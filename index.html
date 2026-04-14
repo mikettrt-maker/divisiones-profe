@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prof. Miguel - Reto División</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <title>Prof. Miguel - Reto División (Gamified)</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
@@ -16,13 +16,21 @@
             --success: #10b981;
             --error: #ef4444;
             --cell-size: 45px;
+            
+            /* COLORES DE RANGO */
+            --rank-iron: #6b7280;
+            --rank-bronze: #d97706;
+            --rank-silver: #64748b;
+            --rank-gold: #fbbf24;
+            --rank-platinum: #06b6d4;
+            --rank-diamond: #8b5cf6;
+            --rank-heroic: #ef4444;
         }
 
         body { margin: 0; font-family: 'Poppins', sans-serif; background-color: #f3f4f6; color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
 
         .main-header { width: 100%; background: linear-gradient(90deg, var(--primary-color), var(--primary-light)); color: white; padding: 15px 0; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .main-header h1 { margin: 0; font-size: 1.8rem; font-weight: 800; }
-        /* AUMENTÉ EL ANCHO MÁXIMO A 1500px PARA QUE QUEPAN LOS 3 ELEMENTOS */
         .app-container { width: 100%; max-width: 1500px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; }
 
         /* PANELES */
@@ -31,63 +39,70 @@
         .level-selector-container { display: flex; align-items: center; gap: 8px; }
         .level-select { padding: 8px 12px; border-radius: 20px; border: 2px solid var(--primary-color); background: white; color: var(--primary-color); font-family: 'Poppins'; font-weight: 700; font-size: 1rem; cursor: pointer; outline: none; }
         
-        .score-badge { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; padding: 8px 15px; border-radius: 20px; font-weight: 700; box-shadow: 0 2px 4px rgba(245, 158, 11, 0.4); display: flex; align-items: center; gap: 5px; }
-        
+        /* ESTILO DE RANK BOX */
+        .rank-box {
+            display: flex; flex-direction: column; align-items: center; background: #f8fafc; padding: 10px 20px; border-radius: 12px; border: 2px solid #e2e8f0;
+            min-width: 180px;
+        }
+        .rank-name {
+            font-size: 1.2rem; font-weight: 800; letter-spacing: 1px;
+            text-transform: uppercase;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
+        }
+        .rank-progress {
+            width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; margin-top: 5px; overflow: hidden;
+        }
+        .rank-progress-bar {
+            height: 100%; background: var(--text-dark); transition: width 0.5s;
+        }
+        .rank-score-label {
+            font-size: 0.8rem; color: #666; margin-top: 2px;
+        }
+
         .progress-bar-container { flex-grow: 1; margin: 0 20px; height: 12px; background: #e5e7eb; border-radius: 6px; overflow: hidden; min-width: 150px; }
         .progress-bar-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
 
-        /* LAYOUT PRINCIPAL (JUEGO + RANKING) */
-        .main-layout {
-            display: flex; flex-direction: row; gap: 20px; width: 100%;
-            align-items: flex-start;
-        }
+        /* LAYOUT PRINCIPAL */
+        .main-layout { display: flex; flex-direction: row; gap: 20px; width: 100%; align-items: flex-start; }
+        .game-area { flex: 4; display: flex; flex-direction: column; gap: 20px; }
+        .workspace-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); display: flex; gap: 40px; justify-content: center; flex-wrap: nowrap; align-items: flex-start; }
 
-        /* ÁREA DEL JUEGO (IZQUIERDA) */
-        .game-area {
-            flex: 4; /* Ocupa más espacio */
-            display: flex; flex-direction: column; gap: 20px;
-        }
-        
-        /* AQUÍ ESTABA EL PROBLEMA: AHORA FORZAMOS A QUE NO SE ENVUELVA */
-        .workspace-card { 
-            background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); 
-            display: flex; gap: 40px; justify-content: center; 
-            flex-wrap: nowrap; /* IMPORTANTE: Evita que la antena se vaya abajo */
-            align-items: flex-start; 
-        }
-
-        /* RANKING SIDEBAR (DERECHA) */
+        /* RANKING SIDEBAR */
         .ranking-sidebar {
-            flex: 1; 
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            position: sticky; 
-            top: 20px;
-            min-width: 280px; /* Ancho mínimo para que se vea bien */
+            flex: 1; background: white; padding: 20px; border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08); position: sticky; top: 20px; min-width: 300px;
         }
         .ranking-title {
-            font-size: 1.2rem; font-weight: 800; color: var(--primary-color);
+            font-size: 1.3rem; font-weight: 800; color: var(--text-dark);
             text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px;
             display: flex; align-items: center; justify-content: center; gap: 10px;
         }
         .ranking-list { list-style: none; padding: 0; margin: 0; }
         .ranking-item {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 10px; margin-bottom: 8px; border-radius: 8px;
-            background: #f8fafc; transition: all 0.3s;
+            padding: 12px; margin-bottom: 8px; border-radius: 8px; background: #f8fafc;
+            border-left: 5px solid #cbd5e1; transition: all 0.3s;
         }
-        .ranking-item.top-1 { background: #fff7ed; border-left: 5px solid #f59e0b; font-weight: 700; }
-        .ranking-item.top-2 { background: #f1f5f9; border-left: 5px solid #94a3b8; }
-        .ranking-item.top-3 { background: #fffbeb; border-left: 5px solid #d97706; }
-        .ranking-item.me { background: #ecfdf5; border-left: 5px solid var(--success); font-weight: 700; border: 2px solid var(--success); }
         
-        .rank-pos { font-weight: 800; color: #666; margin-right: 10px; width: 20px; }
-        .rank-name { flex-grow: 1; color: var(--text-dark); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .rank-score { font-weight: 700; color: var(--primary-light); margin-left: 10px; }
+        /* CLASES DE RANGO DINÁMICAS */
+        .rank-iron { color: var(--rank-iron); border-color: var(--rank-iron); }
+        .rank-bronze { color: var(--rank-bronze); border-color: var(--rank-bronze); background: #fff7ed; }
+        .rank-silver { color: var(--rank-silver); border-color: var(--rank-silver); background: #f8fafc; }
+        .rank-gold { color: #92400e; border-color: var(--rank-gold); background: #fffbeb; font-weight: 800; }
+        .rank-platinum { color: #0e7490; border-color: var(--rank-platinum); background: #ecfeff; font-weight: 800; }
+        .rank-diamond { color: #6d28d9; border-color: var(--rank-diamond); background: #f5f3ff; font-weight: 800; box-shadow: 0 0 10px rgba(139, 92, 246, 0.2); }
+        .rank-heroic { 
+            color: #b91c1c; border-color: var(--rank-heroic); background: #fef2f2; font-weight: 900;
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); animation: pulse 2s infinite;
+        }
+        
+        .rank-pos { font-weight: 800; color: #666; margin-right: 10px; width: 20px; font-size: 0.9rem; }
+        .rank-info { flex-grow: 1; display: flex; flex-direction: column; }
+        .rank-name-list { font-weight: 700; font-size: 0.95rem; }
+        .rank-tier-list { font-size: 0.75rem; font-weight: 800; opacity: 0.9; }
+        .rank-score { font-weight: 700; color: var(--primary-light); margin-left: 10px; font-size: 0.9rem; }
 
-        /* --- GALERA --- */
+        /* GALERA */
         .division-row { display: flex; flex-direction: row; align-items: flex-start; gap: 0; margin-top: 20px; }
         .col-divisor { display: flex; flex-direction: row; align-items: center; height: var(--cell-size); margin-top: 49px; }
         .input-div { width: var(--cell-size); height: var(--cell-size); border: 1px solid #ccc; background: #fafafa; font-size: 2rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; }
@@ -116,7 +131,7 @@
         .border-right { border-right: 2px solid var(--text-dark) !important; }
 
         /* ANTENA */
-        .antena-panel { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; border-top: 5px solid var(--primary-color); width: 260px; flex-shrink: 0; /* Evita que se encoja */ }
+        .antena-panel { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; border-top: 5px solid var(--primary-color); width: 260px; flex-shrink: 0; }
         .antena-header { text-align: center; font-weight: 700; color: var(--primary-color); margin-bottom: 10px; font-size: 1.1rem; }
         .antena-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
         .antena-input { width: 60px; height: 30px; font-size: 0.9rem; font-weight: 600; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px; }
@@ -131,12 +146,12 @@
         .btn-primary { background: var(--primary-color); }
         .btn-check { background: var(--success); box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3); }
         
-        /* Mensaje Motivador */
+        /* Mensaje */
         #msg { width: 100%; text-align: center; font-weight: 600; margin-top: 10px; transition: all 0.3s; }
         .quote-box { background: #f0fdf4; border-left: 4px solid var(--success); padding: 10px; margin-top: 8px; border-radius: 4px; font-style: italic; color: #166534; font-weight: 400; animation: fadeIn 0.5s; }
         .quote-author { display: block; margin-top: 5px; font-weight: 700; font-size: 0.9rem; text-align: right; }
 
-        /* --- PANTALLA DE LOGIN --- */
+        /* LOGIN */
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); display: flex; justify-content: center; align-items: center; z-index: 9999; }
         .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; width: 350px; }
         .login-box h2 { color: var(--primary-color); margin-top: 0; }
@@ -145,12 +160,13 @@
         .login-error { color: var(--error); font-size: 0.9rem; margin-top: 10px; display: none; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
 
         /* Responsive */
         @media (max-width: 1200px) {
             .main-layout { flex-direction: column; }
             .ranking-sidebar { width: 100%; position: relative; top: 0; margin-bottom: 20px; }
-            .workspace-card { flex-wrap: wrap; } /* En móvil sí se puede envolver */
+            .workspace-card { flex-wrap: wrap; }
         }
     </style>
 </head>
@@ -187,13 +203,17 @@
                 </select>
             </div>
             <div class="progress-bar-container"><div class="progress-bar-fill" id="progressBar"></div></div>
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <div style="text-align: center;">
-                    <div style="font-size: 0.8rem; color: #666;" id="difficultyLabel">Divisor: 1 Cifra</div>
-                    <div style="font-size: 0.9rem; color:#666;">Ej. <span id="subLevelCount">1</span>/10</div>
+            
+            <!-- NUEVO: CAJA DE RANGO -->
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <div class="rank-box" id="userRankBox">
+                    <div class="rank-name" id="userRankName">Cargando...</div>
+                    <div class="rank-progress">
+                        <div class="rank-progress-bar" id="userRankBar" style="width: 0%"></div>
+                    </div>
+                    <div class="rank-score-label"><span id="scoreDisplay">0</span> pts</div>
                 </div>
-                <div class="score-badge"><i class="fas fa-star"></i> <span id="scoreDisplay">0</span> pts</div>
-                <button onclick="logout()" style="font-size:0.8rem; padding:5px 10px; background:#aaa;">Salir</button>
+                <button onclick="logout()" style="font-size:0.8rem; padding:10px; background:#aaa; height: fit-content;">Salir</button>
             </div>
         </div>
 
@@ -274,6 +294,50 @@
         const POINTS_PER_SUCCESS = 100;
         let currentUser = null;
 
+        // --- SISTEMA DE RANGOS (NUEVO) ---
+        const RANKS = [
+            { name: "Hierro", min: 0, max: 2999, icon: "🪨", class: "rank-iron" },
+            { name: "Bronce", min: 3000, max: 6999, icon: "🥉", class: "rank-bronze" },
+            { name: "Plata", min: 7000, max: 12999, icon: "🥈", class: "rank-silver" },
+            { name: "Oro", min: 13000, max: 19999, icon: "🥇", class: "rank-gold" },
+            { name: "Platino", min: 20000, max: 29999, icon: "💠", class: "rank-platinum" },
+            { name: "Diamante", min: 30000, max: 49999, icon: "💎", class: "rank-diamond" },
+            { name: "Heroico", min: 50000, max: 999999, icon: "👑", class: "rank-heroic" }
+        ];
+
+        // Calcula el rango y el progreso
+        function getRankInfo(score) {
+            let currentRank = RANKS[0];
+            let nextRank = RANKS[1];
+
+            for (let i = 0; i < RANKS.length; i++) {
+                if (score >= RANKS[i].min) {
+                    currentRank = RANKS[i];
+                    nextRank = RANKS[i + 1] || RANKS[i]; // Si es el último, se queda
+                }
+            }
+
+            // Sub-niveles (III, II, I)
+            let tier = "I";
+            let range = currentRank.max - currentRank.min;
+            let step = range / 3;
+            
+            if (score < currentRank.min + step) tier = "III";
+            else if (score < currentRank.min + (step * 2)) tier = "II";
+            else tier = "I";
+
+            // Progreso para la barrita
+            let progressPercent = ((score - currentRank.min) / (currentRank.max - currentRank.min)) * 100;
+            if (progressPercent > 100) progressPercent = 100;
+
+            return {
+                ...currentRank,
+                tier: tier,
+                nextName: nextRank.name,
+                progress: progressPercent.toFixed(0)
+            };
+        }
+
         // --- BASE DE DATOS DE EJERCICIOS (RESUMIDA) ---
         const exercisesDB = {
             1: [ {d: 456, div: 4}, {d: 789, div: 3}, {d: 125, div: 5}, {d: 982, div: 7}, {d: 641, div: 2}, {d: 333, div: 9}, {d: 805, div: 6}, {d: 219, div: 8}, {d: 567, div: 4}, {d: 901, div: 3} ],
@@ -292,33 +356,19 @@
         // Herramienta Excel
         let selectMode = false; let isDragging = false; let startCell = null; let endCell = null; let selectedCells = new Set();
 
-        // --- 2. GESTIÓN DE USUARIOS Y CIERRE DE SESIÓN ---
-        
+        // --- 2. GESTIÓN DE USUARIOS ---
         document.addEventListener('DOMContentLoaded', async () => {
             const { data: { session } } = await _supabase.auth.getSession();
-            if (session) {
-                currentUser = session.user;
-                showApp();
-            } else {
-                showLogin();
-            }
+            if (session) { currentUser = session.user; showApp(); } else { showLogin(); }
         });
 
-        // CORRECCIÓN: Cierre de sesión inmediato al cerrar pestaña/navegador
-        // Usamos 'unload' y sin async para asegurar que se ejecute
-        window.addEventListener('unload', (event) => {
-            _supabase.auth.signOut(); 
-        });
+        window.addEventListener('unload', (event) => { _supabase.auth.signOut(); });
 
-        function showLogin() {
-            document.getElementById('login-screen').style.display = 'flex';
-            document.querySelector('.app-container').style.display = 'none';
-        }
+        function showLogin() { document.getElementById('login-screen').style.display = 'flex'; document.querySelector('.app-container').style.display = 'none'; }
 
         async function showApp() {
             document.getElementById('login-screen').style.display = 'none';
             document.querySelector('.app-container').style.display = 'flex';
-            
             const { data: { user } } = await _supabase.auth.getUser();
             currentUser = user;
             await loadScore(user);
@@ -348,18 +398,25 @@
             else { alert("¡Cuenta creada!"); currentUser = data.user; showApp(); }
         }
 
-        async function logout() {
-            await _supabase.auth.signOut();
-            currentUser = null;
-            totalScore = 0;
-            showLogin();
-            stopRankingUpdates();
-        }
+        async function logout() { await _supabase.auth.signOut(); currentUser = null; totalScore = 0; showLogin(); stopRankingUpdates(); }
 
         async function loadScore(user) {
             const { data, error } = await _supabase.from('profiles').select('total_score').eq('id', user.id).single();
-            if (data) { totalScore = data.total_score || 0; document.getElementById('scoreDisplay').innerText = totalScore; }
-            else { totalScore = 0; }
+            if (data) { totalScore = data.total_score || 0; updateUI(); }
+            else { totalScore = 0; updateUI(); }
+        }
+
+        function updateUI() {
+            document.getElementById('scoreDisplay').innerText = totalScore;
+            // Actualizar Rango
+            const rankInfo = getRankInfo(totalScore);
+            const rankBox = document.getElementById('userRankBox');
+            
+            document.getElementById('userRankName').innerText = `${rankInfo.icon} ${rankInfo.name} ${rankInfo.tier}`;
+            document.getElementById('userRankName').className = `rank-name ${rankInfo.class}`;
+            document.getElementById('userRankBar').style.width = `${rankInfo.progress}%`;
+            document.getElementById('userRankBar').style.background = getComputedStyle(document.documentElement).getPropertyValue(`--${rankInfo.class.replace('rank-', 'rank-')}`); // Color dinámico
+            rankBox.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue(`--${rankInfo.class.replace('rank-', 'rank-')}`);
         }
 
         async function saveScore() {
@@ -380,17 +437,23 @@
 
             list.innerHTML = data.map((user, index) => {
                 const isMe = (currentUser && user.username === currentUser.email.split('@')[0]);
-                let itemClass = 'ranking-item';
-                if (isMe) itemClass += ' me';
-                if (index === 0) itemClass += ' top-1';
-                else if (index === 1) itemClass += ' top-2';
-                else if (index === 2) itemClass += ' top-3';
+                const score = user.total_score || 0;
+                const rankInfo = getRankInfo(score);
+                
+                // Asignar clase CSS para color
+                let itemClass = `ranking-item ${rankInfo.class}`;
+                if (isMe) itemClass += ' me'; // Clase especial para "Yo"
 
-                return `<li class="${itemClass}">
-                    <span class="rank-pos">${index + 1}.</span>
-                    <span class="rank-name">${user.username || 'Anónimo'}</span>
-                    <span class="rank-score">${user.total_score || 0}</span>
-                </li>`;
+                return `
+                    <li class="${itemClass}">
+                        <span class="rank-pos">${index + 1}.</span>
+                        <div class="rank-info">
+                            <span class="rank-name-list">${user.username || 'Anónimo'}</span>
+                            <span class="rank-tier-list">${rankInfo.icon} ${rankInfo.name} ${rankInfo.tier}</span>
+                        </div>
+                        <span class="rank-score">${score}</span>
+                    </li>
+                `;
             }).join('');
         }
 
@@ -475,15 +538,22 @@
 
             if(coc === realCoc && res === realRes) {
                 totalScore += POINTS_PER_SUCCESS;
-                document.getElementById('scoreDisplay').innerText = totalScore;
+                updateUI(); // Actualiza visualización de rango
                 await saveScore();
+                
+                // Verificar si subió de rango
+                const newRankInfo = getRankInfo(totalScore);
+                // (Opcional: Lógica simple para alertar subida de rango)
+                // if(totalScore % 3000 < 100) alert("¡Subiste de nivel!");
+
                 const quoteObj = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
                 msgDiv.innerHTML = `<span style="color: var(--success); font-weight: 700;">¡Correcto! +${POINTS_PER_SUCCESS} Puntos</span><div class="quote-box">"${quoteObj.text}"<span class="quote-author">- ${quoteObj.author}</span></div>`;
+                
                 setTimeout(() => {
                     if(currentProblemInLevel < PROBLEMS_PER_LEVEL) { currentProblemInLevel++; } 
                     else {
                         if(currentMainLevel < TOTAL_LEVELS) { currentMainLevel++; currentProblemInLevel = 1; }
-                        else { alert("¡JUEGO TERMINADO! Puntuación Final: " + totalScore); currentMainLevel = 1; currentProblemInLevel = 1; totalScore = 0; document.getElementById('scoreDisplay').innerText = totalScore; }
+                        else { alert("¡JUEGO TERMINADO! Puntuación Final: " + totalScore); currentMainLevel = 1; currentProblemInLevel = 1; totalScore = 0; updateUI(); }
                     }
                     loadProblem();
                 }, 2500);
