@@ -6,7 +6,6 @@
     <title>Prof. Miguel - Reto División</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- LIBRERÍA SUPABASE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
@@ -23,7 +22,7 @@
 
         .main-header { width: 100%; background: linear-gradient(90deg, var(--primary-color), var(--primary-light)); color: white; padding: 15px 0; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .main-header h1 { margin: 0; font-size: 1.8rem; font-weight: 800; }
-        .app-container { width: 100%; max-width: 1100px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; }
+        .app-container { width: 100%; max-width: 1400px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; }
 
         /* PANELES */
         .panel { background: white; padding: 15px 25px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
@@ -36,8 +35,49 @@
         .progress-bar-container { flex-grow: 1; margin: 0 20px; height: 12px; background: #e5e7eb; border-radius: 6px; overflow: hidden; min-width: 150px; }
         .progress-bar-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
 
-        /* ÁREA DE TRABAJO */
+        /* LAYOUT PRINCIPAL (JUEGO + RANKING) */
+        .main-layout {
+            display: flex; flex-direction: row; gap: 20px; width: 100%;
+            align-items: flex-start;
+        }
+
+        /* ÁREA DEL JUEGO (IZQUIERDA) */
+        .game-area {
+            flex: 3; /* Ocupa 3 partes del ancho */
+            display: flex; flex-direction: column; gap: 20px;
+        }
+        
         .workspace-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; align-items: flex-start; }
+
+        /* RANKING SIDEBAR (DERECHA) */
+        .ranking-sidebar {
+            flex: 1; /* Ocupa 1 parte del ancho */
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            position: sticky; /* Se queda fijo al hacer scroll si fuera necesario */
+            top: 20px;
+        }
+        .ranking-title {
+            font-size: 1.2rem; font-weight: 800; color: var(--primary-color);
+            text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .ranking-list { list-style: none; padding: 0; margin: 0; }
+        .ranking-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px; margin-bottom: 8px; border-radius: 8px;
+            background: #f8fafc; transition: all 0.3s;
+        }
+        .ranking-item.top-1 { background: #fff7ed; border-left: 5px solid #f59e0b; font-weight: 700; } /* Oro */
+        .ranking-item.top-2 { background: #f1f5f9; border-left: 5px solid #94a3b8; } /* Plata */
+        .ranking-item.top-3 { background: #fffbeb; border-left: 5px solid #d97706; } /* Bronce */
+        .ranking-item.me { background: #ecfdf5; border-left: 5px solid var(--success); font-weight: 700; border: 2px solid var(--success); }
+        
+        .rank-pos { font-weight: 800; color: #666; margin-right: 10px; }
+        .rank-name { flex-grow: 1; color: var(--text-dark); }
+        .rank-score { font-weight: 700; color: var(--primary-light); }
 
         /* --- GALERA --- */
         .division-row { display: flex; flex-direction: row; align-items: flex-start; gap: 0; margin-top: 20px; }
@@ -51,11 +91,10 @@
         .linea-h { height: 4px; background-color: var(--text-dark); width: 100%; margin-bottom: 1px; }
 
         /* HERRAMIENTA EXCEL */
-        .excel-toolbar { position: absolute; top: -40px; left: 0; background: #f1f5s9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px; display: flex; gap: 2px; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .excel-toolbar { position: absolute; top: -40px; left: 0; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px; display: flex; gap: 2px; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .tool-btn { width: 32px; height: 32px; border: 1px solid transparent; background: transparent; cursor: pointer; border-radius: 4px; color: #475569; display: flex; align-items: center; justify-content: center; }
         .tool-btn:hover { background: #e2e8f0; }
         .tool-btn.active { background: #bfdbfe; color: var(--primary-color); border-color: #93c5fd; }
-        .separator { width: 1px; background: #cbd5e1; margin: 2px 4px; }
 
         /* Grid y Celdas */
         .grid-matriz { display: grid; grid-template-columns: repeat(9, var(--cell-size)); grid-template-rows: repeat(8, var(--cell-size)); background-image: linear-gradient(#f0f0f0 1px, transparent 1px), linear-gradient(90deg, #f0f0f0 1px, transparent 1px); background-size: var(--cell-size) var(--cell-size); user-select: none; }
@@ -77,7 +116,7 @@
         .status-wrong { background-color: #fee2e2 !important; border-color: var(--error) !important; }
 
         /* CONTROLES */
-        .controls { background: #eff6ff; padding: 20px; border-radius: 12px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box; }
+        .controls { background: #eff6ff; padding: 20px; border-radius: 12px; border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box; }
         .result-box { display: flex; flex-direction: column; background: white; padding: 8px 15px; border-radius: 8px; border: 1px solid #bfdbfe; }
         .result-input { border: none; font-size: 1.5rem; font-weight: 700; width: 80px; text-align: center; color: var(--primary-color); }
         button { border: none; padding: 12px 24px; font-weight: 600; border-radius: 8px; cursor: pointer; font-size: 1rem; color: white; }
@@ -90,25 +129,20 @@
         .quote-author { display: block; margin-top: 5px; font-weight: 700; font-size: 0.9rem; text-align: right; }
 
         /* --- PANTALLA DE LOGIN --- */
-        #login-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
-            display: flex; justify-content: center; align-items: center; z-index: 9999;
-        }
-        .login-box {
-            background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-            text-align: center; width: 350px;
-        }
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; width: 350px; }
         .login-box h2 { color: var(--primary-color); margin-top: 0; }
-        .login-input {
-            width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #eee; border-radius: 8px;
-            font-size: 1rem; box-sizing: border-box;
-        }
+        .login-input { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #eee; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
         .login-btn { width: 100%; margin-top: 10px; }
         .login-error { color: var(--error); font-size: 0.9rem; margin-top: 10px; display: none; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
+        /* Responsive para móviles */
+        @media (max-width: 1000px) {
+            .main-layout { flex-direction: column; }
+            .ranking-sidebar { width: 100%; position: relative; top: 0; margin-bottom: 20px; }
+        }
     </style>
 </head>
 <body>
@@ -117,7 +151,7 @@
     <div id="login-screen" style="display:none;">
         <div class="login-box">
             <h2>Prof. Miguel</h2>
-            <p>Ingresa tu usuario para guardar tu progreso</p>
+            <p>Ingresa tu usuario para competir</p>
             <input type="text" id="login-username" class="login-input" placeholder="Usuario (ej: juan_perez)">
             <input type="password" id="login-password" class="login-input" placeholder="Contraseña (min 6 letras)">
             <button class="login-btn btn-primary" onclick="handleLogin()">Iniciar Sesión</button>
@@ -129,11 +163,10 @@
     <!-- APLICACIÓN PRINCIPAL -->
     <header class="main-header">
         <h1>Prof. Miguel</h1>
-        <span>Reto de División: 100 Ejercicios</span>
+        <span>Reto de División: Competencia en Vivo</span>
     </header>
 
     <div class="app-container">
-        
         <div class="panel">
             <div class="level-selector-container">
                 <label for="levelSelect" style="font-weight: 600; color: #555;">Nivel:</label>
@@ -144,72 +177,80 @@
                     <option value="10">Nivel 10</option>
                 </select>
             </div>
-
-            <div class="progress-bar-container">
-                <div class="progress-bar-fill" id="progressBar"></div>
-            </div>
-            
+            <div class="progress-bar-container"><div class="progress-bar-fill" id="progressBar"></div></div>
             <div style="display: flex; align-items: center; gap: 15px;">
                 <div style="text-align: center;">
                     <div style="font-size: 0.8rem; color: #666;" id="difficultyLabel">Divisor: 1 Cifra</div>
-                    <div style="font-size: 0.9rem; color:#666;">Ejercicio <span id="subLevelCount">1</span>/10</div>
+                    <div style="font-size: 0.9rem; color:#666;">Ej. <span id="subLevelCount">1</span>/10</div>
                 </div>
-                <div class="score-badge">
-                    <i class="fas fa-star"></i> <span id="scoreDisplay">0</span> pts
-                </div>
+                <div class="score-badge"><i class="fas fa-star"></i> <span id="scoreDisplay">0</span> pts</div>
                 <button onclick="logout()" style="font-size:0.8rem; padding:5px 10px; background:#aaa;">Salir</button>
             </div>
         </div>
 
-        <div class="workspace-card">
+        <!-- LAYOUT FLEX: JUEGO IZQUIERDA | RANKING DERECHA -->
+        <div class="main-layout">
             
-            <div class="division-row">
-                <div class="col-divisor" id="divisorBox"></div>
-                <div class="col-linea-v"></div>
-                <div class="col-grid">
-                    
-                    <div class="excel-toolbar">
-                        <button class="tool-btn" id="btnSelectMode" onclick="toggleSelectMode()" title="Seleccionar Celdas"><i class="fas fa-mouse-pointer"></i></button>
-                        <div class="separator"></div>
-                        <button class="tool-btn" onclick="applyBorder('bottom')" title="Borde Inferior"><i class="fas fa-ellipsis-h"></i></button>
-                        <button class="tool-btn" onclick="applyBorder('right')" title="Borde Derecho"><i class="fas fa-ellipsis-v"></i></button>
-                        <button class="tool-btn" onclick="applyBorder('clear')" title="Borrar Bordes"><i class="fas fa-times"></i></button>
+            <!-- COLUMNA JUEGO -->
+            <div class="game-area">
+                <div class="workspace-card">
+                    <div class="division-row">
+                        <div class="col-divisor" id="divisorBox"></div>
+                        <div class="col-linea-v"></div>
+                        <div class="col-grid">
+                            <div class="excel-toolbar">
+                                <button class="tool-btn" id="btnSelectMode" onclick="toggleSelectMode()" title="Seleccionar"><i class="fas fa-mouse-pointer"></i></button>
+                                <div class="separator"></div>
+                                <button class="tool-btn" onclick="applyBorder('bottom')" title="Abajo"><i class="fas fa-ellipsis-h"></i></button>
+                                <button class="tool-btn" onclick="applyBorder('right')" title="Derecha"><i class="fas fa-ellipsis-v"></i></button>
+                                <button class="tool-btn" onclick="applyBorder('clear')" title="Borrar"><i class="fas fa-times"></i></button>
+                            </div>
+                            <div class="fila-cociente" id="topRow"></div>
+                            <div class="linea-h" id="lineH"></div>
+                            <div class="grid-matriz" id="gridContainer"></div>
+                        </div>
                     </div>
-
-                    <div class="fila-cociente" id="topRow"></div>
-                    <div class="linea-h" id="lineH"></div>
-                    <div class="grid-matriz" id="gridContainer"></div>
+                    <div class="antena-panel">
+                        <div class="antena-header">Antena (x <span id="antenaLabel">24</span>)</div>
+                        <div id="antenaBody"></div>
+                        <button onclick="validarAntena()" class="btn-primary" style="width: 100%; margin-top:15px; padding: 8px;">Validar</button>
+                    </div>
                 </div>
+
+                <div class="controls">
+                    <div style="display:flex; gap:15px;">
+                        <div class="result-box">
+                            <span style="font-size:0.8rem; color:#64748b; font-weight:600;">Cociente</span>
+                            <input type="number" class="result-input" id="valCociente" placeholder="0">
+                        </div>
+                        <div class="result-box">
+                            <span style="font-size:0.8rem; color:#64748b; font-weight:600;">Residuo</span>
+                            <input type="number" class="result-input" id="valResiduo" placeholder="0">
+                        </div>
+                    </div>
+                    <button class="btn-check" onclick="verificarSolucion()">Verificar</button>
+                </div>
+                <div id="msg"></div>
             </div>
 
-            <div class="antena-panel">
-                <div class="antena-header">Antena (x <span id="antenaLabel">24</span>)</div>
-                <div id="antenaBody"></div>
-                <button onclick="validarAntena()" class="btn-primary" style="width: 100%; margin-top:15px; padding: 8px;">Validar</button>
+            <!-- COLUMNA RANKING -->
+            <div class="ranking-sidebar">
+                <div class="ranking-title">
+                    <i class="fas fa-trophy"></i> Ranking de la Clase
+                </div>
+                <ul class="ranking-list" id="ranking-list">
+                    <!-- Se llena con JS -->
+                    <li style="text-align:center; color:#666;">Cargando...</li>
+                </ul>
             </div>
+
         </div>
-
-        <div class="controls">
-            <div style="display:flex; gap:15px;">
-                <div class="result-box">
-                    <span style="font-size:0.8rem; color:#64748b; font-weight:600;">Cociente</span>
-                    <input type="number" class="result-input" id="valCociente" placeholder="0">
-                </div>
-                <div class="result-box">
-                    <span style="font-size:0.8rem; color:#64748b; font-weight:600;">Residuo</span>
-                    <input type="number" class="result-input" id="valResiduo" placeholder="0">
-                </div>
-            </div>
-            <button class="btn-check" onclick="verificarSolucion()">Verificar</button>
-        </div>
-        <div id="msg"></div>
     </div>
 
     <script>
-        // --- 1. CONEXIÓN A SUPABASE (TUS DATOS) ---
+        // --- 1. CONEXIÓN A SUPABASE (TUS LLAVES) ---
         const SUPABASE_URL = 'https://oskrniownbbzkgnwunzz.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_RcfluyMTRxDP4chkK91-2Q_UwLdLrqP';
-        
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // --- VARIABLES GLOBALES ---
@@ -223,8 +264,9 @@
 
         let totalScore = 0;
         const POINTS_PER_SUCCESS = 100;
+        let currentUser = null; // Guardaremos el usuario actual aquí
 
-        // --- BASE DE DATOS DE EJERCICIOS ---
+        // --- BASE DE DATOS DE EJERCICIOS (RESUMIDA) ---
         const exercisesDB = {
             1: [ {d: 456, div: 4}, {d: 789, div: 3}, {d: 125, div: 5}, {d: 982, div: 7}, {d: 641, div: 2}, {d: 333, div: 9}, {d: 805, div: 6}, {d: 219, div: 8}, {d: 567, div: 4}, {d: 901, div: 3} ],
             2: [ {d: 1245, div: 5}, {d: 8902, div: 2}, {d: 4567, div: 9}, {d: 3312, div: 6}, {d: 7841, div: 4}, {d: 2009, div: 7}, {d: 6554, div: 8}, {d: 5123, div: 3}, {d: 9876, div: 5}, {d: 4444, div: 7} ],
@@ -238,69 +280,74 @@
             10: [ {d: 45678912, div: 234}, {d: 89012345, div: 567}, {d: 12345678, div: 901}, {d: 76543210, div: 412}, {d: 33445566, div: 777}, {d: 55667788, div: 125}, {d: 98765432, div: 850}, {d: 20406080, div: 315}, {d: 61234567, div: 621}, {d: 99999999, div: 999} ]
         };
 
-        const motivationalQuotes = [
-            { text: "El único modo de hacer un gran trabajo es amar lo que haces.", author: "Steve Jobs" },
-            { text: "La educación es el arma más poderosa.", author: "Nelson Mandela" },
-            { text: "El éxito no se da de la noche a la mañana.", author: "Albert Einstein" }
-        ];
+        const motivationalQuotes = [ { text: "El único modo de hacer un gran trabajo es amar lo que haces.", author: "Steve Jobs" }, { text: "La educación es el arma más poderosa.", author: "N. Mandela" } ];
 
         // Herramienta Excel
         let selectMode = false; let isDragging = false; let startCell = null; let endCell = null; let selectedCells = new Set();
 
-        // --- 2. GESTIÓN DE USUARIOS ---
-        document.addEventListener('DOMContentLoaded', () => { checkSession(); });
-
-        async function checkSession() {
+        // --- 2. GESTIÓN DE USUARIOS Y CIERRE DE SESIÓN AUTOMÁTICO ---
+        
+        // Al cargar la página
+        document.addEventListener('DOMContentLoaded', async () => {
             const { data: { session } } = await _supabase.auth.getSession();
-            if (session) { showApp(session.user); } else { showLogin(); }
-        }
+            if (session) {
+                currentUser = session.user;
+                showApp();
+            } else {
+                showLogin();
+            }
+        });
+
+        // Detectar cierre de navegador/pestaña
+        window.addEventListener('beforeunload', async (e) => {
+            // Descomenta la siguiente línea si quieres que al cerrar, cierre sesión:
+            await _supabase.auth.signOut(); 
+        });
 
         function showLogin() {
             document.getElementById('login-screen').style.display = 'flex';
             document.querySelector('.app-container').style.display = 'none';
         }
 
-        async function showApp(user) {
+        async function showApp() {
             document.getElementById('login-screen').style.display = 'none';
             document.querySelector('.app-container').style.display = 'flex';
+            
+            const { data: { user } } = await _supabase.auth.getUser();
+            currentUser = user;
             await loadScore(user);
             initGame();
+            startRankingUpdates(); // Iniciar actualización automática
         }
 
         async function handleLogin() {
             const username = document.getElementById('login-username').value.trim();
             const password = document.getElementById('login-password').value;
             const errorDiv = document.getElementById('login-error');
-
             if (!username || password.length < 6) { errorDiv.textContent = "Completa usuario y contraseña (mínimo 6 caracteres)."; errorDiv.style.display = 'block'; return; }
-
             const email = username + "@profemiguel.com";
-
             const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
-            
             if (error) { errorDiv.textContent = "Usuario o contraseña incorrectos."; errorDiv.style.display = 'block'; }
-            else { showApp(data.user); }
+            else { currentUser = data.user; showApp(); }
         }
 
         async function handleRegister() {
             const username = document.getElementById('login-username').value.trim();
             const password = document.getElementById('login-password').value;
             const errorDiv = document.getElementById('login-error');
-
             if (!username || password.length < 6) { errorDiv.textContent = "Completa usuario y contraseña (mínimo 6 caracteres)."; errorDiv.style.display = 'block'; return; }
-
             const email = username + "@profemiguel.com";
-
             const { data, error } = await _supabase.auth.signUp({ email, password });
-            
             if (error) { errorDiv.textContent = "Error al registrar. ¿Usuario ya existe?"; errorDiv.style.display = 'block'; }
-            else { alert("¡Cuenta creada! Ya puedes entrar."); showApp(data.user); }
+            else { alert("¡Cuenta creada!"); currentUser = data.user; showApp(); }
         }
 
         async function logout() {
             await _supabase.auth.signOut();
-            showLogin();
+            currentUser = null;
             totalScore = 0;
+            showLogin();
+            stopRankingUpdates();
         }
 
         async function loadScore(user) {
@@ -310,12 +357,57 @@
         }
 
         async function saveScore() {
-            const { data: { user } } = await _supabase.auth.getUser();
-            if (!user) return;
-            await _supabase.from('profiles').upsert({ id: user.id, username: user.email.split('@')[0], total_score: totalScore });
+            if (!currentUser) return;
+            await _supabase.from('profiles').upsert({ id: currentUser.id, username: currentUser.email.split('@')[0], total_score: totalScore });
+            // Actualizar ranking inmediatamente después de guardar
+            updateRanking();
         }
 
-        // --- 3. LÓGICA DEL JUEGO ---
+        // --- 3. LÓGICA DEL RANKING EN TIEMPO REAL ---
+        let rankingInterval;
+
+        function startRankingUpdates() {
+            updateRanking(); // Primera carga
+            rankingInterval = setInterval(updateRanking, 5000); // Cada 5 segundos
+        }
+
+        function stopRankingUpdates() {
+            clearInterval(rankingInterval);
+        }
+
+        async function updateRanking() {
+            const { data, error } = await _supabase
+                .from('profiles')
+                .select('username, total_score')
+                .order('total_score', { ascending: false })
+                .limit(10);
+
+            const list = document.getElementById('ranking-list');
+            if (!data || data.length === 0) {
+                list.innerHTML = '<li style="text-align:center; color:#666;">No hay datos</li>';
+                return;
+            }
+
+            list.innerHTML = data.map((user, index) => {
+                // Resaltar si soy yo
+                const isMe = (currentUser && user.username === currentUser.email.split('@')[0]);
+                let itemClass = 'ranking-item';
+                if (isMe) itemClass += ' me';
+                if (index === 0) itemClass += ' top-1';
+                else if (index === 1) itemClass += ' top-2';
+                else if (index === 2) itemClass += ' top-3';
+
+                return `
+                    <li class="${itemClass}">
+                        <span class="rank-pos">${index + 1}.</span>
+                        <span class="rank-name">${user.username || 'Anónimo'}</span>
+                        <span class="rank-score">${user.total_score || 0}</span>
+                    </li>
+                `;
+            }).join('');
+        }
+
+        // --- 4. LÓGICA DEL JUEGO ---
         function initGame() { loadProblem(); document.getElementById('levelSelect').value = currentMainLevel; }
         function jumpToLevel(level) { currentMainLevel = parseInt(level); currentProblemInLevel = 1; loadProblem(); }
 
@@ -334,7 +426,6 @@
 
             const label = getDifficultyLabel(currentMainLevel);
             document.getElementById('difficultyLabel').innerText = label;
-
             createUI();
             createAntena();
             resetAll();
@@ -352,9 +443,7 @@
             const divBox = document.getElementById('divisorBox');
             const topRow = document.getElementById('topRow');
             grid.innerHTML = ''; divBox.innerHTML = ''; topRow.innerHTML = '';
-
             String(currentDivisor).split('').forEach(n => { let inp = document.createElement('input'); inp.type = 'text'; inp.className = 'input-div'; inp.value = n; inp.readOnly = true; divBox.appendChild(inp); });
-
             for(let r=0; r<rows; r++) {
                 for(let c=0; c<cols; c++) {
                     let inp = document.createElement('input');
@@ -366,19 +455,13 @@
                 }
             }
             document.onmouseup = () => { isDragging = false; };
-
             let sNum = String(currentDividend);
             let startC = 0; 
-
             for(let i=0; i<sNum.length; i++) {
                 let cell = document.getElementById(`c-0-${startC+i}`);
-                cell.value = sNum[i];
-                cell.classList.add('cell-locked');
-                cell.disabled = true;
+                cell.value = sNum[i]; cell.classList.add('cell-locked'); cell.disabled = true;
             }
-
             document.getElementById('lineH').style.width = (sNum.length * cellSize) + 'px';
-
             for(let c=0; c<sNum.length; c++) {
                 let inp = document.createElement('input'); inp.type = 'text'; inp.className = 'input-cociente'; inp.maxLength = 1; inp.id = `top-${c}`;
                 inp.addEventListener('input', (e) => { syncTop(); if(e.target.value && c < sNum.length - 1) document.getElementById(`top-${c+1}`).focus(); });
@@ -399,21 +482,13 @@
             if(!startCell || !endCell) return;
             const minR = Math.min(startCell.r, endCell.r); const maxR = Math.max(startCell.r, endCell.r);
             const minC = Math.min(startCell.c, endCell.c); const maxC = Math.max(startCell.c, endCell.c);
-            for(let r = minR; r <= maxR; r++) {
-                for(let c = minC; c <= maxC; c++) {
-                    const cell = document.getElementById(`c-${r}-${c}`);
-                    if(cell) { cell.classList.add('cell-selected'); selectedCells.add(cell.id); }
-                }
-            }
+            for(let r = minR; r <= maxR; r++) { for(let c = minC; c <= maxC; c++) { const cell = document.getElementById(`c-${r}-${c}`); if(cell) { cell.classList.add('cell-selected'); selectedCells.add(cell.id); } } }
         }
 
         function clearSelection() { selectedCells.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('cell-selected'); }); selectedCells.clear(); startCell = null; endCell = null; }
 
         function applyBorder(type) {
-            selectedCells.forEach(id => {
-                const el = document.getElementById(id);
-                if(el) { if(type === 'clear') el.classList.remove('border-bottom', 'border-top', 'border-left', 'border-right'); else el.classList.add(`border-${type}`); }
-            });
+            selectedCells.forEach(id => { const el = document.getElementById(id); if(el) { if(type === 'clear') el.classList.remove('border-bottom', 'border-top', 'border-left', 'border-right'); else el.classList.add(`border-${type}`); } });
         }
 
         function syncTop() { let val = ""; document.querySelectorAll('.input-cociente').forEach(x => val += x.value); document.getElementById('valCociente').value = val; }
@@ -422,11 +497,7 @@
             const body = document.getElementById('antenaBody');
             document.getElementById('antenaLabel').innerText = currentDivisor;
             body.innerHTML = '';
-            for(let i=1; i<=10; i++) {
-                let row = document.createElement('div'); row.className = 'antena-row';
-                row.innerHTML = `<span>${i} x ${currentDivisor} =</span><input type='number' class='antena-input' id='a${i}'>`;
-                body.appendChild(row);
-            }
+            for(let i=1; i<=10; i++) { let row = document.createElement('div'); row.className = 'antena-row'; row.innerHTML = `<span>${i} x ${currentDivisor} =</span><input type='number' class='antena-input' id='a${i}'>`; body.appendChild(row); }
         }
 
         function resetAll() {
@@ -440,13 +511,8 @@
 
         function validarAntena() {
             let ok = true;
-            for(let i=1; i<=10; i++) {
-                let inp = document.getElementById(`a${i}`); let val = parseInt(inp.value);
-                if(val === i * currentDivisor) { inp.classList.add('status-ok'); inp.classList.remove('status-wrong'); }
-                else { inp.classList.add('status-wrong'); inp.classList.remove('status-ok'); ok = false; }
-            }
-            document.getElementById('msg').innerText = ok ? "¡Antena correcta!" : "Corrige los errores.";
-            document.getElementById('msg').style.color = ok ? "var(--success)" : "var(--error)";
+            for(let i=1; i<=10; i++) { let inp = document.getElementById(`a${i}`); let val = parseInt(inp.value); if(val === i * currentDivisor) { inp.classList.add('status-ok'); inp.classList.remove('status-wrong'); } else { inp.classList.add('status-wrong'); inp.classList.remove('status-ok'); ok = false; } }
+            document.getElementById('msg').innerText = ok ? "¡Antena correcta!" : "Corrige los errores."; document.getElementById('msg').style.color = ok ? "var(--success)" : "var(--error)";
             let existingQuote = document.querySelector('.quote-box'); if(existingQuote) existingQuote.remove();
         }
 
@@ -457,34 +523,25 @@
             let realRes = currentDividend % currentDivisor;
 
             const msgDiv = document.getElementById('msg');
-            
             let existingQuote = document.querySelector('.quote-box'); if(existingQuote) existingQuote.remove();
 
             if(coc === realCoc && res === realRes) {
                 totalScore += POINTS_PER_SUCCESS;
                 document.getElementById('scoreDisplay').innerText = totalScore;
-
-                await saveScore();
-
+                await saveScore(); // Guarda y actualiza ranking
                 const quoteObj = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
-
                 msgDiv.innerHTML = `<span style="color: var(--success); font-weight: 700;">¡Correcto! +${POINTS_PER_SUCCESS} Puntos</span><div class="quote-box">"${quoteObj.text}"<span class="quote-author">- ${quoteObj.author}</span></div>`;
                 
                 setTimeout(() => {
                     if(currentProblemInLevel < PROBLEMS_PER_LEVEL) { currentProblemInLevel++; } 
                     else {
                         if(currentMainLevel < TOTAL_LEVELS) { currentMainLevel++; currentProblemInLevel = 1; }
-                        else { 
-                            alert("¡JUEGO TERMINADO! Puntuación Final: " + totalScore);
-                            currentMainLevel = 1; currentProblemInLevel = 1; 
-                            totalScore = 0; 
-                            document.getElementById('scoreDisplay').innerText = totalScore;
-                        }
+                        else { alert("¡JUEGO TERMINADO! Puntuación Final: " + totalScore); currentMainLevel = 1; currentProblemInLevel = 1; totalScore = 0; document.getElementById('scoreDisplay').innerText = totalScore; }
                     }
                     loadProblem();
                 }, 2500);
             } else {
-                msgDiv.innerHTML = `<span style="color: var(--error); font-weight: 700;">Incorrecto. Revisa la antena.</span>`;
+                msgDiv.innerHTML = `<span style="color: var(--error); font-weight: 700;">Incorrecto.</span>`;
             }
         }
     </script>
