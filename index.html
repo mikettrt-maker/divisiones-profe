@@ -6,7 +6,7 @@
     <title>Prof. Miguel - Reto División</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <!-- LIBRERÍA SUPABASE (NECESARIA) -->
+    <!-- LIBRERÍA SUPABASE -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
@@ -51,7 +51,7 @@
         .linea-h { height: 4px; background-color: var(--text-dark); width: 100%; margin-bottom: 1px; }
 
         /* HERRAMIENTA EXCEL */
-        .excel-toolbar { position: absolute; top: -40px; left: 0; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px; display: flex; gap: 2px; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .excel-toolbar { position: absolute; top: -40px; left: 0; background: #f1f5s9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px; display: flex; gap: 2px; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .tool-btn { width: 32px; height: 32px; border: 1px solid transparent; background: transparent; cursor: pointer; border-radius: 4px; color: #475569; display: flex; align-items: center; justify-content: center; }
         .tool-btn:hover { background: #e2e8f0; }
         .tool-btn.active { background: #bfdbfe; color: var(--primary-color); border-color: #93c5fd; }
@@ -89,7 +89,7 @@
         .quote-box { background: #f0fdf4; border-left: 4px solid var(--success); padding: 10px; margin-top: 8px; border-radius: 4px; font-style: italic; color: #166534; font-weight: 400; animation: fadeIn 0.5s; }
         .quote-author { display: block; margin-top: 5px; font-weight: 700; font-size: 0.9rem; text-align: right; }
 
-        /* --- NUEVO: PANTALLA DE LOGIN --- */
+        /* --- PANTALLA DE LOGIN --- */
         #login-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, var(--primary-color), var(--primary-light));
@@ -106,7 +106,6 @@
         }
         .login-btn { width: 100%; margin-top: 10px; }
         .login-error { color: var(--error); font-size: 0.9rem; margin-top: 10px; display: none; }
-        .user-info { font-size: 0.9rem; color: #666; }
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -114,7 +113,7 @@
 </head>
 <body>
 
-    <!-- PANTALLA DE LOGIN (NUEVO) -->
+    <!-- PANTALLA DE LOGIN -->
     <div id="login-screen" style="display:none;">
         <div class="login-box">
             <h2>Prof. Miguel</h2>
@@ -207,11 +206,10 @@
     </div>
 
     <script>
-        // --- 1. CONFIGURACIÓN SUPABASE (EDITA AQUÍ) ---
-        const SUPABASE_URL = oskrniownbbzkgnwunzz;
-        const SUPABASE_KEY = sb_publishable_RcfluyMTRxDP4chkK91-2Q_UwLdLrqP;
+        // --- 1. CONEXIÓN A SUPABASE (TUS DATOS) ---
+        const SUPABASE_URL = 'https://oskrniownbbzkgnwunzz.supabase.co';
+        const SUPABASE_KEY = 'sb_publishable_RcfluyMTRxDP4chkK91-2Q_UwLdLrqP';
         
-        // Crear cliente
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         // --- VARIABLES GLOBALES ---
@@ -242,24 +240,19 @@
 
         const motivationalQuotes = [
             { text: "El único modo de hacer un gran trabajo es amar lo que haces.", author: "Steve Jobs" },
-            { text: "La educación es el arma más poderosa.", author: "Nelson Mandela" }
+            { text: "La educación es el arma más poderosa.", author: "Nelson Mandela" },
+            { text: "El éxito no se da de la noche a la mañana.", author: "Albert Einstein" }
         ];
 
         // Herramienta Excel
         let selectMode = false; let isDragging = false; let startCell = null; let endCell = null; let selectedCells = new Set();
 
-        // --- 2. GESTIÓN DE USUARIOS (LOGIN) ---
-        document.addEventListener('DOMContentLoaded', () => {
-            checkSession();
-        });
+        // --- 2. GESTIÓN DE USUARIOS ---
+        document.addEventListener('DOMContentLoaded', () => { checkSession(); });
 
         async function checkSession() {
             const { data: { session } } = await _supabase.auth.getSession();
-            if (session) {
-                showApp(session.user);
-            } else {
-                showLogin();
-            }
+            if (session) { showApp(session.user); } else { showLogin(); }
         }
 
         function showLogin() {
@@ -279,23 +272,14 @@
             const password = document.getElementById('login-password').value;
             const errorDiv = document.getElementById('login-error');
 
-            if (!username || password.length < 6) {
-                errorDiv.textContent = "Completa usuario y contraseña (mínimo 6 caracteres).";
-                errorDiv.style.display = 'block';
-                return;
-            }
+            if (!username || password.length < 6) { errorDiv.textContent = "Completa usuario y contraseña (mínimo 6 caracteres)."; errorDiv.style.display = 'block'; return; }
 
-            // Simulamos email para Supabase auth
             const email = username + "@profemiguel.com";
 
             const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
             
-            if (error) {
-                errorDiv.textContent = "Usuario o contraseña incorrectos.";
-                errorDiv.style.display = 'block';
-            } else {
-                showApp(data.user);
-            }
+            if (error) { errorDiv.textContent = "Usuario o contraseña incorrectos."; errorDiv.style.display = 'block'; }
+            else { showApp(data.user); }
         }
 
         async function handleRegister() {
@@ -303,23 +287,14 @@
             const password = document.getElementById('login-password').value;
             const errorDiv = document.getElementById('login-error');
 
-            if (!username || password.length < 6) {
-                errorDiv.textContent = "Completa usuario y contraseña (mínimo 6 caracteres).";
-                errorDiv.style.display = 'block';
-                return;
-            }
+            if (!username || password.length < 6) { errorDiv.textContent = "Completa usuario y contraseña (mínimo 6 caracteres)."; errorDiv.style.display = 'block'; return; }
 
             const email = username + "@profemiguel.com";
 
             const { data, error } = await _supabase.auth.signUp({ email, password });
             
-            if (error) {
-                errorDiv.textContent = "Error al registrar. ¿Usuario ya existe?";
-                errorDiv.style.display = 'block';
-            } else {
-                alert("¡Cuenta creada! Revisa tu correo para confirmar (o entra directo).");
-                showApp(data.user);
-            }
+            if (error) { errorDiv.textContent = "Error al registrar. ¿Usuario ya existe?"; errorDiv.style.display = 'block'; }
+            else { alert("¡Cuenta creada! Ya puedes entrar."); showApp(data.user); }
         }
 
         async function logout() {
@@ -329,33 +304,19 @@
         }
 
         async function loadScore(user) {
-            const { data, error } = await _supabase
-                .from('profiles')
-                .select('total_score')
-                .eq('id', user.id)
-                .single();
-
-            if (data) {
-                totalScore = data.total_score || 0;
-                document.getElementById('scoreDisplay').innerText = totalScore;
-            } else {
-                totalScore = 0;
-            }
+            const { data, error } = await _supabase.from('profiles').select('total_score').eq('id', user.id).single();
+            if (data) { totalScore = data.total_score || 0; document.getElementById('scoreDisplay').innerText = totalScore; }
+            else { totalScore = 0; }
         }
 
         async function saveScore() {
             const { data: { user } } = await _supabase.auth.getUser();
             if (!user) return;
-
-            await _supabase
-                .from('profiles')
-                .upsert({ id: user.id, username: user.email.split('@')[0], total_score: totalScore });
+            await _supabase.from('profiles').upsert({ id: user.id, username: user.email.split('@')[0], total_score: totalScore });
         }
 
         // --- 3. LÓGICA DEL JUEGO ---
-        
         function initGame() { loadProblem(); document.getElementById('levelSelect').value = currentMainLevel; }
-
         function jumpToLevel(level) { currentMainLevel = parseInt(level); currentProblemInLevel = 1; loadProblem(); }
 
         function loadProblem() {
@@ -392,17 +353,13 @@
             const topRow = document.getElementById('topRow');
             grid.innerHTML = ''; divBox.innerHTML = ''; topRow.innerHTML = '';
 
-            String(currentDivisor).split('').forEach(n => {
-                let inp = document.createElement('input'); inp.type = 'text'; inp.className = 'input-div'; inp.value = n; inp.readOnly = true;
-                divBox.appendChild(inp);
-            });
+            String(currentDivisor).split('').forEach(n => { let inp = document.createElement('input'); inp.type = 'text'; inp.className = 'input-div'; inp.value = n; inp.readOnly = true; divBox.appendChild(inp); });
 
             for(let r=0; r<rows; r++) {
                 for(let c=0; c<cols; c++) {
                     let inp = document.createElement('input');
                     inp.type = 'text'; inp.className = 'cell'; inp.maxLength = 1; inp.id = `c-${r}-${c}`;
-                    
-                    inp.addEventListener('mousedown', (e) => { if(selectMode) { e.preventDefault; isDragging = true; startCell = {r, c}; endCell = {r, c}; updateSelectionVisuals(); } });
+                    inp.addEventListener('mousedown', (e) => { if(selectMode) { e.preventDefault(); isDragging = true; startCell = {r, c}; endCell = {r, c}; updateSelectionVisuals(); } });
                     inp.addEventListener('mouseenter', (e) => { if(selectMode && isDragging) { endCell = {r, c}; updateSelectionVisuals(); } });
                     inp.addEventListener('input', (e) => { if(!selectMode) { if(e.target.value) { if(c < cols-1) document.getElementById(`c-${r}-${c+1}`).focus(); else if(r < rows-1) document.getElementById(`c-${r+1}-0`).focus(); } } });
                     grid.appendChild(inp);
@@ -507,15 +464,11 @@
                 totalScore += POINTS_PER_SUCCESS;
                 document.getElementById('scoreDisplay').innerText = totalScore;
 
-                // GUARDAR EN SUPABASE
                 await saveScore();
 
                 const quoteObj = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
 
-                msgDiv.innerHTML = `
-                    <span style="color: var(--success); font-weight: 700;">¡Correcto! +${POINTS_PER_SUCCESS} Puntos</span>
-                    <div class="quote-box">"${quoteObj.text}"<span class="quote-author">- ${quoteObj.author}</span></div>
-                `;
+                msgDiv.innerHTML = `<span style="color: var(--success); font-weight: 700;">¡Correcto! +${POINTS_PER_SUCCESS} Puntos</span><div class="quote-box">"${quoteObj.text}"<span class="quote-author">- ${quoteObj.author}</span></div>`;
                 
                 setTimeout(() => {
                     if(currentProblemInLevel < PROBLEMS_PER_LEVEL) { currentProblemInLevel++; } 
