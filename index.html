@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prof. Miguel - Reto División</title>
+    <title>Prof. Miguel - Reto División V-FINAL</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -117,7 +117,7 @@
     </div>
 
     <header class="main-header">
-        <h1>Prof. Miguel</h1>
+        <h1>Prof. Miguel <span style="font-size:0.8rem; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:10px; margin-left:10px;">V-FINAL</span></h1>
         <span>Reto de División</span>
     </header>
 
@@ -191,16 +191,11 @@
     </div>
 
     <script>
-        // ==========================================
-        // LLAVES CONFIGURADAS POR EL USUARIO
-        // ==========================================
+        // LLAVES (VERIFICADAS)
         const SUPABASE_URL = 'https://oskrniownbbzkgnwunzz.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_RcfluyMTRxDP4chkK91-2Q_UwLdLrqP';
-        
-        // Crear cliente
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // VARIABLES GLOBALES
         const TOTAL_LEVELS = 10; const PROBLEMS_PER_LEVEL = 10;
         let currentMainLevel = 1; let currentProblemInLevel = 1;
         let currentDivisor = 0; let currentDividend = 0;
@@ -208,7 +203,6 @@
         let totalScore = 0; const POINTS = 100; 
         let currentUser = null;
 
-        // RANGOS
         const RANKS = [
             { name: "Hierro", min: 0, max: 2999, icon: "🪨", css: "rank-iron" },
             { name: "Bronce", min: 3000, max: 6999, icon: "🥉", css: "rank-bronze" },
@@ -231,7 +225,6 @@
             return { ...rank, tier: tier, pct: pct };
         }
 
-        // BASE DE DATOS DE EJERCICIOS
         const DB = {
             1: [ {d: 456, div: 4}, {d: 789, div: 3}, {d: 125, div: 5}, {d: 982, div: 7}, {d: 641, div: 2}, {d: 333, div: 9}, {d: 805, div: 6}, {d: 219, div: 8}, {d: 567, div: 4}, {d: 901, div: 3} ],
             2: [ {d: 1245, div: 5}, {d: 8902, div: 2}, {d: 4567, div: 9}, {d: 3312, div: 6}, {d: 7841, div: 4}, {d: 2009, div: 7}, {d: 6554, div: 8}, {d: 5123, div: 3}, {d: 9876, div: 5}, {d: 4444, div: 7} ],
@@ -245,13 +238,12 @@
             10: [ {d: 45678912, div: 234}, {d: 89012345, div: 567}, {d: 12345678, div: 901}, {d: 76543210, div: 412}, {d: 33445566, div: 777}, {d: 55667788, div: 125}, {d: 98765432, div: 850}, {d: 20406080, div: 315}, {d: 61234567, div: 621}, {d: 99999999, div: 999} ]
         };
 
-        // INICIO
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const { data: { session } } = await _supabase.auth.getSession();
                 if (session && session.user) { currentUser = session.user; showApp(); } 
                 else { showLogin(); }
-            } catch(e) { console.error(e); showLogin(); }
+            } catch(e) { console.error(e); alert("Error de conexión."); showLogin(); }
         });
         
         window.addEventListener('unload', () => { if(_supabase) _supabase.auth.signOut(); });
@@ -279,9 +271,7 @@
                 if (error) throw error;
                 currentUser = data.user;
                 showApp();
-            } catch (err) {
-                e.textContent = "Error: " + err.message; e.style.display='block';
-            }
+            } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; }
         }
 
         async function handleRegister() {
@@ -293,9 +283,7 @@
                 const { data, error } = await _supabase.auth.signUp({ email: u+"@profemiguel.com", password: p });
                 if (error) throw error;
                 alert("Registrado. Entra ahora.");
-            } catch (err) {
-                e.textContent = "Error: " + err.message; e.style.display='block';
-            }
+            } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; }
         }
 
         async function logout() { await _supabase.auth.signOut(); currentUser=null; totalScore=0; showLogin(); clearInterval(rankInt); }
@@ -326,7 +314,6 @@
             } catch(e) { console.error(e); }
         }
 
-        // RANKING
         let rankInt;
         function startRanking() { updateRanking(); rankInt = setInterval(updateRanking, 5000); }
         
@@ -336,7 +323,6 @@
                 const { data, error } = await _supabase.from('profiles').select('username, total_score').order('total_score', { ascending: false }).limit(10);
                 if(error) throw error;
                 if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; padding:10px; color:#666;">No hay datos.</li>'; return; }
-
                 list.innerHTML = data.map((u, i) => {
                     const s = u.total_score || 0;
                     const rI = getRankInfo(s);
@@ -345,12 +331,9 @@
                     if(isMe) cls += " me";
                     return "<li class='" + cls + "'><span class='rank-pos'>"+(i+1)+".</span><div class='rank-info'><span class='rank-name-list'>"+(u.username||'Anónimo')+"</span><span class='rank-tier-list'>"+rI.icon+" "+rI.name+" "+rI.tier+"</span></div><span class='rank-score'>"+s+"</span></li>";
                 }).join('');
-            } catch(err) {
-                list.innerHTML = '<li style="text-align:center; padding:10px; color:red;">Error al cargar ranking.</li>';
-            }
+            } catch(err) { list.innerHTML = '<li style="text-align:center; padding:10px; color:red;">Error al cargar ranking.</li>'; }
         }
 
-        // LÓGICA JUEGO
         function initGame() { loadProblem(); document.getElementById('levelSelect').value = currentMainLevel; }
         function jumpToLevel(l) { currentMainLevel=parseInt(l); currentProblemInLevel=1; loadProblem(); }
         
@@ -358,15 +341,9 @@
             document.getElementById('subLevelCount').innerText = currentProblemInLevel;
             document.getElementById('progressBar').style.width = ((currentMainLevel - 1) / TOTAL_LEVELS) * 100 + '%';
             document.getElementById('levelSelect').value = currentMainLevel;
-            
             const d = DB[currentMainLevel];
-            if (d && d[currentProblemInLevel - 1]) { 
-                currentDividend = d[currentProblemInLevel - 1].d; 
-                currentDivisor = d[currentProblemInLevel - 1].div; 
-            }
-            createUI(); 
-            createAntena(); 
-            resetAll();
+            if (d && d[currentProblemInLevel - 1]) { currentDividend = d[currentProblemInLevel - 1].d; currentDivisor = d[currentProblemInLevel - 1].div; }
+            createUI(); createAntena(); resetAll();
         }
 
         function createUI() {
