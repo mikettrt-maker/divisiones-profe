@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prof. Miguel - Reto División (Gamified)</title>
+    <title>Prof. Miguel - Reto División</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -16,8 +16,6 @@
             --success: #10b981;
             --error: #ef4444;
             --cell-size: 45px;
-            
-            /* COLORES DE RANGO */
             --rank-iron: #6b7280;
             --rank-bronze: #d97706;
             --rank-silver: #64748b;
@@ -36,65 +34,37 @@
         /* PANELES */
         .panel { background: white; padding: 15px 25px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         
-        .level-selector-container { display: flex; align-items: center; gap: 8px; }
         .level-select { padding: 8px 12px; border-radius: 20px; border: 2px solid var(--primary-color); background: white; color: var(--primary-color); font-family: 'Poppins'; font-weight: 700; font-size: 1rem; cursor: pointer; outline: none; }
         
-        /* ESTILO DE RANK BOX */
-        .rank-box {
-            display: flex; flex-direction: column; align-items: center; background: #f8fafc; padding: 10px 20px; border-radius: 12px; border: 2px solid #e2e8f0;
-            min-width: 180px;
-        }
-        .rank-name {
-            font-size: 1.2rem; font-weight: 800; letter-spacing: 1px;
-            text-transform: uppercase;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.2);
-        }
-        .rank-progress {
-            width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; margin-top: 5px; overflow: hidden;
-        }
-        .rank-progress-bar {
-            height: 100%; background: var(--text-dark); transition: width 0.5s;
-        }
-        .rank-score-label {
-            font-size: 0.8rem; color: #666; margin-top: 2px;
-        }
+        /* RANK BOX */
+        .rank-box { display: flex; flex-direction: column; align-items: center; background: #f8fafc; padding: 10px 20px; border-radius: 12px; border: 2px solid #e2e8f0; min-width: 180px; }
+        .rank-name { font-size: 1.2rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+        .rank-progress { width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; margin-top: 5px; overflow: hidden; }
+        .rank-progress-bar { height: 100%; background: var(--text-dark); transition: width 0.5s; }
+        .rank-score-label { font-size: 0.8rem; color: #666; margin-top: 2px; }
 
         .progress-bar-container { flex-grow: 1; margin: 0 20px; height: 12px; background: #e5e7eb; border-radius: 6px; overflow: hidden; min-width: 150px; }
         .progress-bar-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
 
-        /* LAYOUT PRINCIPAL */
+        /* LAYOUT */
         .main-layout { display: flex; flex-direction: row; gap: 20px; width: 100%; align-items: flex-start; }
         .game-area { flex: 4; display: flex; flex-direction: column; gap: 20px; }
         .workspace-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); display: flex; gap: 40px; justify-content: center; flex-wrap: nowrap; align-items: flex-start; }
 
-        /* RANKING SIDEBAR */
-        .ranking-sidebar {
-            flex: 1; background: white; padding: 20px; border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08); position: sticky; top: 20px; min-width: 300px;
-        }
-        .ranking-title {
-            font-size: 1.3rem; font-weight: 800; color: var(--text-dark);
-            text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px;
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-        }
+        /* RANKING */
+        .ranking-sidebar { flex: 1; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); position: sticky; top: 20px; min-width: 300px; }
+        .ranking-title { font-size: 1.3rem; font-weight: 800; color: var(--text-dark); text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 10px; }
         .ranking-list { list-style: none; padding: 0; margin: 0; }
-        .ranking-item {
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 12px; margin-bottom: 8px; border-radius: 8px; background: #f8fafc;
-            border-left: 5px solid #cbd5e1; transition: all 0.3s;
-        }
+        .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; margin-bottom: 8px; border-radius: 8px; background: #f8fafc; border-left: 5px solid #cbd5e1; transition: all 0.3s; }
         
-        /* CLASES DE RANGO DINÁMICAS */
+        /* CLASES RANGO */
         .rank-iron { color: var(--rank-iron); border-color: var(--rank-iron); }
         .rank-bronze { color: var(--rank-bronze); border-color: var(--rank-bronze); background: #fff7ed; }
         .rank-silver { color: var(--rank-silver); border-color: var(--rank-silver); background: #f8fafc; }
         .rank-gold { color: #92400e; border-color: var(--rank-gold); background: #fffbeb; font-weight: 800; }
         .rank-platinum { color: #0e7490; border-color: var(--rank-platinum); background: #ecfeff; font-weight: 800; }
         .rank-diamond { color: #6d28d9; border-color: var(--rank-diamond); background: #f5f3ff; font-weight: 800; box-shadow: 0 0 10px rgba(139, 92, 246, 0.2); }
-        .rank-heroic { 
-            color: #b91c1c; border-color: var(--rank-heroic); background: #fef2f2; font-weight: 900;
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); animation: pulse 2s infinite;
-        }
+        .rank-heroic { color: #b91c1c; border-color: var(--rank-heroic); background: #fef2f2; font-weight: 900; box-shadow: 0 0 15px rgba(239, 68, 68, 0.3); animation: pulse 2s infinite; }
         
         .rank-pos { font-weight: 800; color: #666; margin-right: 10px; width: 20px; font-size: 0.9rem; }
         .rank-info { flex-grow: 1; display: flex; flex-direction: column; }
@@ -113,21 +83,19 @@
         .input-cociente:focus { background: #f0f4c3; }
         .linea-h { height: 4px; background-color: var(--text-dark); width: 100%; margin-bottom: 1px; }
 
-        /* HERRAMIENTA EXCEL */
+        /* EXCEL */
         .excel-toolbar { position: absolute; top: -40px; left: 0; background: #f1f5s9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px; display: flex; gap: 2px; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .tool-btn { width: 32px; height: 32px; border: 1px solid transparent; background: transparent; cursor: pointer; border-radius: 4px; color: #475569; display: flex; align-items: center; justify-content: center; }
         .tool-btn:hover { background: #e2e8f0; }
         .tool-btn.active { background: #bfdbfe; color: var(--primary-color); border-color: #93c5fd; }
 
-        /* Grid y Celdas */
+        /* GRID */
         .grid-matriz { display: grid; grid-template-columns: repeat(9, var(--cell-size)); grid-template-rows: repeat(8, var(--cell-size)); background-image: linear-gradient(#f0f0f0 1px, transparent 1px), linear-gradient(90deg, #f0f0f0 1px, transparent 1px); background-size: var(--cell-size) var(--cell-size); user-select: none; }
         .cell { width: var(--cell-size); height: var(--cell-size); border: none; background: transparent; text-align: center; font-size: 1.4rem; font-weight: 600; outline: none; cursor: text; box-sizing: border-box; }
         .cell:focus { background: #e1f5fe; }
         .cell-locked { background: #eceff1; font-weight: 700; }
         .cell-selected { background-color: #dbeafe !important; }
         .border-bottom { border-bottom: 2px solid var(--text-dark) !important; }
-        .border-top { border-top: 2px solid var(--text-dark) !important; }
-        .border-left { border-left: 2px solid var(--text-dark) !important; }
         .border-right { border-right: 2px solid var(--text-dark) !important; }
 
         /* ANTENA */
@@ -146,10 +114,8 @@
         .btn-primary { background: var(--primary-color); }
         .btn-check { background: var(--success); box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3); }
         
-        /* Mensaje */
-        #msg { width: 100%; text-align: center; font-weight: 600; margin-top: 10px; transition: all 0.3s; }
-        .quote-box { background: #f0fdf4; border-left: 4px solid var(--success); padding: 10px; margin-top: 8px; border-radius: 4px; font-style: italic; color: #166534; font-weight: 400; animation: fadeIn 0.5s; }
-        .quote-author { display: block; margin-top: 5px; font-weight: 700; font-size: 0.9rem; text-align: right; }
+        #msg { width: 100%; text-align: center; font-weight: 600; margin-top: 10px; }
+        .quote-box { background: #f0fdf4; border-left: 4px solid var(--success); padding: 10px; margin-top: 8px; border-radius: 4px; font-style: italic; color: #166534; animation: fadeIn 0.5s; }
 
         /* LOGIN */
         #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); display: flex; justify-content: center; align-items: center; z-index: 9999; }
@@ -162,39 +128,34 @@
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
 
-        /* Responsive */
-        @media (max-width: 1200px) {
-            .main-layout { flex-direction: column; }
-            .ranking-sidebar { width: 100%; position: relative; top: 0; margin-bottom: 20px; }
-            .workspace-card { flex-wrap: wrap; }
-        }
+        @media (max-width: 1200px) { .main-layout { flex-direction: column; } .ranking-sidebar { width: 100%; position: relative; top: 0; margin-bottom: 20px; } .workspace-card { flex-wrap: wrap; } }
     </style>
 </head>
 <body>
 
-    <!-- PANTALLA DE LOGIN -->
+    <!-- LOGIN -->
     <div id="login-screen" style="display:none;">
         <div class="login-box">
             <h2>Prof. Miguel</h2>
             <p>Ingresa tu usuario para competir</p>
-            <input type="text" id="login-username" class="login-input" placeholder="Usuario (ej: juan_perez)">
-            <input type="password" id="login-password" class="login-input" placeholder="Contraseña (min 6 letras)">
+            <input type="text" id="login-username" class="login-input" placeholder="Usuario">
+            <input type="password" id="login-password" class="login-input" placeholder="Contraseña">
             <button class="login-btn btn-primary" onclick="handleLogin()">Iniciar Sesión</button>
             <button class="login-btn btn-check" onclick="handleRegister()" style="margin-top:5px; background:#666;">Registrarse</button>
             <div id="login-error" class="login-error"></div>
         </div>
     </div>
 
-    <!-- APLICACIÓN PRINCIPAL -->
+    <!-- APP -->
     <header class="main-header">
         <h1>Prof. Miguel</h1>
-        <span>Reto de División: Competencia en Vivo</span>
+        <span>Reto de División</span>
     </header>
 
     <div class="app-container">
         <div class="panel">
-            <div class="level-selector-container">
-                <label for="levelSelect" style="font-weight: 600; color: #555;">Nivel:</label>
+            <div>
+                <label style="font-weight: 600; color: #555;">Nivel:</label>
                 <select id="levelSelect" class="level-select" onchange="jumpToLevel(this.value)">
                     <option value="1">Nivel 1</option><option value="2">Nivel 2</option><option value="3">Nivel 3</option>
                     <option value="4">Nivel 4</option><option value="5">Nivel 5</option><option value="6">Nivel 6</option>
@@ -204,23 +165,17 @@
             </div>
             <div class="progress-bar-container"><div class="progress-bar-fill" id="progressBar"></div></div>
             
-            <!-- CAJA DE RANGO -->
             <div style="display: flex; align-items: center; gap: 20px;">
                 <div class="rank-box" id="userRankBox">
                     <div class="rank-name" id="userRankName">Cargando...</div>
-                    <div class="rank-progress">
-                        <div class="rank-progress-bar" id="userRankBar" style="width: 0%"></div>
-                    </div>
+                    <div class="rank-progress"><div class="rank-progress-bar" id="userRankBar" style="width: 0%"></div></div>
                     <div class="rank-score-label"><span id="scoreDisplay">0</span> pts</div>
                 </div>
                 <button onclick="logout()" style="font-size:0.8rem; padding:10px; background:#aaa; height: fit-content;">Salir</button>
             </div>
         </div>
 
-        <!-- LAYOUT FLEX -->
         <div class="main-layout">
-            
-            <!-- COLUMNA JUEGO -->
             <div class="game-area">
                 <div class="workspace-card">
                     <div class="division-row">
@@ -228,11 +183,10 @@
                         <div class="col-linea-v"></div>
                         <div class="col-grid">
                             <div class="excel-toolbar">
-                                <button class="tool-btn" id="btnSelectMode" onclick="toggleSelectMode()" title="Seleccionar"><i class="fas fa-mouse-pointer"></i></button>
-                                <div style="width:1px; background:#cbd5e1; margin:2px 4px;"></div>
-                                <button class="tool-btn" onclick="applyBorder('bottom')" title="Abajo"><i class="fas fa-ellipsis-h"></i></button>
-                                <button class="tool-btn" onclick="applyBorder('right')" title="Derecha"><i class="fas fa-ellipsis-v"></i></button>
-                                <button class="tool-btn" onclick="applyBorder('clear')" title="Borrar"><i class="fas fa-times"></i></button>
+                                <button class="tool-btn" id="btnSelectMode" onclick="toggleSelectMode()"><i class="fas fa-mouse-pointer"></i></button>
+                                <button class="tool-btn" onclick="applyBorder('bottom')"><i class="fas fa-ellipsis-h"></i></button>
+                                <button class="tool-btn" onclick="applyBorder('right')"><i class="fas fa-ellipsis-v"></i></button>
+                                <button class="tool-btn" onclick="applyBorder('clear')"><i class="fas fa-times"></i></button>
                             </div>
                             <div class="fila-cociente" id="topRow"></div>
                             <div class="linea-h" id="lineH"></div>
@@ -245,7 +199,6 @@
                         <button onclick="validarAntena()" class="btn-primary" style="width: 100%; margin-top:15px; padding: 8px;">Validar</button>
                     </div>
                 </div>
-
                 <div class="controls">
                     <div style="display:flex; gap:15px;">
                         <div class="result-box">
@@ -262,80 +215,57 @@
                 <div id="msg"></div>
             </div>
 
-            <!-- COLUMNA RANKING -->
             <div class="ranking-sidebar">
-                <div class="ranking-title">
-                    <i class="fas fa-trophy"></i> Ranking de la Clase
-                </div>
-                <ul class="ranking-list" id="ranking-list">
-                    <li style="text-align:center; color:#666;">Cargando...</li>
-                </ul>
+                <div class="ranking-title"><i class="fas fa-trophy"></i> Ranking</div>
+                <ul class="ranking-list" id="ranking-list"><li style="text-align:center; color:#666;">Cargando...</li></ul>
             </div>
-
         </div>
     </div>
 
     <script>
-        // --- 1. CONEXIÓN A SUPABASE ---
+        // --- CONFIGURACIÓN ---
         const SUPABASE_URL = 'https://oskrniownbbzkgnwunzz.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_RcfluyMTRxDP4chkK91-2Q_UwLdLrqP';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // --- VARIABLES GLOBALES ---
-        const TOTAL_LEVELS = 10;
-        const PROBLEMS_PER_LEVEL = 10;
-        let currentMainLevel = 1;
-        let currentProblemInLevel = 1;
-        let currentDivisor = 0;
-        let currentDividend = 0;
-        const cols = 9, rows = 8, cellSize = 45;
+        const TOTAL_LEVELS = 10; const PROBLEMS_PER_LEVEL = 10;
+        let currentMainLevel = 1; let currentProblemInLevel = 1;
+        let currentDivisor = 0; let currentDividend = 0;
+        const cols = 9; const rows = 8; const cellSize = 45;
+        let totalScore = 0; const POINTS_PER_SUCCESS = 100; let currentUser = null;
 
-        let totalScore = 0;
-        const POINTS_PER_SUCCESS = 100;
-        let currentUser = null;
-
-        // --- SISTEMA DE RANGOS (CORREGIDO) ---
+        // --- RANGOS (CORREGIDO) ---
+        // Cambié 'class' por 'cssClass' para evitar errores
         const RANKS = [
-            { name: "Hierro", min: 0, max: 2999, icon: "🪨", class: "rank-iron" },
-            { name: "Bronce", min: 3000, max: 6999, icon: "🥉", class: "rank-bronze" },
-            { name: "Plata", min: 7000, max: 12999, icon: "🥈", class: "rank-silver" },
-            { name: "Oro", min: 13000, max: 19999, icon: "🥇", class: "rank-gold" },
-            { name: "Platino", min: 20000, max: 29999, icon: "💠", class: "rank-platinum" },
-            { name: "Diamante", min: 30000, max: 49999, icon: "💎", class: "rank-diamond" },
-            { name: "Heroico", min: 50000, max: 999999, icon: "👑", class: "rank-heroic" }
+            { name: "Hierro", min: 0, max: 2999, icon: "🪨", cssClass: "rank-iron" },
+            { name: "Bronce", min: 3000, max: 6999, icon: "🥉", cssClass: "rank-bronze" },
+            { name: "Plata", min: 7000, max: 12999, icon: "🥈", cssClass: "rank-silver" },
+            { name: "Oro", min: 13000, max: 19999, icon: "🥇", cssClass: "rank-gold" },
+            { name: "Platino", min: 20000, max: 29999, icon: "💠", cssClass: "rank-platinum" },
+            { name: "Diamante", min: 30000, max: 49999, icon: "💎", cssClass: "rank-diamond" },
+            { name: "Heroico", min: 50000, max: 999999, icon: "👑", cssClass: "rank-heroic" }
         ];
 
         function getRankInfo(score) {
-            let currentRank = RANKS[0];
-            let nextRank = RANKS[1];
-
-            for (let i = 0; i < RANKS.length; i++) {
-                if (score >= RANKS[i].min) {
-                    currentRank = RANKS[i];
-                    nextRank = RANKS[i + 1] || RANKS[i]; 
-                }
+            let current = RANKS[0];
+            for(let i=0; i<RANKS.length; i++) {
+                if(score >= RANKS[i].min) current = RANKS[i];
             }
-
-            let tier = "I";
-            let range = currentRank.max - currentRank.min;
-            let step = range / 3;
             
-            if (score < currentRank.min + step) tier = "III";
-            else if (score < currentRank.min + (step * 2)) tier = "II";
-            else tier = "I";
+            // Subniveles
+            let tier = "I";
+            let range = current.max - current.min;
+            let step = range / 3;
+            if (score < current.min + step) tier = "III";
+            else if (score < current.min + (step * 2)) tier = "II";
+            
+            let pct = ((score - current.min) / range) * 100;
+            if(pct > 100) pct = 100;
 
-            let progressPercent = ((score - currentRank.min) / (currentRank.max - currentRank.min)) * 100;
-            if (progressPercent > 100) progressPercent = 100;
-
-            return {
-                ...currentRank,
-                tier: tier,
-                nextName: nextRank.name,
-                progress: progressPercent.toFixed(0)
-            };
+            return { ...current, tier: tier, progress: pct.toFixed(0) };
         }
 
-        // --- BASE DE DATOS DE EJERCICIOS ---
+        // --- EJERCICIOS ---
         const exercisesDB = {
             1: [ {d: 456, div: 4}, {d: 789, div: 3}, {d: 125, div: 5}, {d: 982, div: 7}, {d: 641, div: 2}, {d: 333, div: 9}, {d: 805, div: 6}, {d: 219, div: 8}, {d: 567, div: 4}, {d: 901, div: 3} ],
             2: [ {d: 1245, div: 5}, {d: 8902, div: 2}, {d: 4567, div: 9}, {d: 3312, div: 6}, {d: 7841, div: 4}, {d: 2009, div: 7}, {d: 6554, div: 8}, {d: 5123, div: 3}, {d: 9876, div: 5}, {d: 4444, div: 7} ],
@@ -348,17 +278,12 @@
             9: [ {d: 12345678, div: 15}, {d: 50987654, div: 22}, {d: 99112233, div: 45}, {d: 34567890, div: 78}, {d: 76543210, div: 12}, {d: 21098765, div: 89}, {d: 66778899, div: 36}, {d: 45454545, div: 54}, {d: 88000111, div: 93}, {d: 10203040, div: 27} ],
             10: [ {d: 45678912, div: 234}, {d: 89012345, div: 567}, {d: 12345678, div: 901}, {d: 76543210, div: 412}, {d: 33445566, div: 777}, {d: 55667788, div: 125}, {d: 98765432, div: 850}, {d: 20406080, div: 315}, {d: 61234567, div: 621}, {d: 99999999, div: 999} ]
         };
-        const motivationalQuotes = [ { text: "El único modo de hacer un gran trabajo es amar lo que haces.", author: "Steve Jobs" }, { text: "La educación es el arma más poderosa.", author: "N. Mandela" } ];
 
-        // Herramienta Excel
-        let selectMode = false; let isDragging = false; let startCell = null; let endCell = null; let selectedCells = new Set();
-
-        // --- 2. GESTIÓN DE USUARIOS ---
+        // --- USUARIOS ---
         document.addEventListener('DOMContentLoaded', async () => {
             const { data: { session } } = await _supabase.auth.getSession();
             if (session) { currentUser = session.user; showApp(); } else { showLogin(); }
         });
-
         window.addEventListener('unload', (event) => { _supabase.auth.signOut(); });
 
         function showLogin() { document.getElementById('login-screen').style.display = 'flex'; document.querySelector('.app-container').style.display = 'none'; }
@@ -377,7 +302,7 @@
             const username = document.getElementById('login-username').value.trim();
             const password = document.getElementById('login-password').value;
             const errorDiv = document.getElementById('login-error');
-            if (!username || password.length < 6) { errorDiv.textContent = "Completa usuario y contraseña (mínimo 6 caracteres)."; errorDiv.style.display = 'block'; return; }
+            if (!username || password.length < 6) { errorDiv.textContent = "Datos incompletos."; errorDiv.style.display = 'block'; return; }
             const email = username + "@profemiguel.com";
             const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
             if (error) { errorDiv.textContent = "Usuario o contraseña incorrectos."; errorDiv.style.display = 'block'; }
@@ -388,34 +313,35 @@
             const username = document.getElementById('login-username').value.trim();
             const password = document.getElementById('login-password').value;
             const errorDiv = document.getElementById('login-error');
-            if (!username || password.length < 6) { errorDiv.textContent = "Completa usuario y contraseña (mínimo 6 caracteres)."; errorDiv.style.display = 'block'; return; }
+            if (!username || password.length < 6) { errorDiv.textContent = "Datos incompletos."; errorDiv.style.display = 'block'; return; }
             const email = username + "@profemiguel.com";
             const { data, error } = await _supabase.auth.signUp({ email, password });
-            if (error) { errorDiv.textContent = "Error al registrar. ¿Usuario ya existe?"; errorDiv.style.display = 'block'; }
+            if (error) { errorDiv.textContent = "Error al registrar."; errorDiv.style.display = 'block'; }
             else { alert("¡Cuenta creada!"); currentUser = data.user; showApp(); }
         }
 
         async function logout() { await _supabase.auth.signOut(); currentUser = null; totalScore = 0; showLogin(); stopRankingUpdates(); }
 
         async function loadScore(user) {
-            const { data, error } = await _supabase.from('profiles').select('total_score').eq('id', user.id).single();
-            if (data) { totalScore = data.total_score || 0; updateUI(); }
-            else { totalScore = 0; updateUI(); }
+            try {
+                const { data, error } = await _supabase.from('profiles').select('total_score').eq('id', user.id).single();
+                if (data) { totalScore = data.total_score || 0; updateUI(); }
+                else { totalScore = 0; updateUI(); }
+            } catch (e) { console.error(e); totalScore = 0; updateUI(); }
         }
 
         function updateUI() {
-            document.getElementById('scoreDisplay').innerText = totalScore;
-            const rankInfo = getRankInfo(totalScore);
-            const rankBox = document.getElementById('userRankBox');
-            
-            document.getElementById('userRankName').innerText = `${rankInfo.icon} ${rankInfo.name} ${rankInfo.tier}`;
-            document.getElementById('userRankName').className = `rank-name ${rankInfo.class}`;
-            document.getElementById('userRankBar').style.width = `${rankInfo.progress}%`;
-            
-            // CORRECCIÓN: Uso correcto de comillas invertidas (backticks)
-            const colorVar = `--${rankInfo.class}`;
-            document.getElementById('userRankBar').style.background = `var(${colorVar})`;
-            rankBox.style.borderColor = `var(${colorVar})`;
+            try {
+                document.getElementById('scoreDisplay').innerText = totalScore;
+                const rankInfo = getRankInfo(totalScore);
+                const rankBox = document.getElementById('userRankBox');
+                const rankName = document.getElementById('userRankName');
+                
+                rankName.innerText = rankInfo.icon + " " + rankInfo.name + " " + rankInfo.tier;
+                rankName.className = "rank-name " + rankInfo.cssClass; // Usar cssClass
+                document.getElementById('userRankBar').style.width = rankInfo.progress + "%";
+                rankBox.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue('--' + rankInfo.cssClass);
+            } catch(e) { console.error("Error actualizando UI", e); }
         }
 
         async function saveScore() {
@@ -424,38 +350,37 @@
             updateRanking();
         }
 
-        // --- 3. RANKING EN TIEMPO REAL ---
+        // --- RANKING ---
         let rankingInterval;
         function startRankingUpdates() { updateRanking(); rankingInterval = setInterval(updateRanking, 5000); }
         function stopRankingUpdates() { clearInterval(rankingInterval); }
 
         async function updateRanking() {
-            const { data, error } = await _supabase.from('profiles').select('username, total_score').order('total_score', { ascending: false }).limit(10);
-            const list = document.getElementById('ranking-list');
-            if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; color:#666;">No hay datos</li>'; return; }
+            try {
+                const { data, error } = await _supabase.from('profiles').select('username, total_score').order('total_score', { ascending: false }).limit(10);
+                const list = document.getElementById('ranking-list');
+                if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; color:#666;">No hay datos</li>'; return; }
 
-            list.innerHTML = data.map((user, index) => {
-                const isMe = (currentUser && user.username === currentUser.email.split('@')[0]);
-                const score = user.total_score || 0;
-                const rankInfo = getRankInfo(score);
-                
-                let itemClass = `ranking-item ${rankInfo.class}`;
-                if (isMe) itemClass += ' me';
-
-                return `
-                    <li class="${itemClass}">
-                        <span class="rank-pos">${index + 1}.</span>
-                        <div class="rank-info">
-                            <span class="rank-name-list">${user.username || 'Anónimo'}</span>
-                            <span class="rank-tier-list">${rankInfo.icon} ${rankInfo.name} ${rankInfo.tier}</span>
-                        </div>
-                        <span class="rank-score">${score}</span>
-                    </li>
-                `;
-            }).join('');
+                list.innerHTML = data.map((user, index) => {
+                    const isMe = (currentUser && user.username === currentUser.email.split('@')[0]);
+                    const score = user.total_score || 0;
+                    const rankInfo = getRankInfo(score);
+                    let itemClass = "ranking-item " + rankInfo.cssClass;
+                    if (isMe) itemClass += " me";
+                    
+                    return "<li class='" + itemClass + "'>" +
+                        "<span class='rank-pos'>" + (index + 1) + ".</span>" +
+                        "<div class='rank-info'>" +
+                            "<span class='rank-name-list'>" + (user.username || 'Anónimo') + "</span>" +
+                            "<span class='rank-tier-list'>" + rankInfo.icon + " " + rankInfo.name + " " + rankInfo.tier + "</span>" +
+                        "</div>" +
+                        "<span class='rank-score'>" + score + "</span>" +
+                    "</li>";
+                }).join('');
+            } catch(e) { console.error("Error Ranking", e); }
         }
 
-        // --- 4. LÓGICA DEL JUEGO ---
+        // --- LÓGICA JUEGO ---
         function initGame() { loadProblem(); document.getElementById('levelSelect').value = currentMainLevel; }
         function jumpToLevel(level) { currentMainLevel = parseInt(level); currentProblemInLevel = 1; loadProblem(); }
 
@@ -466,16 +391,7 @@
             const levelData = exercisesDB[currentMainLevel];
             const problemIndex = currentProblemInLevel - 1;
             if (levelData && levelData[problemIndex]) { currentDividend = levelData[problemIndex].d; currentDivisor = levelData[problemIndex].div; }
-            const label = getDifficultyLabel(currentMainLevel);
-            document.getElementById('difficultyLabel').innerText = label;
             createUI(); createAntena(); resetAll();
-            if(document.getElementById('msg').innerText.includes("Incorrecto")) document.getElementById('msg').innerText = "";
-        }
-
-        function getDifficultyLabel(level) {
-            if(level <= 2) return "Divisor: 1 Cifra";
-            if(level === 3 || level === 4 || level === 5 || level === 7 || level === 9) return "Divisor: 2 Cifras";
-            return "Divisor: 3 Cifras";
         }
 
         function createUI() {
@@ -485,29 +401,29 @@
             for(let r=0; r<rows; r++) {
                 for(let c=0; c<cols; c++) {
                     let inp = document.createElement('input');
-                    inp.type = 'text'; inp.className = 'cell'; inp.maxLength = 1; inp.id = `c-${r}-${c}`;
+                    inp.type = 'text'; inp.className = 'cell'; inp.maxLength = 1; inp.id = "c-" + r + "-" + c;
                     inp.addEventListener('mousedown', (e) => { if(selectMode) { e.preventDefault(); isDragging = true; startCell = {r, c}; endCell = {r, c}; updateSelectionVisuals(); } });
                     inp.addEventListener('mouseenter', (e) => { if(selectMode && isDragging) { endCell = {r, c}; updateSelectionVisuals(); } });
-                    inp.addEventListener('input', (e) => { if(!selectMode) { if(e.target.value) { if(c < cols-1) document.getElementById(`c-${r}-${c+1}`).focus(); else if(r < rows-1) document.getElementById(`c-${r+1}-0`).focus(); } } });
+                    inp.addEventListener('input', (e) => { if(!selectMode && e.target.value) { const next = (c < cols-1) ? "c-" + r + "-" + (c+1) : (r < rows-1) ? "c-" + (r+1) + "-0" : null; if(next) document.getElementById(next).focus(); } });
                     grid.appendChild(inp);
                 }
             }
             document.onmouseup = () => { isDragging = false; };
             let sNum = String(currentDividend); let startC = 0; 
-            for(let i=0; i<sNum.length; i++) { let cell = document.getElementById(`c-0-${startC+i}`); cell.value = sNum[i]; cell.classList.add('cell-locked'); cell.disabled = true; }
+            for(let i=0; i<sNum.length; i++) { let cell = document.getElementById("c-0-" + (startC+i)); cell.value = sNum[i]; cell.classList.add('cell-locked'); cell.disabled = true; }
             document.getElementById('lineH').style.width = (sNum.length * cellSize) + 'px';
-            for(let c=0; c<sNum.length; c++) { let inp = document.createElement('input'); inp.type = 'text'; inp.className = 'input-cociente'; inp.maxLength = 1; inp.id = `top-${c}`; inp.addEventListener('input', (e) => { syncTop(); if(e.target.value && c < sNum.length - 1) document.getElementById(`top-${c+1}`).focus(); }); topRow.appendChild(inp); }
+            for(let c=0; c<sNum.length; c++) { let inp = document.createElement('input'); inp.type = 'text'; inp.className = 'input-cociente'; inp.maxLength = 1; inp.id = "top-" + c; inp.addEventListener('input', (e) => { syncTop(); if(e.target.value && c < sNum.length - 1) document.getElementById("top-" + (c+1)).focus(); }); topRow.appendChild(inp); }
         }
 
         function toggleSelectMode() { selectMode = !selectMode; const btn = document.getElementById('btnSelectMode'); if(selectMode) { btn.classList.add('active'); document.getElementById('gridContainer').style.cursor = 'crosshair'; } else { btn.classList.remove('active'); document.getElementById('gridContainer').style.cursor = 'default'; clearSelection(); } }
-        function updateSelectionVisuals() { document.querySelectorAll('.cell').forEach(c => c.classList.remove('cell-selected')); selectedCells.clear(); if(!startCell || !endCell) return; const minR = Math.min(startCell.r, endCell.r); const maxR = Math.max(startCell.r, endCell.r); const minC = Math.min(startCell.c, endCell.c); const maxC = Math.max(startCell.c, endCell.c); for(let r = minR; r <= maxR; r++) { for(let c = minC; c <= maxC; c++) { const cell = document.getElementById(`c-${r}-${c}`); if(cell) { cell.classList.add('cell-selected'); selectedCells.add(cell.id); } } } }
+        function updateSelectionVisuals() { document.querySelectorAll('.cell').forEach(c => c.classList.remove('cell-selected')); selectedCells.clear(); if(!startCell || !endCell) return; const minR = Math.min(startCell.r, endCell.r); const maxR = Math.max(startCell.r, endCell.r); const minC = Math.min(startCell.c, endCell.c); const maxC = Math.max(startCell.c, endCell.c); for(let r = minR; r <= maxR; r++) { for(let c = minC; c <= maxC; c++) { const cell = document.getElementById("c-" + r + "-" + c); if(cell) { cell.classList.add('cell-selected'); selectedCells.add(cell.id); } } } }
         function clearSelection() { selectedCells.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('cell-selected'); }); selectedCells.clear(); startCell = null; endCell = null; }
-        function applyBorder(type) { selectedCells.forEach(id => { const el = document.getElementById(id); if(el) { if(type === 'clear') el.classList.remove('border-bottom', 'border-top', 'border-left', 'border-right'); else el.classList.add(`border-${type}`); } }); }
+        function applyBorder(type) { selectedCells.forEach(id => { const el = document.getElementById(id); if(el) { if(type === 'clear') el.classList.remove('border-bottom', 'border-right'); else el.classList.add("border-" + type); } }); }
         function syncTop() { let val = ""; document.querySelectorAll('.input-cociente').forEach(x => val += x.value); document.getElementById('valCociente').value = val; }
 
         function createAntena() {
             const body = document.getElementById('antenaBody'); document.getElementById('antenaLabel').innerText = currentDivisor; body.innerHTML = '';
-            for(let i=1; i<=10; i++) { let row = document.createElement('div'); row.className = 'antena-row'; row.innerHTML = `<span>${i} x ${currentDivisor} =</span><input type='number' class='antena-input' id='a${i}'>`; body.appendChild(row); }
+            for(let i=1; i<=10; i++) { let row = document.createElement('div'); row.className = 'antena-row'; row.innerHTML = "<span>" + i + " x " + currentDivisor + " =</span><input type='number' class='antena-input' id='a" + i + "'>"; body.appendChild(row); }
         }
 
         function resetAll() {
@@ -515,15 +431,14 @@
             document.querySelectorAll('.antena-input').forEach(i => { i.value = ''; i.classList.remove('status-ok','status-wrong'); });
             document.querySelectorAll('.input-cociente').forEach(i => i.value = '');
             document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value = ''; i.disabled = false; });
-            document.querySelectorAll('.cell').forEach(c => c.classList.remove('border-bottom', 'border-top', 'border-left', 'border-right', 'cell-selected'));
+            document.querySelectorAll('.cell').forEach(c => c.classList.remove('border-bottom', 'border-right', 'cell-selected'));
             selectedCells.clear();
         }
 
         function validarAntena() {
             let ok = true;
-            for(let i=1; i<=10; i++) { let inp = document.getElementById(`a${i}`); let val = parseInt(inp.value); if(val === i * currentDivisor) { inp.classList.add('status-ok'); inp.classList.remove('status-wrong'); } else { inp.classList.add('status-wrong'); inp.classList.remove('status-ok'); ok = false; } }
+            for(let i=1; i<=10; i++) { let inp = document.getElementById("a" + i); let val = parseInt(inp.value); if(val === i * currentDivisor) { inp.classList.add('status-ok'); inp.classList.remove('status-wrong'); } else { inp.classList.add('status-wrong'); inp.classList.remove('status-ok'); ok = false; } }
             document.getElementById('msg').innerText = ok ? "¡Antena correcta!" : "Corrige los errores."; document.getElementById('msg').style.color = ok ? "var(--success)" : "var(--error)";
-            let existingQuote = document.querySelector('.quote-box'); if(existingQuote) existingQuote.remove();
         }
 
         async function verificarSolucion() {
@@ -532,25 +447,21 @@
             let realCoc = Math.floor(currentDividend / currentDivisor);
             let realRes = currentDividend % currentDivisor;
             const msgDiv = document.getElementById('msg');
-            let existingQuote = document.querySelector('.quote-box'); if(existingQuote) existingQuote.remove();
 
             if(coc === realCoc && res === realRes) {
                 totalScore += POINTS_PER_SUCCESS;
                 updateUI();
                 await saveScore();
-                
-                const quoteObj = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
-                msgDiv.innerHTML = `<span style="color: var(--success); font-weight: 700;">¡Correcto! +${POINTS_PER_SUCCESS} Puntos</span><div class="quote-box">"${quoteObj.text}"<span class="quote-author">- ${quoteObj.author}</span></div>`;
-                
+                msgDiv.innerHTML = "<span style='color:var(--success); font-weight:700;'>¡Correcto! +" + POINTS_PER_SUCCESS + " Puntos</span>";
                 setTimeout(() => {
                     if(currentProblemInLevel < PROBLEMS_PER_LEVEL) { currentProblemInLevel++; } 
                     else {
                         if(currentMainLevel < TOTAL_LEVELS) { currentMainLevel++; currentProblemInLevel = 1; }
-                        else { alert("¡JUEGO TERMINADO! Puntuación Final: " + totalScore); currentMainLevel = 1; currentProblemInLevel = 1; totalScore = 0; updateUI(); }
+                        else { alert("¡FIN!"); currentMainLevel = 1; currentProblemInLevel = 1; totalScore = 0; updateUI(); }
                     }
                     loadProblem();
                 }, 2500);
-            } else { msgDiv.innerHTML = `<span style="color: var(--error); font-weight: 700;">Incorrecto.</span>`; }
+            } else { msgDiv.innerHTML = "<span style='color:var(--error); font-weight:700;'>Incorrecto.</span>"; }
         }
     </script>
 </body>
