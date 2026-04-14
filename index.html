@@ -204,7 +204,7 @@
             </div>
             <div class="progress-bar-container"><div class="progress-bar-fill" id="progressBar"></div></div>
             
-            <!-- NUEVO: CAJA DE RANGO -->
+            <!-- CAJA DE RANGO -->
             <div style="display: flex; align-items: center; gap: 20px;">
                 <div class="rank-box" id="userRankBox">
                     <div class="rank-name" id="userRankName">Cargando...</div>
@@ -217,7 +217,7 @@
             </div>
         </div>
 
-        <!-- LAYOUT FLEX: JUEGO IZQUIERDA | RANKING DERECHA -->
+        <!-- LAYOUT FLEX -->
         <div class="main-layout">
             
             <!-- COLUMNA JUEGO -->
@@ -294,7 +294,7 @@
         const POINTS_PER_SUCCESS = 100;
         let currentUser = null;
 
-        // --- SISTEMA DE RANGOS (NUEVO) ---
+        // --- SISTEMA DE RANGOS (CORREGIDO) ---
         const RANKS = [
             { name: "Hierro", min: 0, max: 2999, icon: "🪨", class: "rank-iron" },
             { name: "Bronce", min: 3000, max: 6999, icon: "🥉", class: "rank-bronze" },
@@ -305,7 +305,6 @@
             { name: "Heroico", min: 50000, max: 999999, icon: "👑", class: "rank-heroic" }
         ];
 
-        // Calcula el rango y el progreso
         function getRankInfo(score) {
             let currentRank = RANKS[0];
             let nextRank = RANKS[1];
@@ -313,11 +312,10 @@
             for (let i = 0; i < RANKS.length; i++) {
                 if (score >= RANKS[i].min) {
                     currentRank = RANKS[i];
-                    nextRank = RANKS[i + 1] || RANKS[i]; // Si es el último, se queda
+                    nextRank = RANKS[i + 1] || RANKS[i]; 
                 }
             }
 
-            // Sub-niveles (III, II, I)
             let tier = "I";
             let range = currentRank.max - currentRank.min;
             let step = range / 3;
@@ -326,7 +324,6 @@
             else if (score < currentRank.min + (step * 2)) tier = "II";
             else tier = "I";
 
-            // Progreso para la barrita
             let progressPercent = ((score - currentRank.min) / (currentRank.max - currentRank.min)) * 100;
             if (progressPercent > 100) progressPercent = 100;
 
@@ -338,7 +335,7 @@
             };
         }
 
-        // --- BASE DE DATOS DE EJERCICIOS (RESUMIDA) ---
+        // --- BASE DE DATOS DE EJERCICIOS ---
         const exercisesDB = {
             1: [ {d: 456, div: 4}, {d: 789, div: 3}, {d: 125, div: 5}, {d: 982, div: 7}, {d: 641, div: 2}, {d: 333, div: 9}, {d: 805, div: 6}, {d: 219, div: 8}, {d: 567, div: 4}, {d: 901, div: 3} ],
             2: [ {d: 1245, div: 5}, {d: 8902, div: 2}, {d: 4567, div: 9}, {d: 3312, div: 6}, {d: 7841, div: 4}, {d: 2009, div: 7}, {d: 6554, div: 8}, {d: 5123, div: 3}, {d: 9876, div: 5}, {d: 4444, div: 7} ],
@@ -408,15 +405,17 @@
 
         function updateUI() {
             document.getElementById('scoreDisplay').innerText = totalScore;
-            // Actualizar Rango
             const rankInfo = getRankInfo(totalScore);
             const rankBox = document.getElementById('userRankBox');
             
             document.getElementById('userRankName').innerText = `${rankInfo.icon} ${rankInfo.name} ${rankInfo.tier}`;
             document.getElementById('userRankName').className = `rank-name ${rankInfo.class}`;
             document.getElementById('userRankBar').style.width = `${rankInfo.progress}%`;
-            document.getElementById('userRankBar').style.background = getComputedStyle(document.documentElement).getPropertyValue(`--${rankInfo.class.replace('rank-', 'rank-')}`); // Color dinámico
-            rankBox.style.borderColor = getComputedStyle(document.documentElement).getPropertyValue(`--${rankInfo.class.replace('rank-', 'rank-')}`);
+            
+            // CORRECCIÓN: Uso correcto de comillas invertidas (backticks)
+            const colorVar = `--${rankInfo.class}`;
+            document.getElementById('userRankBar').style.background = `var(${colorVar})`;
+            rankBox.style.borderColor = `var(${colorVar})`;
         }
 
         async function saveScore() {
@@ -440,9 +439,8 @@
                 const score = user.total_score || 0;
                 const rankInfo = getRankInfo(score);
                 
-                // Asignar clase CSS para color
                 let itemClass = `ranking-item ${rankInfo.class}`;
-                if (isMe) itemClass += ' me'; // Clase especial para "Yo"
+                if (isMe) itemClass += ' me';
 
                 return `
                     <li class="${itemClass}">
@@ -538,14 +536,9 @@
 
             if(coc === realCoc && res === realRes) {
                 totalScore += POINTS_PER_SUCCESS;
-                updateUI(); // Actualiza visualización de rango
+                updateUI();
                 await saveScore();
                 
-                // Verificar si subió de rango
-                const newRankInfo = getRankInfo(totalScore);
-                // (Opcional: Lógica simple para alertar subida de rango)
-                // if(totalScore % 3000 < 100) alert("¡Subiste de nivel!");
-
                 const quoteObj = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
                 msgDiv.innerHTML = `<span style="color: var(--success); font-weight: 700;">¡Correcto! +${POINTS_PER_SUCCESS} Puntos</span><div class="quote-box">"${quoteObj.text}"<span class="quote-author">- ${quoteObj.author}</span></div>`;
                 
