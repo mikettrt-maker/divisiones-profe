@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prof. Miguel - Reto División V-FINAL</title>
+    <title>Prof. Miguel - DEBUG MODE</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -47,7 +47,7 @@
         .rank-gold { color: #92400e; border-color: var(--rank-gold); background: #fffbeb; font-weight: 800; }
         .rank-platinum { color: #0e7490; border-color: var(--rank-platinum); background: #ecfeff; font-weight: 800; }
         .rank-diamond { color: #6d28d9; border-color: var(--rank-diamond); background: #f5f3ff; font-weight: 800; }
-        .rank-heroic { color: #b91c1c; border-color: var(--rank-heroic); background: #fef2f2; font-weight: 900; box-shadow: 0 0 10px rgba(239, 68, 68, 0.2); }
+        .rank-heroic { color: #b91c1c; border-color: var(--rank-heroic); background: #fef2f2; font-weight: 900; }
         
         .rank-pos { font-weight: 800; color: #666; margin-right: 10px; width: 20px; }
         .rank-info { flex-grow: 1; display: flex; flex-direction: column; }
@@ -69,13 +69,24 @@
         .tool-btn:hover { background: #e2e8f0; }
         .tool-btn.active { background: #bfdbfe; color: var(--primary-color); }
 
-        .grid-matriz { display: grid; grid-template-columns: repeat(9, var(--cell-size)); grid-template-rows: repeat(8, var(--cell-size)); border-top: 1px solid #f0f0f0; border-left: 1px solid #f0f0f0; }
-        .cell { width: var(--cell-size); height: var(--cell-size); border-right: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0; background: white; text-align: center; font-size: 1.4rem; font-weight: 600; outline: none; cursor: text; box-sizing: border-box; }
+        /* CSS FORZADO PARA VISIBILIDAD */
+        .grid-matriz { 
+            display: grid; 
+            grid-template-columns: repeat(9, var(--cell-size)); 
+            grid-template-rows: repeat(8, var(--cell-size)); 
+            background-color: #e5e7eb; /* Fondo gris oscuro para ver la grilla */
+        }
+        .cell { 
+            width: var(--cell-size); height: var(--cell-size); 
+            background-color: white; /* Fondo blanco forzado */
+            border: 1px solid #d1d5db; /* Borde gris para ver celdas */
+            text-align: center; font-size: 1.4rem; font-weight: 600; outline: none; cursor: text; box-sizing: border-box; 
+        }
         .cell:focus { background: #e1f5fe; }
         .cell-locked { background: #eceff1; font-weight: 700; cursor: default; }
         .cell-selected { background-color: #dbeafe !important; }
-        .border-bottom { border-bottom: 2px solid var(--text-dark) !important; }
-        .border-right { border-right: 2px solid var(--text-dark) !important; }
+        .border-bottom { border-bottom: 3px solid var(--text-dark) !important; }
+        .border-right { border-right: 3px solid var(--text-dark) !important; }
 
         .antena-panel { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; border-top: 5px solid var(--primary-color); width: 260px; flex-shrink: 0; }
         .antena-header { text-align: center; font-weight: 700; color: var(--primary-color); margin-bottom: 10px; font-size: 1.1rem; }
@@ -117,7 +128,7 @@
     </div>
 
     <header class="main-header">
-        <h1>Prof. Miguel <span style="font-size:0.8rem; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:10px; margin-left:10px;">V-FINAL</span></h1>
+        <h1>Prof. Miguel <span style="font-size:0.8rem; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:10px; margin-left:10px;">DEBUG</span></h1>
         <span>Reto de División</span>
     </header>
 
@@ -191,7 +202,6 @@
     </div>
 
     <script>
-        // LLAVES (VERIFICADAS)
         const SUPABASE_URL = 'https://oskrniownbbzkgnwunzz.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_RcfluyMTRxDP4chkK91-2Q_UwLdLrqP';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -331,40 +341,86 @@
                     if(isMe) cls += " me";
                     return "<li class='" + cls + "'><span class='rank-pos'>"+(i+1)+".</span><div class='rank-info'><span class='rank-name-list'>"+(u.username||'Anónimo')+"</span><span class='rank-tier-list'>"+rI.icon+" "+rI.name+" "+rI.tier+"</span></div><span class='rank-score'>"+s+"</span></li>";
                 }).join('');
-            } catch(err) { list.innerHTML = '<li style="text-align:center; padding:10px; color:red;">Error al cargar ranking.</li>'; }
+            } catch(err) { 
+                console.error("Ranking Error:", err);
+                list.innerHTML = '<li style="text-align:center; padding:10px; color:red;">Error al cargar.</li>'; 
+            }
         }
 
         function initGame() { loadProblem(); document.getElementById('levelSelect').value = currentMainLevel; }
         function jumpToLevel(l) { currentMainLevel=parseInt(l); currentProblemInLevel=1; loadProblem(); }
         
         function loadProblem() {
-            document.getElementById('subLevelCount').innerText = currentProblemInLevel;
-            document.getElementById('progressBar').style.width = ((currentMainLevel - 1) / TOTAL_LEVELS) * 100 + '%';
-            document.getElementById('levelSelect').value = currentMainLevel;
-            const d = DB[currentMainLevel];
-            if (d && d[currentProblemInLevel - 1]) { currentDividend = d[currentProblemInLevel - 1].d; currentDivisor = d[currentProblemInLevel - 1].div; }
-            createUI(); createAntena(); resetAll();
+            try {
+                document.getElementById('subLevelCount').innerText = currentProblemInLevel;
+                document.getElementById('progressBar').style.width = ((currentMainLevel - 1) / TOTAL_LEVELS) * 100 + '%';
+                document.getElementById('levelSelect').value = currentMainLevel;
+                
+                const d = DB[currentMainLevel];
+                if (d && d[currentProblemInLevel - 1]) { 
+                    currentDividend = d[currentProblemInLevel - 1].d; 
+                    currentDivisor = d[currentProblemInLevel - 1].div; 
+                }
+                
+                createUI(); 
+                createAntena(); 
+                resetAll();
+            } catch(e) {
+                console.error("Load Error:", e);
+                alert("Error al cargar problema: " + e.message);
+            }
         }
 
         function createUI() {
-            const g = document.getElementById('gridContainer'); const dB = document.getElementById('divisorBox'); const tR = document.getElementById('topRow');
-            g.innerHTML = ''; dB.innerHTML = ''; tR.innerHTML = '';
-            String(currentDivisor).split('').forEach(n => { let i=document.createElement('input'); i.type='text'; i.className='input-div'; i.value=n; i.readOnly=true; dB.appendChild(i); });
-            for(let r=0; r<rows; r++) {
-                for(let c=0; c<cols; c++) {
-                    let i = document.createElement('input');
-                    i.type='text'; i.className='cell'; i.maxLength=1; i.id="c-"+r+"-"+c;
-                    i.addEventListener('mousedown', (e) => { if(sel){ e.preventDefault(); drag=true; sC={r,c}; eC={r,c}; updS(); } });
-                    i.addEventListener('mouseenter', (e) => { if(sel&&drag){ eC={r,c}; updS(); } });
-                    i.addEventListener('input', (e) => { if(!sel&&e.target.value){ let n=(c<cols-1)?"c-"+r+"-"+(c+1):(r<rows-1)?"c-"+(r+1)+"-0":null; if(n)document.getElementById(n).focus(); }});
-                    g.appendChild(i);
+            try {
+                const g = document.getElementById('gridContainer'); 
+                const dB = document.getElementById('divisorBox'); 
+                const tR = document.getElementById('topRow');
+                
+                if(!g || !dB || !tR) throw new Error("Elementos HTML no encontrados");
+
+                g.innerHTML = ''; dB.innerHTML = ''; tR.innerHTML = '';
+                
+                // Divisor
+                String(currentDivisor).split('').forEach(n => { 
+                    let i=document.createElement('input'); i.type='text'; i.className='input-div'; i.value=n; i.readOnly=true; dB.appendChild(i); 
+                });
+
+                // Grid
+                for(let r=0; r<rows; r++) {
+                    for(let c=0; c<cols; c++) {
+                        let i = document.createElement('input');
+                        i.type='text'; i.className='cell'; i.maxLength=1; i.id="c-"+r+"-"+c;
+                        // Events
+                        i.addEventListener('mousedown', (e) => { if(sel){ e.preventDefault(); drag=true; sC={r,c}; eC={r,c}; updS(); } });
+                        i.addEventListener('mouseenter', (e) => { if(sel&&drag){ eC={r,c}; updS(); } });
+                        i.addEventListener('input', (e) => { if(!sel&&e.target.value){ let n=(c<cols-1)?"c-"+r+"-"+(c+1):(r<rows-1)?"c-"+(r+1)+"-0":null; if(n)document.getElementById(n).focus(); }});
+                        g.appendChild(i);
+                    }
                 }
+                document.onmouseup = () => { drag=false; };
+                
+                // Dividendo
+                let sN = String(currentDividend);
+                for(let i=0; i<sN.length; i++) { 
+                    let cell = document.getElementById("c-0-"+i); 
+                    if(cell) {
+                        cell.value = sN[i]; 
+                        cell.classList.add('cell-locked'); 
+                        cell.disabled = true; 
+                    }
+                }
+                document.getElementById('lineH').style.width = (sN.length * cellSize) + 'px';
+                
+                // Cociente
+                for(let c=0; c<sN.length; c++) { 
+                    let i=document.createElement('input'); i.type='text'; i.className='input-cociente'; i.maxLength=1; i.id="top-"+c; 
+                    i.addEventListener('input', (e) => { syncT(); if(e.target.value && c<sN.length-1) document.getElementById("top-"+(c+1)).focus(); }); 
+                    tR.appendChild(i); 
+                }
+            } catch(e) {
+                alert("Error en CreateUI: " + e.message);
             }
-            document.onmouseup = () => { drag=false; };
-            let sN = String(currentDividend);
-            for(let i=0; i<sN.length; i++) { let cell = document.getElementById("c-0-"+i); cell.value = sN[i]; cell.classList.add('cell-locked'); cell.disabled = true; }
-            document.getElementById('lineH').style.width = (sN.length * cellSize) + 'px';
-            for(let c=0; c<sN.length; c++) { let i=document.createElement('input'); i.type='text'; i.className='input-cociente'; i.maxLength=1; i.id="top-"+c; i.addEventListener('input', (e) => { syncT(); if(e.target.value && c<sN.length-1) document.getElementById("top-"+(c+1)).focus(); }); tR.appendChild(i); }
         }
 
         let sel=false, drag=false, sC=null, eC=null, selC=new Set();
@@ -375,9 +431,19 @@
         function syncT() { let v=""; document.querySelectorAll('.input-cociente').forEach(x=>v+=x.value); document.getElementById('valCociente').value=v; }
 
         function createAntena() {
-            const b=document.getElementById('antenaBody'); document.getElementById('antenaLabel').innerText=currentDivisor; b.innerHTML='';
-            for(let i=1;i<=10;i++){let r=document.createElement('div'); r.className='antena-row'; r.innerHTML="<span>"+i+" x "+currentDivisor+" =</span><input type='number' class='antena-input' id='a"+i+"'>"; b.appendChild(r);}
+            try {
+                const b=document.getElementById('antenaBody'); 
+                document.getElementById('antenaLabel').innerText=currentDivisor; 
+                b.innerHTML='';
+                for(let i=1;i<=10;i++){
+                    let r=document.createElement('div'); 
+                    r.className='antena-row'; 
+                    r.innerHTML="<span>"+i+" x "+currentDivisor+" =</span><input type='number' class='antena-input' id='a"+i+"'>"; 
+                    b.appendChild(r);
+                }
+            } catch(e) { alert("Error en Antena: " + e.message); }
         }
+        
         function resetAll() {
             document.getElementById('valCociente').value=''; document.getElementById('valResiduo').value='';
             document.querySelectorAll('.antena-input').forEach(i => { i.value=''; i.classList.remove('status-ok','status-wrong'); });
@@ -386,11 +452,13 @@
             document.querySelectorAll('.cell').forEach(c => c.classList.remove('border-bottom','border-right','cell-selected'));
             selC.clear();
         }
+        
         function validarAntena() {
             let ok=true;
             for(let i=1;i<=10;i++){let inp=document.getElementById("a"+i); let v=parseInt(inp.value); if(v===i*currentDivisor){inp.classList.add('status-ok');inp.classList.remove('status-wrong');}else{inp.classList.add('status-wrong');inp.classList.remove('status-ok');ok=false;}}
             document.getElementById('msg').innerText = ok ? "¡Antena correcta!" : "Corrige."; document.getElementById('msg').style.color = ok ? "var(--success)" : "var(--error)";
         }
+        
         async function verificarSolucion() {
             let coc=parseInt(document.getElementById('valCociente').value); let res=parseInt(document.getElementById('valResiduo').value)||0;
             let rC=Math.floor(currentDividend/currentDivisor); let rR=currentDividend%currentDivisor;
