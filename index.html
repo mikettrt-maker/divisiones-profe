@@ -22,13 +22,14 @@
 
         .main-header { width: 100%; background: linear-gradient(90deg, var(--primary-color), var(--primary-light)); color: white; padding: 15px 0; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
         .main-header h1 { margin: 0; font-size: 1.8rem; font-weight: 800; }
-        .app-container { width: 100%; max-width: 1400px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; }
+        /* AUMENTÉ EL ANCHO MÁXIMO A 1500px PARA QUE QUEPAN LOS 3 ELEMENTOS */
+        .app-container { width: 100%; max-width: 1500px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; }
 
         /* PANELES */
         .panel { background: white; padding: 15px 25px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         
         .level-selector-container { display: flex; align-items: center; gap: 8px; }
-        .level-select { padding: 8px 12px; border-radius: 20px; border: 2px solid var(--primary-color); background: white; color: var(--primary-color); font-family: 'Poppins', sans-serif; font-weight: 700; font-size: 1rem; cursor: pointer; outline: none; }
+        .level-select { padding: 8px 12px; border-radius: 20px; border: 2px solid var(--primary-color); background: white; color: var(--primary-color); font-family: 'Poppins'; font-weight: 700; font-size: 1rem; cursor: pointer; outline: none; }
         
         .score-badge { background: linear-gradient(135deg, #fbbf24, #f59e0b); color: white; padding: 8px 15px; border-radius: 20px; font-weight: 700; box-shadow: 0 2px 4px rgba(245, 158, 11, 0.4); display: flex; align-items: center; gap: 5px; }
         
@@ -43,21 +44,28 @@
 
         /* ÁREA DEL JUEGO (IZQUIERDA) */
         .game-area {
-            flex: 3; /* Ocupa 3 partes del ancho */
+            flex: 4; /* Ocupa más espacio */
             display: flex; flex-direction: column; gap: 20px;
         }
         
-        .workspace-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); display: flex; gap: 40px; justify-content: center; flex-wrap: wrap; align-items: flex-start; }
+        /* AQUÍ ESTABA EL PROBLEMA: AHORA FORZAMOS A QUE NO SE ENVUELVA */
+        .workspace-card { 
+            background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); 
+            display: flex; gap: 40px; justify-content: center; 
+            flex-wrap: nowrap; /* IMPORTANTE: Evita que la antena se vaya abajo */
+            align-items: flex-start; 
+        }
 
         /* RANKING SIDEBAR (DERECHA) */
         .ranking-sidebar {
-            flex: 1; /* Ocupa 1 parte del ancho */
+            flex: 1; 
             background: white;
             padding: 20px;
             border-radius: 15px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            position: sticky; /* Se queda fijo al hacer scroll si fuera necesario */
+            position: sticky; 
             top: 20px;
+            min-width: 280px; /* Ancho mínimo para que se vea bien */
         }
         .ranking-title {
             font-size: 1.2rem; font-weight: 800; color: var(--primary-color);
@@ -70,14 +78,14 @@
             padding: 10px; margin-bottom: 8px; border-radius: 8px;
             background: #f8fafc; transition: all 0.3s;
         }
-        .ranking-item.top-1 { background: #fff7ed; border-left: 5px solid #f59e0b; font-weight: 700; } /* Oro */
-        .ranking-item.top-2 { background: #f1f5f9; border-left: 5px solid #94a3b8; } /* Plata */
-        .ranking-item.top-3 { background: #fffbeb; border-left: 5px solid #d97706; } /* Bronce */
+        .ranking-item.top-1 { background: #fff7ed; border-left: 5px solid #f59e0b; font-weight: 700; }
+        .ranking-item.top-2 { background: #f1f5f9; border-left: 5px solid #94a3b8; }
+        .ranking-item.top-3 { background: #fffbeb; border-left: 5px solid #d97706; }
         .ranking-item.me { background: #ecfdf5; border-left: 5px solid var(--success); font-weight: 700; border: 2px solid var(--success); }
         
-        .rank-pos { font-weight: 800; color: #666; margin-right: 10px; }
-        .rank-name { flex-grow: 1; color: var(--text-dark); }
-        .rank-score { font-weight: 700; color: var(--primary-light); }
+        .rank-pos { font-weight: 800; color: #666; margin-right: 10px; width: 20px; }
+        .rank-name { flex-grow: 1; color: var(--text-dark); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .rank-score { font-weight: 700; color: var(--primary-light); margin-left: 10px; }
 
         /* --- GALERA --- */
         .division-row { display: flex; flex-direction: row; align-items: flex-start; gap: 0; margin-top: 20px; }
@@ -91,7 +99,7 @@
         .linea-h { height: 4px; background-color: var(--text-dark); width: 100%; margin-bottom: 1px; }
 
         /* HERRAMIENTA EXCEL */
-        .excel-toolbar { position: absolute; top: -40px; left: 0; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px; display: flex; gap: 2px; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        .excel-toolbar { position: absolute; top: -40px; left: 0; background: #f1f5s9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px; display: flex; gap: 2px; z-index: 100; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
         .tool-btn { width: 32px; height: 32px; border: 1px solid transparent; background: transparent; cursor: pointer; border-radius: 4px; color: #475569; display: flex; align-items: center; justify-content: center; }
         .tool-btn:hover { background: #e2e8f0; }
         .tool-btn.active { background: #bfdbfe; color: var(--primary-color); border-color: #93c5fd; }
@@ -108,7 +116,7 @@
         .border-right { border-right: 2px solid var(--text-dark) !important; }
 
         /* ANTENA */
-        .antena-panel { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; border-top: 5px solid var(--primary-color); width: 260px; }
+        .antena-panel { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; border-top: 5px solid var(--primary-color); width: 260px; flex-shrink: 0; /* Evita que se encoja */ }
         .antena-header { text-align: center; font-weight: 700; color: var(--primary-color); margin-bottom: 10px; font-size: 1.1rem; }
         .antena-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
         .antena-input { width: 60px; height: 30px; font-size: 0.9rem; font-weight: 600; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px; }
@@ -138,10 +146,11 @@
 
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Responsive para móviles */
-        @media (max-width: 1000px) {
+        /* Responsive */
+        @media (max-width: 1200px) {
             .main-layout { flex-direction: column; }
             .ranking-sidebar { width: 100%; position: relative; top: 0; margin-bottom: 20px; }
+            .workspace-card { flex-wrap: wrap; } /* En móvil sí se puede envolver */
         }
     </style>
 </head>
@@ -200,7 +209,7 @@
                         <div class="col-grid">
                             <div class="excel-toolbar">
                                 <button class="tool-btn" id="btnSelectMode" onclick="toggleSelectMode()" title="Seleccionar"><i class="fas fa-mouse-pointer"></i></button>
-                                <div class="separator"></div>
+                                <div style="width:1px; background:#cbd5e1; margin:2px 4px;"></div>
                                 <button class="tool-btn" onclick="applyBorder('bottom')" title="Abajo"><i class="fas fa-ellipsis-h"></i></button>
                                 <button class="tool-btn" onclick="applyBorder('right')" title="Derecha"><i class="fas fa-ellipsis-v"></i></button>
                                 <button class="tool-btn" onclick="applyBorder('clear')" title="Borrar"><i class="fas fa-times"></i></button>
@@ -239,7 +248,6 @@
                     <i class="fas fa-trophy"></i> Ranking de la Clase
                 </div>
                 <ul class="ranking-list" id="ranking-list">
-                    <!-- Se llena con JS -->
                     <li style="text-align:center; color:#666;">Cargando...</li>
                 </ul>
             </div>
@@ -248,7 +256,7 @@
     </div>
 
     <script>
-        // --- 1. CONEXIÓN A SUPABASE (TUS LLAVES) ---
+        // --- 1. CONEXIÓN A SUPABASE ---
         const SUPABASE_URL = 'https://oskrniownbbzkgnwunzz.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_RcfluyMTRxDP4chkK91-2Q_UwLdLrqP';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -264,7 +272,7 @@
 
         let totalScore = 0;
         const POINTS_PER_SUCCESS = 100;
-        let currentUser = null; // Guardaremos el usuario actual aquí
+        let currentUser = null;
 
         // --- BASE DE DATOS DE EJERCICIOS (RESUMIDA) ---
         const exercisesDB = {
@@ -279,15 +287,13 @@
             9: [ {d: 12345678, div: 15}, {d: 50987654, div: 22}, {d: 99112233, div: 45}, {d: 34567890, div: 78}, {d: 76543210, div: 12}, {d: 21098765, div: 89}, {d: 66778899, div: 36}, {d: 45454545, div: 54}, {d: 88000111, div: 93}, {d: 10203040, div: 27} ],
             10: [ {d: 45678912, div: 234}, {d: 89012345, div: 567}, {d: 12345678, div: 901}, {d: 76543210, div: 412}, {d: 33445566, div: 777}, {d: 55667788, div: 125}, {d: 98765432, div: 850}, {d: 20406080, div: 315}, {d: 61234567, div: 621}, {d: 99999999, div: 999} ]
         };
-
         const motivationalQuotes = [ { text: "El único modo de hacer un gran trabajo es amar lo que haces.", author: "Steve Jobs" }, { text: "La educación es el arma más poderosa.", author: "N. Mandela" } ];
 
         // Herramienta Excel
         let selectMode = false; let isDragging = false; let startCell = null; let endCell = null; let selectedCells = new Set();
 
-        // --- 2. GESTIÓN DE USUARIOS Y CIERRE DE SESIÓN AUTOMÁTICO ---
+        // --- 2. GESTIÓN DE USUARIOS Y CIERRE DE SESIÓN ---
         
-        // Al cargar la página
         document.addEventListener('DOMContentLoaded', async () => {
             const { data: { session } } = await _supabase.auth.getSession();
             if (session) {
@@ -298,10 +304,10 @@
             }
         });
 
-        // Detectar cierre de navegador/pestaña
-        window.addEventListener('beforeunload', async (e) => {
-            // Descomenta la siguiente línea si quieres que al cerrar, cierre sesión:
-            await _supabase.auth.signOut(); 
+        // CORRECCIÓN: Cierre de sesión inmediato al cerrar pestaña/navegador
+        // Usamos 'unload' y sin async para asegurar que se ejecute
+        window.addEventListener('unload', (event) => {
+            _supabase.auth.signOut(); 
         });
 
         function showLogin() {
@@ -317,7 +323,7 @@
             currentUser = user;
             await loadScore(user);
             initGame();
-            startRankingUpdates(); // Iniciar actualización automática
+            startRankingUpdates();
         }
 
         async function handleLogin() {
@@ -359,37 +365,20 @@
         async function saveScore() {
             if (!currentUser) return;
             await _supabase.from('profiles').upsert({ id: currentUser.id, username: currentUser.email.split('@')[0], total_score: totalScore });
-            // Actualizar ranking inmediatamente después de guardar
             updateRanking();
         }
 
-        // --- 3. LÓGICA DEL RANKING EN TIEMPO REAL ---
+        // --- 3. RANKING EN TIEMPO REAL ---
         let rankingInterval;
-
-        function startRankingUpdates() {
-            updateRanking(); // Primera carga
-            rankingInterval = setInterval(updateRanking, 5000); // Cada 5 segundos
-        }
-
-        function stopRankingUpdates() {
-            clearInterval(rankingInterval);
-        }
+        function startRankingUpdates() { updateRanking(); rankingInterval = setInterval(updateRanking, 5000); }
+        function stopRankingUpdates() { clearInterval(rankingInterval); }
 
         async function updateRanking() {
-            const { data, error } = await _supabase
-                .from('profiles')
-                .select('username, total_score')
-                .order('total_score', { ascending: false })
-                .limit(10);
-
+            const { data, error } = await _supabase.from('profiles').select('username, total_score').order('total_score', { ascending: false }).limit(10);
             const list = document.getElementById('ranking-list');
-            if (!data || data.length === 0) {
-                list.innerHTML = '<li style="text-align:center; color:#666;">No hay datos</li>';
-                return;
-            }
+            if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; color:#666;">No hay datos</li>'; return; }
 
             list.innerHTML = data.map((user, index) => {
-                // Resaltar si soy yo
                 const isMe = (currentUser && user.username === currentUser.email.split('@')[0]);
                 let itemClass = 'ranking-item';
                 if (isMe) itemClass += ' me';
@@ -397,13 +386,11 @@
                 else if (index === 1) itemClass += ' top-2';
                 else if (index === 2) itemClass += ' top-3';
 
-                return `
-                    <li class="${itemClass}">
-                        <span class="rank-pos">${index + 1}.</span>
-                        <span class="rank-name">${user.username || 'Anónimo'}</span>
-                        <span class="rank-score">${user.total_score || 0}</span>
-                    </li>
-                `;
+                return `<li class="${itemClass}">
+                    <span class="rank-pos">${index + 1}.</span>
+                    <span class="rank-name">${user.username || 'Anónimo'}</span>
+                    <span class="rank-score">${user.total_score || 0}</span>
+                </li>`;
             }).join('');
         }
 
@@ -415,20 +402,12 @@
             document.getElementById('subLevelCount').innerText = currentProblemInLevel;
             document.getElementById('progressBar').style.width = ((currentMainLevel - 1) / TOTAL_LEVELS) * 100 + '%';
             document.getElementById('levelSelect').value = currentMainLevel;
-
             const levelData = exercisesDB[currentMainLevel];
             const problemIndex = currentProblemInLevel - 1;
-            
-            if (levelData && levelData[problemIndex]) {
-                currentDividend = levelData[problemIndex].d;
-                currentDivisor = levelData[problemIndex].div;
-            }
-
+            if (levelData && levelData[problemIndex]) { currentDividend = levelData[problemIndex].d; currentDivisor = levelData[problemIndex].div; }
             const label = getDifficultyLabel(currentMainLevel);
             document.getElementById('difficultyLabel').innerText = label;
-            createUI();
-            createAntena();
-            resetAll();
+            createUI(); createAntena(); resetAll();
             if(document.getElementById('msg').innerText.includes("Incorrecto")) document.getElementById('msg').innerText = "";
         }
 
@@ -439,9 +418,7 @@
         }
 
         function createUI() {
-            const grid = document.getElementById('gridContainer');
-            const divBox = document.getElementById('divisorBox');
-            const topRow = document.getElementById('topRow');
+            const grid = document.getElementById('gridContainer'); const divBox = document.getElementById('divisorBox'); const topRow = document.getElementById('topRow');
             grid.innerHTML = ''; divBox.innerHTML = ''; topRow.innerHTML = '';
             String(currentDivisor).split('').forEach(n => { let inp = document.createElement('input'); inp.type = 'text'; inp.className = 'input-div'; inp.value = n; inp.readOnly = true; divBox.appendChild(inp); });
             for(let r=0; r<rows; r++) {
@@ -455,48 +432,20 @@
                 }
             }
             document.onmouseup = () => { isDragging = false; };
-            let sNum = String(currentDividend);
-            let startC = 0; 
-            for(let i=0; i<sNum.length; i++) {
-                let cell = document.getElementById(`c-0-${startC+i}`);
-                cell.value = sNum[i]; cell.classList.add('cell-locked'); cell.disabled = true;
-            }
+            let sNum = String(currentDividend); let startC = 0; 
+            for(let i=0; i<sNum.length; i++) { let cell = document.getElementById(`c-0-${startC+i}`); cell.value = sNum[i]; cell.classList.add('cell-locked'); cell.disabled = true; }
             document.getElementById('lineH').style.width = (sNum.length * cellSize) + 'px';
-            for(let c=0; c<sNum.length; c++) {
-                let inp = document.createElement('input'); inp.type = 'text'; inp.className = 'input-cociente'; inp.maxLength = 1; inp.id = `top-${c}`;
-                inp.addEventListener('input', (e) => { syncTop(); if(e.target.value && c < sNum.length - 1) document.getElementById(`top-${c+1}`).focus(); });
-                topRow.appendChild(inp);
-            }
+            for(let c=0; c<sNum.length; c++) { let inp = document.createElement('input'); inp.type = 'text'; inp.className = 'input-cociente'; inp.maxLength = 1; inp.id = `top-${c}`; inp.addEventListener('input', (e) => { syncTop(); if(e.target.value && c < sNum.length - 1) document.getElementById(`top-${c+1}`).focus(); }); topRow.appendChild(inp); }
         }
 
-        function toggleSelectMode() {
-            selectMode = !selectMode;
-            const btn = document.getElementById('btnSelectMode');
-            if(selectMode) { btn.classList.add('active'); document.getElementById('gridContainer').style.cursor = 'crosshair'; }
-            else { btn.classList.remove('active'); document.getElementById('gridContainer').style.cursor = 'default'; clearSelection(); }
-        }
-
-        function updateSelectionVisuals() {
-            document.querySelectorAll('.cell').forEach(c => c.classList.remove('cell-selected'));
-            selectedCells.clear();
-            if(!startCell || !endCell) return;
-            const minR = Math.min(startCell.r, endCell.r); const maxR = Math.max(startCell.r, endCell.r);
-            const minC = Math.min(startCell.c, endCell.c); const maxC = Math.max(startCell.c, endCell.c);
-            for(let r = minR; r <= maxR; r++) { for(let c = minC; c <= maxC; c++) { const cell = document.getElementById(`c-${r}-${c}`); if(cell) { cell.classList.add('cell-selected'); selectedCells.add(cell.id); } } }
-        }
-
+        function toggleSelectMode() { selectMode = !selectMode; const btn = document.getElementById('btnSelectMode'); if(selectMode) { btn.classList.add('active'); document.getElementById('gridContainer').style.cursor = 'crosshair'; } else { btn.classList.remove('active'); document.getElementById('gridContainer').style.cursor = 'default'; clearSelection(); } }
+        function updateSelectionVisuals() { document.querySelectorAll('.cell').forEach(c => c.classList.remove('cell-selected')); selectedCells.clear(); if(!startCell || !endCell) return; const minR = Math.min(startCell.r, endCell.r); const maxR = Math.max(startCell.r, endCell.r); const minC = Math.min(startCell.c, endCell.c); const maxC = Math.max(startCell.c, endCell.c); for(let r = minR; r <= maxR; r++) { for(let c = minC; c <= maxC; c++) { const cell = document.getElementById(`c-${r}-${c}`); if(cell) { cell.classList.add('cell-selected'); selectedCells.add(cell.id); } } } }
         function clearSelection() { selectedCells.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('cell-selected'); }); selectedCells.clear(); startCell = null; endCell = null; }
-
-        function applyBorder(type) {
-            selectedCells.forEach(id => { const el = document.getElementById(id); if(el) { if(type === 'clear') el.classList.remove('border-bottom', 'border-top', 'border-left', 'border-right'); else el.classList.add(`border-${type}`); } });
-        }
-
+        function applyBorder(type) { selectedCells.forEach(id => { const el = document.getElementById(id); if(el) { if(type === 'clear') el.classList.remove('border-bottom', 'border-top', 'border-left', 'border-right'); else el.classList.add(`border-${type}`); } }); }
         function syncTop() { let val = ""; document.querySelectorAll('.input-cociente').forEach(x => val += x.value); document.getElementById('valCociente').value = val; }
 
         function createAntena() {
-            const body = document.getElementById('antenaBody');
-            document.getElementById('antenaLabel').innerText = currentDivisor;
-            body.innerHTML = '';
+            const body = document.getElementById('antenaBody'); document.getElementById('antenaLabel').innerText = currentDivisor; body.innerHTML = '';
             for(let i=1; i<=10; i++) { let row = document.createElement('div'); row.className = 'antena-row'; row.innerHTML = `<span>${i} x ${currentDivisor} =</span><input type='number' class='antena-input' id='a${i}'>`; body.appendChild(row); }
         }
 
@@ -521,17 +470,15 @@
             let res = parseInt(document.getElementById('valResiduo').value) || 0;
             let realCoc = Math.floor(currentDividend / currentDivisor);
             let realRes = currentDividend % currentDivisor;
-
             const msgDiv = document.getElementById('msg');
             let existingQuote = document.querySelector('.quote-box'); if(existingQuote) existingQuote.remove();
 
             if(coc === realCoc && res === realRes) {
                 totalScore += POINTS_PER_SUCCESS;
                 document.getElementById('scoreDisplay').innerText = totalScore;
-                await saveScore(); // Guarda y actualiza ranking
+                await saveScore();
                 const quoteObj = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
                 msgDiv.innerHTML = `<span style="color: var(--success); font-weight: 700;">¡Correcto! +${POINTS_PER_SUCCESS} Puntos</span><div class="quote-box">"${quoteObj.text}"<span class="quote-author">- ${quoteObj.author}</span></div>`;
-                
                 setTimeout(() => {
                     if(currentProblemInLevel < PROBLEMS_PER_LEVEL) { currentProblemInLevel++; } 
                     else {
@@ -540,9 +487,7 @@
                     }
                     loadProblem();
                 }, 2500);
-            } else {
-                msgDiv.innerHTML = `<span style="color: var(--error); font-weight: 700;">Incorrecto.</span>`;
-            }
+            } else { msgDiv.innerHTML = `<span style="color: var(--error); font-weight: 700;">Incorrecto.</span>`; }
         }
     </script>
 </body>
