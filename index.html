@@ -3,23 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - Dark Mode</title>
-    <!-- FUENTES GAMER -->
+    <title>Reto de División - Antena Progresiva</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
         :root {
-            --primary-color: #ffcc00; /* Amarillo Gamer */
-            --primary-light: #ff9800; /* Naranja */
-            --text-dark: #e0e0e0; /* Texto claro sobre negro */
-            --bg-dark: #0f0f0f; /* Fondo Negro */
-            --bg-panel: #1a1a1a; /* Paneles Gris Oscuro */
-            --bg-input: #2a2a2a; /* Fondo inputs */
-            --success: #00e676; /* Verde Neón */
-            --error: #ff1744; /* Rojo Neón */
-            --cell-size: 45px;
+            --primary-color: #ffcc00; --primary-light: #ff9800; --text-dark: #e0e0e0;
+            --bg-dark: #0f0f0f; --bg-panel: #1a1a1a; --bg-input: #2a2a2a;
+            --success: #00e676; --error: #ff1744; --cell-size: 45px;
             --rank-iron: #9e9e9e; --rank-bronze: #d97706; --rank-silver: #bdbdbd;
             --rank-gold: #fbbf24; --rank-platinum: #00bcd4; --rank-diamond: #7c4dff; --rank-heroic: #ff1744;
         }
@@ -32,7 +25,6 @@
         .panel { background: var(--bg-panel); padding: 15px 25px; border-radius: 4px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border: 1px solid #333; }
         .level-select { padding: 8px 12px; border-radius: 2px; border: 1px solid var(--primary-color); background: black; color: var(--primary-color); font-family: 'Rajdhani', sans-serif; font-weight: 700; cursor: pointer; outline: none; text-transform: uppercase; }
         
-        /* AVATAR SYSTEM */
         .avatar-container { width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 2px solid var(--primary-color); background-color: #000; position: relative; box-shadow: 0 0 10px var(--primary-color); flex-shrink: 0; }
         .avatar-img { width: 100%; height: 100%; object-fit: cover; background-color: black; }
         
@@ -61,7 +53,7 @@
         .workspace-card { background: var(--bg-panel); padding: 30px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: flex; gap: 40px; justify-content: flex-start; align-items: flex-start; overflow-x: auto; width: 100%; box-sizing: border-box; border: 1px solid #333; }
 
         .ranking-sidebar { flex: 1; background: var(--bg-panel); padding: 20px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); min-width: 280px; border: 1px solid #333; }
-        .ranking-title { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); text-align: center; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; margin-bottom: 15px; text-transform: uppercase; font-family: 'Teko', sans-serif; letter-spacing: 1px; }
+        .ranking-title { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); text-align: center; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; margin-bottom: 15px; text-transform: uppercase; font-family: 'Teko', sans-serif; }
         .ranking-list { list-style: none; padding: 0; margin: 0; }
         .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.05); border-left: 4px solid #333; transition: all 0.3s; }
         
@@ -97,7 +89,6 @@
         .tool-btn:hover { background: #333; color: var(--primary-color); }
         .tool-btn.active { background: var(--primary-color); color: black; }
 
-        /* GRID - 15 FILAS (ESTRUCTURA INTACTA) */
         .grid-matriz { display: grid; grid-template-columns: repeat(9, var(--cell-size)); grid-template-rows: repeat(15, var(--cell-size)); background-color: #2a2a2a; border: 1px solid #444; }
         .cell { width: var(--cell-size); height: var(--cell-size); background-color: #1a1a1a; border: 1px solid #333; text-align: center; font-size: 1.4rem; font-weight: 600; outline: none; cursor: text; box-sizing: border-box; color: white; transition: background 0.2s; }
         .cell:focus { background: #333; box-shadow: inset 0 0 10px var(--primary-color); }
@@ -106,21 +97,22 @@
         .border-bottom { border-bottom: 2px solid var(--primary-color) !important; }
         .border-right { border-right: 2px solid var(--primary-color) !important; }
 
-        /* BLOQUEO DE GRID */
         .grid-disabled-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 50; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: opacity 0.3s; }
         .grid-disabled-overlay.hidden { display: none; }
         .lock-msg { background: var(--primary-color); color: black; padding: 10px 20px; border-radius: 2px; font-size: 1rem; font-weight: 700; box-shadow: 0 0 20px var(--primary-color); pointer-events: auto; text-align: center; text-transform: uppercase; }
         
-        /* ANTENA */
+        /* ANTENA & PROGRESSIVE LOCK */
         .antena-panel { background: var(--bg-panel); border: 1px solid #333; padding: 15px; border-radius: 4px; border-top: 4px solid var(--primary-color); width: 260px; flex-shrink: 0; }
         .antena-header { text-align: center; font-weight: 700; color: var(--primary-color); margin-bottom: 15px; font-size: 1.2rem; text-transform: uppercase; font-family: 'Teko', sans-serif; letter-spacing: 1px; }
-        .antena-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .antena-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; opacity: 1; transition: opacity 0.3s; }
+        .antena-row.locked-row { opacity: 0.4; } /* Visual cue for locked rows */
+        
         .antena-input { width: 60px; height: 30px; font-size: 1rem; font-weight: 600; text-align: center; border: 1px solid #444; border-radius: 2px; background: black; color: white; }
+        .antena-input:disabled { background: #111; color: #555; border-color: #222; cursor: not-allowed; } /* Disabled state */
         .antena-input:focus { border-color: var(--primary-color); }
         .status-ok { background-color: rgba(0, 230, 118, 0.2) !important; border-color: var(--success) !important; color: var(--success); }
         .status-wrong { background-color: rgba(255, 23, 68, 0.2) !important; border-color: var(--error) !important; color: var(--error); }
 
-        /* CONTROLES */
         .controls { background: black; padding: 20px; border-radius: 4px; border: 1px solid #333; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box; }
         .result-box { display: flex; flex-direction: column; background: #1a1a1a; padding: 8px 15px; border-radius: 2px; border: 1px solid #333; }
         .result-input { border: none; font-size: 1.8rem; font-weight: 700; width: 80px; text-align: center; color: var(--primary-color); background: transparent; font-family: 'Teko', sans-serif; }
@@ -132,14 +124,12 @@
         .btn-small:hover { border-color: #888; color: white; }
         #msg { width: 100%; text-align: center; font-weight: 600; margin-top: 10px; font-size: 1.1rem; }
 
-        /* --- VICTORY SCREEN (BUYA) - DARK MODE --- */
+        /* VICTORY SCREEN */
         #victory-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 99999; display: none; flex-direction: column; justify-content: center; align-items: center; }
         #victory-screen.show { display: flex; }
-        
         .victory-title { font-size: 7rem; color: var(--primary-color); font-weight: 700; text-shadow: 0 0 30px var(--primary-color); font-family: 'Teko', sans-serif; letter-spacing: 4px; margin-bottom: 10px; animation: scaleUp 0.3s; text-transform: uppercase; }
         .victory-sub { font-size: 2rem; color: #888; font-weight: 600; animation: fadeInUp 0.5s 0.2s backwards; text-transform: uppercase; font-family: 'Rajdhani', sans-serif; }
         .victory-level { font-size: 4rem; color: white; font-weight: 700; margin: 20px 0; animation: zoomIn 0.8s 0.4s backwards; background: black; padding: 5px 40px; border: 2px solid var(--primary-color); box-shadow: 0 0 20px var(--primary-color); font-family: 'Teko', sans-serif; }
-        
         .confetti { position: absolute; width: 10px; height: 10px; background: #f00; animation: fall linear forwards; }
 
         @keyframes scaleUp { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
@@ -152,10 +142,8 @@
         .login-box { background: var(--bg-panel); padding: 40px; border-radius: 4px; box-shadow: 0 0 30px rgba(255, 204, 0, 0.1); text-align: center; width: 350px; border: 1px solid #333; }
         .login-box h2 { color: var(--primary-color); margin-top: 0; margin-bottom: 5px; font-family: 'Teko', sans-serif; font-size: 2.5rem; text-transform: uppercase; letter-spacing: 1px; }
         .login-input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #333; border-radius: 2px; font-size: 1rem; box-sizing: border-box; background: black; color: white; font-family: 'Rajdhani', sans-serif; }
-        .login-input:focus { border-color: var(--primary-color); }
         .login-btn { width: 100%; margin-top: 10px; }
         .login-error { color: var(--error); font-size: 0.9rem; margin-top: 10px; display: none; }
-        
         .login-avatar-preview { width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 20px auto; border: 2px solid var(--primary-color); overflow: hidden; background: black; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px var(--primary-color); }
         .login-avatar-preview img { width: 100%; height: 100%; object-fit: cover; opacity: 1; transition: opacity 0.3s; }
 
@@ -167,7 +155,6 @@
         .avatar-option:hover { border-color: #555; }
         .avatar-option.selected { border-color: var(--primary-color); background: rgba(255, 204, 0, 0.1); }
         .avatar-option img { width: 50px; height: 50px; border-radius: 50%; background: #000; }
-        
         .avatar-locked { filter: grayscale(100%); opacity: 0.5; cursor: not-allowed; }
         .lock-icon { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.8); border-radius: 50%; color: #666; font-size: 1.2rem; pointer-events: none; }
 
@@ -176,19 +163,15 @@
 </head>
 <body>
 
-    <!-- VICTORY SCREEN -->
     <div id="victory-screen">
         <div class="victory-title">NIVEL COMPLETADO</div>
         <div class="victory-sub">Preparando siguiente reto...</div>
         <div class="victory-level" id="victory-level-display">NIVEL 2</div>
     </div>
 
-    <!-- LOGIN SCREEN -->
     <div id="login-screen" style="display:none;">
         <div class="login-box">
-            <div class="login-avatar-preview">
-                <img id="login-avatar-img" src="https://api.dicebear.com/8.x/identicon/svg?seed=Shadow" alt="Avatar">
-            </div>
+            <div class="login-avatar-preview"><img id="login-avatar-img" src="https://api.dicebear.com/8.x/identicon/svg?seed=Shadow" alt="Avatar"></div>
             <h2>Reto de División</h2>
             <p style="margin-bottom: 20px; color:#888;">Ingresa tu usuario</p>
             <input type="text" id="login-username" class="login-input" placeholder="Usuario">
@@ -199,22 +182,12 @@
         </div>
     </div>
 
-    <!-- AVATAR MODAL -->
     <div id="avatar-modal" style="display:none; background: rgba(0,0,0,0.9);" onclick="if(event.target.id === 'avatar-modal') toggleAvatarModal()">
         <div class="modal-box">
             <h3 style="margin:0 0 10px 0; color:var(--primary-color); font-family:'Teko'; font-size:1.8rem; text-transform:uppercase;">Personaje</h3>
             <p style="font-size:0.9rem; color:#666;">Selecciona tu estilo</p>
-            
-            <div class="modal-section">
-                <h4>Estándar</h4>
-                <div class="avatar-grid" id="avatar-options-standard"></div>
-            </div>
-
-            <div class="modal-section" id="exclusive-section" style="display:none;">
-                <h4 style="color:var(--error);"> <i class="fas fa-lock-open"></i> Exclusivos Heroico</h4>
-                <div class="avatar-grid" id="avatar-options-exclusive"></div>
-            </div>
-
+            <div class="modal-section"><h4>Estándar</h4><div class="avatar-grid" id="avatar-options-standard"></div></div>
+            <div class="modal-section" id="exclusive-section" style="display:none;"><h4 style="color:var(--error);"> <i class="fas fa-lock-open"></i> Exclusivos Heroico</h4><div class="avatar-grid" id="avatar-options-exclusive"></div></div>
             <button class="btn-primary" onclick="saveAvatarChoice()">Guardar</button>
         </div>
     </div>
@@ -238,9 +211,7 @@
             <div class="progress-bar-container"><div class="progress-bar-fill" id="progressBar"></div></div>
             
             <div class="user-info-panel">
-                <div class="avatar-container" id="main-avatar-box" onclick="toggleAvatarModal()" title="Cambiar Avatar" style="cursor: pointer;">
-                    <img id="main-avatar-img" class="avatar-img" src="" alt="Avatar">
-                </div>
+                <div class="avatar-container" id="main-avatar-box" onclick="toggleAvatarModal()" title="Cambiar Avatar" style="cursor: pointer;"><img id="main-avatar-img" class="avatar-img" src="" alt="Avatar"></div>
                 <div class="user-stats">
                      <div style="font-size: 0.8rem; color: #888;" id="difficultyLabel">...</div>
                      <div style="font-size: 0.9rem; color:#aaa;">Ej. <span id="subLevelCount">1</span>/10</div>
@@ -261,10 +232,7 @@
                         <div class="col-divisor" id="divisorBox"></div>
                         <div class="col-linea-v"></div>
                         <div class="col-grid" id="grid-wrapper">
-                            <div class="grid-disabled-overlay" id="grid-lock-overlay">
-                                <div class="lock-msg"><i class="fas fa-lock"></i> ¡Valida la Antena!</div>
-                            </div>
-
+                            <div class="grid-disabled-overlay" id="grid-lock-overlay"><div class="lock-msg"><i class="fas fa-lock"></i> ¡Completa la Antena!</div></div>
                             <div class="excel-toolbar">
                                 <button class="tool-btn" id="btnSelectMode" onclick="toggleSelectMode()"><i class="fas fa-mouse-pointer"></i></button>
                                 <button class="tool-btn" onclick="applyBorder('bottom')"><i class="fas fa-ellipsis-h"></i></button>
@@ -279,33 +247,49 @@
                     <div class="antena-panel">
                         <div class="antena-header">Antena (x <span id="antenaLabel">...</span>)</div>
                         <div id="antenaBody"></div>
-                        <button onclick="validarAntena()" class="btn-primary" style="width: 100%; margin-top:15px; padding: 8px;">Validar</button>
+                        <!-- Botón Validar eliminado para flujo automático, o mantener para help? Se deja oculto o se adapta -->
                     </div>
                 </div>
                 <div class="controls">
                     <div style="display:flex; gap:15px;">
-                        <div class="result-box">
-                            <span style="font-size:0.8rem; color: #666; font-weight:600;">Cociente</span>
-                            <input type="number" class="result-input" id="valCociente" placeholder="0">
-                        </div>
-                        <div class="result-box">
-                            <span style="font-size:0.8rem; color: #666; font-weight:600;">Residuo</span>
-                            <input type="number" class="result-input" id="valResiduo" placeholder="0">
-                        </div>
+                        <div class="result-box"><span style="font-size:0.8rem; color: #666; font-weight:600;">Cociente</span><input type="number" class="result-input" id="valCociente" placeholder="0"></div>
+                        <div class="result-box"><span style="font-size:0.8rem; color: #666; font-weight:600;">Residuo</span><input type="number" class="result-input" id="valResiduo" placeholder="0"></div>
                     </div>
                     <button class="btn-check" onclick="verificarSolucion()">Verificar</button>
                 </div>
                 <div id="msg"></div>
             </div>
-            <div class="ranking-sidebar">
-                <div class="ranking-title">Ranking</div>
-                <ul class="ranking-list" id="ranking-list"><li style="text-align:center; color:#666;">Conectando...</li></ul>
-            </div>
+            <div class="ranking-sidebar"><div class="ranking-title">Ranking</div><ul class="ranking-list" id="ranking-list"><li style="text-align:center; color:#666;">Conectando...</li></ul></div>
         </div>
     </div>
 
     <script>
-        // CONFIG (SIN CAMBIOS)
+        // --- SOUND ENGINE ---
+        const AudioEngine = {
+            ctx: null,
+            init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
+            playTone(freq, duration, type = 'square', volume = 0.1) {
+                this.init();
+                const osc = this.ctx.createOscillator();
+                const gain = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.value = freq;
+                gain.gain.value = volume;
+                osc.connect(gain);
+                gain.connect(this.ctx.destination);
+                osc.start();
+                setTimeout(() => { osc.stop(); }, duration);
+            },
+            playClick() { this.playTone(800, 50, 'square', 0.05); },
+            playSuccess() { this.playTone(523, 100, 'square', 0.08); setTimeout(() => this.playTone(659, 150, 'square', 0.08), 100); },
+            playError() { this.playTone(200, 300, 'sawtooth', 0.1); },
+            playLevelUp() {
+                const notes = [523, 659, 784, 1047]; 
+                notes.forEach((n, i) => setTimeout(() => this.playTone(n, 200, 'square', 0.1), i * 150));
+            }
+        };
+
+        // CONFIG
         const SUPABASE_URL = 'https://oskrniownbbzkgnwunzz.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_RcfluyMTRxDP4chkK91-2Q_UwLdLrqP';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storage: window.sessionStorage, autoRefreshToken: false, persistSession: true, detectSessionInUrl: false } });
@@ -318,6 +302,11 @@
         let currentUser = null;
         let currentAvatarStyle = 'adventurer';
         let isGridLocked = true;
+
+        // --- ANTENA LOGIC ---
+        // Secuencia pedagógica: 1, 10, 5, 2, 4, 8, 3, 6, 7, 9
+        const ANTENNA_SEQUENCE = [1, 10, 5, 2, 4, 8, 3, 6, 7, 9];
+        let currentAntennaIndex = 0;
 
         const AVATAR_STYLES_STANDARD = [
             { id: 'adventurer', name: 'Guerrero' }, { id: 'bottts', name: 'Robot' }, { id: 'pixel-art', name: 'Pixel' },
@@ -426,9 +415,10 @@
         }
 
         function selectAvatarStyle(styleId) { const isExclusive = AVATAR_STYLES_EXCLUSIVE.some(s => s.id === styleId); if(isExclusive && totalScore < 50000) { alert("¡Este avatar es exclusivo para Rango Heroico!"); return; } currentAvatarStyle = styleId; renderAvatarOptions(); renderMainAvatar(); }
-        async function saveAvatarChoice() { await _supabase.from('profiles').upsert({ id: currentUser.id, avatar_style: currentAvatarStyle }); toggleAvatarModal(); updateRanking(); }
+        async function saveAvatarChoice() { AudioEngine.playClick(); await _supabase.from('profiles').upsert({ id: currentUser.id, avatar_style: currentAvatarStyle }); toggleAvatarModal(); updateRanking(); }
         async function saveScore() { if (!currentUser) return; try { await _supabase.from('profiles').upsert({ id: currentUser.id, username: currentUser.email.split('@')[0], total_score: totalScore }); updateRanking(); } catch(e) { console.error(e); } }
         let rankInt; function startRanking() { updateRanking(); rankInt = setInterval(updateRanking, 5000); }
+        
         async function updateRanking() {
             const list = document.getElementById('ranking-list');
             try {
@@ -439,7 +429,7 @@
         }
 
         function initGame() { loadProblem(); document.getElementById('levelSelect').value = currentMainLevel; }
-        function jumpToLevel(l) { currentMainLevel=parseInt(l); currentProblemInLevel=1; loadProblem(); }
+        function jumpToLevel(l) { AudioEngine.playClick(); currentMainLevel=parseInt(l); currentProblemInLevel=1; loadProblem(); }
         
         function loadProblem() {
             document.getElementById('subLevelCount').innerText = currentProblemInLevel; document.getElementById('progressBar').style.width = ((currentMainLevel - 1) / TOTAL_LEVELS) * 100 + '%'; document.getElementById('levelSelect').value = currentMainLevel;
@@ -449,11 +439,12 @@
         function getDifficultyLabel(lvl) { if(lvl <= 2) return "Divisor: 1 Cifra"; if(lvl === 3 || lvl === 4 || lvl === 5 || lvl === 7 || lvl === 9) return "Divisor: 2 Cifras"; return "Divisor: 3 Cifras"; }
 
         function lockGrid() { isGridLocked = true; document.getElementById('grid-lock-overlay').classList.remove('hidden'); document.getElementById('valCociente').disabled = true; document.getElementById('valResiduo').disabled = true; document.getElementById('btnSelectMode').disabled = true; }
-        function unlockGrid() { isGridLocked = false; document.getElementById('grid-lock-overlay').classList.add('hidden'); document.getElementById('valCociente').disabled = false; document.getElementById('valResiduo').disabled = false; document.getElementById('btnSelectMode').disabled = false; document.getElementById('msg').innerText = "¡Antena correcta! Desbloqueado."; document.getElementById('msg').style.color = "var(--success)"; }
+        function unlockGrid() { isGridLocked = false; document.getElementById('grid-lock-overlay').classList.add('hidden'); document.getElementById('valCociente').disabled = false; document.getElementById('valResiduo').disabled = false; document.getElementById('btnSelectMode').disabled = false; document.getElementById('msg').innerText = "¡Antena completa! Desbloqueado."; document.getElementById('msg').style.color = "var(--success)"; }
 
         function showVictoryScreen(nextLevel) {
             const screen = document.getElementById('victory-screen'); const levelDisplay = document.getElementById('victory-level-display'); levelDisplay.innerText = "NIVEL " + nextLevel;
             createConfetti(); screen.classList.add('show');
+            AudioEngine.playLevelUp();
             setTimeout(() => { screen.classList.remove('show'); document.querySelectorAll('.confetti').forEach(c => c.remove()); currentMainLevel = nextLevel; currentProblemInLevel = 1; loadProblem(); }, 3000);
         }
 
@@ -475,26 +466,90 @@
         function applyBorder(t) { if(isGridLocked) return; selC.forEach(id=>{let el=document.getElementById(id); if(el){if(t==='clear'){el.classList.remove('border-bottom','border-right');}else{el.classList.add("border-"+t);}}}); }
         function syncT() { let v=""; document.querySelectorAll('.input-cociente').forEach(x=>v+=x.value); document.getElementById('valCociente').value=v; }
 
-        function createAntena() { const b=document.getElementById('antenaBody'); document.getElementById('antenaLabel').innerText=currentDivisor; b.innerHTML=''; for(let i=1;i<=10;i++){let r=document.createElement('div'); r.className='antena-row'; r.innerHTML="<span>"+i+" x "+currentDivisor+" =</span><input type='number' class='antena-input' id='a"+i+"'>"; b.appendChild(r);} }
-        function resetAll() { document.getElementById('valCociente').value=''; document.getElementById('valResiduo').value=''; document.querySelectorAll('.antena-input').forEach(i => { i.value=''; i.classList.remove('status-ok','status-wrong'); }); document.querySelectorAll('.input-cociente').forEach(i => i.value=''); document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value=''; i.disabled=false; }); document.querySelectorAll('.cell').forEach(c => c.classList.remove('border-bottom','border-right','cell-selected')); selC.clear(); }
-        function validarAntena() { if(isGridLocked == false) return; let ok=true; for(let i=1;i<=10;i++){let inp=document.getElementById("a"+i); let v=parseInt(inp.value); if(v===i*currentDivisor){inp.classList.add('status-ok');inp.classList.remove('status-wrong');}else{inp.classList.add('status-wrong');inp.classList.remove('status-ok');ok=false;}} if(ok) { unlockGrid(); } else { document.getElementById('msg').innerText = "Corrige los errores."; document.getElementById('msg').style.color = "var(--error)"; } }
+        // --- ANTENA PROGRESSIVE LOGIC ---
+        function createAntena() {
+            const b=document.getElementById('antenaBody'); document.getElementById('antenaLabel').innerText=currentDivisor; b.innerHTML='';
+            // Generate all 10 rows
+            for(let i=1;i<=10;i++){
+                let r=document.createElement('div'); r.className='antena-row locked-row'; r.id="row-"+i; // Start locked
+                r.innerHTML="<span>"+i+" x "+currentDivisor+" =</span><input type='number' class='antena-input' id='a"+i+"' disabled>"; // Disabled by default
+                b.appendChild(r);
+            }
+            currentAntennaIndex = 0; // Reset sequence tracker
+            enableNextAntennaInput(); // Enable first one
+        }
+
+        function enableNextAntennaInput() {
+            if (currentAntennaIndex >= ANTENNA_SEQUENCE.length) return; // Done
+
+            const currentId = ANTENNA_SEQUENCE[currentAntennaIndex];
+            const input = document.getElementById("a"+currentId);
+            const row = document.getElementById("row-"+currentId);
+
+            if(input) {
+                input.disabled = false;
+                input.focus();
+                row.classList.remove('locked-row');
+                // Add auto-check listener
+                input.oninput = () => checkAntennaInput(input, currentId);
+            }
+        }
+
+        function checkAntennaInput(input, id) {
+            const val = parseInt(input.value);
+            const expected = id * currentDivisor;
+            
+            if (val === expected) {
+                // Correct
+                AudioEngine.playSuccess();
+                input.classList.add('status-ok');
+                input.disabled = true; // Lock it
+                input.classList.remove('status-wrong');
+                
+                currentAntennaIndex++; // Move to next in sequence
+                
+                if (currentAntennaIndex < ANTENNA_SEQUENCE.length) {
+                    enableNextAntennaInput();
+                } else {
+                    // All done
+                    unlockGrid();
+                }
+            } else {
+                // Wrong (optional: mark red)
+                input.classList.add('status-wrong');
+                setTimeout(() => input.classList.remove('status-wrong'), 500);
+            }
+        }
+
+        function resetAll() {
+            document.getElementById('valCociente').value=''; document.getElementById('valResiduo').value='';
+            document.querySelectorAll('.antena-input').forEach(i => { i.value=''; i.classList.remove('status-ok','status-wrong'); });
+            document.querySelectorAll('.input-cociente').forEach(i => i.value='');
+            document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value=''; i.disabled=false; });
+            document.querySelectorAll('.cell').forEach(c => c.classList.remove('border-bottom','border-right','cell-selected'));
+            selC.clear();
+        }
         
         async function verificarSolucion() {
-            if(isGridLocked) { alert("¡Valida la Antena primero!"); return; }
+            if(isGridLocked) { alert("¡Completa la Antena primero!"); return; }
             let coc=parseInt(document.getElementById('valCociente').value); let res=parseInt(document.getElementById('valResiduo').value)||0;
             let rC=Math.floor(currentDividend/currentDivisor); let rR=currentDividend%currentDivisor;
             if(coc===rC && res===rR) {
                 totalScore+=POINTS; updateUI(); await saveScore();
+                AudioEngine.playSuccess();
                 document.getElementById('msg').innerHTML="<span style='color:var(--success); font-weight:700; font-size:1.2rem;'>¡CORRECTO! +"+POINTS+"</span>";
                 setTimeout(() => {
                     if(currentProblemInLevel<PROBLEMS_PER_LEVEL) currentProblemInLevel++;
                     else {
                         if(currentMainLevel < TOTAL_LEVELS) { let nextLvl = currentMainLevel + 1; showVictoryScreen(nextLvl); }
-                        else { alert("¡JUEGO TERMINADO! Puntuación: " + totalScore); currentMainLevel = 1; currentProblemInLevel = 1; totalScore = 0; updateUI(); loadProblem(); }
+                        else { alert("¡JUEGO TERMINADO!"); currentMainLevel = 1; currentProblemInLevel = 1; totalScore = 0; updateUI(); loadProblem(); }
                     }
-                    if(currentProblemInLevel > 1 || currentMainLevel > 1) loadProblem(); // Avoid double load on victory screen
+                    if(currentProblemInLevel > 1 || currentMainLevel > 1) loadProblem();
                 }, 1500);
-            } else { document.getElementById('msg').innerHTML="<span style='color:var(--error); font-weight:700; font-size:1.2rem;'>INCORRECTO</span>"; }
+            } else { 
+                AudioEngine.playError();
+                document.getElementById('msg').innerHTML="<span style='color:var(--error); font-weight:700; font-size:1.2rem;'>INCORRECTO</span>"; 
+            }
         }
     </script>
 </body>
