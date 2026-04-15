@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prof. Miguel - Gamer Edition</title>
+    <title>Prof. Miguel - Gamer Edition V2</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -23,7 +23,7 @@
         .panel { background: white; padding: 15px 25px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .level-select { padding: 8px 12px; border-radius: 20px; border: 2px solid var(--primary-color); background: white; color: var(--primary-color); font-family: 'Poppins'; font-weight: 700; cursor: pointer; outline: none; }
         
-        /* AVATAR SYSTEM - FREE FIRE STYLE */
+        /* AVATAR SYSTEM */
         .avatar-container {
             width: 60px; height: 60px;
             border-radius: 50%; overflow: hidden;
@@ -35,7 +35,7 @@
         }
         .avatar-img { width: 100%; height: 100%; object-fit: cover; background-color: white; }
         
-        /* Rank Borders for Avatar */
+        /* Rank Borders */
         .avatar-iron { border-color: var(--rank-iron); background-color: #f3f4f6; }
         .avatar-bronze { border-color: var(--rank-bronze); background-color: #fff7ed; }
         .avatar-silver { border-color: var(--rank-silver); background-color: #f8fafc; }
@@ -124,7 +124,7 @@
         .btn-small { font-size: 0.8rem; padding: 5px 10px; background: #aaa; }
         #msg { width: 100%; text-align: center; font-weight: 600; margin-top: 10px; }
 
-        /* Login & Modals */
+        /* Modals */
         #login-screen, #avatar-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 9999; }
         .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; width: 350px; }
         .login-box h2 { color: var(--primary-color); margin-top: 0; }
@@ -132,12 +132,17 @@
         .login-btn { width: 100%; margin-top: 10px; }
         .login-error { color: var(--error); font-size: 0.9rem; margin-top: 10px; display: none; }
 
-        .modal-box { background: white; padding: 30px; border-radius: 15px; width: 350px; text-align: center; }
-        .avatar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0; }
-        .avatar-option { cursor: pointer; padding: 5px; border-radius: 50%; border: 3px solid transparent; transition: 0.2s; }
+        .modal-box { background: white; padding: 30px; border-radius: 15px; width: 450px; max-height: 80vh; overflow-y: auto; text-align: center; }
+        .modal-section { margin-bottom: 20px; }
+        .modal-section h4 { margin: 0 0 10px 0; color: var(--text-dark); border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+        .avatar-option { cursor: pointer; padding: 5px; border-radius: 50%; border: 3px solid transparent; transition: 0.2s; position: relative; }
         .avatar-option:hover { border-color: #bfdbfe; }
         .avatar-option.selected { border-color: var(--primary-color); background-color: #f0f0ff; }
-        .avatar-option img { width: 60px; height: 60px; border-radius: 50%; background: #eee; }
+        .avatar-option img { width: 50px; height: 50px; border-radius: 50%; background: #eee; }
+        
+        .avatar-locked { filter: grayscale(100%); opacity: 0.5; cursor: not-allowed; }
+        .lock-icon { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.7); border-radius: 50%; color: #333; font-size: 1.2rem; pointer-events: none; }
 
         @media (max-width: 900px) { .main-layout { flex-direction: column; } .ranking-sidebar { width: 100%; } .workspace-card { flex-wrap: wrap; justify-content: center; } }
     </style>
@@ -160,9 +165,21 @@
     <!-- AVATAR MODAL -->
     <div id="avatar-modal" style="display:none; background: rgba(0,0,0,0.5);" onclick="if(event.target.id === 'avatar-modal') toggleAvatarModal()">
         <div class="modal-box">
-            <h3 style="margin:0 0 10px 0; color:var(--primary-color);">Elige tu Personaje</h3>
-            <p style="font-size:0.9rem; color:#666;">Selecciona tu estilo de combate:</p>
-            <div class="avatar-grid" id="avatar-options"></div>
+            <h3 style="margin:0 0 10px 0; color:var(--primary-color);">Personaje</h3>
+            <p style="font-size:0.9rem; color:#666;">Selecciona tu estilo</p>
+            
+            <!-- Standard Styles -->
+            <div class="modal-section">
+                <h4>Estándar</h4>
+                <div class="avatar-grid" id="avatar-options-standard"></div>
+            </div>
+
+            <!-- Exclusive Styles -->
+            <div class="modal-section" id="exclusive-section" style="display:none;">
+                <h4 style="color:#ef4444;"> <i class="fas fa-lock-open"></i> Exclusivos Rango Heroico</h4>
+                <div class="avatar-grid" id="avatar-options-exclusive"></div>
+            </div>
+
             <button class="btn-primary" onclick="saveAvatarChoice()">Guardar</button>
         </div>
     </div>
@@ -260,15 +277,26 @@
         const cols = 9; const rows = 8; const cellSize = 45;
         let totalScore = 0; const POINTS = 100; 
         let currentUser = null;
-        let currentAvatarStyle = 'adventurer'; // Default style
+        let currentAvatarStyle = 'adventurer';
 
-        // AVATAR STYLES (DiceBear)
-        const AVATAR_STYLES = [
+        // AVATAR CONFIGURATION
+        // Standard Styles (Available to all)
+        const AVATAR_STYLES_STANDARD = [
             { id: 'adventurer', name: 'Guerrero' },
             { id: 'bottts', name: 'Robot' },
             { id: 'pixel-art', name: 'Pixel' },
             { id: 'lorelei', name: 'Fantasma' },
-            { id: 'big-ears', name: 'Alien' }
+            { id: 'big-ears', name: 'Alien' },
+            { id: 'open-peeps', name: 'Dibujo' },
+            { id: 'croodles', name: 'Boceto' },
+            { id: 'identicon', name: 'Matrix' }
+        ];
+
+        // Exclusive Styles (Heroic Rank Only)
+        const AVATAR_STYLES_EXCLUSIVE = [
+            { id: 'micah', name: 'Élite' },
+            { id: 'personas', name: 'Dios' },
+            { id: 'thumbs', name: 'Leyenda' }
         ];
 
         const RANKS = [
@@ -371,12 +399,11 @@
             let c = getComputedStyle(document.documentElement).getPropertyValue('--' + rI.css);
             document.getElementById('userRankBar').style.background = c;
             
-            // Apply rank border to avatar
             const avatarBox = document.getElementById('main-avatar-box');
-            avatarBox.className = "avatar-container " + rI.avatar; // Apply rank class to avatar container
+            avatarBox.className = "avatar-container " + rI.avatar;
         }
 
-        // --- AVATAR SYSTEM ---
+        // --- AVATAR SYSTEM LOGIC ---
         function getAvatarUrl(seed, style) {
             return `https://api.dicebear.com/8.x/${style}/svg?seed=${seed}`;
         }
@@ -397,19 +424,59 @@
         }
 
         function renderAvatarOptions() {
-            const grid = document.getElementById('avatar-options');
-            grid.innerHTML = '';
+            const gridStandard = document.getElementById('avatar-options-standard');
+            const gridExclusive = document.getElementById('avatar-options-exclusive');
+            const exclusiveSection = document.getElementById('exclusive-section');
+            
+            gridStandard.innerHTML = '';
+            gridExclusive.innerHTML = '';
+            
             const seed = currentUser.email.split('@')[0];
-            AVATAR_STYLES.forEach(style => {
+            const isHeroic = totalScore >= 50000;
+
+            // Render Standard
+            AVATAR_STYLES_STANDARD.forEach(style => {
                 let div = document.createElement('div');
                 div.className = 'avatar-option' + (currentAvatarStyle === style.id ? ' selected' : '');
                 div.onclick = () => selectAvatarStyle(style.id);
                 div.innerHTML = `<img src="${getAvatarUrl(seed, style.id)}"><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`;
-                grid.appendChild(div);
+                gridStandard.appendChild(div);
             });
+
+            // Render Exclusive (Locked/Unlocked)
+            if(isHeroic) {
+                exclusiveSection.style.display = 'block';
+                AVATAR_STYLES_EXCLUSIVE.forEach(style => {
+                    let div = document.createElement('div');
+                    div.className = 'avatar-option' + (currentAvatarStyle === style.id ? ' selected' : '');
+                    div.onclick = () => selectAvatarStyle(style.id);
+                    div.innerHTML = `<img src="${getAvatarUrl(seed, style.id)}"><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`;
+                    gridExclusive.appendChild(div);
+                });
+            } else {
+                exclusiveSection.style.display = 'block'; 
+                // Show locked examples
+                AVATAR_STYLES_EXCLUSIVE.forEach(style => {
+                    let div = document.createElement('div');
+                    div.className = 'avatar-option avatar-locked';
+                    div.innerHTML = `
+                        <img src="${getAvatarUrl('demo', style.id)}">
+                        <div class="lock-icon"><i class="fas fa-lock"></i></div>
+                        <span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>
+                    `;
+                    gridExclusive.appendChild(div);
+                });
+            }
         }
 
         function selectAvatarStyle(styleId) {
+            // Check if trying to select locked style
+            const isExclusive = AVATAR_STYLES_EXCLUSIVE.some(s => s.id === styleId);
+            if(isExclusive && totalScore < 50000) {
+                alert("¡Este avatar es exclusivo para Rango Heroico!");
+                return;
+            }
+
             currentAvatarStyle = styleId;
             renderAvatarOptions();
             renderMainAvatar();
@@ -418,7 +485,7 @@
         async function saveAvatarChoice() {
             await _supabase.from('profiles').upsert({ id: currentUser.id, avatar_style: currentAvatarStyle });
             toggleAvatarModal();
-            updateRanking(); // Refresh ranking to show new avatar
+            updateRanking();
         }
 
         async function saveScore() {
