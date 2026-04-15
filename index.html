@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prof. Miguel - DEBUG MODE</title>
+    <title>Prof. Miguel - FIXED VERSION</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -69,19 +69,8 @@
         .tool-btn:hover { background: #e2e8f0; }
         .tool-btn.active { background: #bfdbfe; color: var(--primary-color); }
 
-        /* CSS FORZADO PARA VISIBILIDAD */
-        .grid-matriz { 
-            display: grid; 
-            grid-template-columns: repeat(9, var(--cell-size)); 
-            grid-template-rows: repeat(8, var(--cell-size)); 
-            background-color: #e5e7eb; /* Fondo gris oscuro para ver la grilla */
-        }
-        .cell { 
-            width: var(--cell-size); height: var(--cell-size); 
-            background-color: white; /* Fondo blanco forzado */
-            border: 1px solid #d1d5db; /* Borde gris para ver celdas */
-            text-align: center; font-size: 1.4rem; font-weight: 600; outline: none; cursor: text; box-sizing: border-box; 
-        }
+        .grid-matriz { display: grid; grid-template-columns: repeat(9, var(--cell-size)); grid-template-rows: repeat(8, var(--cell-size)); background-color: #e5e7eb; }
+        .cell { width: var(--cell-size); height: var(--cell-size); background-color: white; border: 1px solid #d1d5db; text-align: center; font-size: 1.4rem; font-weight: 600; outline: none; cursor: text; box-sizing: border-box; }
         .cell:focus { background: #e1f5fe; }
         .cell-locked { background: #eceff1; font-weight: 700; cursor: default; }
         .cell-selected { background-color: #dbeafe !important; }
@@ -128,7 +117,7 @@
     </div>
 
     <header class="main-header">
-        <h1>Prof. Miguel <span style="font-size:0.8rem; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:10px; margin-left:10px;">DEBUG</span></h1>
+        <h1>Prof. Miguel <span style="font-size:0.8rem; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:10px; margin-left:10px;">FIXED</span></h1>
         <span>Reto de División</span>
     </header>
 
@@ -145,7 +134,12 @@
             </div>
             <div class="progress-bar-container"><div class="progress-bar-fill" id="progressBar"></div></div>
             
-            <div style="display: flex; align-items: center; gap: 20px;">
+            <!-- BLOQUE RESTAURADO (ESTABA FALTANDO) -->
+            <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="text-align: center;">
+                    <div style="font-size: 0.8rem; color: #666;" id="difficultyLabel">...</div>
+                    <div style="font-size: 0.9rem; color:#666;">Ej. <span id="subLevelCount">1</span>/10</div>
+                </div>
                 <div class="rank-box" id="userRankBox">
                     <div class="rank-name" id="userRankName">...</div>
                     <div class="rank-progress"><div class="rank-progress-bar" id="userRankBar" style="width: 0%"></div></div>
@@ -341,10 +335,7 @@
                     if(isMe) cls += " me";
                     return "<li class='" + cls + "'><span class='rank-pos'>"+(i+1)+".</span><div class='rank-info'><span class='rank-name-list'>"+(u.username||'Anónimo')+"</span><span class='rank-tier-list'>"+rI.icon+" "+rI.name+" "+rI.tier+"</span></div><span class='rank-score'>"+s+"</span></li>";
                 }).join('');
-            } catch(err) { 
-                console.error("Ranking Error:", err);
-                list.innerHTML = '<li style="text-align:center; padding:10px; color:red;">Error al cargar.</li>'; 
-            }
+            } catch(err) { list.innerHTML = '<li style="text-align:center; padding:10px; color:red;">Error al cargar.</li>'; }
         }
 
         function initGame() { loadProblem(); document.getElementById('levelSelect').value = currentMainLevel; }
@@ -361,6 +352,8 @@
                     currentDividend = d[currentProblemInLevel - 1].d; 
                     currentDivisor = d[currentProblemInLevel - 1].div; 
                 }
+                const label = getDifficultyLabel(currentMainLevel);
+                document.getElementById('difficultyLabel').innerText = label;
                 
                 createUI(); 
                 createAntena(); 
@@ -371,56 +364,31 @@
             }
         }
 
+        function getDifficultyLabel(lvl) {
+            if(lvl <= 2) return "Divisor: 1 Cifra";
+            if(lvl === 3 || lvl === 4 || lvl === 5 || lvl === 7 || lvl === 9) return "Divisor: 2 Cifras";
+            return "Divisor: 3 Cifras";
+        }
+
         function createUI() {
-            try {
-                const g = document.getElementById('gridContainer'); 
-                const dB = document.getElementById('divisorBox'); 
-                const tR = document.getElementById('topRow');
-                
-                if(!g || !dB || !tR) throw new Error("Elementos HTML no encontrados");
-
-                g.innerHTML = ''; dB.innerHTML = ''; tR.innerHTML = '';
-                
-                // Divisor
-                String(currentDivisor).split('').forEach(n => { 
-                    let i=document.createElement('input'); i.type='text'; i.className='input-div'; i.value=n; i.readOnly=true; dB.appendChild(i); 
-                });
-
-                // Grid
-                for(let r=0; r<rows; r++) {
-                    for(let c=0; c<cols; c++) {
-                        let i = document.createElement('input');
-                        i.type='text'; i.className='cell'; i.maxLength=1; i.id="c-"+r+"-"+c;
-                        // Events
-                        i.addEventListener('mousedown', (e) => { if(sel){ e.preventDefault(); drag=true; sC={r,c}; eC={r,c}; updS(); } });
-                        i.addEventListener('mouseenter', (e) => { if(sel&&drag){ eC={r,c}; updS(); } });
-                        i.addEventListener('input', (e) => { if(!sel&&e.target.value){ let n=(c<cols-1)?"c-"+r+"-"+(c+1):(r<rows-1)?"c-"+(r+1)+"-0":null; if(n)document.getElementById(n).focus(); }});
-                        g.appendChild(i);
-                    }
+            const g = document.getElementById('gridContainer'); const dB = document.getElementById('divisorBox'); const tR = document.getElementById('topRow');
+            g.innerHTML = ''; dB.innerHTML = ''; tR.innerHTML = '';
+            String(currentDivisor).split('').forEach(n => { let i=document.createElement('input'); i.type='text'; i.className='input-div'; i.value=n; i.readOnly=true; dB.appendChild(i); });
+            for(let r=0; r<rows; r++) {
+                for(let c=0; c<cols; c++) {
+                    let i = document.createElement('input');
+                    i.type='text'; i.className='cell'; i.maxLength=1; i.id="c-"+r+"-"+c;
+                    i.addEventListener('mousedown', (e) => { if(sel){ e.preventDefault(); drag=true; sC={r,c}; eC={r,c}; updS(); } });
+                    i.addEventListener('mouseenter', (e) => { if(sel&&drag){ eC={r,c}; updS(); } });
+                    i.addEventListener('input', (e) => { if(!sel&&e.target.value){ let n=(c<cols-1)?"c-"+r+"-"+(c+1):(r<rows-1)?"c-"+(r+1)+"-0":null; if(n)document.getElementById(n).focus(); }});
+                    g.appendChild(i);
                 }
-                document.onmouseup = () => { drag=false; };
-                
-                // Dividendo
-                let sN = String(currentDividend);
-                for(let i=0; i<sN.length; i++) { 
-                    let cell = document.getElementById("c-0-"+i); 
-                    if(cell) {
-                        cell.value = sN[i]; 
-                        cell.classList.add('cell-locked'); 
-                        cell.disabled = true; 
-                    }
-                }
-                document.getElementById('lineH').style.width = (sN.length * cellSize) + 'px';
-                
-                // Cociente
-                for(let c=0; c<sN.length; c++) { 
-                    let i=document.createElement('input'); i.type='text'; i.className='input-cociente'; i.maxLength=1; i.id="top-"+c; 
-                    i.addEventListener('input', (e) => { syncT(); if(e.target.value && c<sN.length-1) document.getElementById("top-"+(c+1)).focus(); }); 
-                    tR.appendChild(i); 
-                }
-            } catch(e) {
-                alert("Error en CreateUI: " + e.message);
             }
+            document.onmouseup = () => { drag=false; };
+            let sN = String(currentDividend);
+            for(let i=0; i<sN.length; i++) { let cell = document.getElementById("c-0-"+i); cell.value = sN[i]; cell.classList.add('cell-locked'); cell.disabled = true; }
+            document.getElementById('lineH').style.width = (sN.length * cellSize) + 'px';
+            for(let c=0; c<sN.length; c++) { let i=document.createElement('input'); i.type='text'; i.className='input-cociente'; i.maxLength=1; i.id="top-"+c; i.addEventListener('input', (e) => { syncT(); if(e.target.value && c<sN.length-1) document.getElementById("top-"+(c+1)).focus(); }); tR.appendChild(i); }
         }
 
         let sel=false, drag=false, sC=null, eC=null, selC=new Set();
@@ -431,19 +399,9 @@
         function syncT() { let v=""; document.querySelectorAll('.input-cociente').forEach(x=>v+=x.value); document.getElementById('valCociente').value=v; }
 
         function createAntena() {
-            try {
-                const b=document.getElementById('antenaBody'); 
-                document.getElementById('antenaLabel').innerText=currentDivisor; 
-                b.innerHTML='';
-                for(let i=1;i<=10;i++){
-                    let r=document.createElement('div'); 
-                    r.className='antena-row'; 
-                    r.innerHTML="<span>"+i+" x "+currentDivisor+" =</span><input type='number' class='antena-input' id='a"+i+"'>"; 
-                    b.appendChild(r);
-                }
-            } catch(e) { alert("Error en Antena: " + e.message); }
+            const b=document.getElementById('antenaBody'); document.getElementById('antenaLabel').innerText=currentDivisor; b.innerHTML='';
+            for(let i=1;i<=10;i++){let r=document.createElement('div'); r.className='antena-row'; r.innerHTML="<span>"+i+" x "+currentDivisor+" =</span><input type='number' class='antena-input' id='a"+i+"'>"; b.appendChild(r);}
         }
-        
         function resetAll() {
             document.getElementById('valCociente').value=''; document.getElementById('valResiduo').value='';
             document.querySelectorAll('.antena-input').forEach(i => { i.value=''; i.classList.remove('status-ok','status-wrong'); });
@@ -452,13 +410,11 @@
             document.querySelectorAll('.cell').forEach(c => c.classList.remove('border-bottom','border-right','cell-selected'));
             selC.clear();
         }
-        
         function validarAntena() {
             let ok=true;
             for(let i=1;i<=10;i++){let inp=document.getElementById("a"+i); let v=parseInt(inp.value); if(v===i*currentDivisor){inp.classList.add('status-ok');inp.classList.remove('status-wrong');}else{inp.classList.add('status-wrong');inp.classList.remove('status-ok');ok=false;}}
             document.getElementById('msg').innerText = ok ? "¡Antena correcta!" : "Corrige."; document.getElementById('msg').style.color = ok ? "var(--success)" : "var(--error)";
         }
-        
         async function verificarSolucion() {
             let coc=parseInt(document.getElementById('valCociente').value); let res=parseInt(document.getElementById('valResiduo').value)||0;
             let rC=Math.floor(currentDividend/currentDivisor); let rR=currentDividend%currentDivisor;
