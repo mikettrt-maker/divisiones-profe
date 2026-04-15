@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - Chat Edition</title>
+    <title>Reto de División - Chat Edition V2</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -25,7 +25,7 @@
         .panel { background: var(--bg-panel); padding: 15px 25px; border-radius: 4px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border: 1px solid #333; }
         .level-select { padding: 8px 12px; border-radius: 2px; border: 1px solid var(--primary-color); background: black; color: var(--primary-color); font-family: 'Rajdhani', sans-serif; font-weight: 700; cursor: pointer; outline: none; text-transform: uppercase; }
         
-        .avatar-container { width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 2px solid var(--primary-color); background-color: #000; position: relative; box-shadow: 0 0 10px var(--primary-color); flex-shrink: 0; }
+        .avatar-container { width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 2px solid var(--primary-color); background-color: #000; position: relative; box-shadow: 0 0 10px var(--primary-color); flex-shrink: 0; cursor: pointer; }
         .avatar-img { width: 100%; height: 100%; object-fit: cover; background-color: black; }
         
         .avatar-iron { border-color: var(--rank-iron); box-shadow: 0 0 5px var(--rank-iron); }
@@ -48,7 +48,7 @@
         .progress-bar-container { flex-grow: 1; margin: 0 20px; height: 12px; background: #333; border-radius: 0; overflow: hidden; min-width: 100px; }
         .progress-bar-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; box-shadow: 0 0 10px var(--success); }
 
-        .main-layout { display: flex; flex-direction: row; gap: 20px; width: 100%; align-items: flex-start; flex-wrap: wrap; padding-bottom: 100px; /* Space for chat */ }
+        .main-layout { display: flex; flex-direction: row; gap: 20px; width: 100%; align-items: flex-start; flex-wrap: wrap; }
         .game-area { flex: 3; display: flex; flex-direction: column; gap: 20px; min-width: 300px; }
         .workspace-card { background: var(--bg-panel); padding: 30px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: flex; gap: 40px; justify-content: flex-start; align-items: flex-start; overflow-x: auto; width: 100%; box-sizing: border-box; border: 1px solid #333; }
 
@@ -81,7 +81,6 @@
         .col-grid { display: flex; flex-direction: column; position: relative; }
         .fila-cociente { display: flex; justify-content: flex-start; height: var(--cell-size); align-items: center; margin-bottom: 4px; }
         .input-cociente { width: var(--cell-size); height: var(--cell-size); border: none; border-bottom: 2px solid #444; background: transparent; font-size: 1.8rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; font-family: 'Rajdhani', sans-serif; }
-        .input-cociente:focus { background: rgba(255, 204, 0, 0.1); border-color: var(--primary-color); }
         .linea-h { height: 3px; background-color: var(--primary-color); width: 100%; margin-bottom: 1px; box-shadow: 0 0 8px var(--primary-color); }
 
         .excel-toolbar { position: absolute; top: -40px; left: 0; background: #000; border: 1px solid #333; border-radius: 0; padding: 4px; display: flex; gap: 2px; z-index: 100; }
@@ -93,54 +92,45 @@
         .cell { width: var(--cell-size); height: var(--cell-size); background-color: #1a1a1a; border: 1px solid #333; text-align: center; font-size: 1.4rem; font-weight: 600; outline: none; cursor: text; box-sizing: border-box; color: white; transition: background 0.2s; }
         .cell:focus { background: #333; box-shadow: inset 0 0 10px var(--primary-color); }
         .cell-locked { background: #000; font-weight: 700; color: var(--primary-color); border-color: #333; }
-        .cell-selected { background-color: rgba(255, 204, 0, 0.2) !important; border-color: var(--primary-color) !important; }
-        .border-bottom { border-bottom: 2px solid var(--primary-color) !important; }
-        .border-right { border-right: 2px solid var(--primary-color) !important; }
-
-        .grid-disabled-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 50; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: opacity 0.3s; }
+        .grid-disabled-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 50; display: flex; align-items: center; justify-content: center; pointer-events: none; }
         .grid-disabled-overlay.hidden { display: none; }
         .lock-msg { background: var(--primary-color); color: black; padding: 10px 20px; border-radius: 2px; font-size: 1rem; font-weight: 700; box-shadow: 0 0 20px var(--primary-color); pointer-events: auto; text-align: center; text-transform: uppercase; }
         
         /* ANTENA */
         .antena-panel { background: var(--bg-panel); border: 1px solid #333; padding: 15px; border-radius: 4px; border-top: 4px solid var(--primary-color); width: 260px; flex-shrink: 0; }
-        .antena-header { text-align: center; font-weight: 700; color: var(--primary-color); margin-bottom: 15px; font-size: 1.2rem; text-transform: uppercase; font-family: 'Teko', sans-serif; letter-spacing: 1px; }
+        .antena-header { text-align: center; font-weight: 700; color: var(--primary-color); margin-bottom: 15px; font-size: 1.2rem; text-transform: uppercase; font-family: 'Teko', sans-serif; }
         .antena-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; opacity: 1; transition: opacity 0.3s; }
         .antena-row.locked-row { opacity: 0.4; }
         .antena-input { width: 60px; height: 30px; font-size: 1rem; font-weight: 600; text-align: center; border: 1px solid #444; border-radius: 2px; background: black; color: white; }
-        .antena-input:disabled { background: #111; color: #555; border-color: #222; cursor: not- allowed; }
+        .antena-input:disabled { background: #111; color: #555; border-color: #222; cursor: not-allowed; }
         .status-ok { background-color: rgba(0, 230, 118, 0.2) !important; border-color: var(--success) !important; color: var(--success); }
         .status-wrong { background-color: rgba(255, 23, 68, 0.2) !important; border-color: var(--error) !important; color: var(--error); }
 
         .controls { background: black; padding: 20px; border-radius: 4px; border: 1px solid #333; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box; }
         .result-box { display: flex; flex-direction: column; background: #1a1a1a; padding: 8px 15px; border-radius: 2px; border: 1px solid #333; }
         .result-input { border: none; font-size: 1.8rem; font-weight: 700; width: 80px; text-align: center; color: var(--primary-color); background: transparent; font-family: 'Teko', sans-serif; }
-        button { border: none; padding: 10px 24px; font-weight: 600; border-radius: 2px; cursor: pointer; font-size: 1.1rem; color: black; text-transform: uppercase; font-family: 'Rajdhani', sans-serif; letter-spacing: 1px; transition: all 0.2s; }
+        button { border: none; padding: 10px 24px; font-weight: 600; border-radius: 2px; cursor: pointer; font-size: 1.1rem; color: black; text-transform: uppercase; font-family: 'Rajdhani', sans-serif; transition: all 0.2s; }
         .btn-primary { background: var(--primary-color); box-shadow: 0 0 15px var(--primary-color); }
-        .btn-primary:hover { background: white; box-shadow: 0 0 20px white; }
-        .btn-check { background: var(--success); box-shadow: 0 0 15px var(--success); color: black; }
-        .btn-small { font-size: 0.9rem; padding: 5px 10px; background: #333; color: #ccc; border: 1px solid #555; box-shadow: none; }
+        .btn-small { font-size: 0.9rem; padding: 5px 10px; background: #333; color: #ccc; border: 1px solid #555; }
         #msg { width: 100%; text-align: center; font-weight: 600; margin-top: 10px; font-size: 1.1rem; }
 
         /* VICTORY SCREEN */
         #victory-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 99999; display: none; flex-direction: column; justify-content: center; align-items: center; }
-        #victory-screen.show { display: flex; }
-        .victory-title { font-size: 7rem; color: var(--primary-color); font-weight: 700; text-shadow: 0 0 30px var(--primary-color); font-family: 'Teko', sans-serif; letter-spacing: 4px; margin-bottom: 10px; animation: scaleUp 0.3s; text-transform: uppercase; }
-        .victory-sub { font-size: 2rem; color: #888; font-weight: 600; animation: fadeInUp 0.5s 0.2s backwards; text-transform: uppercase; font-family: 'Rajdhani', sans-serif; }
-        .victory-level { font-size: 4rem; color: white; font-weight: 700; margin: 20px 0; animation: zoomIn 0.8s 0.4s backwards; background: black; padding: 5px 40px; border: 2px solid var(--primary-color); box-shadow: 0 0 20px var(--primary-color); font-family: 'Teko', sans-serif; }
+        .victory-title { font-size: 7rem; color: var(--primary-color); font-weight: 700; text-shadow: 0 0 30px var(--primary-color); font-family: 'Teko', sans-serif; animation: scaleUp 0.3s; text-transform: uppercase; }
         .confetti { position: absolute; width: 10px; height: 10px; background: #f00; animation: fall linear forwards; }
-
         @keyframes scaleUp { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        @keyframes fadeInUp { 0% { transform: translateY(50px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
-        @keyframes zoomIn { 0% { transform: scale(0) rotate(-10deg); } 100% { transform: scale(1) rotate(0); } }
         @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
 
-        /* --- CHAT BATTLE UI --- */
+        /* --- CHAT BATTLE UI V2 --- */
         #chat-battle {
-            position: fixed; bottom: 20px; right: 20px; width: 300px; z-index: 9000;
+            position: fixed; bottom: 80px; right: 20px; width: 300px; z-index: 9000;
             background: rgba(0, 0, 0, 0.95); border: 1px solid #333; border-radius: 8px; border-top: 3px solid var(--primary-color);
             box-shadow: 0 0 20px rgba(0,0,0,0.8); font-family: 'Rajdhani', sans-serif;
+            display: none; /* Hidden by default */
         }
-        .chat-header { padding: 8px 15px; background: #111; color: var(--primary-color); font-weight: 700; text-transform: uppercase; font-size: 0.9rem; border-bottom: 1px solid #333; display: flex; justify-content: space-between;}
+        #chat-battle.visible { display: block; }
+        
+        .chat-header { padding: 8px 15px; background: #111; color: var(--primary-color); font-weight: 700; text-transform: uppercase; font-size: 0.9rem; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; cursor: pointer;}
         .chat-messages { height: 200px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column-reverse; }
         .chat-msg { margin-bottom: 5px; font-size: 0.95rem; line-height: 1.2; }
         .chat-msg span { color: #888; }
@@ -149,49 +139,63 @@
         .chat-input-bar { display: flex; padding: 8px; border-top: 1px solid #333; background: #111; justify-content: space-around; }
         .emoji-btn { background: transparent; border: none; font-size: 1.5rem; cursor: pointer; transition: transform 0.1s; padding: 5px 10px; filter: grayscale(50%); }
         .emoji-btn:hover { transform: scale(1.3); filter: grayscale(0%); }
-        .emoji-btn:active { transform: scale(0.9); }
+
+        /* Floating Toggle Button */
+        #chat-toggle-btn {
+            position: fixed; bottom: 20px; right: 20px; z-index: 9001;
+            width: 50px; height: 50px; border-radius: 50%;
+            background: var(--primary-color); color: black; font-size: 1.5rem;
+            border: none; box-shadow: 0 0 15px var(--primary-color);
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+        }
+        #chat-toggle-btn .unread { 
+            position: absolute; top: -5px; right: -5px; background: var(--error); color: white; 
+            width: 20px; height: 20px; border-radius: 50%; font-size: 0.8rem; display: none;
+            align-items: center; justify-content: center;
+        }
 
         /* Modals Dark */
         #login-screen, #avatar-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 9999; }
-        .login-box { background: var(--bg-panel); padding: 40px; border-radius: 4px; box-shadow: 0 0 30px rgba(255, 204, 0, 0.1); text-align: center; width: 350px; border: 1px solid #333; }
+        .login-box { background: var(--bg-panel); padding: 40px; border-radius: 4px; width: 350px; border: 1px solid #333; }
         .login-box h2 { color: var(--primary-color); margin-top: 0; margin-bottom: 5px; font-family: 'Teko', sans-serif; font-size: 2.5rem; text-transform: uppercase; }
-        .login-input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #333; border-radius: 2px; font-size: 1rem; box-sizing: border-box; background: black; color: white; font-family: 'Rajdhani', sans-serif; }
+        .login-input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #333; border-radius: 2px; background: black; color: white; font-family: 'Rajdhani', sans-serif; box-sizing: border-box; }
         .login-btn { width: 100%; margin-top: 10px; }
-        .login-error { color: var(--error); font-size: 0.9rem; margin-top: 10px; display: none; }
         .login-avatar-preview { width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 20px auto; border: 2px solid var(--primary-color); overflow: hidden; background: black; box-shadow: 0 0 15px var(--primary-color); }
-        .login-avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
+        .login-error { color: var(--error); font-size: 0.9rem; margin-top: 10px; display: none; }
 
         .modal-box { background: var(--bg-panel); padding: 30px; border-radius: 4px; width: 450px; max-height: 80vh; overflow-y: auto; text-align: center; border: 1px solid #333; }
         .modal-section { margin-bottom: 20px; }
         .modal-section h4 { margin: 0 0 10px 0; color: #888; border-bottom: 1px solid #333; padding-bottom: 5px; text-transform: uppercase; }
         .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
         .avatar-option { cursor: pointer; padding: 5px; border-radius: 50%; border: 2px solid transparent; transition: 0.2s; position: relative; }
-        .avatar-option:hover { border-color: #555; }
         .avatar-option.selected { border-color: var(--primary-color); background: rgba(255, 204, 0, 0.1); }
         .avatar-option img { width: 50px; height: 50px; border-radius: 50%; background: #000; }
         .avatar-locked { filter: grayscale(100%); opacity: 0.5; cursor: not-allowed; }
         .lock-icon { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.8); border-radius: 50%; color: #666; font-size: 1.2rem; pointer-events: none; }
 
-        @media (max-width: 900px) { .main-layout { flex-direction: column; } .ranking-sidebar { width: 100%; } .workspace-card { flex-wrap: wrap; justify-content: center; } .victory-title { font-size: 3.5rem; } #chat-battle { width: 100%; bottom: 0; right: 0; border-radius: 0; } }
+        @media (max-width: 900px) { .main-layout { flex-direction: column; } .ranking-sidebar { width: 100%; } #chat-battle { width: calc(100% - 40px); bottom: 80px; right: 20px; left: 20px; } }
     </style>
 </head>
 <body>
 
     <div id="victory-screen">
         <div class="victory-title">NIVEL COMPLETADO</div>
-        <div class="victory-sub">Preparando siguiente reto...</div>
-        <div class="victory-level" id="victory-level-display">NIVEL 2</div>
+        <div class="confetti"></div>
     </div>
+
+    <!-- CHAT TOGGLE BUTTON -->
+    <button id="chat-toggle-btn" onclick="toggleChatUI()">
+        <i class="fas fa-comments"></i>
+        <div class="unread" id="chat-unread">!</div>
+    </button>
 
     <!-- CHAT BATTLE -->
     <div id="chat-battle">
-        <div class="chat-header">
-            <span><i class="fas fa-comments"></i> Chat Batalla</span>
-            <span id="chat-status" style="font-size: 0.8rem; color: #666;">Conectando...</span>
+        <div class="chat-header" onclick="toggleChatUI()">
+            <span><i class="fas fa-bolt"></i> Chat Batalla</span>
+            <i class="fas fa-chevron-down"></i>
         </div>
-        <div class="chat-messages" id="chat-messages">
-            <!-- Messages appear here -->
-        </div>
+        <div class="chat-messages" id="chat-messages"></div>
         <div class="chat-input-bar">
             <button class="emoji-btn" onclick="sendChat('👍')">👍</button>
             <button class="emoji-btn" onclick="sendChat('🔥')">🔥</button>
@@ -204,7 +208,7 @@
 
     <div id="login-screen" style="display:none;">
         <div class="login-box">
-            <div class="login-avatar-preview"><img id="login-avatar-img" src="https://api.dicebear.com/8.x/identicon/svg?seed=Shadow" alt="Avatar"></div>
+            <div class="login-avatar-preview"><img id="login-avatar-img" src="https://api.dicebear.com/8.x/identicon/svg?seed=Shadow"></div>
             <h2>Reto de División</h2>
             <p style="margin-bottom: 20px; color:#888;">Ingresa tu usuario</p>
             <input type="text" id="login-username" class="login-input" placeholder="Usuario">
@@ -218,7 +222,6 @@
     <div id="avatar-modal" style="display:none; background: rgba(0,0,0,0.9);" onclick="if(event.target.id === 'avatar-modal') toggleAvatarModal()">
         <div class="modal-box">
             <h3 style="margin:0 0 10px 0; color:var(--primary-color); font-family:'Teko'; font-size:1.8rem; text-transform:uppercase;">Personaje</h3>
-            <p style="font-size:0.9rem; color:#666;">Selecciona tu estilo</p>
             <div class="modal-section"><h4>Estándar</h4><div class="avatar-grid" id="avatar-options-standard"></div></div>
             <div class="modal-section" id="exclusive-section" style="display:none;"><h4 style="color:var(--error);"> <i class="fas fa-lock-open"></i> Exclusivos Heroico</h4><div class="avatar-grid" id="avatar-options-exclusive"></div></div>
             <button class="btn-primary" onclick="saveAvatarChoice()">Guardar</button>
@@ -244,7 +247,7 @@
             <div class="progress-bar-container"><div class="progress-bar-fill" id="progressBar"></div></div>
             
             <div class="user-info-panel">
-                <div class="avatar-container" id="main-avatar-box" onclick="toggleAvatarModal()" title="Cambiar Avatar" style="cursor: pointer;"><img id="main-avatar-img" class="avatar-img" src="" alt="Avatar"></div>
+                <div class="avatar-container" id="main-avatar-box" onclick="toggleAvatarModal()" title="Cambiar Avatar"><img id="main-avatar-img" class="avatar-img" src="" alt="Avatar"></div>
                 <div class="user-stats">
                      <div style="font-size: 0.8rem; color: #888;" id="difficultyLabel">...</div>
                      <div style="font-size: 0.9rem; color:#aaa;">Ej. <span id="subLevelCount">1</span>/10</div>
@@ -301,9 +304,7 @@
             ctx: null,
             init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
             playTone(freq, duration, type = 'square', volume = 0.1) {
-                this.init();
-                const osc = this.ctx.createOscillator();
-                const gain = this.ctx.createGain();
+                this.init(); const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
                 osc.type = type; osc.frequency.value = freq; gain.gain.value = volume;
                 osc.connect(gain); gain.connect(this.ctx.destination); osc.start();
                 setTimeout(() => { osc.stop(); }, duration);
@@ -330,6 +331,7 @@
 
         // --- CHAT STATE ---
         let chatCooldown = false;
+        let chatVisible = false;
 
         const ANTENNA_SEQUENCE = [1, 10, 5, 2, 4, 8, 3, 6, 7, 9];
         let currentAntennaIndex = 0;
@@ -363,7 +365,7 @@
             return { ...rank, tier: tier, pct: pct };
         }
 
-        const DB = { /* Same DB as before */ 
+        const DB = { 
             1: [ {d: 456, div: 4}, {d: 789, div: 3}, {d: 125, div: 5}, {d: 982, div: 7}, {d: 641, div: 2}, {d: 333, div: 9}, {d: 805, div: 6}, {d: 219, div: 8}, {d: 567, div: 4}, {d: 901, div: 3} ],
             2: [ {d: 1245, div: 5}, {d: 8902, div: 2}, {d: 4567, div: 9}, {d: 3312, div: 6}, {d: 7841, div: 4}, {d: 2009, div: 7}, {d: 6554, div: 8}, {d: 5123, div: 3}, {d: 9876, div: 5}, {d: 4444, div: 7} ],
             3: [ {d: 2460, div: 12}, {d: 3575, div: 25}, {d: 1024, div: 32}, {d: 8940, div: 15}, {d: 4567, div: 42}, {d: 6781, div: 54}, {d: 9120, div: 20}, {d: 5555, div: 11}, {d: 7329, div: 63}, {d: 2891, div: 91} ],
@@ -384,7 +386,6 @@
         });
 
         let typingTimer; const doneTypingInterval = 500;
-
         function showLogin() { 
             document.getElementById('login-screen').style.display = 'flex'; 
             document.querySelector('.app-container').style.display = 'none'; 
@@ -393,11 +394,10 @@
             document.getElementById('login-username').addEventListener('input', (e) => {
                 const val = e.target.value.trim(); clearTimeout(typingTimer);
                 if (val.length === 0) { img.src = "https://api.dicebear.com/8.x/identicon/svg?seed=Shadow"; } else {
-                    typingTimer = setTimeout(() => { img.classList.add('loading'); img.src = `https://api.dicebear.com/8.x/adventurer/svg?seed=${val}`; img.onload = () => img.classList.remove('loading'); }, doneTypingInterval);
+                    typingTimer = setTimeout(() => { img.src = `https://api.dicebear.com/8.x/adventurer/svg?seed=${val}`; }, doneTypingInterval);
                 }
             });
         }
-        
         async function showApp() { document.getElementById('login-screen').style.display = 'none'; document.querySelector('.app-container').style.display = 'flex'; if(currentUser) { try { await loadScore(currentUser); } catch(e){ console.error(e); } } initGame(); startRanking(); initChat(); }
 
         async function handleLogin() {
@@ -405,20 +405,17 @@
             if (!u || p.length < 6) { e.textContent = "Datos incompletos."; e.style.display='block'; return; }
             try { const { data, error } = await _supabase.auth.signInWithPassword({ email: u+"@profemiguel.com", password: p }); if (error) throw error; currentUser = data.user; showApp(); } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; }
         }
-
         async function handleRegister() {
             const u = document.getElementById('login-username').value.trim(); const p = document.getElementById('login-password').value; const e = document.getElementById('login-error');
             if (!u || p.length < 6) { e.textContent = "Datos incompletos."; e.style.display='block'; return; }
             try { const { data, error } = await _supabase.auth.signUp({ email: u+"@profemiguel.com", password: p }); if (error) throw error; alert("Registrado. Entra ahora."); } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; }
         }
-
         async function logout() { await _supabase.auth.signOut(); currentUser=null; totalScore=0; showLogin(); clearInterval(rankInt); }
 
         async function loadScore(user) {
             try { const { data } = await _supabase.from('profiles').select('total_score, avatar_style').eq('id', user.id).single(); totalScore = (data && data.total_score) ? data.total_score : 0; currentAvatarStyle = (data && data.avatar_style) ? data.avatar_style : 'adventurer'; } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; }
             updateUI(); renderMainAvatar();
         }
-
         function updateUI() {
             document.getElementById('scoreDisplay').innerText = totalScore; const rI = getRankInfo(totalScore);
             document.getElementById('userRankName').innerText = rI.icon + " " + rI.name + " " + rI.tier;
@@ -426,12 +423,9 @@
             document.getElementById('userRankBar').style.width = rI.pct + "%";
             const avatarBox = document.getElementById('main-avatar-box'); avatarBox.className = "avatar-container " + rI.avatar;
         }
-
         function getAvatarUrl(seed, style) { return `https://api.dicebear.com/8.x/${style}/svg?seed=${seed}`; }
-        function renderMainAvatar() { const img = document.getElementById('main-avatar-img'); img.src = getAvatarUrl(currentUser.email.split('@')[0], currentAvatarStyle); }
-
+        function renderMainAvatar() { document.getElementById('main-avatar-img').src = getAvatarUrl(currentUser.email.split('@')[0], currentAvatarStyle); }
         function toggleAvatarModal() { const modal = document.getElementById('avatar-modal'); if(modal.style.display === 'none') { modal.style.display = 'flex'; renderAvatarOptions(); } else { modal.style.display = 'none'; } }
-
         function renderAvatarOptions() {
             const gridStandard = document.getElementById('avatar-options-standard'); const gridExclusive = document.getElementById('avatar-options-exclusive'); const exclusiveSection = document.getElementById('exclusive-section');
             gridStandard.innerHTML = ''; gridExclusive.innerHTML = ''; const seed = currentUser.email.split('@')[0]; const isHeroic = totalScore >= 50000;
@@ -439,12 +433,10 @@
             if(isHeroic) { exclusiveSection.style.display = 'block'; AVATAR_STYLES_EXCLUSIVE.forEach(style => { let div = document.createElement('div'); div.className = 'avatar-option' + (currentAvatarStyle === style.id ? ' selected' : ''); div.onclick = () => selectAvatarStyle(style.id); div.innerHTML = `<img src="${getAvatarUrl(seed, style.id)}"><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`; gridExclusive.appendChild(div); }); }
             else { exclusiveSection.style.display = 'block'; AVATAR_STYLES_EXCLUSIVE.forEach(style => { let div = document.createElement('div'); div.className = 'avatar-option avatar-locked'; div.innerHTML = `<img src="${getAvatarUrl('demo', style.id)}"><div class="lock-icon"><i class="fas fa-lock"></i></div><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`; gridExclusive.appendChild(div); }); }
         }
-
-        function selectAvatarStyle(styleId) { const isExclusive = AVATAR_STYLES_EXCLUSIVE.some(s => s.id === styleId); if(isExclusive && totalScore < 50000) { alert("¡Este avatar es exclusivo para Rango Heroico!"); return; } currentAvatarStyle = styleId; renderAvatarOptions(); renderMainAvatar(); }
+        function selectAvatarStyle(styleId) { const isExclusive = AVATAR_STYLES_EXCLUSIVE.some(s => s.id === styleId); if(isExclusive && totalScore < 50000) { alert("¡Este avatar es exclusivo!"); return; } currentAvatarStyle = styleId; renderAvatarOptions(); renderMainAvatar(); }
         async function saveAvatarChoice() { AudioEngine.playClick(); await _supabase.from('profiles').upsert({ id: currentUser.id, avatar_style: currentAvatarStyle }); toggleAvatarModal(); updateRanking(); }
         async function saveScore() { if (!currentUser) return; try { await _supabase.from('profiles').upsert({ id: currentUser.id, username: currentUser.email.split('@')[0], total_score: totalScore }); updateRanking(); } catch(e) { console.error(e); } }
         let rankInt; function startRanking() { updateRanking(); rankInt = setInterval(updateRanking, 5000); }
-        
         async function updateRanking() {
             const list = document.getElementById('ranking-list');
             try {
@@ -459,20 +451,18 @@
             const channel = _supabase.channel('public:chat_messages');
             channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => {
                  addChatMessage(payload.new);
-            }).subscribe((status) => {
-                if(status === 'SUBSCRIBED') document.getElementById('chat-status').innerText = 'En vivo';
-            });
+                 // If chat is closed, show notification
+                 if(!chatVisible) document.getElementById('chat-unread').style.display = 'flex';
+            }).subscribe();
             loadInitialChat();
         }
 
         async function loadInitialChat() {
             try {
-                const { data, error } = await _supabase.from('chat_messages').select('*').order('created_at', { ascending: false }).limit(15);
-                if(data) {
-                    const container = document.getElementById('chat-messages');
-                    container.innerHTML = '';
-                    data.reverse().forEach(msg => addChatMessage(msg));
-                }
+                const { data } = await _supabase.from('chat_messages').select('*').order('created_at', { ascending: false }).limit(15);
+                const container = document.getElementById('chat-messages');
+                container.innerHTML = '';
+                if(data) data.reverse().forEach(msg => addChatMessage(msg));
             } catch(e) { console.error("Chat load error", e); }
         }
 
@@ -481,30 +471,24 @@
             const div = document.createElement('div');
             div.className = 'chat-msg';
             div.innerHTML = `<span>${msg.username}:</span> <span class="chat-emoji">${msg.emoji}</span>`;
-            container.prepend(div); // Add to top
-            
-            // Keep only last 15 in view
-            while (container.children.length > 15) {
-                container.removeChild(container.lastChild);
-            }
+            container.prepend(div);
+            while (container.children.length > 15) container.removeChild(container.lastChild);
         }
 
         async function sendChat(emoji) {
-            if(chatCooldown) return; // Anti-spam
+            if(chatCooldown) return;
             if(!currentUser) return;
-
             chatCooldown = true;
             setTimeout(() => chatCooldown = false, 3000);
-
             AudioEngine.playClick();
-            try {
-                await _supabase.from('chat_messages').insert({
-                    user_id: currentUser.id,
-                    username: currentUser.email.split('@')[0],
-                    emoji: emoji
-                });
-                // No need to manually add to UI, realtime will handle it
-            } catch(e) { console.error(e); }
+            try { await _supabase.from('chat_messages').insert({ user_id: currentUser.id, username: currentUser.email.split('@')[0], emoji: emoji }); } 
+            catch(e) { console.error("Send error", e); alert("Error al enviar. Revisa consola."); }
+        }
+
+        function toggleChatUI() {
+            chatVisible = !chatVisible;
+            document.getElementById('chat-battle').classList.toggle('visible', chatVisible);
+            if(chatVisible) document.getElementById('chat-unread').style.display = 'none';
         }
 
         function initGame() { loadProblem(); document.getElementById('levelSelect').value = currentMainLevel; }
@@ -522,11 +506,9 @@
 
         function showVictoryScreen(nextLevel) {
             const screen = document.getElementById('victory-screen'); const levelDisplay = document.getElementById('victory-level-display'); levelDisplay.innerText = "NIVEL " + nextLevel;
-            createConfetti(); screen.classList.add('show');
-            AudioEngine.playLevelUp();
+            createConfetti(); screen.classList.add('show'); AudioEngine.playLevelUp();
             setTimeout(() => { screen.classList.remove('show'); document.querySelectorAll('.confetti').forEach(c => c.remove()); currentMainLevel = nextLevel; currentProblemInLevel = 1; loadProblem(); }, 3000);
         }
-
         function createConfetti() { const screen = document.getElementById('victory-screen'); const colors = ['#ffcc00', '#00e676', '#2979ff', '#f00', '#ff9800']; for (let i = 0; i < 50; i++) { const conf = document.createElement('div'); conf.className = 'confetti'; conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = -10 + 'px'; conf.style.background = colors[Math.floor(Math.random() * colors.length)]; conf.style.animationDuration = (Math.random() * 2 + 2) + 's'; screen.appendChild(conf); } }
 
         function createUI() {
@@ -551,14 +533,12 @@
             for(let i=1;i<=10;i++){ let r=document.createElement('div'); r.className='antena-row locked-row'; r.id="row-"+i; r.innerHTML="<span>"+i+" x "+currentDivisor+" =</span><input type='number' class='antena-input' id='a"+i+"' disabled>"; b.appendChild(r); }
             currentAntennaIndex = 0; enableNextAntennaInput();
         }
-
         function enableNextAntennaInput() {
             if (currentAntennaIndex >= ANTENNA_SEQUENCE.length) return;
             const currentId = ANTENNA_SEQUENCE[currentAntennaIndex];
             const input = document.getElementById("a"+currentId); const row = document.getElementById("row-"+currentId);
             if(input) { input.disabled = false; input.focus(); row.classList.remove('locked-row'); input.oninput = () => checkAntennaInput(input, currentId); }
         }
-
         function checkAntennaInput(input, id) {
             const val = parseInt(input.value); const expected = id * currentDivisor;
             if (val === expected) {
@@ -566,7 +546,6 @@
                 currentAntennaIndex++; if (currentAntennaIndex < ANTENNA_SEQUENCE.length) { enableNextAntennaInput(); } else { unlockGrid(); }
             } else { input.classList.add('status-wrong'); setTimeout(() => input.classList.remove('status-wrong'), 500); }
         }
-
         function resetAll() {
             document.getElementById('valCociente').value=''; document.getElementById('valResiduo').value='';
             document.querySelectorAll('.antena-input').forEach(i => { i.value=''; i.classList.remove('status-ok','status-wrong'); });
