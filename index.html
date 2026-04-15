@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prof. Miguel - FIXED VERSION</title>
+    <title>Prof. Miguel - Versión Final</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -34,7 +34,15 @@
 
         .main-layout { display: flex; flex-direction: row; gap: 20px; width: 100%; align-items: flex-start; flex-wrap: wrap; }
         .game-area { flex: 3; display: flex; flex-direction: column; gap: 20px; min-width: 300px; }
-        .workspace-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); display: flex; gap: 40px; justify-content: center; align-items: flex-start; }
+        
+        /* CORRECCIÓN: Scroll horizontal si el contenido es muy ancho (Nivel 10) */
+        .workspace-card { 
+            background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); 
+            display: flex; gap: 40px; justify-content: flex-start; align-items: flex-start;
+            overflow-x: auto; /* Permite scroll horizontal */
+            width: 100%;
+            box-sizing: border-box;
+        }
 
         .ranking-sidebar { flex: 1; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); min-width: 280px; }
         .ranking-title { font-size: 1.3rem; font-weight: 800; color: var(--text-dark); text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
@@ -55,7 +63,7 @@
         .rank-tier-list { font-size: 0.75rem; font-weight: 800; opacity: 0.9; }
         .rank-score { font-weight: 700; color: var(--primary-light); margin-left: 10px; font-size: 0.9rem; }
 
-        .division-row { display: flex; flex-direction: row; align-items: flex-start; gap: 0; margin-top: 20px; }
+        .division-row { display: flex; flex-direction: row; align-items: flex-start; gap: 0; margin-top: 20px; flex-shrink: 0; /* Evita que se comprima */ }
         .col-divisor { display: flex; flex-direction: row; align-items: center; height: var(--cell-size); margin-top: 49px; }
         .input-div { width: var(--cell-size); height: var(--cell-size); border: 1px solid #ccc; background: #fafafa; font-size: 2rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; }
         .col-linea-v { width: 4px; height: var(--cell-size); background-color: var(--text-dark); margin-top: 49px; }
@@ -99,7 +107,7 @@
         .login-btn { width: 100%; margin-top: 10px; }
         .login-error { color: var(--error); font-size: 0.9rem; margin-top: 10px; display: none; }
 
-        @media (max-width: 900px) { .main-layout { flex-direction: column; } .ranking-sidebar { width: 100%; } }
+        @media (max-width: 900px) { .main-layout { flex-direction: column; } .ranking-sidebar { width: 100%; } .workspace-card { flex-wrap: wrap; justify-content: center; } }
     </style>
 </head>
 <body>
@@ -117,7 +125,7 @@
     </div>
 
     <header class="main-header">
-        <h1>Prof. Miguel <span style="font-size:0.8rem; background:rgba(255,255,255,0.2); padding:3px 8px; border-radius:10px; margin-left:10px;">FIXED</span></h1>
+        <h1>Prof. Miguel</h1>
         <span>Reto de División</span>
     </header>
 
@@ -134,7 +142,6 @@
             </div>
             <div class="progress-bar-container"><div class="progress-bar-fill" id="progressBar"></div></div>
             
-            <!-- BLOQUE RESTAURADO (ESTABA FALTANDO) -->
             <div style="display: flex; align-items: center; gap: 15px;">
                 <div style="text-align: center;">
                     <div style="font-size: 0.8rem; color: #666;" id="difficultyLabel">...</div>
@@ -198,7 +205,16 @@
     <script>
         const SUPABASE_URL = 'https://oskrniownbbzkgnwunzz.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_RcfluyMTRxDP4chkK91-2Q_UwLdLrqP';
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        
+        // CORRECCIÓN SESIÓN: Usar sessionStorage para que se borre al cerrar navegador
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+            auth: {
+                storage: window.sessionStorage,
+                autoRefreshToken: false,
+                persistSession: true,
+                detectSessionInUrl: false
+            }
+        });
 
         const TOTAL_LEVELS = 10; const PROBLEMS_PER_LEVEL = 10;
         let currentMainLevel = 1; let currentProblemInLevel = 1;
@@ -245,12 +261,13 @@
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const { data: { session } } = await _supabase.auth.getSession();
+                // Si hay sesión en sessionStorage, la usa. Si no, login.
                 if (session && session.user) { currentUser = session.user; showApp(); } 
                 else { showLogin(); }
-            } catch(e) { console.error(e); alert("Error de conexión."); showLogin(); }
+            } catch(e) { console.error(e); showLogin(); }
         });
         
-        window.addEventListener('unload', () => { if(_supabase) _supabase.auth.signOut(); });
+        // Eliminamos el evento 'unload' porque sessionStorage se borra solo al cerrar navegador.
 
         function showLogin() { 
             document.getElementById('login-screen').style.display = 'flex'; 
@@ -290,7 +307,12 @@
             } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; }
         }
 
-        async function logout() { await _supabase.auth.signOut(); currentUser=null; totalScore=0; showLogin(); clearInterval(rankInt); }
+        async function logout() { 
+            await _supabase.auth.signOut(); 
+            currentUser=null; totalScore=0; 
+            showLogin(); 
+            clearInterval(rankInt); 
+        }
 
         async function loadScore(user) {
             try {
@@ -342,26 +364,14 @@
         function jumpToLevel(l) { currentMainLevel=parseInt(l); currentProblemInLevel=1; loadProblem(); }
         
         function loadProblem() {
-            try {
-                document.getElementById('subLevelCount').innerText = currentProblemInLevel;
-                document.getElementById('progressBar').style.width = ((currentMainLevel - 1) / TOTAL_LEVELS) * 100 + '%';
-                document.getElementById('levelSelect').value = currentMainLevel;
-                
-                const d = DB[currentMainLevel];
-                if (d && d[currentProblemInLevel - 1]) { 
-                    currentDividend = d[currentProblemInLevel - 1].d; 
-                    currentDivisor = d[currentProblemInLevel - 1].div; 
-                }
-                const label = getDifficultyLabel(currentMainLevel);
-                document.getElementById('difficultyLabel').innerText = label;
-                
-                createUI(); 
-                createAntena(); 
-                resetAll();
-            } catch(e) {
-                console.error("Load Error:", e);
-                alert("Error al cargar problema: " + e.message);
-            }
+            document.getElementById('subLevelCount').innerText = currentProblemInLevel;
+            document.getElementById('progressBar').style.width = ((currentMainLevel - 1) / TOTAL_LEVELS) * 100 + '%';
+            document.getElementById('levelSelect').value = currentMainLevel;
+            const d = DB[currentMainLevel];
+            if (d && d[currentProblemInLevel - 1]) { currentDividend = d[currentProblemInLevel - 1].d; currentDivisor = d[currentProblemInLevel - 1].div; }
+            const label = getDifficultyLabel(currentMainLevel);
+            document.getElementById('difficultyLabel').innerText = label;
+            createUI(); createAntena(); resetAll();
         }
 
         function getDifficultyLabel(lvl) {
