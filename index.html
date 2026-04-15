@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prof. Miguel - Gamer Edition V2</title>
+    <title>Prof. Miguel - Gamer Edition V3</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -24,29 +24,16 @@
         .level-select { padding: 8px 12px; border-radius: 20px; border: 2px solid var(--primary-color); background: white; color: var(--primary-color); font-family: 'Poppins'; font-weight: 700; cursor: pointer; outline: none; }
         
         /* AVATAR SYSTEM */
-        .avatar-container {
-            width: 60px; height: 60px;
-            border-radius: 50%; overflow: hidden;
-            border: 3px solid #e5e7eb;
-            background-color: #e5e7eb;
-            position: relative;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            flex-shrink: 0;
-        }
+        .avatar-container { width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 3px solid #e5e7eb; background-color: #e5e7eb; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1); flex-shrink: 0; }
         .avatar-img { width: 100%; height: 100%; object-fit: cover; background-color: white; }
         
-        /* Rank Borders */
         .avatar-iron { border-color: var(--rank-iron); background-color: #f3f4f6; }
         .avatar-bronze { border-color: var(--rank-bronze); background-color: #fff7ed; }
         .avatar-silver { border-color: var(--rank-silver); background-color: #f8fafc; }
         .avatar-gold { border-color: var(--rank-gold); background-color: #fffbeb; box-shadow: 0 0 10px rgba(251, 191, 36, 0.4); }
         .avatar-platinum { border-color: var(--rank-platinum); background-color: #ecfeff; }
         .avatar-diamond { border-color: var(--rank-diamond); background-color: #f5f3ff; box-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
-        .avatar-heroic { 
-            border-color: var(--rank-heroic); background-color: #fef2f2; 
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
-            animation: heroPulse 2s infinite;
-        }
+        .avatar-heroic { border-color: var(--rank-heroic); background-color: #fef2f2; box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); animation: heroPulse 2s infinite; }
         @keyframes heroPulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
 
         .user-info-panel { display: flex; align-items: center; gap: 15px; }
@@ -108,6 +95,20 @@
         .border-bottom { border-bottom: 3px solid var(--text-dark) !important; }
         .border-right { border-right: 3px solid var(--text-dark) !important; }
 
+        /* BLOQUEO DE GRID */
+        .grid-disabled-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.7); z-index: 50;
+            display: flex; align-items: center; justify-content: center;
+            pointer-events: none; transition: opacity 0.3s;
+        }
+        .grid-disabled-overlay.hidden { display: none; }
+        .lock-msg {
+            background: #1f2937; color: white; padding: 10px 20px; border-radius: 20px;
+            font-size: 0.9rem; font-weight: 600; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            pointer-events: auto; text-align: center;
+        }
+
         .antena-panel { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; border-top: 5px solid var(--primary-color); width: 260px; flex-shrink: 0; }
         .antena-header { text-align: center; font-weight: 700; color: var(--primary-color); margin-bottom: 10px; font-size: 1.1rem; }
         .antena-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
@@ -127,10 +128,14 @@
         /* Modals */
         #login-screen, #avatar-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 9999; }
         .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; width: 350px; }
-        .login-box h2 { color: var(--primary-color); margin-top: 0; }
+        .login-box h2 { color: var(--primary-color); margin-top: 0; margin-bottom: 5px; }
         .login-input { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #eee; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
         .login-btn { width: 100%; margin-top: 10px; }
         .login-error { color: var(--error); font-size: 0.9rem; margin-top: 10px; display: none; }
+        
+        /* LOGIN AVATAR PREVIEW */
+        .login-avatar-preview { width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 20px auto; border: 4px solid var(--primary-light); overflow: hidden; background: #eee; display: flex; align-items: center; justify-content: center; }
+        .login-avatar-preview img { width: 100%; height: 100%; object-fit: cover; }
 
         .modal-box { background: white; padding: 30px; border-radius: 15px; width: 450px; max-height: 80vh; overflow-y: auto; text-align: center; }
         .modal-section { margin-bottom: 20px; }
@@ -152,8 +157,11 @@
     <!-- LOGIN SCREEN -->
     <div id="login-screen" style="display:none;">
         <div class="login-box">
+            <div class="login-avatar-preview">
+                <img id="login-avatar-img" src="https://api.dicebear.com/8.x/adventurer/svg?seed=Guest" alt="Avatar">
+            </div>
             <h2>Prof. Miguel</h2>
-            <p>Ingresa tu usuario</p>
+            <p style="margin-bottom: 20px; color:#666;">Ingresa tu usuario</p>
             <input type="text" id="login-username" class="login-input" placeholder="Usuario">
             <input type="password" id="login-password" class="login-input" placeholder="Contraseña">
             <button class="login-btn btn-primary" onclick="handleLogin()">Iniciar Sesión</button>
@@ -168,15 +176,13 @@
             <h3 style="margin:0 0 10px 0; color:var(--primary-color);">Personaje</h3>
             <p style="font-size:0.9rem; color:#666;">Selecciona tu estilo</p>
             
-            <!-- Standard Styles -->
             <div class="modal-section">
                 <h4>Estándar</h4>
                 <div class="avatar-grid" id="avatar-options-standard"></div>
             </div>
 
-            <!-- Exclusive Styles -->
             <div class="modal-section" id="exclusive-section" style="display:none;">
-                <h4 style="color:#ef4444;"> <i class="fas fa-lock-open"></i> Exclusivos Rango Heroico</h4>
+                <h4 style="color:#ef4444;"> <i class="fas fa-lock-open"></i> Exclusivos Heroico</h4>
                 <div class="avatar-grid" id="avatar-options-exclusive"></div>
             </div>
 
@@ -225,7 +231,12 @@
                     <div class="division-row">
                         <div class="col-divisor" id="divisorBox"></div>
                         <div class="col-linea-v"></div>
-                        <div class="col-grid">
+                        <div class="col-grid" id="grid-wrapper">
+                            <!-- OVERLAY DE BLOQUEO -->
+                            <div class="grid-disabled-overlay" id="grid-lock-overlay">
+                                <div class="lock-msg"><i class="fas fa-lock"></i> ¡Valida la Antena para desbloquear!</div>
+                            </div>
+
                             <div class="excel-toolbar">
                                 <button class="tool-btn" id="btnSelectMode" onclick="toggleSelectMode()"><i class="fas fa-mouse-pointer"></i></button>
                                 <button class="tool-btn" onclick="applyBorder('bottom')"><i class="fas fa-ellipsis-h"></i></button>
@@ -278,25 +289,16 @@
         let totalScore = 0; const POINTS = 100; 
         let currentUser = null;
         let currentAvatarStyle = 'adventurer';
+        let isGridLocked = true; // Estado del bloqueo
 
-        // AVATAR CONFIGURATION
-        // Standard Styles (Available to all)
+        // AVATAR CONFIG
         const AVATAR_STYLES_STANDARD = [
-            { id: 'adventurer', name: 'Guerrero' },
-            { id: 'bottts', name: 'Robot' },
-            { id: 'pixel-art', name: 'Pixel' },
-            { id: 'lorelei', name: 'Fantasma' },
-            { id: 'big-ears', name: 'Alien' },
-            { id: 'open-peeps', name: 'Dibujo' },
-            { id: 'croodles', name: 'Boceto' },
-            { id: 'identicon', name: 'Matrix' }
+            { id: 'adventurer', name: 'Guerrero' }, { id: 'bottts', name: 'Robot' }, { id: 'pixel-art', name: 'Pixel' },
+            { id: 'lorelei', name: 'Fantasma' }, { id: 'big-ears', name: 'Alien' }, { id: 'open-peeps', name: 'Dibujo' },
+            { id: 'croodles', name: 'Boceto' }, { id: 'identicon', name: 'Matrix' }
         ];
-
-        // Exclusive Styles (Heroic Rank Only)
         const AVATAR_STYLES_EXCLUSIVE = [
-            { id: 'micah', name: 'Élite' },
-            { id: 'personas', name: 'Dios' },
-            { id: 'thumbs', name: 'Leyenda' }
+            { id: 'micah', name: 'Élite' }, { id: 'personas', name: 'Dios' }, { id: 'thumbs', name: 'Leyenda' }
         ];
 
         const RANKS = [
@@ -343,7 +345,19 @@
             } catch(e) { console.error(e); showLogin(); }
         });
 
-        function showLogin() { document.getElementById('login-screen').style.display = 'flex'; document.querySelector('.app-container').style.display = 'none'; }
+        function showLogin() { 
+            document.getElementById('login-screen').style.display = 'flex'; 
+            document.querySelector('.app-container').style.display = 'none'; 
+            
+            // Login Avatar Preview Logic
+            const input = document.getElementById('login-username');
+            const img = document.getElementById('login-avatar-img');
+            input.addEventListener('input', (e) => {
+                const val = e.target.value.trim();
+                if(val.length > 0) { img.src = `https://api.dicebear.com/8.x/adventurer/svg?seed=${val}`; } 
+                else { img.src = `https://api.dicebear.com/8.x/adventurer/svg?seed=Guest`; }
+            });
+        }
         
         async function showApp() {
             document.getElementById('login-screen').style.display = 'none';
@@ -398,43 +412,27 @@
             document.getElementById('userRankBar').style.width = rI.pct + "%";
             let c = getComputedStyle(document.documentElement).getPropertyValue('--' + rI.css);
             document.getElementById('userRankBar').style.background = c;
-            
             const avatarBox = document.getElementById('main-avatar-box');
             avatarBox.className = "avatar-container " + rI.avatar;
         }
 
-        // --- AVATAR SYSTEM LOGIC ---
-        function getAvatarUrl(seed, style) {
-            return `https://api.dicebear.com/8.x/${style}/svg?seed=${seed}`;
-        }
-
-        function renderMainAvatar() {
-            const img = document.getElementById('main-avatar-img');
-            img.src = getAvatarUrl(currentUser.email.split('@')[0], currentAvatarStyle);
-        }
+        // --- AVATAR SYSTEM ---
+        function getAvatarUrl(seed, style) { return `https://api.dicebear.com/8.x/${style}/svg?seed=${seed}`; }
+        function renderMainAvatar() { const img = document.getElementById('main-avatar-img'); img.src = getAvatarUrl(currentUser.email.split('@')[0], currentAvatarStyle); }
 
         function toggleAvatarModal() {
             const modal = document.getElementById('avatar-modal');
-            if(modal.style.display === 'none') {
-                modal.style.display = 'flex';
-                renderAvatarOptions();
-            } else {
-                modal.style.display = 'none';
-            }
+            if(modal.style.display === 'none') { modal.style.display = 'flex'; renderAvatarOptions(); } else { modal.style.display = 'none'; }
         }
 
         function renderAvatarOptions() {
             const gridStandard = document.getElementById('avatar-options-standard');
             const gridExclusive = document.getElementById('avatar-options-exclusive');
             const exclusiveSection = document.getElementById('exclusive-section');
-            
-            gridStandard.innerHTML = '';
-            gridExclusive.innerHTML = '';
-            
+            gridStandard.innerHTML = ''; gridExclusive.innerHTML = '';
             const seed = currentUser.email.split('@')[0];
             const isHeroic = totalScore >= 50000;
 
-            // Render Standard
             AVATAR_STYLES_STANDARD.forEach(style => {
                 let div = document.createElement('div');
                 div.className = 'avatar-option' + (currentAvatarStyle === style.id ? ' selected' : '');
@@ -443,7 +441,6 @@
                 gridStandard.appendChild(div);
             });
 
-            // Render Exclusive (Locked/Unlocked)
             if(isHeroic) {
                 exclusiveSection.style.display = 'block';
                 AVATAR_STYLES_EXCLUSIVE.forEach(style => {
@@ -454,29 +451,19 @@
                     gridExclusive.appendChild(div);
                 });
             } else {
-                exclusiveSection.style.display = 'block'; 
-                // Show locked examples
+                exclusiveSection.style.display = 'block';
                 AVATAR_STYLES_EXCLUSIVE.forEach(style => {
                     let div = document.createElement('div');
                     div.className = 'avatar-option avatar-locked';
-                    div.innerHTML = `
-                        <img src="${getAvatarUrl('demo', style.id)}">
-                        <div class="lock-icon"><i class="fas fa-lock"></i></div>
-                        <span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>
-                    `;
+                    div.innerHTML = `<img src="${getAvatarUrl('demo', style.id)}"><div class="lock-icon"><i class="fas fa-lock"></i></div><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`;
                     gridExclusive.appendChild(div);
                 });
             }
         }
 
         function selectAvatarStyle(styleId) {
-            // Check if trying to select locked style
             const isExclusive = AVATAR_STYLES_EXCLUSIVE.some(s => s.id === styleId);
-            if(isExclusive && totalScore < 50000) {
-                alert("¡Este avatar es exclusivo para Rango Heroico!");
-                return;
-            }
-
+            if(isExclusive && totalScore < 50000) { alert("¡Este avatar es exclusivo para Rango Heroico!"); return; }
             currentAvatarStyle = styleId;
             renderAvatarOptions();
             renderMainAvatar();
@@ -529,6 +516,7 @@
         }
 
         // GAME LOGIC
+        
         function initGame() { loadProblem(); document.getElementById('levelSelect').value = currentMainLevel; }
         function jumpToLevel(l) { currentMainLevel=parseInt(l); currentProblemInLevel=1; loadProblem(); }
         
@@ -541,12 +529,33 @@
             const label = getDifficultyLabel(currentMainLevel);
             document.getElementById('difficultyLabel').innerText = label;
             createUI(); createAntena(); resetAll();
+            lockGrid(); // BLOCK GRID INITIALLY
         }
 
         function getDifficultyLabel(lvl) {
             if(lvl <= 2) return "Divisor: 1 Cifra";
             if(lvl === 3 || lvl === 4 || lvl === 5 || lvl === 7 || lvl === 9) return "Divisor: 2 Cifras";
             return "Divisor: 3 Cifras";
+        }
+
+        // --- LOCK/UNLOCK LOGIC ---
+        function lockGrid() {
+            isGridLocked = true;
+            document.getElementById('grid-lock-overlay').classList.remove('hidden');
+            document.getElementById('valCociente').disabled = true;
+            document.getElementById('valResiduo').disabled = true;
+            // Disable toolbar buttons
+            document.getElementById('btnSelectMode').disabled = true;
+        }
+
+        function unlockGrid() {
+            isGridLocked = false;
+            document.getElementById('grid-lock-overlay').classList.add('hidden');
+            document.getElementById('valCociente').disabled = false;
+            document.getElementById('valResiduo').disabled = false;
+            document.getElementById('btnSelectMode').disabled = false;
+            document.getElementById('msg').innerText = "¡Antena correcta! Operación desbloqueada.";
+            document.getElementById('msg').style.color = "var(--success)";
         }
 
         function createUI() {
@@ -557,9 +566,9 @@
                 for(let c=0; c<cols; c++) {
                     let i = document.createElement('input');
                     i.type='text'; i.className='cell'; i.maxLength=1; i.id="c-"+r+"-"+c;
-                    i.addEventListener('mousedown', (e) => { if(sel){ e.preventDefault(); drag=true; sC={r,c}; eC={r,c}; updS(); } });
-                    i.addEventListener('mouseenter', (e) => { if(sel&&drag){ eC={r,c}; updS(); } });
-                    i.addEventListener('input', (e) => { if(!sel&&e.target.value){ let n=(c<cols-1)?"c-"+r+"-"+(c+1):(r<rows-1)?"c-"+(r+1)+"-0":null; if(n)document.getElementById(n).focus(); }});
+                    i.addEventListener('mousedown', (e) => { if(sel && !isGridLocked){ e.preventDefault(); drag=true; sC={r,c}; eC={r,c}; updS(); } }); // Only allow tools if not locked
+                    i.addEventListener('mouseenter', (e) => { if(sel && drag && !isGridLocked){ eC={r,c}; updS(); } });
+                    i.addEventListener('input', (e) => { if(!sel && !isGridLocked && e.target.value){ let n=(c<cols-1)?"c-"+r+"-"+(c+1):(r<rows-1)?"c-"+(r+1)+"-0":null; if(n)document.getElementById(n).focus(); }});
                     g.appendChild(i);
                 }
             }
@@ -571,10 +580,13 @@
         }
 
         let sel=false, drag=false, sC=null, eC=null, selC=new Set();
-        function toggleSelectMode() { sel=!sel; document.getElementById('btnSelectMode').classList.toggle('active', sel); if(!sel) clrS(); }
+        function toggleSelectMode() { 
+            if(isGridLocked) return; // Can't toggle if locked
+            sel=!sel; document.getElementById('btnSelectMode').classList.toggle('active', sel); if(!sel) clrS(); 
+        }
         function updS() { clrS(); if(!sC||!eC)return; let minR=Math.min(sC.r,eC.r),maxR=Math.max(sC.r,eC.r),minC=Math.min(sC.c,eC.c),maxC=Math.max(sC.c,eC.c); for(let r=minR;r<=maxR;r++)for(let c=minC;c<=maxC;c++){let el=document.getElementById("c-"+r+"-"+c); if(el){el.classList.add('cell-selected'); selC.add(el.id);}} }
         function clrS() { selC.forEach(id=>{let el=document.getElementById(id); if(el)el.classList.remove('cell-selected');}); selC.clear(); }
-        function applyBorder(t) { selC.forEach(id=>{let el=document.getElementById(id); if(el){if(t==='clear'){el.classList.remove('border-bottom','border-right');}else{el.classList.add("border-"+t);}}}); }
+        function applyBorder(t) { if(isGridLocked) return; selC.forEach(id=>{let el=document.getElementById(id); if(el){if(t==='clear'){el.classList.remove('border-bottom','border-right');}else{el.classList.add("border-"+t);}}}); }
         function syncT() { let v=""; document.querySelectorAll('.input-cociente').forEach(x=>v+=x.value); document.getElementById('valCociente').value=v; }
 
         function createAntena() {
@@ -589,12 +601,24 @@
             document.querySelectorAll('.cell').forEach(c => c.classList.remove('border-bottom','border-right','cell-selected'));
             selC.clear();
         }
+        
         function validarAntena() {
+            if(isGridLocked == false) return; // Already unlocked
+            
             let ok=true;
             for(let i=1;i<=10;i++){let inp=document.getElementById("a"+i); let v=parseInt(inp.value); if(v===i*currentDivisor){inp.classList.add('status-ok');inp.classList.remove('status-wrong');}else{inp.classList.add('status-wrong');inp.classList.remove('status-ok');ok=false;}}
-            document.getElementById('msg').innerText = ok ? "¡Antena correcta!" : "Corrige."; document.getElementById('msg').style.color = ok ? "var(--success)" : "var(--error)";
+            
+            if(ok) {
+                unlockGrid(); // UNLOCK THE GAME!
+            } else {
+                document.getElementById('msg').innerText = "Corrige los errores.";
+                document.getElementById('msg').style.color = "var(--error)";
+            }
         }
+
         async function verificarSolucion() {
+            if(isGridLocked) { alert("¡Valida la Antena primero!"); return; }
+
             let coc=parseInt(document.getElementById('valCociente').value); let res=parseInt(document.getElementById('valResiduo').value)||0;
             let rC=Math.floor(currentDividend/currentDivisor); let rR=currentDividend%currentDivisor;
             if(coc===rC && res===rR) {
