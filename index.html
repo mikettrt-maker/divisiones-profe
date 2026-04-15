@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prof. Miguel - Gamer Edition V3</title>
+    <title>Reto de División - Gamer Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -98,7 +98,7 @@
         /* BLOQUEO DE GRID */
         .grid-disabled-overlay {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.7); z-index: 50;
+            background: rgba(255,255,255,0.8); z-index: 50;
             display: flex; align-items: center; justify-content: center;
             pointer-events: none; transition: opacity 0.3s;
         }
@@ -133,7 +133,7 @@
         .login-btn { width: 100%; margin-top: 10px; }
         .login-error { color: var(--error); font-size: 0.9rem; margin-top: 10px; display: none; }
         
-        /* LOGIN AVATAR PREVIEW - SHADOW STYLE */
+        /* LOGIN AVATAR PREVIEW */
         .login-avatar-preview { 
             width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 20px auto; 
             border: 4px solid var(--primary-light); overflow: hidden; 
@@ -143,7 +143,6 @@
             width: 100%; height: 100%; object-fit: cover; 
             opacity: 1; transition: opacity 0.3s;
         }
-        /* Class to fade out image while loading new one */
         .login-avatar-preview img.loading { opacity: 0.5; }
 
         .modal-box { background: white; padding: 30px; border-radius: 15px; width: 450px; max-height: 80vh; overflow-y: auto; text-align: center; }
@@ -167,10 +166,10 @@
     <div id="login-screen" style="display:none;">
         <div class="login-box">
             <div class="login-avatar-preview">
-                <!-- Default Shadow Image -->
                 <img id="login-avatar-img" src="https://api.dicebear.com/8.x/micah/svg?seed=Shadow&backgroundColor=b6e3f4" alt="Avatar">
             </div>
-            <h2>Prof. Miguel</h2>
+            <!-- TÍTULO CAMBIADO A NOMBRE DEL JUEGO -->
+            <h2>Reto de División</h2>
             <p style="margin-bottom: 20px; color:#666;">Ingresa tu usuario</p>
             <input type="text" id="login-username" class="login-input" placeholder="Usuario">
             <input type="password" id="login-password" class="login-input" placeholder="Contraseña">
@@ -242,7 +241,6 @@
                         <div class="col-divisor" id="divisorBox"></div>
                         <div class="col-linea-v"></div>
                         <div class="col-grid" id="grid-wrapper">
-                            <!-- OVERLAY DE BLOQUEO -->
                             <div class="grid-disabled-overlay" id="grid-lock-overlay">
                                 <div class="lock-msg"><i class="fas fa-lock"></i> ¡Valida la Antena para desbloquear!</div>
                             </div>
@@ -357,7 +355,7 @@
 
         // --- LOGIN LOGIC WITH SHADOW & DEBOUNCE ---
         let typingTimer;
-        const doneTypingInterval = 500; // Wait 0.5s after user stops typing
+        const doneTypingInterval = 500;
 
         function showLogin() { 
             document.getElementById('login-screen').style.display = 'flex'; 
@@ -366,23 +364,17 @@
             const input = document.getElementById('login-username');
             const img = document.getElementById('login-avatar-img');
 
-            // Clear previous listeners to avoid duplicates
             const newInput = input.cloneNode(true);
             input.parentNode.replaceChild(newInput, input);
 
             document.getElementById('login-username').addEventListener('input', (e) => {
                 const val = e.target.value.trim();
-                
-                // Reset timer
                 clearTimeout(typingTimer);
 
                 if (val.length === 0) {
-                    // Back to Shadow
                     img.src = "https://api.dicebear.com/8.x/micah/svg?seed=Shadow&backgroundColor=b6e3f4";
                 } else {
-                    // Start timer
                     typingTimer = setTimeout(() => {
-                        // User finished typing -> Generate Avatar
                         img.classList.add('loading');
                         img.src = `https://api.dicebear.com/8.x/adventurer/svg?seed=${val}`;
                         img.onload = () => img.classList.remove('loading');
