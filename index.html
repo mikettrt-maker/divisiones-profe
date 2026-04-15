@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - Gamer Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <title>Reto de División - Victory Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
@@ -82,12 +82,13 @@
         .input-cociente { width: var(--cell-size); height: var(--cell-size); border: none; border-bottom: 2px solid #eee; background: transparent; font-size: 1.8rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; }
         .linea-h { height: 4px; background-color: var(--text-dark); width: 100%; margin-bottom: 1px; }
 
-        .excel-toolbar { position: absolute; top: -40px; left: 0; background: #f1f5f9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px; display: flex; gap: 2px; z-index: 100; }
+        .excel-toolbar { position: absolute; top: -40px; left: 0; background: #f1f5s9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px; display: flex; gap: 2px; z-index: 100; }
         .tool-btn { width: 32px; height: 32px; background: transparent; cursor: pointer; border-radius: 4px; color: #475569; border: none; display: flex; align-items: center; justify-content: center; }
         .tool-btn:hover { background: #e2e8f0; }
         .tool-btn.active { background: #bfdbfe; color: var(--primary-color); }
 
-        .grid-matriz { display: grid; grid-template-columns: repeat(9, var(--cell-size)); grid-template-rows: repeat(8, var(--cell-size)); background-color: #e5e7eb; }
+        /* GRID - 15 FILAS */
+        .grid-matriz { display: grid; grid-template-columns: repeat(9, var(--cell-size)); grid-template-rows: repeat(15, var(--cell-size)); background-color: #e5e7eb; }
         .cell { width: var(--cell-size); height: var(--cell-size); background-color: white; border: 1px solid #d1d5db; text-align: center; font-size: 1.4rem; font-weight: 600; outline: none; cursor: text; box-sizing: border-box; }
         .cell:focus { background: #e1f5fe; }
         .cell-locked { background: #eceff1; font-weight: 700; cursor: default; }
@@ -96,18 +97,9 @@
         .border-right { border-right: 3px solid var(--text-dark) !important; }
 
         /* BLOQUEO DE GRID */
-        .grid-disabled-overlay {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(255,255,255,0.8); z-index: 50;
-            display: flex; align-items: center; justify-content: center;
-            pointer-events: none; transition: opacity 0.3s;
-        }
+        .grid-disabled-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 50; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: opacity 0.3s; }
         .grid-disabled-overlay.hidden { display: none; }
-        .lock-msg {
-            background: #1f2937; color: white; padding: 10px 20px; border-radius: 20px;
-            font-size: 0.9rem; font-weight: 600; box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-            pointer-events: auto; text-align: center;
-        }
+        .lock-msg { background: #1f2937; color: white; padding: 10px 20px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; box-shadow: 0 4px 10px rgba(0,0,0,0.2); pointer-events: auto; text-align: center; }
 
         .antena-panel { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; border-top: 5px solid var(--primary-color); width: 260px; flex-shrink: 0; }
         .antena-header { text-align: center; font-weight: 700; color: var(--primary-color); margin-bottom: 10px; font-size: 1.1rem; }
@@ -125,6 +117,46 @@
         .btn-small { font-size: 0.8rem; padding: 5px 10px; background: #aaa; }
         #msg { width: 100%; text-align: center; font-weight: 600; margin-top: 10px; }
 
+        /* --- VICTORY SCREEN (BUYA) --- */
+        #victory-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85); z-index: 99999;
+            display: none; flex-direction: column;
+            justify-content: center; align-items: center;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        #victory-screen.show { display: flex; opacity: 1; }
+        
+        .victory-title {
+            font-size: 6rem; color: #fbbf24; font-weight: 900;
+            text-shadow: 0 0 20px rgba(251, 191, 36, 0.8), 0 0 40px rgba(251, 191, 36, 0.5);
+            animation: scaleUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .victory-sub {
+            font-size: 2rem; color: white; font-weight: 600;
+            animation: fadeInUp 0.5s 0.2s backwards;
+        }
+        .victory-level {
+            font-size: 4rem; color: #fff; font-weight: 800;
+            margin: 20px 0;
+            animation: zoomIn 0.8s 0.4s backwards;
+            background: var(--primary-color); padding: 10px 40px; border-radius: 20px;
+            box-shadow: 0 0 30px var(--primary-light);
+        }
+
+        /* Confetti Simple */
+        .confetti {
+            position: absolute; width: 10px; height: 10px;
+            background: #f00; animation: fall linear forwards;
+        }
+
+        @keyframes scaleUp { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes fadeInUp { 0% { transform: translateY(50px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
+        @keyframes zoomIn { 0% { transform: scale(0) rotate(-10deg); } 100% { transform: scale(1) rotate(0); } }
+        @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
+
         /* Modals */
         #login-screen, #avatar-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 9999; }
         .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; width: 350px; }
@@ -133,16 +165,8 @@
         .login-btn { width: 100%; margin-top: 10px; }
         .login-error { color: var(--error); font-size: 0.9rem; margin-top: 10px; display: none; }
         
-        /* LOGIN AVATAR PREVIEW */
-        .login-avatar-preview { 
-            width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 20px auto; 
-            border: 4px solid var(--primary-light); overflow: hidden; 
-            background: #e5e7eb; display: flex; align-items: center; justify-content: center;
-        }
-        .login-avatar-preview img { 
-            width: 100%; height: 100%; object-fit: cover; 
-            opacity: 1; transition: opacity 0.3s;
-        }
+        .login-avatar-preview { width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 20px auto; border: 4px solid var(--primary-light); overflow: hidden; background: #e5e7eb; display: flex; align-items: center; justify-content: center; }
+        .login-avatar-preview img { width: 100%; height: 100%; object-fit: cover; opacity: 1; transition: opacity 0.3s; }
         .login-avatar-preview img.loading { opacity: 0.5; }
 
         .modal-box { background: white; padding: 30px; border-radius: 15px; width: 450px; max-height: 80vh; overflow-y: auto; text-align: center; }
@@ -157,10 +181,17 @@
         .avatar-locked { filter: grayscale(100%); opacity: 0.5; cursor: not-allowed; }
         .lock-icon { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.7); border-radius: 50%; color: #333; font-size: 1.2rem; pointer-events: none; }
 
-        @media (max-width: 900px) { .main-layout { flex-direction: column; } .ranking-sidebar { width: 100%; } .workspace-card { flex-wrap: wrap; justify-content: center; } }
+        @media (max-width: 900px) { .main-layout { flex-direction: column; } .ranking-sidebar { width: 100%; } .workspace-card { flex-wrap: wrap; justify-content: center; } .victory-title { font-size: 3rem; } .victory-level { font-size: 2rem; } }
     </style>
 </head>
 <body>
+
+    <!-- VICTORY SCREEN (BUYA) -->
+    <div id="victory-screen">
+        <div class="victory-title">¡NIVEL COMPLETADO!</div>
+        <div class="victory-sub">Preparando siguiente reto...</div>
+        <div class="victory-level" id="victory-level-display">NIVEL 2</div>
+    </div>
 
     <!-- LOGIN SCREEN -->
     <div id="login-screen" style="display:none;">
@@ -168,7 +199,6 @@
             <div class="login-avatar-preview">
                 <img id="login-avatar-img" src="https://api.dicebear.com/8.x/micah/svg?seed=Shadow&backgroundColor=b6e3f4" alt="Avatar">
             </div>
-            <!-- TÍTULO CAMBIADO A NOMBRE DEL JUEGO -->
             <h2>Reto de División</h2>
             <p style="margin-bottom: 20px; color:#666;">Ingresa tu usuario</p>
             <input type="text" id="login-username" class="login-input" placeholder="Usuario">
@@ -293,7 +323,9 @@
         const TOTAL_LEVELS = 10; const PROBLEMS_PER_LEVEL = 10;
         let currentMainLevel = 1; let currentProblemInLevel = 1;
         let currentDivisor = 0; let currentDividend = 0;
-        const cols = 9; const rows = 8; const cellSize = 45;
+        const cols = 9; 
+        const rows = 15; // 15 FILAS
+        const cellSize = 45;
         let totalScore = 0; const POINTS = 100; 
         let currentUser = null;
         let currentAvatarStyle = 'adventurer';
@@ -353,7 +385,7 @@
             } catch(e) { console.error(e); showLogin(); }
         });
 
-        // --- LOGIN LOGIC WITH SHADOW & DEBOUNCE ---
+        // --- LOGIN LOGIC ---
         let typingTimer;
         const doneTypingInterval = 500;
 
@@ -581,10 +613,48 @@
             document.getElementById('msg').style.color = "var(--success)";
         }
 
+        // --- VICTORY (BUYA) LOGIC ---
+        function showVictoryScreen(nextLevel) {
+            const screen = document.getElementById('victory-screen');
+            const levelDisplay = document.getElementById('victory-level-display');
+            levelDisplay.innerText = "NIVEL " + nextLevel;
+            
+            // Add confetti
+            createConfetti();
+
+            screen.classList.add('show');
+
+            setTimeout(() => {
+                screen.classList.remove('show');
+                // Clean up confetti
+                document.querySelectorAll('.confetti').forEach(c => c.remove());
+                
+                // Proceed
+                currentMainLevel = nextLevel;
+                currentProblemInLevel = 1;
+                loadProblem();
+            }, 3000);
+        }
+
+        function createConfetti() {
+            const screen = document.getElementById('victory-screen');
+            const colors = ['#f00', '#0f0', '#00f', '#ff0', '#f0f', '#0ff'];
+            for (let i = 0; i < 50; i++) {
+                const conf = document.createElement('div');
+                conf.className = 'confetti';
+                conf.style.left = Math.random() * 100 + 'vw';
+                conf.style.top = -10 + 'px';
+                conf.style.background = colors[Math.floor(Math.random() * colors.length)];
+                conf.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                screen.appendChild(conf);
+            }
+        }
+
         function createUI() {
             const g = document.getElementById('gridContainer'); const dB = document.getElementById('divisorBox'); const tR = document.getElementById('topRow');
             g.innerHTML = ''; dB.innerHTML = ''; tR.innerHTML = '';
             String(currentDivisor).split('').forEach(n => { let i=document.createElement('input'); i.type='text'; i.className='input-div'; i.value=n; i.readOnly=true; dB.appendChild(i); });
+            
             for(let r=0; r<rows; r++) {
                 for(let c=0; c<cols; c++) {
                     let i = document.createElement('input');
@@ -637,15 +707,29 @@
 
             let coc=parseInt(document.getElementById('valCociente').value); let res=parseInt(document.getElementById('valResiduo').value)||0;
             let rC=Math.floor(currentDividend/currentDivisor); let rR=currentDividend%currentDivisor;
+            
             if(coc===rC && res===rR) {
                 totalScore+=POINTS; updateUI(); await saveScore();
                 document.getElementById('msg').innerHTML="<span style='color:var(--success); font-weight:700;'>¡Correcto! +"+POINTS+"</span>";
+                
                 setTimeout(() => {
-                    if(currentProblemInLevel<PROBLEMS_PER_LEVEL)currentProblemInLevel++;
-                    else{if(currentMainLevel<TOTAL_LEVELS){currentMainLevel++;currentProblemInLevel=1;}else{alert("¡FIN!");currentMainLevel=1;currentProblemInLevel=1;totalScore=0;updateUI();}}
-                    loadProblem();
-                }, 2000);
-            } else { document.getElementById('msg').innerHTML="<span style='color:var(--error); font-weight:700;'>Incorrecto.</span>"; }
+                    if(currentProblemInLevel<PROBLEMS_PER_LEVEL) {
+                        currentProblemInLevel++;
+                        loadProblem();
+                    } else {
+                        // TERMINÓ EL NIVEL
+                        if(currentMainLevel < TOTAL_LEVELS) {
+                            let nextLvl = currentMainLevel + 1;
+                            showVictoryScreen(nextLvl); // ACTIVAR BUYA
+                        } else {
+                            alert("¡JUEGO TERMINADO! Puntuación: " + totalScore);
+                            currentMainLevel = 1; currentProblemInLevel = 1; totalScore = 0; updateUI(); loadProblem();
+                        }
+                    }
+                }, 1500); // Reducido a 1.5s para que fluya rápido al Buya
+            } else { 
+                document.getElementById('msg').innerHTML="<span style='color:var(--error); font-weight:700;'>Incorrecto.</span>"; 
+            }
         }
     </script>
 </body>
