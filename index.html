@@ -3,192 +3,182 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - Victory Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <title>Reto de División - Dark Mode</title>
+    <!-- FUENTES GAMER -->
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
         :root {
-            --primary-color: #311b92; --primary-light: #673ab7; --text-dark: #1f2937;
-            --success: #10b981; --error: #ef4444; --cell-size: 45px;
-            --rank-iron: #6b7280; --rank-bronze: #d97706; --rank-silver: #64748b;
-            --rank-gold: #fbbf24; --rank-platinum: #06b6d4; --rank-diamond: #8b5cf6; --rank-heroic: #ef4444;
+            --primary-color: #ffcc00; /* Amarillo Gamer */
+            --primary-light: #ff9800; /* Naranja */
+            --text-dark: #e0e0e0; /* Texto claro sobre negro */
+            --bg-dark: #0f0f0f; /* Fondo Negro */
+            --bg-panel: #1a1a1a; /* Paneles Gris Oscuro */
+            --bg-input: #2a2a2a; /* Fondo inputs */
+            --success: #00e676; /* Verde Neón */
+            --error: #ff1744; /* Rojo Neón */
+            --cell-size: 45px;
+            --rank-iron: #9e9e9e; --rank-bronze: #d97706; --rank-silver: #bdbdbd;
+            --rank-gold: #fbbf24; --rank-platinum: #00bcd4; --rank-diamond: #7c4dff; --rank-heroic: #ff1744;
         }
-        body { margin: 0; font-family: 'Poppins', sans-serif; background-color: #f3f4f6; color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
-        .main-header { width: 100%; background: linear-gradient(90deg, var(--primary-color), var(--primary-light)); color: white; padding: 15px 0; text-align: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .main-header h1 { margin: 0; font-size: 1.8rem; font-weight: 800; }
+        body { margin: 0; font-family: 'Rajdhani', sans-serif; background-color: var(--bg-dark); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
+        
+        .main-header { width: 100%; background: linear-gradient(90deg, #000000, #1a1a1a); color: var(--primary-color); padding: 15px 0; text-align: center; box-shadow: 0 4px 20px rgba(255, 204, 0, 0.2); border-bottom: 2px solid var(--primary-color); }
+        .main-header h1 { margin: 0; font-size: 2.2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-family: 'Teko', sans-serif; }
         .app-container { width: 100%; max-width: 1500px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; }
 
-        .panel { background: white; padding: 15px 25px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
-        .level-select { padding: 8px 12px; border-radius: 20px; border: 2px solid var(--primary-color); background: white; color: var(--primary-color); font-family: 'Poppins'; font-weight: 700; cursor: pointer; outline: none; }
+        .panel { background: var(--bg-panel); padding: 15px 25px; border-radius: 4px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border: 1px solid #333; }
+        .level-select { padding: 8px 12px; border-radius: 2px; border: 1px solid var(--primary-color); background: black; color: var(--primary-color); font-family: 'Rajdhani', sans-serif; font-weight: 700; cursor: pointer; outline: none; text-transform: uppercase; }
         
         /* AVATAR SYSTEM */
-        .avatar-container { width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 3px solid #e5e7eb; background-color: #e5e7eb; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.1); flex-shrink: 0; }
-        .avatar-img { width: 100%; height: 100%; object-fit: cover; background-color: white; transition: opacity 0.3s; }
+        .avatar-container { width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 2px solid var(--primary-color); background-color: #000; position: relative; box-shadow: 0 0 10px var(--primary-color); flex-shrink: 0; }
+        .avatar-img { width: 100%; height: 100%; object-fit: cover; background-color: black; }
         
-        .avatar-iron { border-color: var(--rank-iron); background-color: #f3f4f6; }
-        .avatar-bronze { border-color: var(--rank-bronze); background-color: #fff7ed; }
-        .avatar-silver { border-color: var(--rank-silver); background-color: #f8fafc; }
-        .avatar-gold { border-color: var(--rank-gold); background-color: #fffbeb; box-shadow: 0 0 10px rgba(251, 191, 36, 0.4); }
-        .avatar-platinum { border-color: var(--rank-platinum); background-color: #ecfeff; }
-        .avatar-diamond { border-color: var(--rank-diamond); background-color: #f5f3ff; box-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
-        .avatar-heroic { border-color: var(--rank-heroic); background-color: #fef2f2; box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); animation: heroPulse 2s infinite; }
-        @keyframes heroPulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+        .avatar-iron { border-color: var(--rank-iron); box-shadow: 0 0 5px var(--rank-iron); }
+        .avatar-bronze { border-color: var(--rank-bronze); box-shadow: 0 0 8px var(--rank-bronze); }
+        .avatar-silver { border-color: var(--rank-silver); box-shadow: 0 0 8px var(--rank-silver); }
+        .avatar-gold { border-color: var(--rank-gold); box-shadow: 0 0 15px var(--rank-gold); background: rgba(251, 191, 36, 0.1); }
+        .avatar-platinum { border-color: var(--rank-platinum); box-shadow: 0 0 15px var(--rank-platinum); }
+        .avatar-diamond { border-color: var(--rank-diamond); box-shadow: 0 0 15px var(--rank-diamond); background: rgba(124, 77, 255, 0.1); }
+        .avatar-heroic { border-color: var(--rank-heroic); box-shadow: 0 0 20px var(--rank-heroic); background: rgba(255, 23, 68, 0.1); animation: heroPulse 2s infinite; }
+        @keyframes heroPulse { 0% { box-shadow: 0 0 0 0 rgba(255, 23, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(255, 23, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 23, 68, 0); } }
 
         .user-info-panel { display: flex; align-items: center; gap: 15px; }
         .user-stats { display: flex; flex-direction: column; align-items: flex-start; }
-        .rank-box { display: flex; flex-direction: column; align-items: center; background: #f8fafc; padding: 5px 15px; border-radius: 12px; border: 2px solid #e2e8f0; min-width: 120px; }
+        .rank-box { display: flex; flex-direction: column; align-items: center; background: black; padding: 5px 15px; border-radius: 4px; border: 1px solid #444; min-width: 120px; }
         .rank-name { font-size: 1rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
-        .rank-progress { width: 100%; height: 4px; background: #e2e8f0; border-radius: 3px; margin-top: 4px; overflow: hidden; }
+        .rank-progress { width: 100%; height: 4px; background: #333; border-radius: 0; margin-top: 4px; overflow: hidden; }
         .rank-progress-bar { height: 100%; transition: width 0.5s; background: var(--text-dark); }
-        .rank-score-label { font-size: 0.8rem; color: #666; margin-top: 2px; }
+        .rank-score-label { font-size: 0.8rem; color: #888; margin-top: 2px; }
 
-        .progress-bar-container { flex-grow: 1; margin: 0 20px; height: 12px; background: #e5e7eb; border-radius: 6px; overflow: hidden; min-width: 100px; }
-        .progress-bar-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
+        .progress-bar-container { flex-grow: 1; margin: 0 20px; height: 12px; background: #333; border-radius: 0; overflow: hidden; min-width: 100px; }
+        .progress-bar-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; box-shadow: 0 0 10px var(--success); }
 
         .main-layout { display: flex; flex-direction: row; gap: 20px; width: 100%; align-items: flex-start; flex-wrap: wrap; }
         .game-area { flex: 3; display: flex; flex-direction: column; gap: 20px; min-width: 300px; }
-        .workspace-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); display: flex; gap: 40px; justify-content: flex-start; align-items: flex-start; overflow-x: auto; width: 100%; box-sizing: border-box; }
+        .workspace-card { background: var(--bg-panel); padding: 30px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: flex; gap: 40px; justify-content: flex-start; align-items: flex-start; overflow-x: auto; width: 100%; box-sizing: border-box; border: 1px solid #333; }
 
-        .ranking-sidebar { flex: 1; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); min-width: 280px; }
-        .ranking-title { font-size: 1.3rem; font-weight: 800; color: var(--text-dark); text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
+        .ranking-sidebar { flex: 1; background: var(--bg-panel); padding: 20px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); min-width: 280px; border: 1px solid #333; }
+        .ranking-title { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); text-align: center; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; margin-bottom: 15px; text-transform: uppercase; font-family: 'Teko', sans-serif; letter-spacing: 1px; }
         .ranking-list { list-style: none; padding: 0; margin: 0; }
-        .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; border-radius: 8px; background: #f8fafc; border-left: 5px solid #cbd5e1; }
+        .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.05); border-left: 4px solid #333; transition: all 0.3s; }
         
         .rank-row { display: flex; align-items: center; gap: 10px; flex-grow: 1; }
-        .list-avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #e5e7eb; flex-shrink: 0; }
+        .list-avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #333; flex-shrink: 0; }
         
         .rank-iron { color: var(--rank-iron); border-color: var(--rank-iron); }
-        .rank-bronze { color: var(--rank-bronze); border-color: var(--rank-bronze); background: #fff7ed; }
+        .rank-bronze { color: var(--rank-bronze); border-color: var(--rank-bronze); background: rgba(217, 119, 6, 0.1); }
         .rank-silver { color: var(--rank-silver); border-color: var(--rank-silver); }
-        .rank-gold { color: #92400e; border-color: var(--rank-gold); background: #fffbeb; font-weight: 800; }
-        .rank-platinum { color: #0e7490; border-color: var(--rank-platinum); background: #ecfeff; font-weight: 800; }
-        .rank-diamond { color: #6d28d9; border-color: var(--rank-diamond); background: #f5f3ff; font-weight: 800; }
-        .rank-heroic { color: #b91c1c; border-color: var(--rank-heroic); background: #fef2f2; font-weight: 900; }
+        .rank-gold { color: var(--rank-gold); border-color: var(--rank-gold); background: rgba(251, 191, 36, 0.1); }
+        .rank-platinum { color: var(--rank-platinum); border-color: var(--rank-platinum); background: rgba(0, 188, 212, 0.1); }
+        .rank-diamond { color: var(--rank-diamond); border-color: var(--rank-diamond); background: rgba(124, 77, 255, 0.1); }
+        .rank-heroic { color: var(--rank-heroic); border-color: var(--rank-heroic); background: rgba(255, 23, 68, 0.1); }
         
-        .rank-pos { font-weight: 800; color: #666; margin-right: 5px; width: 20px; font-size: 0.9rem; }
+        .rank-pos { font-weight: 700; color: #666; margin-right: 5px; width: 20px; font-size: 1rem; }
         .rank-info { flex-grow: 1; display: flex; flex-direction: column; }
-        .rank-name-list { font-weight: 700; font-size: 0.9rem; }
-        .rank-tier-list { font-size: 0.7rem; font-weight: 800; opacity: 0.9; }
-        .rank-score { font-weight: 700; color: var(--primary-light); margin-left: 10px; font-size: 0.9rem; }
+        .rank-name-list { font-weight: 600; font-size: 0.95rem; }
+        .rank-tier-list { font-size: 0.75rem; font-weight: 700; opacity: 0.8; }
+        .rank-score { font-weight: 700; color: var(--primary-color); margin-left: 10px; font-size: 0.9rem; text-shadow: 0 0 5px var(--primary-color); }
 
         .division-row { display: flex; flex-direction: row; align-items: flex-start; gap: 0; margin-top: 20px; flex-shrink: 0; }
         .col-divisor { display: flex; flex-direction: row; align-items: center; height: var(--cell-size); margin-top: 49px; }
-        .input-div { width: var(--cell-size); height: var(--cell-size); border: 1px solid #ccc; background: #fafafa; font-size: 2rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; }
-        .col-linea-v { width: 4px; height: var(--cell-size); background-color: var(--text-dark); margin-top: 49px; }
+        .input-div { width: var(--cell-size); height: var(--cell-size); border: 1px solid #555; background: black; font-size: 2rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; text-shadow: 0 0 5px var(--primary-color); }
+        .col-linea-v { width: 3px; height: var(--cell-size); background-color: var(--primary-color); margin-top: 49px; box-shadow: 0 0 8px var(--primary-color); }
         .col-grid { display: flex; flex-direction: column; position: relative; }
         .fila-cociente { display: flex; justify-content: flex-start; height: var(--cell-size); align-items: center; margin-bottom: 4px; }
-        .input-cociente { width: var(--cell-size); height: var(--cell-size); border: none; border-bottom: 2px solid #eee; background: transparent; font-size: 1.8rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; }
-        .linea-h { height: 4px; background-color: var(--text-dark); width: 100%; margin-bottom: 1px; }
+        .input-cociente { width: var(--cell-size); height: var(--cell-size); border: none; border-bottom: 2px solid #444; background: transparent; font-size: 1.8rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; font-family: 'Rajdhani', sans-serif; }
+        .input-cociente:focus { background: rgba(255, 204, 0, 0.1); border-color: var(--primary-color); }
+        .linea-h { height: 3px; background-color: var(--primary-color); width: 100%; margin-bottom: 1px; box-shadow: 0 0 8px var(--primary-color); }
 
-        .excel-toolbar { position: absolute; top: -40px; left: 0; background: #f1f5s9; border: 1px solid #cbd5e1; border-radius: 6px; padding: 4px; display: flex; gap: 2px; z-index: 100; }
-        .tool-btn { width: 32px; height: 32px; background: transparent; cursor: pointer; border-radius: 4px; color: #475569; border: none; display: flex; align-items: center; justify-content: center; }
-        .tool-btn:hover { background: #e2e8f0; }
-        .tool-btn.active { background: #bfdbfe; color: var(--primary-color); }
+        .excel-toolbar { position: absolute; top: -40px; left: 0; background: #000; border: 1px solid #333; border-radius: 0; padding: 4px; display: flex; gap: 2px; z-index: 100; }
+        .tool-btn { width: 32px; height: 32px; background: transparent; cursor: pointer; color: #666; border: none; display: flex; align-items: center; justify-content: center; }
+        .tool-btn:hover { background: #333; color: var(--primary-color); }
+        .tool-btn.active { background: var(--primary-color); color: black; }
 
-        /* GRID - 15 FILAS */
-        .grid-matriz { display: grid; grid-template-columns: repeat(9, var(--cell-size)); grid-template-rows: repeat(15, var(--cell-size)); background-color: #e5e7eb; }
-        .cell { width: var(--cell-size); height: var(--cell-size); background-color: white; border: 1px solid #d1d5db; text-align: center; font-size: 1.4rem; font-weight: 600; outline: none; cursor: text; box-sizing: border-box; }
-        .cell:focus { background: #e1f5fe; }
-        .cell-locked { background: #eceff1; font-weight: 700; cursor: default; }
-        .cell-selected { background-color: #dbeafe !important; }
-        .border-bottom { border-bottom: 3px solid var(--text-dark) !important; }
-        .border-right { border-right: 3px solid var(--text-dark) !important; }
+        /* GRID - 15 FILAS (ESTRUCTURA INTACTA) */
+        .grid-matriz { display: grid; grid-template-columns: repeat(9, var(--cell-size)); grid-template-rows: repeat(15, var(--cell-size)); background-color: #2a2a2a; border: 1px solid #444; }
+        .cell { width: var(--cell-size); height: var(--cell-size); background-color: #1a1a1a; border: 1px solid #333; text-align: center; font-size: 1.4rem; font-weight: 600; outline: none; cursor: text; box-sizing: border-box; color: white; transition: background 0.2s; }
+        .cell:focus { background: #333; box-shadow: inset 0 0 10px var(--primary-color); }
+        .cell-locked { background: #000; font-weight: 700; color: var(--primary-color); border-color: #333; }
+        .cell-selected { background-color: rgba(255, 204, 0, 0.2) !important; border-color: var(--primary-color) !important; }
+        .border-bottom { border-bottom: 2px solid var(--primary-color) !important; }
+        .border-right { border-right: 2px solid var(--primary-color) !important; }
 
         /* BLOQUEO DE GRID */
-        .grid-disabled-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.8); z-index: 50; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: opacity 0.3s; }
+        .grid-disabled-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 50; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: opacity 0.3s; }
         .grid-disabled-overlay.hidden { display: none; }
-        .lock-msg { background: #1f2937; color: white; padding: 10px 20px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; box-shadow: 0 4px 10px rgba(0,0,0,0.2); pointer-events: auto; text-align: center; }
-
-        .antena-panel { background: #f8fafc; border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; border-top: 5px solid var(--primary-color); width: 260px; flex-shrink: 0; }
-        .antena-header { text-align: center; font-weight: 700; color: var(--primary-color); margin-bottom: 10px; font-size: 1.1rem; }
-        .antena-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
-        .antena-input { width: 60px; height: 30px; font-size: 0.9rem; font-weight: 600; text-align: center; border: 1px solid #cbd5e1; border-radius: 4px; }
-        .status-ok { background-color: #dcfce7 !important; border-color: var(--success) !important; }
-        .status-wrong { background-color: #fee2e2 !important; border-color: var(--error) !important; }
-
-        .controls { background: #eff6ff; padding: 20px; border-radius: 12px; border: 1px solid #bfdbfe; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box; }
-        .result-box { display: flex; flex-direction: column; background: white; padding: 8px 15px; border-radius: 8px; border: 1px solid #bfdbfe; }
-        .result-input { border: none; font-size: 1.5rem; font-weight: 700; width: 80px; text-align: center; color: var(--primary-color); }
-        button { border: none; padding: 12px 24px; font-weight: 600; border-radius: 8px; cursor: pointer; font-size: 1rem; color: white; }
-        .btn-primary { background: var(--primary-color); }
-        .btn-check { background: var(--success); }
-        .btn-small { font-size: 0.8rem; padding: 5px 10px; background: #aaa; }
-        #msg { width: 100%; text-align: center; font-weight: 600; margin-top: 10px; }
-
-        /* --- VICTORY SCREEN (BUYA) --- */
-        #victory-screen {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85); z-index: 99999;
-            display: none; flex-direction: column;
-            justify-content: center; align-items: center;
-            opacity: 0; transition: opacity 0.3s;
-        }
-        #victory-screen.show { display: flex; opacity: 1; }
+        .lock-msg { background: var(--primary-color); color: black; padding: 10px 20px; border-radius: 2px; font-size: 1rem; font-weight: 700; box-shadow: 0 0 20px var(--primary-color); pointer-events: auto; text-align: center; text-transform: uppercase; }
         
-        .victory-title {
-            font-size: 6rem; color: #fbbf24; font-weight: 900;
-            text-shadow: 0 0 20px rgba(251, 191, 36, 0.8), 0 0 40px rgba(251, 191, 36, 0.5);
-            animation: scaleUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .victory-sub {
-            font-size: 2rem; color: white; font-weight: 600;
-            animation: fadeInUp 0.5s 0.2s backwards;
-        }
-        .victory-level {
-            font-size: 4rem; color: #fff; font-weight: 800;
-            margin: 20px 0;
-            animation: zoomIn 0.8s 0.4s backwards;
-            background: var(--primary-color); padding: 10px 40px; border-radius: 20px;
-            box-shadow: 0 0 30px var(--primary-light);
-        }
+        /* ANTENA */
+        .antena-panel { background: var(--bg-panel); border: 1px solid #333; padding: 15px; border-radius: 4px; border-top: 4px solid var(--primary-color); width: 260px; flex-shrink: 0; }
+        .antena-header { text-align: center; font-weight: 700; color: var(--primary-color); margin-bottom: 15px; font-size: 1.2rem; text-transform: uppercase; font-family: 'Teko', sans-serif; letter-spacing: 1px; }
+        .antena-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+        .antena-input { width: 60px; height: 30px; font-size: 1rem; font-weight: 600; text-align: center; border: 1px solid #444; border-radius: 2px; background: black; color: white; }
+        .antena-input:focus { border-color: var(--primary-color); }
+        .status-ok { background-color: rgba(0, 230, 118, 0.2) !important; border-color: var(--success) !important; color: var(--success); }
+        .status-wrong { background-color: rgba(255, 23, 68, 0.2) !important; border-color: var(--error) !important; color: var(--error); }
 
-        /* Confetti Simple */
-        .confetti {
-            position: absolute; width: 10px; height: 10px;
-            background: #f00; animation: fall linear forwards;
-        }
+        /* CONTROLES */
+        .controls { background: black; padding: 20px; border-radius: 4px; border: 1px solid #333; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box; }
+        .result-box { display: flex; flex-direction: column; background: #1a1a1a; padding: 8px 15px; border-radius: 2px; border: 1px solid #333; }
+        .result-input { border: none; font-size: 1.8rem; font-weight: 700; width: 80px; text-align: center; color: var(--primary-color); background: transparent; font-family: 'Teko', sans-serif; }
+        button { border: none; padding: 10px 24px; font-weight: 600; border-radius: 2px; cursor: pointer; font-size: 1.1rem; color: black; text-transform: uppercase; font-family: 'Rajdhani', sans-serif; letter-spacing: 1px; transition: all 0.2s; }
+        .btn-primary { background: var(--primary-color); box-shadow: 0 0 15px var(--primary-color); }
+        .btn-primary:hover { background: white; box-shadow: 0 0 20px white; }
+        .btn-check { background: var(--success); box-shadow: 0 0 15px var(--success); color: black; }
+        .btn-small { font-size: 0.9rem; padding: 5px 10px; background: #333; color: #ccc; border: 1px solid #555; box-shadow: none; }
+        .btn-small:hover { border-color: #888; color: white; }
+        #msg { width: 100%; text-align: center; font-weight: 600; margin-top: 10px; font-size: 1.1rem; }
+
+        /* --- VICTORY SCREEN (BUYA) - DARK MODE --- */
+        #victory-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 99999; display: none; flex-direction: column; justify-content: center; align-items: center; }
+        #victory-screen.show { display: flex; }
+        
+        .victory-title { font-size: 7rem; color: var(--primary-color); font-weight: 700; text-shadow: 0 0 30px var(--primary-color); font-family: 'Teko', sans-serif; letter-spacing: 4px; margin-bottom: 10px; animation: scaleUp 0.3s; text-transform: uppercase; }
+        .victory-sub { font-size: 2rem; color: #888; font-weight: 600; animation: fadeInUp 0.5s 0.2s backwards; text-transform: uppercase; font-family: 'Rajdhani', sans-serif; }
+        .victory-level { font-size: 4rem; color: white; font-weight: 700; margin: 20px 0; animation: zoomIn 0.8s 0.4s backwards; background: black; padding: 5px 40px; border: 2px solid var(--primary-color); box-shadow: 0 0 20px var(--primary-color); font-family: 'Teko', sans-serif; }
+        
+        .confetti { position: absolute; width: 10px; height: 10px; background: #f00; animation: fall linear forwards; }
 
         @keyframes scaleUp { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes fadeInUp { 0% { transform: translateY(50px); opacity: 0; } 100% { transform: translateY(0); opacity: 1; } }
         @keyframes zoomIn { 0% { transform: scale(0) rotate(-10deg); } 100% { transform: scale(1) rotate(0); } }
         @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
 
-        /* Modals */
-        #login-screen, #avatar-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 9999; }
-        .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; width: 350px; }
-        .login-box h2 { color: var(--primary-color); margin-top: 0; margin-bottom: 5px; }
-        .login-input { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #eee; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
+        /* Modals Dark */
+        #login-screen, #avatar-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        .login-box { background: var(--bg-panel); padding: 40px; border-radius: 4px; box-shadow: 0 0 30px rgba(255, 204, 0, 0.1); text-align: center; width: 350px; border: 1px solid #333; }
+        .login-box h2 { color: var(--primary-color); margin-top: 0; margin-bottom: 5px; font-family: 'Teko', sans-serif; font-size: 2.5rem; text-transform: uppercase; letter-spacing: 1px; }
+        .login-input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #333; border-radius: 2px; font-size: 1rem; box-sizing: border-box; background: black; color: white; font-family: 'Rajdhani', sans-serif; }
+        .login-input:focus { border-color: var(--primary-color); }
         .login-btn { width: 100%; margin-top: 10px; }
         .login-error { color: var(--error); font-size: 0.9rem; margin-top: 10px; display: none; }
         
-        .login-avatar-preview { width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 20px auto; border: 4px solid var(--primary-light); overflow: hidden; background: #e5e7eb; display: flex; align-items: center; justify-content: center; }
+        .login-avatar-preview { width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 20px auto; border: 2px solid var(--primary-color); overflow: hidden; background: black; display: flex; align-items: center; justify-content: center; box-shadow: 0 0 15px var(--primary-color); }
         .login-avatar-preview img { width: 100%; height: 100%; object-fit: cover; opacity: 1; transition: opacity 0.3s; }
-        .login-avatar-preview img.loading { opacity: 0.5; }
 
-        .modal-box { background: white; padding: 30px; border-radius: 15px; width: 450px; max-height: 80vh; overflow-y: auto; text-align: center; }
+        .modal-box { background: var(--bg-panel); padding: 30px; border-radius: 4px; width: 450px; max-height: 80vh; overflow-y: auto; text-align: center; border: 1px solid #333; }
         .modal-section { margin-bottom: 20px; }
-        .modal-section h4 { margin: 0 0 10px 0; color: var(--text-dark); border-bottom: 1px solid #eee; padding-bottom: 5px; }
+        .modal-section h4 { margin: 0 0 10px 0; color: #888; border-bottom: 1px solid #333; padding-bottom: 5px; text-transform: uppercase; }
         .avatar-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-        .avatar-option { cursor: pointer; padding: 5px; border-radius: 50%; border: 3px solid transparent; transition: 0.2s; position: relative; }
-        .avatar-option:hover { border-color: #bfdbfe; }
-        .avatar-option.selected { border-color: var(--primary-color); background-color: #f0f0ff; }
-        .avatar-option img { width: 50px; height: 50px; border-radius: 50%; background: #eee; }
+        .avatar-option { cursor: pointer; padding: 5px; border-radius: 50%; border: 2px solid transparent; transition: 0.2s; position: relative; }
+        .avatar-option:hover { border-color: #555; }
+        .avatar-option.selected { border-color: var(--primary-color); background: rgba(255, 204, 0, 0.1); }
+        .avatar-option img { width: 50px; height: 50px; border-radius: 50%; background: #000; }
         
         .avatar-locked { filter: grayscale(100%); opacity: 0.5; cursor: not-allowed; }
-        .lock-icon { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.7); border-radius: 50%; color: #333; font-size: 1.2rem; pointer-events: none; }
+        .lock-icon { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.8); border-radius: 50%; color: #666; font-size: 1.2rem; pointer-events: none; }
 
-        @media (max-width: 900px) { .main-layout { flex-direction: column; } .ranking-sidebar { width: 100%; } .workspace-card { flex-wrap: wrap; justify-content: center; } .victory-title { font-size: 3rem; } .victory-level { font-size: 2rem; } }
+        @media (max-width: 900px) { .main-layout { flex-direction: column; } .ranking-sidebar { width: 100%; } .workspace-card { flex-wrap: wrap; justify-content: center; } .victory-title { font-size: 3.5rem; } .victory-level { font-size: 2rem; } }
     </style>
 </head>
 <body>
 
-    <!-- VICTORY SCREEN (BUYA) -->
+    <!-- VICTORY SCREEN -->
     <div id="victory-screen">
-        <div class="victory-title">¡NIVEL COMPLETADO!</div>
+        <div class="victory-title">NIVEL COMPLETADO</div>
         <div class="victory-sub">Preparando siguiente reto...</div>
         <div class="victory-level" id="victory-level-display">NIVEL 2</div>
     </div>
@@ -197,22 +187,22 @@
     <div id="login-screen" style="display:none;">
         <div class="login-box">
             <div class="login-avatar-preview">
-                <img id="login-avatar-img" src="https://api.dicebear.com/8.x/micah/svg?seed=Shadow&backgroundColor=b6e3f4" alt="Avatar">
+                <img id="login-avatar-img" src="https://api.dicebear.com/8.x/identicon/svg?seed=Shadow" alt="Avatar">
             </div>
             <h2>Reto de División</h2>
-            <p style="margin-bottom: 20px; color:#666;">Ingresa tu usuario</p>
+            <p style="margin-bottom: 20px; color:#888;">Ingresa tu usuario</p>
             <input type="text" id="login-username" class="login-input" placeholder="Usuario">
             <input type="password" id="login-password" class="login-input" placeholder="Contraseña">
             <button class="login-btn btn-primary" onclick="handleLogin()">Iniciar Sesión</button>
-            <button class="login-btn btn-check" onclick="handleRegister()" style="margin-top:5px; background:#666;">Registrarse</button>
+            <button class="login-btn btn-check" onclick="handleRegister()" style="margin-top:5px; background:#333; color:#ccc;">Registrarse</button>
             <div id="login-error" class="login-error"></div>
         </div>
     </div>
 
     <!-- AVATAR MODAL -->
-    <div id="avatar-modal" style="display:none; background: rgba(0,0,0,0.5);" onclick="if(event.target.id === 'avatar-modal') toggleAvatarModal()">
+    <div id="avatar-modal" style="display:none; background: rgba(0,0,0,0.9);" onclick="if(event.target.id === 'avatar-modal') toggleAvatarModal()">
         <div class="modal-box">
-            <h3 style="margin:0 0 10px 0; color:var(--primary-color);">Personaje</h3>
+            <h3 style="margin:0 0 10px 0; color:var(--primary-color); font-family:'Teko'; font-size:1.8rem; text-transform:uppercase;">Personaje</h3>
             <p style="font-size:0.9rem; color:#666;">Selecciona tu estilo</p>
             
             <div class="modal-section">
@@ -221,7 +211,7 @@
             </div>
 
             <div class="modal-section" id="exclusive-section" style="display:none;">
-                <h4 style="color:#ef4444;"> <i class="fas fa-lock-open"></i> Exclusivos Heroico</h4>
+                <h4 style="color:var(--error);"> <i class="fas fa-lock-open"></i> Exclusivos Heroico</h4>
                 <div class="avatar-grid" id="avatar-options-exclusive"></div>
             </div>
 
@@ -231,13 +221,13 @@
 
     <header class="main-header">
         <h1>Prof. Miguel</h1>
-        <span>Reto de División</span>
+        <span style="color:#888; font-size:0.9rem;">Reto de División</span>
     </header>
 
     <div class="app-container">
         <div class="panel">
             <div>
-                <label style="font-weight: 600; color: #555;">Nivel:</label>
+                <label style="font-weight: 600; color: #888;">Nivel:</label>
                 <select id="levelSelect" class="level-select" onchange="jumpToLevel(this.value)">
                     <option value="1">Nivel 1</option><option value="2">Nivel 2</option><option value="3">Nivel 3</option>
                     <option value="4">Nivel 4</option><option value="5">Nivel 5</option><option value="6">Nivel 6</option>
@@ -252,8 +242,8 @@
                     <img id="main-avatar-img" class="avatar-img" src="" alt="Avatar">
                 </div>
                 <div class="user-stats">
-                     <div style="font-size: 0.8rem; color: #666;" id="difficultyLabel">...</div>
-                     <div style="font-size: 0.9rem; color:#666;">Ej. <span id="subLevelCount">1</span>/10</div>
+                     <div style="font-size: 0.8rem; color: #888;" id="difficultyLabel">...</div>
+                     <div style="font-size: 0.9rem; color:#aaa;">Ej. <span id="subLevelCount">1</span>/10</div>
                 </div>
                 <div class="rank-box" id="userRankBox">
                     <div class="rank-name" id="userRankName">...</div>
@@ -272,7 +262,7 @@
                         <div class="col-linea-v"></div>
                         <div class="col-grid" id="grid-wrapper">
                             <div class="grid-disabled-overlay" id="grid-lock-overlay">
-                                <div class="lock-msg"><i class="fas fa-lock"></i> ¡Valida la Antena para desbloquear!</div>
+                                <div class="lock-msg"><i class="fas fa-lock"></i> ¡Valida la Antena!</div>
                             </div>
 
                             <div class="excel-toolbar">
@@ -295,11 +285,11 @@
                 <div class="controls">
                     <div style="display:flex; gap:15px;">
                         <div class="result-box">
-                            <span style="font-size:0.8rem; color:#64748b; font-weight:600;">Cociente</span>
+                            <span style="font-size:0.8rem; color: #666; font-weight:600;">Cociente</span>
                             <input type="number" class="result-input" id="valCociente" placeholder="0">
                         </div>
                         <div class="result-box">
-                            <span style="font-size:0.8rem; color:#64748b; font-weight:600;">Residuo</span>
+                            <span style="font-size:0.8rem; color: #666; font-weight:600;">Residuo</span>
                             <input type="number" class="result-input" id="valResiduo" placeholder="0">
                         </div>
                     </div>
@@ -315,7 +305,7 @@
     </div>
 
     <script>
-        // CONFIG
+        // CONFIG (SIN CAMBIOS)
         const SUPABASE_URL = 'https://oskrniownbbzkgnwunzz.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_RcfluyMTRxDP4chkK91-2Q_UwLdLrqP';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storage: window.sessionStorage, autoRefreshToken: false, persistSession: true, detectSessionInUrl: false } });
@@ -323,15 +313,12 @@
         const TOTAL_LEVELS = 10; const PROBLEMS_PER_LEVEL = 10;
         let currentMainLevel = 1; let currentProblemInLevel = 1;
         let currentDivisor = 0; let currentDividend = 0;
-        const cols = 9; 
-        const rows = 15; // 15 FILAS
-        const cellSize = 45;
+        const cols = 9; const rows = 15; const cellSize = 45;
         let totalScore = 0; const POINTS = 100; 
         let currentUser = null;
         let currentAvatarStyle = 'adventurer';
         let isGridLocked = true;
 
-        // AVATAR CONFIG
         const AVATAR_STYLES_STANDARD = [
             { id: 'adventurer', name: 'Guerrero' }, { id: 'bottts', name: 'Robot' }, { id: 'pixel-art', name: 'Pixel' },
             { id: 'lorelei', name: 'Fantasma' }, { id: 'big-ears', name: 'Alien' }, { id: 'open-peeps', name: 'Dibujo' },
@@ -354,16 +341,13 @@
         function getRankInfo(score) {
             let rank = RANKS[0];
             for(let i=0; i<RANKS.length; i++) { if(score >= RANKS[i].min) rank = RANKS[i]; }
-            let tier = "I";
-            let range = rank.max - rank.min;
+            let tier = "I"; let range = rank.max - rank.min;
             if (score < rank.min + range/3) tier = "III";
             else if (score < rank.min + (range/3)*2) tier = "II";
-            let pct = ((score - rank.min) / range) * 100;
-            if(pct > 100) pct = 100;
+            let pct = ((score - rank.min) / range) * 100; if(pct > 100) pct = 100;
             return { ...rank, tier: tier, pct: pct };
         }
 
-        // DB EXERCISES
         const DB = {
             1: [ {d: 456, div: 4}, {d: 789, div: 3}, {d: 125, div: 5}, {d: 982, div: 7}, {d: 641, div: 2}, {d: 333, div: 9}, {d: 805, div: 6}, {d: 219, div: 8}, {d: 567, div: 4}, {d: 901, div: 3} ],
             2: [ {d: 1245, div: 5}, {d: 8902, div: 2}, {d: 4567, div: 9}, {d: 3312, div: 6}, {d: 7841, div: 4}, {d: 2009, div: 7}, {d: 6554, div: 8}, {d: 5123, div: 3}, {d: 9876, div: 5}, {d: 4444, div: 7} ],
@@ -380,294 +364,106 @@
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const { data: { session } } = await _supabase.auth.getSession();
-                if (session && session.user) { currentUser = session.user; showApp(); } 
-                else { showLogin(); }
+                if (session && session.user) { currentUser = session.user; showApp(); } else { showLogin(); }
             } catch(e) { console.error(e); showLogin(); }
         });
 
-        // --- LOGIN LOGIC ---
-        let typingTimer;
-        const doneTypingInterval = 500;
+        let typingTimer; const doneTypingInterval = 500;
 
         function showLogin() { 
             document.getElementById('login-screen').style.display = 'flex'; 
             document.querySelector('.app-container').style.display = 'none'; 
-            
-            const input = document.getElementById('login-username');
-            const img = document.getElementById('login-avatar-img');
-
-            const newInput = input.cloneNode(true);
-            input.parentNode.replaceChild(newInput, input);
-
+            const input = document.getElementById('login-username'); const img = document.getElementById('login-avatar-img');
+            const newInput = input.cloneNode(true); input.parentNode.replaceChild(newInput, input);
             document.getElementById('login-username').addEventListener('input', (e) => {
-                const val = e.target.value.trim();
-                clearTimeout(typingTimer);
-
-                if (val.length === 0) {
-                    img.src = "https://api.dicebear.com/8.x/micah/svg?seed=Shadow&backgroundColor=b6e3f4";
-                } else {
-                    typingTimer = setTimeout(() => {
-                        img.classList.add('loading');
-                        img.src = `https://api.dicebear.com/8.x/adventurer/svg?seed=${val}`;
-                        img.onload = () => img.classList.remove('loading');
-                    }, doneTypingInterval);
+                const val = e.target.value.trim(); clearTimeout(typingTimer);
+                if (val.length === 0) { img.src = "https://api.dicebear.com/8.x/identicon/svg?seed=Shadow"; } else {
+                    typingTimer = setTimeout(() => { img.classList.add('loading'); img.src = `https://api.dicebear.com/8.x/adventurer/svg?seed=${val}`; img.onload = () => img.classList.remove('loading'); }, doneTypingInterval);
                 }
             });
         }
         
-        async function showApp() {
-            document.getElementById('login-screen').style.display = 'none';
-            document.querySelector('.app-container').style.display = 'flex';
-            if(currentUser) { try { await loadScore(currentUser); } catch(e){ console.error(e); } }
-            initGame();
-            startRanking();
-        }
+        async function showApp() { document.getElementById('login-screen').style.display = 'none'; document.querySelector('.app-container').style.display = 'flex'; if(currentUser) { try { await loadScore(currentUser); } catch(e){ console.error(e); } } initGame(); startRanking(); }
 
         async function handleLogin() {
-            const u = document.getElementById('login-username').value.trim();
-            const p = document.getElementById('login-password').value;
-            const e = document.getElementById('login-error');
+            const u = document.getElementById('login-username').value.trim(); const p = document.getElementById('login-password').value; const e = document.getElementById('login-error');
             if (!u || p.length < 6) { e.textContent = "Datos incompletos."; e.style.display='block'; return; }
-            try {
-                const { data, error } = await _supabase.auth.signInWithPassword({ email: u+"@profemiguel.com", password: p });
-                if (error) throw error;
-                currentUser = data.user;
-                showApp();
-            } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; }
+            try { const { data, error } = await _supabase.auth.signInWithPassword({ email: u+"@profemiguel.com", password: p }); if (error) throw error; currentUser = data.user; showApp(); } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; }
         }
 
         async function handleRegister() {
-            const u = document.getElementById('login-username').value.trim();
-            const p = document.getElementById('login-password').value;
-            const e = document.getElementById('login-error');
+            const u = document.getElementById('login-username').value.trim(); const p = document.getElementById('login-password').value; const e = document.getElementById('login-error');
             if (!u || p.length < 6) { e.textContent = "Datos incompletos."; e.style.display='block'; return; }
-            try {
-                const { data, error } = await _supabase.auth.signUp({ email: u+"@profemiguel.com", password: p });
-                if (error) throw error;
-                alert("Registrado. Entra ahora.");
-            } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; }
+            try { const { data, error } = await _supabase.auth.signUp({ email: u+"@profemiguel.com", password: p }); if (error) throw error; alert("Registrado. Entra ahora."); } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; }
         }
 
         async function logout() { await _supabase.auth.signOut(); currentUser=null; totalScore=0; showLogin(); clearInterval(rankInt); }
 
         async function loadScore(user) {
-            try {
-                const { data } = await _supabase.from('profiles').select('total_score, avatar_style').eq('id', user.id).single();
-                totalScore = (data && data.total_score) ? data.total_score : 0;
-                currentAvatarStyle = (data && data.avatar_style) ? data.avatar_style : 'adventurer';
-            } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; }
-            updateUI();
-            renderMainAvatar();
+            try { const { data } = await _supabase.from('profiles').select('total_score, avatar_style').eq('id', user.id).single(); totalScore = (data && data.total_score) ? data.total_score : 0; currentAvatarStyle = (data && data.avatar_style) ? data.avatar_style : 'adventurer'; } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; }
+            updateUI(); renderMainAvatar();
         }
 
         function updateUI() {
-            document.getElementById('scoreDisplay').innerText = totalScore;
-            const rI = getRankInfo(totalScore);
+            document.getElementById('scoreDisplay').innerText = totalScore; const rI = getRankInfo(totalScore);
             document.getElementById('userRankName').innerText = rI.icon + " " + rI.name + " " + rI.tier;
             document.getElementById('userRankName').className = "rank-name " + rI.css;
             document.getElementById('userRankBar').style.width = rI.pct + "%";
-            let c = getComputedStyle(document.documentElement).getPropertyValue('--' + rI.css);
-            document.getElementById('userRankBar').style.background = c;
-            const avatarBox = document.getElementById('main-avatar-box');
-            avatarBox.className = "avatar-container " + rI.avatar;
+            const avatarBox = document.getElementById('main-avatar-box'); avatarBox.className = "avatar-container " + rI.avatar;
         }
 
-        // --- AVATAR SYSTEM ---
         function getAvatarUrl(seed, style) { return `https://api.dicebear.com/8.x/${style}/svg?seed=${seed}`; }
         function renderMainAvatar() { const img = document.getElementById('main-avatar-img'); img.src = getAvatarUrl(currentUser.email.split('@')[0], currentAvatarStyle); }
 
-        function toggleAvatarModal() {
-            const modal = document.getElementById('avatar-modal');
-            if(modal.style.display === 'none') { modal.style.display = 'flex'; renderAvatarOptions(); } else { modal.style.display = 'none'; }
-        }
+        function toggleAvatarModal() { const modal = document.getElementById('avatar-modal'); if(modal.style.display === 'none') { modal.style.display = 'flex'; renderAvatarOptions(); } else { modal.style.display = 'none'; } }
 
         function renderAvatarOptions() {
-            const gridStandard = document.getElementById('avatar-options-standard');
-            const gridExclusive = document.getElementById('avatar-options-exclusive');
-            const exclusiveSection = document.getElementById('exclusive-section');
-            gridStandard.innerHTML = ''; gridExclusive.innerHTML = '';
-            const seed = currentUser.email.split('@')[0];
-            const isHeroic = totalScore >= 50000;
-
-            AVATAR_STYLES_STANDARD.forEach(style => {
-                let div = document.createElement('div');
-                div.className = 'avatar-option' + (currentAvatarStyle === style.id ? ' selected' : '');
-                div.onclick = () => selectAvatarStyle(style.id);
-                div.innerHTML = `<img src="${getAvatarUrl(seed, style.id)}"><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`;
-                gridStandard.appendChild(div);
-            });
-
-            if(isHeroic) {
-                exclusiveSection.style.display = 'block';
-                AVATAR_STYLES_EXCLUSIVE.forEach(style => {
-                    let div = document.createElement('div');
-                    div.className = 'avatar-option' + (currentAvatarStyle === style.id ? ' selected' : '');
-                    div.onclick = () => selectAvatarStyle(style.id);
-                    div.innerHTML = `<img src="${getAvatarUrl(seed, style.id)}"><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`;
-                    gridExclusive.appendChild(div);
-                });
-            } else {
-                exclusiveSection.style.display = 'block';
-                AVATAR_STYLES_EXCLUSIVE.forEach(style => {
-                    let div = document.createElement('div');
-                    div.className = 'avatar-option avatar-locked';
-                    div.innerHTML = `<img src="${getAvatarUrl('demo', style.id)}"><div class="lock-icon"><i class="fas fa-lock"></i></div><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`;
-                    gridExclusive.appendChild(div);
-                });
-            }
+            const gridStandard = document.getElementById('avatar-options-standard'); const gridExclusive = document.getElementById('avatar-options-exclusive'); const exclusiveSection = document.getElementById('exclusive-section');
+            gridStandard.innerHTML = ''; gridExclusive.innerHTML = ''; const seed = currentUser.email.split('@')[0]; const isHeroic = totalScore >= 50000;
+            AVATAR_STYLES_STANDARD.forEach(style => { let div = document.createElement('div'); div.className = 'avatar-option' + (currentAvatarStyle === style.id ? ' selected' : ''); div.onclick = () => selectAvatarStyle(style.id); div.innerHTML = `<img src="${getAvatarUrl(seed, style.id)}"><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`; gridStandard.appendChild(div); });
+            if(isHeroic) { exclusiveSection.style.display = 'block'; AVATAR_STYLES_EXCLUSIVE.forEach(style => { let div = document.createElement('div'); div.className = 'avatar-option' + (currentAvatarStyle === style.id ? ' selected' : ''); div.onclick = () => selectAvatarStyle(style.id); div.innerHTML = `<img src="${getAvatarUrl(seed, style.id)}"><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`; gridExclusive.appendChild(div); }); }
+            else { exclusiveSection.style.display = 'block'; AVATAR_STYLES_EXCLUSIVE.forEach(style => { let div = document.createElement('div'); div.className = 'avatar-option avatar-locked'; div.innerHTML = `<img src="${getAvatarUrl('demo', style.id)}"><div class="lock-icon"><i class="fas fa-lock"></i></div><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`; gridExclusive.appendChild(div); }); }
         }
 
-        function selectAvatarStyle(styleId) {
-            const isExclusive = AVATAR_STYLES_EXCLUSIVE.some(s => s.id === styleId);
-            if(isExclusive && totalScore < 50000) { alert("¡Este avatar es exclusivo para Rango Heroico!"); return; }
-            currentAvatarStyle = styleId;
-            renderAvatarOptions();
-            renderMainAvatar();
-        }
-
-        async function saveAvatarChoice() {
-            await _supabase.from('profiles').upsert({ id: currentUser.id, avatar_style: currentAvatarStyle });
-            toggleAvatarModal();
-            updateRanking();
-        }
-
-        async function saveScore() {
-            if (!currentUser) return;
-            try {
-                await _supabase.from('profiles').upsert({ id: currentUser.id, username: currentUser.email.split('@')[0], total_score: totalScore });
-                updateRanking();
-            } catch(e) { console.error(e); }
-        }
-
-        let rankInt;
-        function startRanking() { updateRanking(); rankInt = setInterval(updateRanking, 5000); }
-        
+        function selectAvatarStyle(styleId) { const isExclusive = AVATAR_STYLES_EXCLUSIVE.some(s => s.id === styleId); if(isExclusive && totalScore < 50000) { alert("¡Este avatar es exclusivo para Rango Heroico!"); return; } currentAvatarStyle = styleId; renderAvatarOptions(); renderMainAvatar(); }
+        async function saveAvatarChoice() { await _supabase.from('profiles').upsert({ id: currentUser.id, avatar_style: currentAvatarStyle }); toggleAvatarModal(); updateRanking(); }
+        async function saveScore() { if (!currentUser) return; try { await _supabase.from('profiles').upsert({ id: currentUser.id, username: currentUser.email.split('@')[0], total_score: totalScore }); updateRanking(); } catch(e) { console.error(e); } }
+        let rankInt; function startRanking() { updateRanking(); rankInt = setInterval(updateRanking, 5000); }
         async function updateRanking() {
             const list = document.getElementById('ranking-list');
             try {
                 const { data, error } = await _supabase.from('profiles').select('username, total_score, avatar_style').order('total_score', { ascending: false }).limit(10);
-                if(error) throw error;
-                if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; padding:10px; color:#666;">No hay datos.</li>'; return; }
-                list.innerHTML = data.map((u, i) => {
-                    const s = u.total_score || 0;
-                    const rI = getRankInfo(s);
-                    const isMe = (currentUser && u.username === currentUser.email.split('@')[0]);
-                    let cls = "ranking-item " + rI.css;
-                    if(isMe) cls += " me";
-                    const style = u.avatar_style || 'adventurer';
-                    const avatarUrl = getAvatarUrl(u.username || 'guest', style);
-                    return `<li class="${cls}">
-                        <span class="rank-pos">${i+1}.</span>
-                        <div class="rank-row">
-                            <img src="${avatarUrl}" class="list-avatar ${rI.avatar}">
-                            <div class="rank-info">
-                                <span class="rank-name-list">${u.username||'Yo'}</span>
-                                <span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span>
-                            </div>
-                        </div>
-                        <span class="rank-score">${s}</span>
-                    </li>`;
-                }).join('');
+                if(error) throw error; if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; padding:10px; color:#666;">No hay datos.</li>'; return; }
+                list.innerHTML = data.map((u, i) => { const s = u.total_score || 0; const rI = getRankInfo(s); const isMe = (currentUser && u.username === currentUser.email.split('@')[0]); let cls = "ranking-item " + rI.css; if(isMe) cls += " me"; const style = u.avatar_style || 'adventurer'; const avatarUrl = getAvatarUrl(u.username || 'guest', style); return `<li class="${cls}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avatarUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${u.username||'Yo'}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span></div></div><span class="rank-score">${s}</span></li>`; }).join('');
             } catch(err) { list.innerHTML = '<li style="text-align:center; padding:10px; color:red;">Error al cargar.</li>'; }
         }
 
-        // GAME LOGIC
-        
         function initGame() { loadProblem(); document.getElementById('levelSelect').value = currentMainLevel; }
         function jumpToLevel(l) { currentMainLevel=parseInt(l); currentProblemInLevel=1; loadProblem(); }
         
         function loadProblem() {
-            document.getElementById('subLevelCount').innerText = currentProblemInLevel;
-            document.getElementById('progressBar').style.width = ((currentMainLevel - 1) / TOTAL_LEVELS) * 100 + '%';
-            document.getElementById('levelSelect').value = currentMainLevel;
-            const d = DB[currentMainLevel];
-            if (d && d[currentProblemInLevel - 1]) { currentDividend = d[currentProblemInLevel - 1].d; currentDivisor = d[currentProblemInLevel - 1].div; }
-            const label = getDifficultyLabel(currentMainLevel);
-            document.getElementById('difficultyLabel').innerText = label;
-            createUI(); createAntena(); resetAll();
-            lockGrid();
+            document.getElementById('subLevelCount').innerText = currentProblemInLevel; document.getElementById('progressBar').style.width = ((currentMainLevel - 1) / TOTAL_LEVELS) * 100 + '%'; document.getElementById('levelSelect').value = currentMainLevel;
+            const d = DB[currentMainLevel]; if (d && d[currentProblemInLevel - 1]) { currentDividend = d[currentProblemInLevel - 1].d; currentDivisor = d[currentProblemInLevel - 1].div; }
+            const label = getDifficultyLabel(currentMainLevel); document.getElementById('difficultyLabel').innerText = label; createUI(); createAntena(); resetAll(); lockGrid();
         }
+        function getDifficultyLabel(lvl) { if(lvl <= 2) return "Divisor: 1 Cifra"; if(lvl === 3 || lvl === 4 || lvl === 5 || lvl === 7 || lvl === 9) return "Divisor: 2 Cifras"; return "Divisor: 3 Cifras"; }
 
-        function getDifficultyLabel(lvl) {
-            if(lvl <= 2) return "Divisor: 1 Cifra";
-            if(lvl === 3 || lvl === 4 || lvl === 5 || lvl === 7 || lvl === 9) return "Divisor: 2 Cifras";
-            return "Divisor: 3 Cifras";
-        }
+        function lockGrid() { isGridLocked = true; document.getElementById('grid-lock-overlay').classList.remove('hidden'); document.getElementById('valCociente').disabled = true; document.getElementById('valResiduo').disabled = true; document.getElementById('btnSelectMode').disabled = true; }
+        function unlockGrid() { isGridLocked = false; document.getElementById('grid-lock-overlay').classList.add('hidden'); document.getElementById('valCociente').disabled = false; document.getElementById('valResiduo').disabled = false; document.getElementById('btnSelectMode').disabled = false; document.getElementById('msg').innerText = "¡Antena correcta! Desbloqueado."; document.getElementById('msg').style.color = "var(--success)"; }
 
-        // --- LOCK/UNLOCK LOGIC ---
-        function lockGrid() {
-            isGridLocked = true;
-            document.getElementById('grid-lock-overlay').classList.remove('hidden');
-            document.getElementById('valCociente').disabled = true;
-            document.getElementById('valResiduo').disabled = true;
-            document.getElementById('btnSelectMode').disabled = true;
-        }
-
-        function unlockGrid() {
-            isGridLocked = false;
-            document.getElementById('grid-lock-overlay').classList.add('hidden');
-            document.getElementById('valCociente').disabled = false;
-            document.getElementById('valResiduo').disabled = false;
-            document.getElementById('btnSelectMode').disabled = false;
-            document.getElementById('msg').innerText = "¡Antena correcta! Operación desbloqueada.";
-            document.getElementById('msg').style.color = "var(--success)";
-        }
-
-        // --- VICTORY (BUYA) LOGIC ---
         function showVictoryScreen(nextLevel) {
-            const screen = document.getElementById('victory-screen');
-            const levelDisplay = document.getElementById('victory-level-display');
-            levelDisplay.innerText = "NIVEL " + nextLevel;
-            
-            // Add confetti
-            createConfetti();
-
-            screen.classList.add('show');
-
-            setTimeout(() => {
-                screen.classList.remove('show');
-                // Clean up confetti
-                document.querySelectorAll('.confetti').forEach(c => c.remove());
-                
-                // Proceed
-                currentMainLevel = nextLevel;
-                currentProblemInLevel = 1;
-                loadProblem();
-            }, 3000);
+            const screen = document.getElementById('victory-screen'); const levelDisplay = document.getElementById('victory-level-display'); levelDisplay.innerText = "NIVEL " + nextLevel;
+            createConfetti(); screen.classList.add('show');
+            setTimeout(() => { screen.classList.remove('show'); document.querySelectorAll('.confetti').forEach(c => c.remove()); currentMainLevel = nextLevel; currentProblemInLevel = 1; loadProblem(); }, 3000);
         }
 
-        function createConfetti() {
-            const screen = document.getElementById('victory-screen');
-            const colors = ['#f00', '#0f0', '#00f', '#ff0', '#f0f', '#0ff'];
-            for (let i = 0; i < 50; i++) {
-                const conf = document.createElement('div');
-                conf.className = 'confetti';
-                conf.style.left = Math.random() * 100 + 'vw';
-                conf.style.top = -10 + 'px';
-                conf.style.background = colors[Math.floor(Math.random() * colors.length)];
-                conf.style.animationDuration = (Math.random() * 2 + 2) + 's';
-                screen.appendChild(conf);
-            }
-        }
+        function createConfetti() { const screen = document.getElementById('victory-screen'); const colors = ['#ffcc00', '#00e676', '#2979ff', '#f00', '#ff9800']; for (let i = 0; i < 50; i++) { const conf = document.createElement('div'); conf.className = 'confetti'; conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = -10 + 'px'; conf.style.background = colors[Math.floor(Math.random() * colors.length)]; conf.style.animationDuration = (Math.random() * 2 + 2) + 's'; screen.appendChild(conf); } }
 
         function createUI() {
-            const g = document.getElementById('gridContainer'); const dB = document.getElementById('divisorBox'); const tR = document.getElementById('topRow');
-            g.innerHTML = ''; dB.innerHTML = ''; tR.innerHTML = '';
+            const g = document.getElementById('gridContainer'); const dB = document.getElementById('divisorBox'); const tR = document.getElementById('topRow'); g.innerHTML = ''; dB.innerHTML = ''; tR.innerHTML = '';
             String(currentDivisor).split('').forEach(n => { let i=document.createElement('input'); i.type='text'; i.className='input-div'; i.value=n; i.readOnly=true; dB.appendChild(i); });
-            
-            for(let r=0; r<rows; r++) {
-                for(let c=0; c<cols; c++) {
-                    let i = document.createElement('input');
-                    i.type='text'; i.className='cell'; i.maxLength=1; i.id="c-"+r+"-"+c;
-                    i.addEventListener('mousedown', (e) => { if(sel && !isGridLocked){ e.preventDefault(); drag=true; sC={r,c}; eC={r,c}; updS(); } });
-                    i.addEventListener('mouseenter', (e) => { if(sel && drag && !isGridLocked){ eC={r,c}; updS(); } });
-                    i.addEventListener('input', (e) => { if(!sel && !isGridLocked && e.target.value){ let n=(c<cols-1)?"c-"+r+"-"+(c+1):(r<rows-1)?"c-"+(r+1)+"-0":null; if(n)document.getElementById(n).focus(); }});
-                    g.appendChild(i);
-                }
-            }
-            document.onmouseup = () => { drag=false; };
-            let sN = String(currentDividend);
-            for(let i=0; i<sN.length; i++) { let cell = document.getElementById("c-0-"+i); cell.value = sN[i]; cell.classList.add('cell-locked'); cell.disabled = true; }
+            for(let r=0; r<rows; r++) { for(let c=0; c<cols; c++) { let i = document.createElement('input'); i.type='text'; i.className='cell'; i.maxLength=1; i.id="c-"+r+"-"+c; i.addEventListener('mousedown', (e) => { if(sel && !isGridLocked){ e.preventDefault(); drag=true; sC={r,c}; eC={r,c}; updS(); } }); i.addEventListener('mouseenter', (e) => { if(sel && drag && !isGridLocked){ eC={r,c}; updS(); } }); i.addEventListener('input', (e) => { if(!sel && !isGridLocked && e.target.value){ let n=(c<cols-1)?"c-"+r+"-"+(c+1):(r<rows-1)?"c-"+(r+1)+"-0":null; if(n)document.getElementById(n).focus(); }}); g.appendChild(i); } }
+            document.onmouseup = () => { drag=false; }; let sN = String(currentDividend); for(let i=0; i<sN.length; i++) { let cell = document.getElementById("c-0-"+i); cell.value = sN[i]; cell.classList.add('cell-locked'); cell.disabled = true; }
             document.getElementById('lineH').style.width = (sN.length * cellSize) + 'px';
             for(let c=0; c<sN.length; c++) { let i=document.createElement('input'); i.type='text'; i.className='input-cociente'; i.maxLength=1; i.id="top-"+c; i.addEventListener('input', (e) => { syncT(); if(e.target.value && c<sN.length-1) document.getElementById("top-"+(c+1)).focus(); }); tR.appendChild(i); }
         }
@@ -679,57 +475,26 @@
         function applyBorder(t) { if(isGridLocked) return; selC.forEach(id=>{let el=document.getElementById(id); if(el){if(t==='clear'){el.classList.remove('border-bottom','border-right');}else{el.classList.add("border-"+t);}}}); }
         function syncT() { let v=""; document.querySelectorAll('.input-cociente').forEach(x=>v+=x.value); document.getElementById('valCociente').value=v; }
 
-        function createAntena() {
-            const b=document.getElementById('antenaBody'); document.getElementById('antenaLabel').innerText=currentDivisor; b.innerHTML='';
-            for(let i=1;i<=10;i++){let r=document.createElement('div'); r.className='antena-row'; r.innerHTML="<span>"+i+" x "+currentDivisor+" =</span><input type='number' class='antena-input' id='a"+i+"'>"; b.appendChild(r);}
-        }
-        function resetAll() {
-            document.getElementById('valCociente').value=''; document.getElementById('valResiduo').value='';
-            document.querySelectorAll('.antena-input').forEach(i => { i.value=''; i.classList.remove('status-ok','status-wrong'); });
-            document.querySelectorAll('.input-cociente').forEach(i => i.value='');
-            document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value=''; i.disabled=false; });
-            document.querySelectorAll('.cell').forEach(c => c.classList.remove('border-bottom','border-right','cell-selected'));
-            selC.clear();
-        }
+        function createAntena() { const b=document.getElementById('antenaBody'); document.getElementById('antenaLabel').innerText=currentDivisor; b.innerHTML=''; for(let i=1;i<=10;i++){let r=document.createElement('div'); r.className='antena-row'; r.innerHTML="<span>"+i+" x "+currentDivisor+" =</span><input type='number' class='antena-input' id='a"+i+"'>"; b.appendChild(r);} }
+        function resetAll() { document.getElementById('valCociente').value=''; document.getElementById('valResiduo').value=''; document.querySelectorAll('.antena-input').forEach(i => { i.value=''; i.classList.remove('status-ok','status-wrong'); }); document.querySelectorAll('.input-cociente').forEach(i => i.value=''); document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value=''; i.disabled=false; }); document.querySelectorAll('.cell').forEach(c => c.classList.remove('border-bottom','border-right','cell-selected')); selC.clear(); }
+        function validarAntena() { if(isGridLocked == false) return; let ok=true; for(let i=1;i<=10;i++){let inp=document.getElementById("a"+i); let v=parseInt(inp.value); if(v===i*currentDivisor){inp.classList.add('status-ok');inp.classList.remove('status-wrong');}else{inp.classList.add('status-wrong');inp.classList.remove('status-ok');ok=false;}} if(ok) { unlockGrid(); } else { document.getElementById('msg').innerText = "Corrige los errores."; document.getElementById('msg').style.color = "var(--error)"; } }
         
-        function validarAntena() {
-            if(isGridLocked == false) return;
-            let ok=true;
-            for(let i=1;i<=10;i++){let inp=document.getElementById("a"+i); let v=parseInt(inp.value); if(v===i*currentDivisor){inp.classList.add('status-ok');inp.classList.remove('status-wrong');}else{inp.classList.add('status-wrong');inp.classList.remove('status-ok');ok=false;}}
-            if(ok) { unlockGrid(); } else {
-                document.getElementById('msg').innerText = "Corrige los errores.";
-                document.getElementById('msg').style.color = "var(--error)";
-            }
-        }
-
         async function verificarSolucion() {
             if(isGridLocked) { alert("¡Valida la Antena primero!"); return; }
-
             let coc=parseInt(document.getElementById('valCociente').value); let res=parseInt(document.getElementById('valResiduo').value)||0;
             let rC=Math.floor(currentDividend/currentDivisor); let rR=currentDividend%currentDivisor;
-            
             if(coc===rC && res===rR) {
                 totalScore+=POINTS; updateUI(); await saveScore();
-                document.getElementById('msg').innerHTML="<span style='color:var(--success); font-weight:700;'>¡Correcto! +"+POINTS+"</span>";
-                
+                document.getElementById('msg').innerHTML="<span style='color:var(--success); font-weight:700; font-size:1.2rem;'>¡CORRECTO! +"+POINTS+"</span>";
                 setTimeout(() => {
-                    if(currentProblemInLevel<PROBLEMS_PER_LEVEL) {
-                        currentProblemInLevel++;
-                        loadProblem();
-                    } else {
-                        // TERMINÓ EL NIVEL
-                        if(currentMainLevel < TOTAL_LEVELS) {
-                            let nextLvl = currentMainLevel + 1;
-                            showVictoryScreen(nextLvl); // ACTIVAR BUYA
-                        } else {
-                            alert("¡JUEGO TERMINADO! Puntuación: " + totalScore);
-                            currentMainLevel = 1; currentProblemInLevel = 1; totalScore = 0; updateUI(); loadProblem();
-                        }
+                    if(currentProblemInLevel<PROBLEMS_PER_LEVEL) currentProblemInLevel++;
+                    else {
+                        if(currentMainLevel < TOTAL_LEVELS) { let nextLvl = currentMainLevel + 1; showVictoryScreen(nextLvl); }
+                        else { alert("¡JUEGO TERMINADO! Puntuación: " + totalScore); currentMainLevel = 1; currentProblemInLevel = 1; totalScore = 0; updateUI(); loadProblem(); }
                     }
-                }, 1500); // Reducido a 1.5s para que fluya rápido al Buya
-            } else { 
-                document.getElementById('msg').innerHTML="<span style='color:var(--error); font-weight:700;'>Incorrecto.</span>"; 
-            }
+                    if(currentProblemInLevel > 1 || currentMainLevel > 1) loadProblem(); // Avoid double load on victory screen
+                }, 1500);
+            } else { document.getElementById('msg').innerHTML="<span style='color:var(--error); font-weight:700; font-size:1.2rem;'>INCORRECTO</span>"; }
         }
     </script>
 </body>
