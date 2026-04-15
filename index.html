@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Prof. Miguel - Versión Final</title>
+    <title>Prof. Miguel - Gamer Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -23,31 +23,54 @@
         .panel { background: white; padding: 15px 25px; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
         .level-select { padding: 8px 12px; border-radius: 20px; border: 2px solid var(--primary-color); background: white; color: var(--primary-color); font-family: 'Poppins'; font-weight: 700; cursor: pointer; outline: none; }
         
-        .rank-box { display: flex; flex-direction: column; align-items: center; background: #f8fafc; padding: 10px 20px; border-radius: 12px; border: 2px solid #e2e8f0; min-width: 180px; }
-        .rank-name { font-size: 1.2rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
-        .rank-progress { width: 100%; height: 6px; background: #e2e8f0; border-radius: 3px; margin-top: 5px; overflow: hidden; }
+        /* AVATAR SYSTEM - FREE FIRE STYLE */
+        .avatar-container {
+            width: 60px; height: 60px;
+            border-radius: 50%; overflow: hidden;
+            border: 3px solid #e5e7eb;
+            background-color: #e5e7eb;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            flex-shrink: 0;
+        }
+        .avatar-img { width: 100%; height: 100%; object-fit: cover; background-color: white; }
+        
+        /* Rank Borders for Avatar */
+        .avatar-iron { border-color: var(--rank-iron); background-color: #f3f4f6; }
+        .avatar-bronze { border-color: var(--rank-bronze); background-color: #fff7ed; }
+        .avatar-silver { border-color: var(--rank-silver); background-color: #f8fafc; }
+        .avatar-gold { border-color: var(--rank-gold); background-color: #fffbeb; box-shadow: 0 0 10px rgba(251, 191, 36, 0.4); }
+        .avatar-platinum { border-color: var(--rank-platinum); background-color: #ecfeff; }
+        .avatar-diamond { border-color: var(--rank-diamond); background-color: #f5f3ff; box-shadow: 0 0 10px rgba(139, 92, 246, 0.3); }
+        .avatar-heroic { 
+            border-color: var(--rank-heroic); background-color: #fef2f2; 
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.5);
+            animation: heroPulse 2s infinite;
+        }
+        @keyframes heroPulse { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
+
+        .user-info-panel { display: flex; align-items: center; gap: 15px; }
+        .user-stats { display: flex; flex-direction: column; align-items: flex-start; }
+        .rank-box { display: flex; flex-direction: column; align-items: center; background: #f8fafc; padding: 5px 15px; border-radius: 12px; border: 2px solid #e2e8f0; min-width: 120px; }
+        .rank-name { font-size: 1rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
+        .rank-progress { width: 100%; height: 4px; background: #e2e8f0; border-radius: 3px; margin-top: 4px; overflow: hidden; }
         .rank-progress-bar { height: 100%; transition: width 0.5s; background: var(--text-dark); }
         .rank-score-label { font-size: 0.8rem; color: #666; margin-top: 2px; }
 
-        .progress-bar-container { flex-grow: 1; margin: 0 20px; height: 12px; background: #e5e7eb; border-radius: 6px; overflow: hidden; min-width: 150px; }
+        .progress-bar-container { flex-grow: 1; margin: 0 20px; height: 12px; background: #e5e7eb; border-radius: 6px; overflow: hidden; min-width: 100px; }
         .progress-bar-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
 
         .main-layout { display: flex; flex-direction: row; gap: 20px; width: 100%; align-items: flex-start; flex-wrap: wrap; }
         .game-area { flex: 3; display: flex; flex-direction: column; gap: 20px; min-width: 300px; }
-        
-        /* CORRECCIÓN: Scroll horizontal si el contenido es muy ancho (Nivel 10) */
-        .workspace-card { 
-            background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); 
-            display: flex; gap: 40px; justify-content: flex-start; align-items: flex-start;
-            overflow-x: auto; /* Permite scroll horizontal */
-            width: 100%;
-            box-sizing: border-box;
-        }
+        .workspace-card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); display: flex; gap: 40px; justify-content: flex-start; align-items: flex-start; overflow-x: auto; width: 100%; box-sizing: border-box; }
 
         .ranking-sidebar { flex: 1; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); min-width: 280px; }
         .ranking-title { font-size: 1.3rem; font-weight: 800; color: var(--text-dark); text-align: center; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-bottom: 15px; }
         .ranking-list { list-style: none; padding: 0; margin: 0; }
-        .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; margin-bottom: 8px; border-radius: 8px; background: #f8fafc; border-left: 5px solid #cbd5e1; }
+        .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; border-radius: 8px; background: #f8fafc; border-left: 5px solid #cbd5e1; }
+        
+        .rank-row { display: flex; align-items: center; gap: 10px; flex-grow: 1; }
+        .list-avatar { width: 36px; height: 36px; border-radius: 50%; border: 2px solid #e5e7eb; flex-shrink: 0; }
         
         .rank-iron { color: var(--rank-iron); border-color: var(--rank-iron); }
         .rank-bronze { color: var(--rank-bronze); border-color: var(--rank-bronze); background: #fff7ed; }
@@ -57,13 +80,13 @@
         .rank-diamond { color: #6d28d9; border-color: var(--rank-diamond); background: #f5f3ff; font-weight: 800; }
         .rank-heroic { color: #b91c1c; border-color: var(--rank-heroic); background: #fef2f2; font-weight: 900; }
         
-        .rank-pos { font-weight: 800; color: #666; margin-right: 10px; width: 20px; }
+        .rank-pos { font-weight: 800; color: #666; margin-right: 5px; width: 20px; font-size: 0.9rem; }
         .rank-info { flex-grow: 1; display: flex; flex-direction: column; }
-        .rank-name-list { font-weight: 700; font-size: 0.95rem; }
-        .rank-tier-list { font-size: 0.75rem; font-weight: 800; opacity: 0.9; }
+        .rank-name-list { font-weight: 700; font-size: 0.9rem; }
+        .rank-tier-list { font-size: 0.7rem; font-weight: 800; opacity: 0.9; }
         .rank-score { font-weight: 700; color: var(--primary-light); margin-left: 10px; font-size: 0.9rem; }
 
-        .division-row { display: flex; flex-direction: row; align-items: flex-start; gap: 0; margin-top: 20px; flex-shrink: 0; /* Evita que se comprima */ }
+        .division-row { display: flex; flex-direction: row; align-items: flex-start; gap: 0; margin-top: 20px; flex-shrink: 0; }
         .col-divisor { display: flex; flex-direction: row; align-items: center; height: var(--cell-size); margin-top: 49px; }
         .input-div { width: var(--cell-size); height: var(--cell-size); border: 1px solid #ccc; background: #fafafa; font-size: 2rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; }
         .col-linea-v { width: 4px; height: var(--cell-size); background-color: var(--text-dark); margin-top: 49px; }
@@ -98,20 +121,30 @@
         button { border: none; padding: 12px 24px; font-weight: 600; border-radius: 8px; cursor: pointer; font-size: 1rem; color: white; }
         .btn-primary { background: var(--primary-color); }
         .btn-check { background: var(--success); }
+        .btn-small { font-size: 0.8rem; padding: 5px 10px; background: #aaa; }
         #msg { width: 100%; text-align: center; font-weight: 600; margin-top: 10px; }
 
-        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, var(--primary-color), var(--primary-light)); display: flex; justify-content: center; align-items: center; z-index: 9999; }
+        /* Login & Modals */
+        #login-screen, #avatar-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: flex; justify-content: center; align-items: center; z-index: 9999; }
         .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.3); text-align: center; width: 350px; }
         .login-box h2 { color: var(--primary-color); margin-top: 0; }
         .login-input { width: 100%; padding: 12px; margin: 10px 0; border: 2px solid #eee; border-radius: 8px; font-size: 1rem; box-sizing: border-box; }
         .login-btn { width: 100%; margin-top: 10px; }
         .login-error { color: var(--error); font-size: 0.9rem; margin-top: 10px; display: none; }
 
+        .modal-box { background: white; padding: 30px; border-radius: 15px; width: 350px; text-align: center; }
+        .avatar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0; }
+        .avatar-option { cursor: pointer; padding: 5px; border-radius: 50%; border: 3px solid transparent; transition: 0.2s; }
+        .avatar-option:hover { border-color: #bfdbfe; }
+        .avatar-option.selected { border-color: var(--primary-color); background-color: #f0f0ff; }
+        .avatar-option img { width: 60px; height: 60px; border-radius: 50%; background: #eee; }
+
         @media (max-width: 900px) { .main-layout { flex-direction: column; } .ranking-sidebar { width: 100%; } .workspace-card { flex-wrap: wrap; justify-content: center; } }
     </style>
 </head>
 <body>
 
+    <!-- LOGIN SCREEN -->
     <div id="login-screen" style="display:none;">
         <div class="login-box">
             <h2>Prof. Miguel</h2>
@@ -121,6 +154,16 @@
             <button class="login-btn btn-primary" onclick="handleLogin()">Iniciar Sesión</button>
             <button class="login-btn btn-check" onclick="handleRegister()" style="margin-top:5px; background:#666;">Registrarse</button>
             <div id="login-error" class="login-error"></div>
+        </div>
+    </div>
+
+    <!-- AVATAR MODAL -->
+    <div id="avatar-modal" style="display:none; background: rgba(0,0,0,0.5);" onclick="if(event.target.id === 'avatar-modal') toggleAvatarModal()">
+        <div class="modal-box">
+            <h3 style="margin:0 0 10px 0; color:var(--primary-color);">Elige tu Personaje</h3>
+            <p style="font-size:0.9rem; color:#666;">Selecciona tu estilo de combate:</p>
+            <div class="avatar-grid" id="avatar-options"></div>
+            <button class="btn-primary" onclick="saveAvatarChoice()">Guardar</button>
         </div>
     </div>
 
@@ -142,17 +185,20 @@
             </div>
             <div class="progress-bar-container"><div class="progress-bar-fill" id="progressBar"></div></div>
             
-            <div style="display: flex; align-items: center; gap: 15px;">
-                <div style="text-align: center;">
-                    <div style="font-size: 0.8rem; color: #666;" id="difficultyLabel">...</div>
-                    <div style="font-size: 0.9rem; color:#666;">Ej. <span id="subLevelCount">1</span>/10</div>
+            <div class="user-info-panel">
+                <div class="avatar-container" id="main-avatar-box" onclick="toggleAvatarModal()" title="Cambiar Avatar" style="cursor: pointer;">
+                    <img id="main-avatar-img" class="avatar-img" src="" alt="Avatar">
+                </div>
+                <div class="user-stats">
+                     <div style="font-size: 0.8rem; color: #666;" id="difficultyLabel">...</div>
+                     <div style="font-size: 0.9rem; color:#666;">Ej. <span id="subLevelCount">1</span>/10</div>
                 </div>
                 <div class="rank-box" id="userRankBox">
                     <div class="rank-name" id="userRankName">...</div>
                     <div class="rank-progress"><div class="rank-progress-bar" id="userRankBar" style="width: 0%"></div></div>
                     <div class="rank-score-label"><span id="scoreDisplay">0</span> pts</div>
                 </div>
-                <button onclick="logout()" style="font-size:0.8rem; padding:10px; background:#aaa; height: fit-content;">Salir</button>
+                <button onclick="logout()" class="btn-small">Salir</button>
             </div>
         </div>
 
@@ -203,18 +249,10 @@
     </div>
 
     <script>
+        // CONFIG
         const SUPABASE_URL = 'https://oskrniownbbzkgnwunzz.supabase.co';
         const SUPABASE_KEY = 'sb_publishable_RcfluyMTRxDP4chkK91-2Q_UwLdLrqP';
-        
-        // CORRECCIÓN SESIÓN: Usar sessionStorage para que se borre al cerrar navegador
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-            auth: {
-                storage: window.sessionStorage,
-                autoRefreshToken: false,
-                persistSession: true,
-                detectSessionInUrl: false
-            }
-        });
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storage: window.sessionStorage, autoRefreshToken: false, persistSession: true, detectSessionInUrl: false } });
 
         const TOTAL_LEVELS = 10; const PROBLEMS_PER_LEVEL = 10;
         let currentMainLevel = 1; let currentProblemInLevel = 1;
@@ -222,15 +260,25 @@
         const cols = 9; const rows = 8; const cellSize = 45;
         let totalScore = 0; const POINTS = 100; 
         let currentUser = null;
+        let currentAvatarStyle = 'adventurer'; // Default style
+
+        // AVATAR STYLES (DiceBear)
+        const AVATAR_STYLES = [
+            { id: 'adventurer', name: 'Guerrero' },
+            { id: 'bottts', name: 'Robot' },
+            { id: 'pixel-art', name: 'Pixel' },
+            { id: 'lorelei', name: 'Fantasma' },
+            { id: 'big-ears', name: 'Alien' }
+        ];
 
         const RANKS = [
-            { name: "Hierro", min: 0, max: 2999, icon: "🪨", css: "rank-iron" },
-            { name: "Bronce", min: 3000, max: 6999, icon: "🥉", css: "rank-bronze" },
-            { name: "Plata", min: 7000, max: 12999, icon: "🥈", css: "rank-silver" },
-            { name: "Oro", min: 13000, max: 19999, icon: "🥇", css: "rank-gold" },
-            { name: "Platino", min: 20000, max: 29999, icon: "💠", css: "rank-platinum" },
-            { name: "Diamante", min: 30000, max: 49999, icon: "💎", css: "rank-diamond" },
-            { name: "Heroico", min: 50000, max: 999999, icon: "👑", css: "rank-heroic" }
+            { name: "Hierro", min: 0, max: 2999, icon: "🪨", css: "rank-iron", avatar: "avatar-iron" },
+            { name: "Bronce", min: 3000, max: 6999, icon: "🥉", css: "rank-bronze", avatar: "avatar-bronze" },
+            { name: "Plata", min: 7000, max: 12999, icon: "🥈", css: "rank-silver", avatar: "avatar-silver" },
+            { name: "Oro", min: 13000, max: 19999, icon: "🥇", css: "rank-gold", avatar: "avatar-gold" },
+            { name: "Platino", min: 20000, max: 29999, icon: "💠", css: "rank-platinum", avatar: "avatar-platinum" },
+            { name: "Diamante", min: 30000, max: 49999, icon: "💎", css: "rank-diamond", avatar: "avatar-diamond" },
+            { name: "Heroico", min: 50000, max: 999999, icon: "👑", css: "rank-heroic", avatar: "avatar-heroic" }
         ];
 
         function getRankInfo(score) {
@@ -245,6 +293,7 @@
             return { ...rank, tier: tier, pct: pct };
         }
 
+        // DB EXERCISES
         const DB = {
             1: [ {d: 456, div: 4}, {d: 789, div: 3}, {d: 125, div: 5}, {d: 982, div: 7}, {d: 641, div: 2}, {d: 333, div: 9}, {d: 805, div: 6}, {d: 219, div: 8}, {d: 567, div: 4}, {d: 901, div: 3} ],
             2: [ {d: 1245, div: 5}, {d: 8902, div: 2}, {d: 4567, div: 9}, {d: 3312, div: 6}, {d: 7841, div: 4}, {d: 2009, div: 7}, {d: 6554, div: 8}, {d: 5123, div: 3}, {d: 9876, div: 5}, {d: 4444, div: 7} ],
@@ -261,18 +310,12 @@
         document.addEventListener('DOMContentLoaded', async () => {
             try {
                 const { data: { session } } = await _supabase.auth.getSession();
-                // Si hay sesión en sessionStorage, la usa. Si no, login.
                 if (session && session.user) { currentUser = session.user; showApp(); } 
                 else { showLogin(); }
             } catch(e) { console.error(e); showLogin(); }
         });
-        
-        // Eliminamos el evento 'unload' porque sessionStorage se borra solo al cerrar navegador.
 
-        function showLogin() { 
-            document.getElementById('login-screen').style.display = 'flex'; 
-            document.querySelector('.app-container').style.display = 'none'; 
-        }
+        function showLogin() { document.getElementById('login-screen').style.display = 'flex'; document.querySelector('.app-container').style.display = 'none'; }
         
         async function showApp() {
             document.getElementById('login-screen').style.display = 'none';
@@ -307,19 +350,16 @@
             } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; }
         }
 
-        async function logout() { 
-            await _supabase.auth.signOut(); 
-            currentUser=null; totalScore=0; 
-            showLogin(); 
-            clearInterval(rankInt); 
-        }
+        async function logout() { await _supabase.auth.signOut(); currentUser=null; totalScore=0; showLogin(); clearInterval(rankInt); }
 
         async function loadScore(user) {
             try {
-                const { data } = await _supabase.from('profiles').select('total_score').eq('id', user.id).single();
+                const { data } = await _supabase.from('profiles').select('total_score, avatar_style').eq('id', user.id).single();
                 totalScore = (data && data.total_score) ? data.total_score : 0;
-            } catch(e) { totalScore = 0; }
+                currentAvatarStyle = (data && data.avatar_style) ? data.avatar_style : 'adventurer';
+            } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; }
             updateUI();
+            renderMainAvatar();
         }
 
         function updateUI() {
@@ -330,6 +370,55 @@
             document.getElementById('userRankBar').style.width = rI.pct + "%";
             let c = getComputedStyle(document.documentElement).getPropertyValue('--' + rI.css);
             document.getElementById('userRankBar').style.background = c;
+            
+            // Apply rank border to avatar
+            const avatarBox = document.getElementById('main-avatar-box');
+            avatarBox.className = "avatar-container " + rI.avatar; // Apply rank class to avatar container
+        }
+
+        // --- AVATAR SYSTEM ---
+        function getAvatarUrl(seed, style) {
+            return `https://api.dicebear.com/8.x/${style}/svg?seed=${seed}`;
+        }
+
+        function renderMainAvatar() {
+            const img = document.getElementById('main-avatar-img');
+            img.src = getAvatarUrl(currentUser.email.split('@')[0], currentAvatarStyle);
+        }
+
+        function toggleAvatarModal() {
+            const modal = document.getElementById('avatar-modal');
+            if(modal.style.display === 'none') {
+                modal.style.display = 'flex';
+                renderAvatarOptions();
+            } else {
+                modal.style.display = 'none';
+            }
+        }
+
+        function renderAvatarOptions() {
+            const grid = document.getElementById('avatar-options');
+            grid.innerHTML = '';
+            const seed = currentUser.email.split('@')[0];
+            AVATAR_STYLES.forEach(style => {
+                let div = document.createElement('div');
+                div.className = 'avatar-option' + (currentAvatarStyle === style.id ? ' selected' : '');
+                div.onclick = () => selectAvatarStyle(style.id);
+                div.innerHTML = `<img src="${getAvatarUrl(seed, style.id)}"><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`;
+                grid.appendChild(div);
+            });
+        }
+
+        function selectAvatarStyle(styleId) {
+            currentAvatarStyle = styleId;
+            renderAvatarOptions();
+            renderMainAvatar();
+        }
+
+        async function saveAvatarChoice() {
+            await _supabase.from('profiles').upsert({ id: currentUser.id, avatar_style: currentAvatarStyle });
+            toggleAvatarModal();
+            updateRanking(); // Refresh ranking to show new avatar
         }
 
         async function saveScore() {
@@ -346,7 +435,7 @@
         async function updateRanking() {
             const list = document.getElementById('ranking-list');
             try {
-                const { data, error } = await _supabase.from('profiles').select('username, total_score').order('total_score', { ascending: false }).limit(10);
+                const { data, error } = await _supabase.from('profiles').select('username, total_score, avatar_style').order('total_score', { ascending: false }).limit(10);
                 if(error) throw error;
                 if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; padding:10px; color:#666;">No hay datos.</li>'; return; }
                 list.innerHTML = data.map((u, i) => {
@@ -355,11 +444,24 @@
                     const isMe = (currentUser && u.username === currentUser.email.split('@')[0]);
                     let cls = "ranking-item " + rI.css;
                     if(isMe) cls += " me";
-                    return "<li class='" + cls + "'><span class='rank-pos'>"+(i+1)+".</span><div class='rank-info'><span class='rank-name-list'>"+(u.username||'Anónimo')+"</span><span class='rank-tier-list'>"+rI.icon+" "+rI.name+" "+rI.tier+"</span></div><span class='rank-score'>"+s+"</span></li>";
+                    const style = u.avatar_style || 'adventurer';
+                    const avatarUrl = getAvatarUrl(u.username || 'guest', style);
+                    return `<li class="${cls}">
+                        <span class="rank-pos">${i+1}.</span>
+                        <div class="rank-row">
+                            <img src="${avatarUrl}" class="list-avatar ${rI.avatar}">
+                            <div class="rank-info">
+                                <span class="rank-name-list">${u.username||'Yo'}</span>
+                                <span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span>
+                            </div>
+                        </div>
+                        <span class="rank-score">${s}</span>
+                    </li>`;
                 }).join('');
             } catch(err) { list.innerHTML = '<li style="text-align:center; padding:10px; color:red;">Error al cargar.</li>'; }
         }
 
+        // GAME LOGIC
         function initGame() { loadProblem(); document.getElementById('levelSelect').value = currentMainLevel; }
         function jumpToLevel(l) { currentMainLevel=parseInt(l); currentProblemInLevel=1; loadProblem(); }
         
