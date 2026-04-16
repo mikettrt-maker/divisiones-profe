@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - Temporada & Ban</title>
+    <title>Reto de División - Limpio</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -100,10 +100,9 @@
         .grid-disabled-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 50; display: flex; align-items: center; justify-content: center; pointer-events: none; border-radius: 4px; }
         .grid-disabled-overlay.hidden { display: none; }
         .lock-msg { background: var(--primary-color); color: black; padding: 8px 15px; border-radius: 2px; font-size: 0.9rem; font-weight: 700; box-shadow: 0 0 20px var(--primary-color); pointer-events: auto; text-align: center; text-transform: uppercase; }
-        .grid-header-toolbar { display: flex; height: 30px; align-items: center; justify-content: flex-start; gap: 5px; margin-bottom: 2px; padding-left: 2px; }
-        .tool-btn { background: #222; cursor: pointer; color: #888; border: none; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 2px; font-size: 0.8rem; }
-        .tool-btn:hover { background: #333; color: var(--primary-color); }
-        .tool-btn.active { background: var(--primary-color); color: black; }
+        
+        /* REMOVED TOOLBAR CSS */
+        
         .fila-horizontal-top { height: 3px; background-color: var(--primary-color); box-shadow: 0 0 8px var(--primary-color); border-radius: 2px; }
         .grid-matriz { display: grid; grid-template-columns: repeat(9, var(--cell-size)); grid-template-rows: repeat(15, var(--cell-size)); background-color: #2a2a2a; border: 1px solid #444; border-radius: 0 0 4px 4px; }
         .cell { width: var(--cell-size); height: var(--cell-size); background-color: #1a1a1a; border: 1px solid #333; text-align: center; font-size: 1.1rem; font-weight: 600; outline: none; cursor: text; box-sizing: border-box; color: white; transition: background 0.2s; }
@@ -114,13 +113,11 @@
         .input-cociente-galera { width: var(--cell-size); height: var(--cell-size); border: none; background: transparent; font-size: 1.4rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; font-family: 'Rajdhani', sans-serif; border-bottom: 1px solid #333; margin-bottom: 1px; }
         .input-cociente-galera:first-child { border-bottom: 1px solid var(--primary-color); }
 
-        /* ANTENA PANEL - FIX: Remove spinners */
+        /* ANTENA PANEL */
         .antena-panel { background: var(--bg-panel); border: 1px solid #333; padding: 15px; border-radius: 4px; border-top: 4px solid var(--primary-color); width: 240px; flex-shrink: 0; margin-left: auto; }
         .antena-header { text-align: center; font-weight: 700; color: var(--primary-color); margin-bottom: 15px; font-size: 1.1rem; text-transform: uppercase; font-family: 'Teko', sans-serif; }
         .antena-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; opacity: 1; transition: opacity 0.3s; font-size: 0.9rem; }
         .antena-row.locked-row { opacity: 0.4; }
-        
-        /* Force text input to hide spinners */
         .antena-input { width: 50px; height: 26px; font-size: 0.9rem; font-weight: 600; text-align: center; border: 1px solid #444; border-radius: 2px; background: black; color: white; -moz-appearance: textfield; }
         .antena-input::-webkit-outer-spin-button, .antena-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         .antena-input:disabled { background: #111; color: #555; border-color: #222; cursor: not-allowed; }
@@ -158,7 +155,7 @@
         .emoji-btn:hover { transform: scale(1.3); filter: grayscale(0%); }
         #chat-toggle-btn { position: fixed; bottom: 20px; right: 20px; z-index: 9001; width: 50px; height: 50px; border-radius: 50%; background: var(--primary-color); color: black; font-size: 1.5rem; border: none; box-shadow: 0 0 15px var(--primary-color); display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
-        /* ADMIN MODAL - UPDATED */
+        /* ADMIN MODAL */
         #admin-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 100000; overflow-y: auto; padding: 20px; }
         .admin-box { background: var(--bg-panel); padding: 30px; border-radius: 10px; border: 2px solid var(--primary-color); width: 600px; max-width: 100%; color: white; display: flex; flex-direction: column; gap: 20px; }
         .admin-title { font-family: 'Teko'; font-size: 2.5rem; color: var(--primary-color); margin-bottom: 10px; text-align: center; }
@@ -211,7 +208,6 @@
         <div class="admin-box" onclick="event.stopPropagation()">
             <div class="admin-title"><i class="fas fa-user-shield"></i> PANEL ADMIN</div>
             
-            <!-- SECCION TEMPORADA -->
             <div class="admin-section">
                 <h4><i class="fas fa-clock"></i> Temporada</h4>
                 <div id="timer-status" style="margin-bottom:10px; text-align:center; font-size:1.2rem; color:#aaa;">Cargando...</div>
@@ -222,15 +218,11 @@
                 </div>
             </div>
 
-            <!-- SECCION USUARIOS -->
             <div class="admin-section">
                 <h4><i class="fas fa-users"></i> Usuarios</h4>
-                <div class="user-list-admin" id="admin-user-list">
-                    <!-- Se llena con JS -->
-                </div>
+                <div class="user-list-admin" id="admin-user-list"></div>
             </div>
 
-            <!-- REINICIAR MANUAL -->
             <div class="admin-section">
                 <button class="btn-danger-big" onclick="resetAllUsers()"><i class="fas fa-redo"></i> Reiniciar Puntos (Manual)</button>
             </div>
@@ -284,12 +276,9 @@
                         <div class="col-linea-v"></div>
                         <div class="col-grid" id="grid-wrapper">
                             <div class="grid-disabled-overlay" id="grid-lock-overlay"><div class="lock-msg"><i class="fas fa-lock"></i> ¡Completa la Antena!</div></div>
-                            <div class="grid-header-toolbar">
-                                <button class="tool-btn" id="btnSelectMode" onclick="toggleSelectMode()"><i class="fas fa-mouse-pointer"></i></button>
-                                <button class="tool-btn" onclick="applyBorder('bottom')"><i class="fas fa-minus"></i></button>
-                                <button class="tool-btn" onclick="applyBorder('right')"><i class="fas fa-grip-lines-vertical"></i></button>
-                                <button class="tool-btn" onclick="applyBorder('clear')"><i class="fas fa-times"></i></button>
-                            </div>
+                            
+                            <!-- REMOVED TOOLBAR -->
+                            
                             <div class="fila-horizontal-top" id="lineH"></div>
                             <div class="grid-matriz" id="gridContainer"></div>
                         </div>
@@ -398,104 +387,48 @@
         async function initSeason() {
             try {
                 const { data } = await _supabase.from('game_settings').select('season_end_time').eq('id', 1).single();
-                if(data && data.season_end_time) {
-                    startCountdown(new Date(data.season_end_time));
-                } else {
-                    document.getElementById('timer-display').innerText = "SIN INICIAR";
-                    document.getElementById('season-badge').classList.add('finished');
-                }
+                if(data && data.season_end_time) { startCountdown(new Date(data.season_end_time)); } else { document.getElementById('timer-display').innerText = "SIN INICIAR"; document.getElementById('season-badge').classList.add('finished'); }
             } catch(e) { console.error("Error loading season", e); }
         }
-
         function startCountdown(endDate) {
             clearInterval(seasonInterval);
             seasonInterval = setInterval(() => {
-                const now = new Date();
-                const diff = endDate - now;
-
-                if (diff <= 0) {
-                    clearInterval(seasonInterval);
-                    document.getElementById('timer-display').innerText = "00:00:00";
-                    document.getElementById('season-badge').classList.add('finished');
-                    document.getElementById('season-badge').classList.remove('active');
-                    // Trigger reset if I am the admin (to avoid everyone trying to reset)
-                    if(isAdmin) {
-                        alert("¡Tiempo terminado! Reiniciando puntos...");
-                        resetAllUsers(true); // true = silent/auto
-                    }
-                    return;
-                }
-
-                const h = Math.floor(diff / 3600000);
-                const m = Math.floor((diff % 3600000) / 60000);
-                const s = Math.floor((diff % 60000) / 1000);
-                
-                document.getElementById('timer-display').innerText = 
-                    `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-                
-                document.getElementById('season-badge').classList.add('active');
-                document.getElementById('season-badge').classList.remove('finished');
-
+                const now = new Date(); const diff = endDate - now;
+                if (diff <= 0) { clearInterval(seasonInterval); document.getElementById('timer-display').innerText = "00:00:00"; document.getElementById('season-badge').classList.add('finished'); document.getElementById('season-badge').classList.remove('active'); if(isAdmin) { alert("¡Tiempo terminado! Reiniciando puntos..."); resetAllUsers(true); } return; }
+                const h = Math.floor(diff / 3600000); const m = Math.floor((diff % 3600000) / 60000); const s = Math.floor((diff % 60000) / 1000);
+                document.getElementById('timer-display').innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                document.getElementById('season-badge').classList.add('active'); document.getElementById('season-badge').classList.remove('finished');
             }, 1000);
         }
-
         async function startSeason() {
-            const h = parseInt(document.getElementById('input-hours').value) || 0;
-            const m = parseInt(document.getElementById('input-mins').value) || 0;
+            const h = parseInt(document.getElementById('input-hours').value) || 0; const m = parseInt(document.getElementById('input-mins').value) || 0;
             if(h === 0 && m === 0) return alert("Ingresa tiempo.");
-            
             const endTime = new Date(new Date().getTime() + (h * 3600000) + (m * 60000));
-            
-            try {
-                await _supabase.from('game_settings').upsert({ id: 1, season_end_time: endTime.toISOString() });
-                alert("¡Temporada iniciada!");
-                startCountdown(endTime);
-            } catch(e) { alert("Error al iniciar."); }
+            try { await _supabase.from('game_settings').upsert({ id: 1, season_end_time: endTime.toISOString() }); alert("¡Temporada iniciada!"); startCountdown(endTime); } catch(e) { alert("Error al iniciar."); }
         }
-
         async function loadAdminUsers() {
-            const list = document.getElementById('admin-user-list');
-            list.innerHTML = 'Cargando...';
+            const list = document.getElementById('admin-user-list'); list.innerHTML = 'Cargando...';
             try {
                 const { data, error } = await _supabase.from('profiles').select('id, username, total_score, is_banned').order('total_score', { ascending: false });
                 if(error) throw error;
                 list.innerHTML = data.map(u => `
                     <div class="user-row-admin">
-                        <div>
-                            <span class="user-name-admin">${u.username}</span>
-                            <span class="user-score-admin">${u.total_score} pts</span>
-                        </div>
-                        <button class="btn-ban ${u.is_banned ? 'active' : ''}" onclick="toggleBan('${u.id}', ${u.is_banned})">
-                            ${u.is_banned ? 'BANEADO' : 'Banear'}
-                        </button>
+                        <div><span class="user-name-admin">${u.username}</span><span class="user-score-admin">${u.total_score} pts</span></div>
+                        <button class="btn-ban ${u.is_banned ? 'active' : ''}" onclick="toggleBan('${u.id}', ${u.is_banned})">${u.is_banned ? 'BANEADO' : 'Banear'}</button>
                     </div>
                 `).join('');
             } catch(e) { list.innerHTML = 'Error'; }
         }
-
         async function toggleBan(uid, currentStatus) {
-            try {
-                await _supabase.from('profiles').update({ is_banned: !currentStatus }).eq('id', uid);
-                loadAdminUsers();
-                updateRanking();
-            } catch(e) { alert("Error al banear."); }
+            try { await _supabase.from('profiles').update({ is_banned: !currentStatus }).eq('id', uid); loadAdminUsers(); updateRanking(); } catch(e) { alert("Error al banear."); }
         }
-
         async function resetAllUsers(isAuto = false) {
             if(!isAuto && !confirm("¿Reiniciar TODOS los puntos?")) return;
             try {
                 await _supabase.from('profiles').update({ total_score: 0, current_level: 1, completed_at: null }).neq('id', '00000000-0000-0000-0000-000000000000');
-                if(!isAuto) alert("¡Reiniciado!");
-                toggleAdmin(); updateRanking(); loadHallOfFame();
+                if(!isAuto) alert("¡Reiniciado!"); toggleAdmin(); updateRanking(); loadHallOfFame();
                 totalScore = 0; unlockedLevel = 1; hasFinishedGame = false; updateUI(); initGame();
-                // Clear timer
-                if(!isAuto) {
-                    await _supabase.from('game_settings').update({ season_end_time: null }).eq('id', 1);
-                    document.getElementById('timer-display').innerText = "SIN INICIAR";
-                    clearInterval(seasonInterval);
-                    document.getElementById('season-badge').classList.remove('active');
-                    document.getElementById('season-badge').classList.add('finished');
-                }
+                if(!isAuto) { await _supabase.from('game_settings').update({ season_end_time: null }).eq('id', 1); document.getElementById('timer-display').innerText = "SIN INICIAR"; clearInterval(seasonInterval); document.getElementById('season-badge').classList.remove('active'); document.getElementById('season-badge').classList.add('finished'); }
             } catch(e) { alert("Error."); console.error(e); }
         }
 
@@ -512,8 +445,8 @@
         }
         function getDifficultyLabel(lvl) { if(lvl <= 2) return "Divisor: 1 Cifra"; if(lvl === 3 || lvl === 4 || lvl === 5 || lvl === 7 || lvl === 9) return "Divisor: 2 Cifras"; return "Divisor: 3 Cifras"; }
         
-        function lockGrid() { isGridLocked = true; document.getElementById('grid-lock-overlay').classList.remove('hidden'); disableCocienteInputs(true); document.getElementById('btnSelectMode').disabled = true; }
-        function unlockGrid() { isGridLocked = false; document.getElementById('grid-lock-overlay').classList.add('hidden'); disableCocienteInputs(false); document.getElementById('btnSelectMode').disabled = false; document.getElementById('msg').innerText = "¡Antena completa!"; document.getElementById('msg').style.color = "var(--success)"; triggerEpicEffect(); }
+        function lockGrid() { isGridLocked = true; document.getElementById('grid-lock-overlay').classList.remove('hidden'); disableCocienteInputs(true); }
+        function unlockGrid() { isGridLocked = false; document.getElementById('grid-lock-overlay').classList.add('hidden'); disableCocienteInputs(false); document.getElementById('msg').innerText = "¡Antena completa!"; document.getElementById('msg').style.color = "var(--success)"; triggerEpicEffect(); }
 
         function triggerEpicEffect() { AudioEngine.playEpic(); const overlay = document.getElementById('epic-overlay'); const text = document.getElementById('epic-text'); const messages = ["¡BOOYAH!", "¡A LA CARGA!", "¡MÁXIMO PODER!"]; text.innerText = messages[Math.floor(Math.random()*messages.length)]; overlay.style.display = 'flex'; text.style.animation = 'none'; void text.offsetWidth; text.style.animation = 'epicPulse 0.5s ease-out forwards'; setTimeout(() => { overlay.style.display = 'none'; }, 1500); }
 
@@ -525,26 +458,19 @@
             const g = document.getElementById('gridContainer'); const dB = document.getElementById('divisorBox'); const cC = document.getElementById('col-cociente');
             g.innerHTML = ''; dB.innerHTML = ''; cC.innerHTML = '';
             String(currentDivisor).split('').forEach(n => { let i=document.createElement('input'); i.type='text'; i.className='input-div'; i.value=n; i.readOnly=true; dB.appendChild(i); });
-            for(let r=0; r<rows; r++) { for(let c=0; c<cols; c++) { let i = document.createElement('input'); i.type='text'; i.className='cell'; i.maxLength=1; i.id="c-"+r+"-"+c; i.addEventListener('mousedown', (e) => { if(sel && !isGridLocked){ e.preventDefault(); drag=true; sC={r,c}; eC={r,c}; updS(); } }); i.addEventListener('mouseenter', (e) => { if(sel && drag && !isGridLocked){ eC={r,c}; updS(); } }); i.addEventListener('input', (e) => { if(!sel && !isGridLocked && e.target.value){ let n=(c<cols-1)?"c-"+r+"-"+(c+1):(r<rows-1)?"c-"+(r+1)+"-0":null; if(n)document.getElementById(n).focus(); }}); g.appendChild(i); } }
-            document.onmouseup = () => { drag=false; }; let sN = String(currentDividend); for(let i=0; i<sN.length; i++) { let cell = document.getElementById("c-0-"+i); cell.value = sN[i]; cell.classList.add('cell-locked'); cell.disabled = true; }
+            for(let r=0; r<rows; r++) { for(let c=0; c<cols; c++) { let i = document.createElement('input'); i.type='text'; i.className='cell'; i.maxLength=1; i.id="c-"+r+"-"+c; i.addEventListener('input', (e) => { if(!isGridLocked && e.target.value){ let n=(c<cols-1)?"c-"+r+"-"+(c+1):(r<rows-1)?"c-"+(r+1)+"-0":null; if(n)document.getElementById(n).focus(); }}); g.appendChild(i); } }
+            let sN = String(currentDividend); for(let i=0; i<sN.length; i++) { let cell = document.getElementById("c-0-"+i); cell.value = sN[i]; cell.classList.add('cell-locked'); cell.disabled = true; }
             document.getElementById('lineH').style.width = (sN.length * cellSize) + 'px';
             for(let i=0; i<sN.length; i++) { let inp = document.createElement('input'); inp.type = 'text'; inp.className = 'input-cociente-galera'; inp.maxLength = 1; inp.id = "top-"+i; inp.addEventListener('input', (e) => { syncT(); if(e.target.value && i<sN.length-1) document.getElementById("top-"+(i+1)).focus(); }); cC.appendChild(inp); }
         }
         function disableCocienteInputs(disabled) { document.querySelectorAll('.input-cociente-galera').forEach(i => i.disabled = disabled); }
-        let sel=false, drag=false, sC=null, eC=null, selC=new Set();
-        function toggleSelectMode() { if(isGridLocked) return; sel=!sel; document.getElementById('btnSelectMode').classList.toggle('active', sel); if(!sel) clrS(); }
-        function updS() { clrS(); if(!sC||!eC)return; let minR=Math.min(sC.r,eC.r),maxR=Math.max(sC.r,eC.r),minC=Math.min(sC.c,eC.c),maxC=Math.max(sC.c,eC.c); for(let r=minR;r<=maxR;r++)for(let c=minC;c<=maxC;c++){let el=document.getElementById("c-"+r+"-"+c); if(el){el.classList.add('cell-selected'); selC.add(el.id);}} }
-        function clrS() { selC.forEach(id=>{let el=document.getElementById(id); if(el)el.classList.remove('cell-selected');}); selC.clear(); }
-        function applyBorder(t) { if(isGridLocked) return; selC.forEach(id=>{let el=document.getElementById(id); if(el){if(t==='clear'){el.classList.remove('border-bottom','border-right');}else{el.classList.add("border-"+t);}}}); }
         function syncT() { let v=""; document.querySelectorAll('.input-cociente-galera').forEach(x=>v+=x.value); document.getElementById('valCociente').value=v; }
 
-        // --- ANTENA LOGIC (FIXED: Text Input) ---
-        function createAntena() { const b=document.getElementById('antenaBody'); document.getElementById('antenaLabel').innerText=currentDivisor; b.innerHTML=''; for(let i=1;i<=10;i++){ let r=document.createElement('div'); r.className='antena-row locked-row'; r.id="row-"+i; 
-            // FIX: type="text" inputmode="numeric" pattern="[0-9]*" prevents spinners
-            r.innerHTML="<span>"+i+" x "+currentDivisor+" =</span><input type='text' inputmode='numeric' pattern='[0-9]*' class='antena-input' id='a"+i+"' disabled>"; b.appendChild(r); } currentAntennaIndex = 0; enableNextAntennaInput(); }
+        // --- ANTENA LOGIC ---
+        function createAntena() { const b=document.getElementById('antenaBody'); document.getElementById('antenaLabel').innerText=currentDivisor; b.innerHTML=''; for(let i=1;i<=10;i++){ let r=document.createElement('div'); r.className='antena-row locked-row'; r.id="row-"+i; r.innerHTML="<span>"+i+" x "+currentDivisor+" =</span><input type='text' inputmode='numeric' pattern='[0-9]*' class='antena-input' id='a"+i+"' disabled>"; b.appendChild(r); } currentAntennaIndex = 0; enableNextAntennaInput(); }
         function enableNextAntennaInput() { if (currentAntennaIndex >= ANTENNA_SEQUENCE.length) return; const currentId = ANTENNA_SEQUENCE[currentAntennaIndex]; const input = document.getElementById("a"+currentId); const row = document.getElementById("row-"+currentId); if(input) { input.disabled = false; input.focus(); row.classList.remove('locked-row'); input.oninput = (e) => { e.target.value = e.target.value.replace(/[^0-9]/g, ''); checkAntennaInput(input, currentId); }; } }
         function checkAntennaInput(input, id) { const val = parseInt(input.value); const expected = id * currentDivisor; if (val === expected) { AudioEngine.playSuccess(); input.classList.add('status-ok'); input.disabled = true; input.classList.remove('status-wrong'); currentAntennaIndex++; if (currentAntennaIndex < ANTENNA_SEQUENCE.length) { enableNextAntennaInput(); } else { unlockGrid(); } } else { input.classList.add('status-wrong'); setTimeout(() => input.classList.remove('status-wrong'), 500); } }
-        function resetAll() { document.getElementById('valCociente').value=''; document.getElementById('valResiduo').value=''; document.querySelectorAll('.antena-input').forEach(i => { i.value=''; i.classList.remove('status-ok','status-wrong'); }); document.querySelectorAll('.input-cociente-galera').forEach(i => i.value=''); document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value=''; i.disabled=false; }); document.querySelectorAll('.cell').forEach(c => c.classList.remove('border-bottom','border-right','cell-selected')); selC.clear(); }
+        function resetAll() { document.getElementById('valCociente').value=''; document.getElementById('valResiduo').value=''; document.querySelectorAll('.antena-input').forEach(i => { i.value=''; i.classList.remove('status-ok','status-wrong'); }); document.querySelectorAll('.input-cociente-galera').forEach(i => i.value=''); document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value=''; i.disabled=false; }); }
         
         async function verificarSolucion() {
             if(isProcessing) return; if(isGridLocked) { alert("¡Completa la Antena!"); return; }
