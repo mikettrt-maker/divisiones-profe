@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - Anti-Trampa</title>
+    <title>Reto de División - Admin Reset</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -11,15 +11,16 @@
     <style>
         :root {
             --primary-color: #ffcc00; --primary-light: #ff9800; --text-dark: #e0e0e0;
-            --bg-dark: #0f0f0f; --bg-panel: #1a1a1a; --bg-input: #2a2a2a;
-            --success: #00e676; --error: #ff1744; --cell-size: 45px;
+            --bg-dark: #0f0f0f; --bg-panel: #1a1a1a; --success: #00e676; --error: #ff1744; --cell-size: 45px;
             --rank-iron: #9e9e9e; --rank-bronze: #d97706; --rank-silver: #bdbdbd;
-            --rank-gold: #fbbf24; --rank-platinum: #00bcd4; --rank-diamond: #7c4dff; --rank-heroic: #ff1744;
+            --rank-gold: #fbbf24; --rank-platinum: #06b6d4; --rank-diamond: #8b5cf6; --rank-heroic: #ef4444;
         }
         body { margin: 0; font-family: 'Rajdhani', sans-serif; background-color: var(--bg-dark); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
-        .main-header { width: 100%; background: linear-gradient(90deg, #000000, #1a1a1a); color: var(--primary-color); padding: 15px 0; text-align: center; box-shadow: 0 4px 20px rgba(255, 204, 0, 0.2); border-bottom: 2px solid var(--primary-color); }
+        .main-header { width: 100%; background: linear-gradient(90deg, #000000, #1a1a1a); color: var(--primary-color); padding: 15px 0; text-align: center; box-shadow: 0 4px 20px rgba(255, 204, 0, 0.2); border-bottom: 2px solid var(--primary-color); display: flex; justify-content: center; align-items: center; gap: 20px;}
         .main-header h1 { margin: 0; font-size: 2.2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-family: 'Teko', sans-serif; }
+        .admin-btn { background: #333; color: var(--primary-color); padding: 5px 15px; font-size: 0.9rem; border: 1px solid var(--primary-color); border-radius: 4px; cursor: pointer; display: none; }
+        .admin-btn.visible { display: block; }
         .app-container { width: 100%; max-width: 1500px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; }
 
         .panel { background: var(--bg-panel); padding: 15px 25px; border-radius: 4px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; border: 1px solid #333; }
@@ -83,11 +84,6 @@
         .input-cociente { width: var(--cell-size); height: var(--cell-size); border: none; border-bottom: 2px solid #444; background: transparent; font-size: 1.8rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; font-family: 'Rajdhani', sans-serif; }
         .linea-h { height: 3px; background-color: var(--primary-color); width: 100%; margin-bottom: 1px; box-shadow: 0 0 8px var(--primary-color); }
 
-        .excel-toolbar { position: absolute; top: -40px; left: 0; background: #000; border: 1px solid #333; border-radius: 0; padding: 4px; display: flex; gap: 2px; z-index: 100; }
-        .tool-btn { width: 32px; height: 32px; background: transparent; cursor: pointer; color: #666; border: none; display: flex; align-items: center; justify-content: center; }
-        .tool-btn:hover { background: #333; color: var(--primary-color); }
-        .tool-btn.active { background: var(--primary-color); color: black; }
-
         .grid-matriz { display: grid; grid-template-columns: repeat(9, var(--cell-size)); grid-template-rows: repeat(15, var(--cell-size)); background-color: #2a2a2a; border: 1px solid #444; }
         .cell { width: var(--cell-size); height: var(--cell-size); background-color: #1a1a1a; border: 1px solid #333; text-align: center; font-size: 1.4rem; font-weight: 600; outline: none; cursor: text; box-sizing: border-box; color: white; transition: background 0.2s; }
         .cell:focus { background: #333; box-shadow: inset 0 0 10px var(--primary-color); }
@@ -121,7 +117,7 @@
         @keyframes scaleUp { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
 
-        /* --- CHAT BATTLE UI V2 --- */
+        /* CHAT UI */
         #chat-battle { position: fixed; bottom: 80px; right: 20px; width: 300px; z-index: 9000; background: rgba(0, 0, 0, 0.95); border: 1px solid #333; border-radius: 8px; border-top: 3px solid var(--primary-color); box-shadow: 0 0 20px rgba(0,0,0,0.8); font-family: 'Rajdhani', sans-serif; display: none; }
         #chat-battle.visible { display: block; }
         .chat-header { padding: 8px 15px; background: #111; color: var(--primary-color); font-weight: 700; text-transform: uppercase; font-size: 0.9rem; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; cursor: pointer;}
@@ -133,6 +129,12 @@
         .emoji-btn { background: transparent; border: none; font-size: 1.5rem; cursor: pointer; transition: transform 0.1s; padding: 5px 10px; filter: grayscale(50%); }
         .emoji-btn:hover { transform: scale(1.3); filter: grayscale(0%); }
         #chat-toggle-btn { position: fixed; bottom: 20px; right: 20px; z-index: 9001; width: 50px; height: 50px; border-radius: 50%; background: var(--primary-color); color: black; font-size: 1.5rem; border: none; box-shadow: 0 0 15px var(--primary-color); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+
+        /* ADMIN MODAL */
+        #admin-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 100000; }
+        .admin-box { background: var(--bg-panel); padding: 40px; border-radius: 10px; border: 2px solid var(--primary-color); width: 400px; text-align: center; color: white; }
+        .admin-title { font-family: 'Teko'; font-size: 2.5rem; color: var(--primary-color); margin-bottom: 20px; }
+        .btn-danger-big { background: var(--error); color: white; font-size: 1.2rem; padding: 15px 30px; width: 100%; margin-top: 10px; }
 
         /* Modals Dark */
         #login-screen, #avatar-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 9999; }
@@ -153,33 +155,31 @@
         .avatar-locked { filter: grayscale(100%); opacity: 0.5; cursor: not-allowed; }
         .lock-icon { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.8); border-radius: 50%; color: #666; font-size: 1.2rem; pointer-events: none; }
 
-        @media (max-width: 900px) { .main-layout { flex-direction: column; } .ranking-sidebar { width: 100%; } #chat-battle { width: calc(100% - 40px); bottom: 80px; right: 20px; left: 20px; } }
+        @media (max-width: 900px) { .main-layout { flex-direction: column; } .ranking-sidebar { width: 100%; } }
     </style>
 </head>
 <body>
 
-    <div id="victory-screen">
-        <div class="victory-title">NIVEL COMPLETADO</div>
-        <div class="confetti"></div>
+    <div id="victory-screen"><div class="victory-title">NIVEL COMPLETADO</div><div class="confetti"></div></div>
+
+    <!-- ADMIN MODAL -->
+    <div id="admin-modal" onclick="if(event.target.id === 'admin-modal') toggleAdmin()">
+        <div class="admin-box" onclick="event.stopPropagation()">
+            <div class="admin-title"><i class="fas fa-user-shield"></i> PANEL ADMIN</div>
+            <p style="color:#aaa; margin-bottom: 30px;">Bienvenido Profe. Use con cuidado.</p>
+            <button class="btn-danger-big" onclick="resetAllUsers()"><i class="fas fa-redo"></i> REINICIAR PUNTOS DE TODOS</button>
+            <div style="margin-top: 20px; font-size: 0.8rem; color: #666;">Esto pondrá a 0 los puntos de todos los alumnos.</div>
+        </div>
     </div>
 
-    <!-- CHAT TOGGLE BUTTON -->
     <button id="chat-toggle-btn" onclick="toggleChatUI()"><i class="fas fa-comments"></i></button>
-
-    <!-- CHAT BATTLE -->
     <div id="chat-battle">
-        <div class="chat-header" onclick="toggleChatUI()">
-            <span><i class="fas fa-bolt"></i> Chat Batalla</span>
-            <i class="fas fa-chevron-down"></i>
-        </div>
+        <div class="chat-header" onclick="toggleChatUI()"><span><i class="fas fa-bolt"></i> Chat Batalla</span><i class="fas fa-chevron-down"></i></div>
         <div class="chat-messages" id="chat-messages"></div>
         <div class="chat-input-bar">
-            <button class="emoji-btn" onclick="sendChat('👍')">👍</button>
-            <button class="emoji-btn" onclick="sendChat('🔥')">🔥</button>
-            <button class="emoji-btn" onclick="sendChat('🎉')">🎉</button>
-            <button class="emoji-btn" onclick="sendChat('😂')">😂</button>
-            <button class="emoji-btn" onclick="sendChat('🧠')">🧠</button>
-            <button class="emoji-btn" onclick="sendChat('💪')">💪</button>
+            <button class="emoji-btn" onclick="sendChat('👍')">👍</button><button class="emoji-btn" onclick="sendChat('🔥')">🔥</button>
+            <button class="emoji-btn" onclick="sendChat('🎉')">🎉</button><button class="emoji-btn" onclick="sendChat('😂')">😂</button>
+            <button class="emoji-btn" onclick="sendChat('🧠')">🧠</button><button class="emoji-btn" onclick="sendChat('💪')">💪</button>
         </div>
     </div>
 
@@ -208,6 +208,7 @@
     <header class="main-header">
         <h1>Prof. Miguel</h1>
         <span style="color:#888; font-size:0.9rem;">Reto de División</span>
+        <button id="admin-header-btn" class="admin-btn" onclick="toggleAdmin()"><i class="fas fa-user-shield"></i> Admin</button>
     </header>
 
     <div class="app-container">
@@ -280,12 +281,7 @@
         const AudioEngine = {
             ctx: null,
             init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
-            playTone(freq, duration, type = 'square', volume = 0.1) {
-                this.init(); const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain();
-                osc.type = type; osc.frequency.value = freq; gain.gain.value = volume;
-                osc.connect(gain); gain.connect(this.ctx.destination); osc.start();
-                setTimeout(() => { osc.stop(); }, duration);
-            },
+            playTone(freq, duration, type = 'square', volume = 0.1) { this.init(); const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain(); osc.type = type; osc.frequency.value = freq; gain.gain.value = volume; osc.connect(gain); gain.connect(this.ctx.destination); osc.start(); setTimeout(() => { osc.stop(); }, duration); },
             playClick() { this.playTone(800, 50, 'square', 0.05); },
             playSuccess() { this.playTone(523, 100, 'square', 0.08); setTimeout(() => this.playTone(659, 150, 'square', 0.08), 100); },
             playError() { this.playTone(200, 300, 'sawtooth', 0.1); },
@@ -306,11 +302,13 @@
         let currentAvatarStyle = 'adventurer';
         let isGridLocked = true;
         
-        // --- ANTI-CHEAT SYSTEM ---
-        let unlockedLevel = 1; // Max level achieved
-        let isPracticeMode = false; // If playing old level
+        // --- SYSTEM ---
+        let unlockedLevel = 1; 
+        let isPracticeMode = false; 
+        let isAdmin = false;
+        const ADMIN_USER = 'profemiguel'; // Usuario administrador
 
-        // CHAT STATE
+        // CHAT
         let chatCooldown = false; let chatVisible = false;
 
         const ANTENNA_SEQUENCE = [1, 10, 5, 2, 4, 8, 3, 6, 7, 9];
@@ -405,8 +403,12 @@
                 currentAvatarStyle = (data && data.avatar_style) ? data.avatar_style : 'adventurer'; 
                 unlockedLevel = (data && data.current_level) ? data.current_level : 1;
             } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1; }
+            
+            // CHECK ADMIN
+            isAdmin = (user.email.split('@')[0] === ADMIN_USER);
+            document.getElementById('admin-header-btn').classList.toggle('visible', isAdmin);
+
             updateUI(); renderMainAvatar();
-            // Set game to the unlocked level
             currentMainLevel = unlockedLevel;
         }
         function updateUI() {
@@ -434,70 +436,71 @@
             const list = document.getElementById('ranking-list');
             try {
                 const { data, error } = await _supabase.from('profiles').select('username, total_score, avatar_style').order('total_score', { ascending: false }).limit(10);
-                if(error) throw error; if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; padding:10px; color:#666;">No hay datos.</li>'; return; }
+                if(error) throw error;
+                if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; padding:10px; color:#666;">No hay datos.</li>'; return; }
                 list.innerHTML = data.map((u, i) => { const s = u.total_score || 0; const rI = getRankInfo(s); const isMe = (currentUser && u.username === currentUser.email.split('@')[0]); let cls = "ranking-item " + rI.css; if(isMe) cls += " me"; const style = u.avatar_style || 'adventurer'; const avatarUrl = getAvatarUrl(u.username || 'guest', style); return `<li class="${cls}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avatarUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${u.username||'Yo'}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span></div></div><span class="rank-score">${s}</span></li>`; }).join('');
-            } catch(err) { list.innerHTML = '<li style="text-align:center; padding:10px; color:red;">Error al cargar.</li>'; }
+            } catch(err) { list.innerHTML = '<li style="text-align:center; padding:10px; color:red;">Error.</li>'; }
         }
 
         // --- CHAT LOGIC ---
-        function initChat() {
-            const channel = _supabase.channel('public:chat_messages');
-            channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => { addChatMessage(payload.new); }).subscribe();
-            loadInitialChat();
-        }
-        async function loadInitialChat() {
-            try { const { data } = await _supabase.from('chat_messages').select('*').order('created_at', { ascending: false }).limit(15); const container = document.getElementById('chat-messages'); container.innerHTML = ''; if(data) data.reverse().forEach(msg => addChatMessage(msg)); } catch(e) { console.error("Chat load error", e); }
-        }
+        function initChat() { const channel = _supabase.channel('public:chat_messages'); channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => { addChatMessage(payload.new); }).subscribe(); loadInitialChat(); }
+        async function loadInitialChat() { try { const { data } = await _supabase.from('chat_messages').select('*').order('created_at', { ascending: false }).limit(15); const container = document.getElementById('chat-messages'); container.innerHTML = ''; if(data) data.reverse().forEach(msg => addChatMessage(msg)); } catch(e) { console.error(e); } }
         function addChatMessage(msg) { const container = document.getElementById('chat-messages'); const div = document.createElement('div'); div.className = 'chat-msg'; div.innerHTML = `<span>${msg.username}:</span> <span class="chat-emoji">${msg.emoji}</span>`; container.prepend(div); while (container.children.length > 15) container.removeChild(container.lastChild); }
-        async function sendChat(emoji) { if(chatCooldown) return; if(!currentUser) return; chatCooldown = true; setTimeout(() => chatCooldown = false, 3000); AudioEngine.playClick(); try { await _supabase.from('chat_messages').insert({ user_id: currentUser.id, username: currentUser.email.split('@')[0], emoji: emoji }); } catch(e) { console.error("Send error", e); } }
+        async function sendChat(emoji) { if(chatCooldown) return; if(!currentUser) return; chatCooldown = true; setTimeout(() => chatCooldown = false, 3000); AudioEngine.playClick(); try { await _supabase.from('chat_messages').insert({ user_id: currentUser.id, username: currentUser.email.split('@')[0], emoji: emoji }); } catch(e) { console.error(e); } }
         function toggleChatUI() { chatVisible = !chatVisible; document.getElementById('chat-battle').classList.toggle('visible', chatVisible); }
 
-        // --- GAME LOGIC & ANTI-CHEAT ---
-        function initGame() { loadProblem(); document.getElementById('levelSelect').value = currentMainLevel; }
+        // --- ADMIN LOGIC ---
+        function toggleAdmin() {
+            const modal = document.getElementById('admin-modal');
+            if(modal.style.display === 'flex') { modal.style.display = 'none'; } 
+            else { modal.style.display = 'flex'; }
+        }
         
+        async function resetAllUsers() {
+            if(!confirm("¿ESTÁS SEGURO? Esto borrará los puntos de TODOS los alumnos.")) return;
+            if(!confirm("¿Seguro de seguro? No hay vuelta atrás.")) return;
+            try {
+                // Reset everyone except admin (optional) or everyone. Let's reset everyone.
+                await _supabase.from('profiles').update({ total_score: 0, current_level: 1 }).neq('id', '00000000-0000-0000-0000-000000000000');
+                alert("¡Todos los puntos han sido reiniciados!");
+                toggleAdmin();
+                updateRanking();
+                // Reset local UI if admin was playing
+                totalScore = 0; unlockedLevel = 1; currentMainLevel = 1; updateUI(); loadProblem();
+            } catch(e) { alert("Error al reiniciar."); console.error(e); }
+        }
+
+        // --- GAME LOGIC ---
+        function initGame() { loadProblem(); document.getElementById('levelSelect').value = currentMainLevel; }
         function jumpToLevel(l) { 
             AudioEngine.playClick(); 
             currentMainLevel = parseInt(l); 
             currentProblemInLevel = 1; 
-            
-            // ANTI-CHEAT CHECK
-            if (currentMainLevel < unlockedLevel) {
-                isPracticeMode = true;
-                document.getElementById('msg').innerHTML = "<span style='color:#aaa;'>MODO PRÁCTICA (Sin puntos)</span>";
-            } else {
-                isPracticeMode = false;
-                document.getElementById('msg').innerHTML = "";
-            }
+            if (currentMainLevel < unlockedLevel) { isPracticeMode = true; document.getElementById('msg').innerHTML = "<span style='color:#aaa;'>MODO PRÁCTICA (Sin puntos)</span>"; } 
+            else { isPracticeMode = false; document.getElementById('msg').innerHTML = ""; }
             loadProblem(); 
         }
-        
         function loadProblem() {
-            document.getElementById('subLevelCount').innerText = currentProblemInLevel; 
-            document.getElementById('progressBar').style.width = ((currentMainLevel - 1) / TOTAL_LEVELS) * 100 + '%'; 
-            document.getElementById('levelSelect').value = currentMainLevel;
+            document.getElementById('subLevelCount').innerText = currentProblemInLevel; document.getElementById('progressBar').style.width = ((currentMainLevel - 1) / TOTAL_LEVELS) * 100 + '%'; document.getElementById('levelSelect').value = currentMainLevel;
             const d = DB[currentMainLevel]; if (d && d[currentProblemInLevel - 1]) { currentDividend = d[currentProblemInLevel - 1].d; currentDivisor = d[currentProblemInLevel - 1].div; }
             const label = getDifficultyLabel(currentMainLevel); document.getElementById('difficultyLabel').innerText = label; createUI(); createAntena(); resetAll(); lockGrid();
         }
         function getDifficultyLabel(lvl) { if(lvl <= 2) return "Divisor: 1 Cifra"; if(lvl === 3 || lvl === 4 || lvl === 5 || lvl === 7 || lvl === 9) return "Divisor: 2 Cifras"; return "Divisor: 3 Cifras"; }
-
         function lockGrid() { isGridLocked = true; document.getElementById('grid-lock-overlay').classList.remove('hidden'); document.getElementById('valCociente').disabled = true; document.getElementById('valResiduo').disabled = true; document.getElementById('btnSelectMode').disabled = true; }
         function unlockGrid() { isGridLocked = false; document.getElementById('grid-lock-overlay').classList.add('hidden'); document.getElementById('valCociente').disabled = false; document.getElementById('valResiduo').disabled = false; document.getElementById('btnSelectMode').disabled = false; document.getElementById('msg').innerText = "¡Antena completa!"; document.getElementById('msg').style.color = "var(--success)"; }
-
         function showVictoryScreen(nextLevel) {
             const screen = document.getElementById('victory-screen'); 
-            // Only show level up animation if actually leveling up
             if (nextLevel > unlockedLevel) {
                  const levelDisplay = document.getElementById('victory-level-display'); levelDisplay.innerText = "NIVEL " + nextLevel;
                  createConfetti(); screen.classList.add('show'); AudioEngine.playLevelUp();
-                 unlockedLevel = nextLevel; // Update unlocked level
+                 unlockedLevel = nextLevel; 
                  setTimeout(() => { screen.classList.remove('show'); document.querySelectorAll('.confetti').forEach(c => c.remove()); currentMainLevel = nextLevel; currentProblemInLevel = 1; loadProblem(); }, 3000);
             } else {
-                 // Just silent transition if replaying old levels (shouldn't happen with logic, but safe fallback)
                  currentMainLevel = nextLevel; currentProblemInLevel = 1; loadProblem();
             }
         }
         function createConfetti() { const screen = document.getElementById('victory-screen'); const colors = ['#ffcc00', '#00e676', '#2979ff', '#f00', '#ff9800']; for (let i = 0; i < 50; i++) { const conf = document.createElement('div'); conf.className = 'confetti'; conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = -10 + 'px'; conf.style.background = colors[Math.floor(Math.random() * colors.length)]; conf.style.animationDuration = (Math.random() * 2 + 2) + 's'; screen.appendChild(conf); } }
-
+        
         function createUI() {
             const g = document.getElementById('gridContainer'); const dB = document.getElementById('divisorBox'); const tR = document.getElementById('topRow'); g.innerHTML = ''; dB.innerHTML = ''; tR.innerHTML = '';
             String(currentDivisor).split('').forEach(n => { let i=document.createElement('input'); i.type='text'; i.className='input-div'; i.value=n; i.readOnly=true; dB.appendChild(i); });
@@ -506,7 +509,6 @@
             document.getElementById('lineH').style.width = (sN.length * cellSize) + 'px';
             for(let c=0; c<sN.length; c++) { let i=document.createElement('input'); i.type='text'; i.className='input-cociente'; i.maxLength=1; i.id="top-"+c; i.addEventListener('input', (e) => { syncT(); if(e.target.value && c<sN.length-1) document.getElementById("top-"+(c+1)).focus(); }); tR.appendChild(i); }
         }
-
         let sel=false, drag=false, sC=null, eC=null, selC=new Set();
         function toggleSelectMode() { if(isGridLocked) return; sel=!sel; document.getElementById('btnSelectMode').classList.toggle('active', sel); if(!sel) clrS(); }
         function updS() { clrS(); if(!sC||!eC)return; let minR=Math.min(sC.r,eC.r),maxR=Math.max(sC.r,eC.r),minC=Math.min(sC.c,eC.c),maxC=Math.max(sC.c,eC.c); for(let r=minR;r<=maxR;r++)for(let c=minC;c<=maxC;c++){let el=document.getElementById("c-"+r+"-"+c); if(el){el.classList.add('cell-selected'); selC.add(el.id);}} }
@@ -515,57 +517,24 @@
         function syncT() { let v=""; document.querySelectorAll('.input-cociente').forEach(x=>v+=x.value); document.getElementById('valCociente').value=v; }
 
         // --- ANTENA PROGRESSIVE LOGIC ---
-        function createAntena() {
-            const b=document.getElementById('antenaBody'); document.getElementById('antenaLabel').innerText=currentDivisor; b.innerHTML='';
-            for(let i=1;i<=10;i++){ let r=document.createElement('div'); r.className='antena-row locked-row'; r.id="row-"+i; r.innerHTML="<span>"+i+" x "+currentDivisor+" =</span><input type='number' class='antena-input' id='a"+i+"' disabled>"; b.appendChild(r); }
-            currentAntennaIndex = 0; enableNextAntennaInput();
-        }
-        function enableNextAntennaInput() {
-            if (currentAntennaIndex >= ANTENNA_SEQUENCE.length) return;
-            const currentId = ANTENNA_SEQUENCE[currentAntennaIndex];
-            const input = document.getElementById("a"+currentId); const row = document.getElementById("row-"+currentId);
-            if(input) { input.disabled = false; input.focus(); row.classList.remove('locked-row'); input.oninput = () => checkAntennaInput(input, currentId); }
-        }
-        function checkAntennaInput(input, id) {
-            const val = parseInt(input.value); const expected = id * currentDivisor;
-            if (val === expected) {
-                AudioEngine.playSuccess(); input.classList.add('status-ok'); input.disabled = true; input.classList.remove('status-wrong');
-                currentAntennaIndex++; if (currentAntennaIndex < ANTENNA_SEQUENCE.length) { enableNextAntennaInput(); } else { unlockGrid(); }
-            } else { input.classList.add('status-wrong'); setTimeout(() => input.classList.remove('status-wrong'), 500); }
-        }
-        function resetAll() {
-            document.getElementById('valCociente').value=''; document.getElementById('valResiduo').value='';
-            document.querySelectorAll('.antena-input').forEach(i => { i.value=''; i.classList.remove('status-ok','status-wrong'); });
-            document.querySelectorAll('.input-cociente').forEach(i => i.value='');
-            document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value=''; i.disabled=false; });
-            document.querySelectorAll('.cell').forEach(c => c.classList.remove('border-bottom','border-right','cell-selected')); selC.clear();
-        }
+        function createAntena() { const b=document.getElementById('antenaBody'); document.getElementById('antenaLabel').innerText=currentDivisor; b.innerHTML=''; for(let i=1;i<=10;i++){ let r=document.createElement('div'); r.className='antena-row locked-row'; r.id="row-"+i; r.innerHTML="<span>"+i+" x "+currentDivisor+" =</span><input type='number' class='antena-input' id='a"+i+"' disabled>"; b.appendChild(r); } currentAntennaIndex = 0; enableNextAntennaInput(); }
+        function enableNextAntennaInput() { if (currentAntennaIndex >= ANTENNA_SEQUENCE.length) return; const currentId = ANTENNA_SEQUENCE[currentAntennaIndex]; const input = document.getElementById("a"+currentId); const row = document.getElementById("row-"+currentId); if(input) { input.disabled = false; input.focus(); row.classList.remove('locked-row'); input.oninput = () => checkAntennaInput(input, currentId); } }
+        function checkAntennaInput(input, id) { const val = parseInt(input.value); const expected = id * currentDivisor; if (val === expected) { AudioEngine.playSuccess(); input.classList.add('status-ok'); input.disabled = true; input.classList.remove('status-wrong'); currentAntennaIndex++; if (currentAntennaIndex < ANTENNA_SEQUENCE.length) { enableNextAntennaInput(); } else { unlockGrid(); } } else { input.classList.add('status-wrong'); setTimeout(() => input.classList.remove('status-wrong'), 500); } }
+        function resetAll() { document.getElementById('valCociente').value=''; document.getElementById('valResiduo').value=''; document.querySelectorAll('.antena-input').forEach(i => { i.value=''; i.classList.remove('status-ok','status-wrong'); }); document.querySelectorAll('.input-cociente').forEach(i => i.value=''); document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value=''; i.disabled=false; }); document.querySelectorAll('.cell').forEach(c => c.classList.remove('border-bottom','border-right','cell-selected')); selC.clear(); }
         
         async function verificarSolucion() {
             if(isGridLocked) { alert("¡Completa la Antena primero!"); return; }
             let coc=parseInt(document.getElementById('valCociente').value); let res=parseInt(document.getElementById('valResiduo').value)||0;
             let rC=Math.floor(currentDividend/currentDivisor); let rR=currentDividend%currentDivisor;
             if(coc===rC && res===rR) {
-                
-                // --- ANTI-CHEAT LOGIC ---
-                if (isPracticeMode) {
-                    document.getElementById('msg').innerHTML="<span style='color:#aaa; font-weight:700;'>Correcto (Sin puntos - Nivel superado)</span>";
-                } else {
-                    totalScore += POINTS; 
-                    updateUI(); 
-                    await saveScore(); 
-                    AudioEngine.playSuccess();
-                    document.getElementById('msg').innerHTML="<span style='color:var(--success); font-weight:700;'>¡CORRECTO! +"+POINTS+"</span>";
-                }
+                if (isPracticeMode) { document.getElementById('msg').innerHTML="<span style='color:#aaa; font-weight:700;'>Correcto (Sin puntos)</span>"; } 
+                else { totalScore += POINTS; updateUI(); await saveScore(); AudioEngine.playSuccess(); document.getElementById('msg').innerHTML="<span style='color:var(--success); font-weight:700;'>¡CORRECTO! +"+POINTS+"</span>"; }
 
                 setTimeout(() => {
                     if(currentProblemInLevel<PROBLEMS_PER_LEVEL) currentProblemInLevel++;
                     else { 
                         if(currentMainLevel < TOTAL_LEVELS) { let nextLvl = currentMainLevel + 1; showVictoryScreen(nextLvl); } 
-                        else { 
-                            alert("¡JUEGO TERMINADO!"); 
-                            currentMainLevel = 1; currentProblemInLevel = 1; totalScore = 0; unlockedLevel = 1; updateUI(); loadProblem(); 
-                        } 
+                        else { alert("¡JUEGO TERMINADO!"); currentMainLevel = 1; currentProblemInLevel = 1; totalScore = 0; unlockedLevel = 1; updateUI(); loadProblem(); } 
                     }
                     if(currentProblemInLevel > 1 || currentMainLevel > 1) loadProblem();
                 }, 1500);
