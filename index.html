@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - Estable</title>
+    <title>Reto de División - V8 Persistencia</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -90,14 +90,14 @@
         .game-area { flex: 3; display: flex; flex-direction: column; gap: 20px; min-width: 300px; }
         .workspace-card { background: var(--bg-panel); padding: 20px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: flex; gap: 15px; justify-content: flex-start; align-items: flex-start; overflow-x: auto; width: 100%; box-sizing: border-box; border: 1px solid #333; }
 
-        /* --- LAYOUT GALERA CORREGIDO --- */
+        /* --- LAYOUT GALERA --- */
         .division-row { display: flex; flex-direction: row; align-items: flex-start; gap: 0; margin-top: 10px; flex-shrink: 0; }
         
-        /* 1. DIVISOR (Alineado con el dividendo) */
+        /* 1. DIVISOR */
         .col-divisor { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; margin-top: 38px; margin-right: 3px; }
         .input-div { width: var(--cell-size); height: var(--cell-size); border: 1px solid #555; background: black; font-size: 1.4rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; display: flex; align-items: center; justify-content: center; text-shadow: 0 0 5px var(--primary-color); }
         
-        /* 2. GRID CONTAINER (Contiene Cociente Arriba + Grid) */
+        /* 2. GRID CONTAINER */
         .col-grid { display: flex; flex-direction: column; position: relative; z-index: 1; }
         .grid-disabled-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 5; display: flex; align-items: center; justify-content: center; pointer-events: none; border-radius: 4px; }
         .grid-disabled-overlay.hidden { display: none; }
@@ -106,31 +106,34 @@
         /* C. COCIENTE ARRIBA */
         .fila-cociente-arriba { display: flex; justify-content: flex-start; height: var(--cell-size); align-items: flex-end; padding-bottom: 4px; }
         .input-cociente-galera { 
-            width: var(--cell-size); 
-            height: var(--cell-size); 
-            border: 1px solid #555; 
-            background: #000; 
-            font-size: 1.4rem; 
-            font-weight: 700; 
-            color: var(--primary-color); 
-            text-align: center; 
-            outline: none; 
-            font-family: 'Rajdhani', sans-serif; 
-            margin-right: 1px;
-            border-radius: 2px;
-            cursor: text; 
-            pointer-events: auto; 
+            width: var(--cell-size); height: var(--cell-size); 
+            border: 1px solid #555; background: #000; 
+            font-size: 1.4rem; font-weight: 700; color: var(--primary-color); 
+            text-align: center; outline: none; font-family: 'Rajdhani', sans-serif; 
+            margin-right: 1px; border-radius: 2px; cursor: text; pointer-events: auto; 
         }
         .input-cociente-galera:disabled { background: #111; color: #444; border-color: #222; cursor: not-allowed; opacity: 0.5; pointer-events: none; }
 
         /* D. LINEA HORIZONTAL */
         .fila-horizontal-top { height: 3px; background-color: var(--primary-color); box-shadow: 0 0 8px var(--primary-color); border-radius: 2px; width: 100%; }
         
-        /* E. GRID MATRIZ (Dividendo) */
+        /* E. GRID MATRIZ */
         .grid-matriz { display: grid; grid-template-columns: repeat(9, var(--cell-size)); grid-template-rows: repeat(15, var(--cell-size)); background-color: #2a2a2a; border: 1px solid #444; border-radius: 0 0 4px 4px; border-top: none; }
         .cell { width: var(--cell-size); height: var(--cell-size); background-color: #1a1a1a; border: 1px solid #333; text-align: center; font-size: 1.1rem; font-weight: 600; outline: none; cursor: text; box-sizing: border-box; color: white; transition: background 0.2s; }
         .cell:focus { background: #333; box-shadow: inset 0 0 5px var(--primary-color); }
         .cell-locked { background: #000; font-weight: 700; color: var(--primary-color); border-color: #333; }
+
+        /* F. RESIDUO (ABAJO) */
+        .fila-residuo { display: flex; justify-content: flex-end; margin-top: 5px; height: var(--cell-size); align-items: center; }
+        .residuo-label { color: #888; font-size: 0.9rem; margin-right: 5px; text-transform: uppercase; }
+        .input-residuo { 
+            width: calc(var(--cell-size) * 2); height: var(--cell-size); 
+            border: 1px solid #555; background: #000; 
+            font-size: 1.4rem; font-weight: 700; color: var(--primary-color); 
+            text-align: center; outline: none; font-family: 'Rajdhani', sans-serif; 
+            border-radius: 2px; cursor: text; pointer-events: auto;
+        }
+        .input-residuo:disabled { background: #111; color: #444; border-color: #222; cursor: not-allowed; opacity: 0.5; pointer-events: none; }
 
         /* ANTENA PANEL */
         .antena-panel { background: var(--bg-panel); border: 1px solid #333; padding: 15px; border-radius: 4px; border-top: 4px solid var(--primary-color); width: 240px; flex-shrink: 0; margin-left: auto; }
@@ -302,6 +305,11 @@
                             <div class="fila-horizontal-top" id="lineH"></div>
                             <!-- MAIN GRID -->
                             <div class="grid-matriz" id="gridContainer"></div>
+                            <!-- RESIDUE ROW (BOTTOM) -->
+                            <div class="fila-residuo">
+                                <span class="residuo-label">Residuo:</span>
+                                <input type="number" id="valResiduo" class="input-residuo" placeholder="0">
+                            </div>
                         </div>
                     </div>
                     <div class="antena-panel">
@@ -310,7 +318,7 @@
                     </div>
                 </div>
                 <div class="controls">
-                    <div style="display:flex; gap:15px; visibility: hidden; position:absolute;"><input type="number" id="valCociente"><input type="number" id="valResiduo"></div>
+                    <input type="hidden" id="valCociente">
                     <button id="btn-verify" class="btn-primary" onclick="verificarSolucion()">Verificar</button>
                 </div>
                 <div id="msg"></div>
@@ -376,10 +384,14 @@
         async function logout() { await _supabase.auth.signOut(); currentUser=null; totalScore=0; showLogin(); clearInterval(rankInt); }
 
         async function loadScore(user) {
-            try { const { data } = await _supabase.from('profiles').select('total_score, avatar_style, current_level, completed_at, is_banned').eq('id', user.id).single(); 
+            try { const { data } = await _supabase.from('profiles').select('total_score, avatar_style, current_level, completed_at, is_banned, current_problem').eq('id', user.id).single(); 
                 if(data && data.is_banned) { alert("Tu cuenta está suspendida temporalmente."); logout(); return; }
-                totalScore = (data && data.total_score) ? data.total_score : 0; currentAvatarStyle = (data && data.avatar_style) ? data.avatar_style : 'adventurer'; unlockedLevel = (data && data.current_level) ? data.current_level : 1; hasFinishedGame = (data && data.completed_at); 
-            } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1; hasFinishedGame = false; }
+                totalScore = (data && data.total_score) ? data.total_score : 0; currentAvatarStyle = (data && data.avatar_style) ? data.avatar_style : 'adventurer'; unlockedLevel = (data && data.current_level) ? data.current_level : 1; 
+                // FIX: Cargar problema actual
+                currentProblemInLevel = (data && data.current_problem) ? data.current_problem : 1;
+                if(currentProblemInLevel > 10) currentProblemInLevel = 1; // Safety check
+                hasFinishedGame = (data && data.completed_at); 
+            } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1; currentProblemInLevel = 1; hasFinishedGame = false; }
             isAdmin = (user.email.split('@')[0] === ADMIN_USER); document.getElementById('admin-header-btn').classList.toggle('visible', isAdmin); if(hasFinishedGame) document.getElementById('msg').innerHTML = "<span style='color:var(--primary-color);'>¡Ya terminaste!</span>"; currentMainLevel = unlockedLevel; populateLevelSelect(); updateUI(); renderMainAvatar();
         }
         function populateLevelSelect() { const sel = document.getElementById('levelSelect'); sel.innerHTML = ''; for(let i=1; i<=TOTAL_LEVELS; i++) { let opt = document.createElement('option'); opt.value = i; opt.innerText = "Nivel " + i; if(i > unlockedLevel) { opt.disabled = true; opt.innerText += " 🔒"; } sel.appendChild(opt); } sel.value = currentMainLevel; }
@@ -390,7 +402,11 @@
         function renderAvatarOptions() { const gridStandard = document.getElementById('avatar-options-standard'); const gridExclusive = document.getElementById('avatar-options-exclusive'); const exclusiveSection = document.getElementById('exclusive-section'); gridStandard.innerHTML = ''; gridExclusive.innerHTML = ''; const seed = currentUser.email.split('@')[0]; const isHeroic = totalScore >= 50000; AVATAR_STYLES_STANDARD.forEach(style => { let div = document.createElement('div'); div.className = 'avatar-option' + (currentAvatarStyle === style.id ? ' selected' : ''); div.onclick = () => selectAvatarStyle(style.id); div.innerHTML = `<img src="${getAvatarUrl(seed, style.id)}"><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`; gridStandard.appendChild(div); }); if(isHeroic) { exclusiveSection.style.display = 'block'; AVATAR_STYLES_EXCLUSIVE.forEach(style => { let div = document.createElement('div'); div.className = 'avatar-option' + (currentAvatarStyle === style.id ? ' selected' : ''); div.onclick = () => selectAvatarStyle(style.id); div.innerHTML = `<img src="${getAvatarUrl(seed, style.id)}"><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`; gridExclusive.appendChild(div); }); } else { exclusiveSection.style.display = 'block'; AVATAR_STYLES_EXCLUSIVE.forEach(style => { let div = document.createElement('div'); div.className = 'avatar-option avatar-locked'; div.innerHTML = `<img src="${getAvatarUrl('demo', style.id)}"><div class="lock-icon"><i class="fas fa-lock"></i></div><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`; gridExclusive.appendChild(div); }); } }
         function selectAvatarStyle(styleId) { const isExclusive = AVATAR_STYLES_EXCLUSIVE.some(s => s.id === styleId); if(isExclusive && totalScore < 50000) { alert("¡Este avatar es exclusivo!"); return; } currentAvatarStyle = styleId; renderAvatarOptions(); renderMainAvatar(); }
         async function saveAvatarChoice() { AudioEngine.playClick(); await _supabase.from('profiles').upsert({ id: currentUser.id, avatar_style: currentAvatarStyle }); toggleAvatarModal(); updateRanking(); }
-        async function saveScore() { if (!currentUser) return; try { await _supabase.from('profiles').upsert({ id: currentUser.id, username: currentUser.email.split('@')[0], total_score: totalScore, current_level: unlockedLevel }); updateRanking(); } catch(e) { console.error(e); } }
+        async function saveScore() { if (!currentUser) return; try { 
+            // FIX: Guardar también el problema actual
+            await _supabase.from('profiles').upsert({ id: currentUser.id, username: currentUser.email.split('@')[0], total_score: totalScore, current_level: unlockedLevel, current_problem: currentProblemInLevel }); 
+            updateRanking(); 
+        } catch(e) { console.error(e); } }
         let rankInt; function startRanking() { updateRanking(); rankInt = setInterval(updateRanking, 5000); }
         async function updateRanking() { 
             const list = document.getElementById('ranking-list'); 
@@ -398,7 +414,6 @@
                 const { data, error } = await _supabase.from('profiles').select('username, total_score, avatar_style, completed_at, is_banned').order('total_score', { ascending: false }).limit(10); 
                 if(error) throw error; 
                 if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; padding:10px; color:#666;">No hay datos.</li>'; return; } 
-                // Filter: Not finished, not banned
                 list.innerHTML = data.filter(u => !u.completed_at && !u.is_banned).map((u, i) => { 
                     const s = u.total_score || 0; const rI = getRankInfo(s); const isMe = (currentUser && u.username === currentUser.email.split('@')[0]); 
                     let cls = "ranking-item " + rI.css; if(isMe) cls += " me"; 
@@ -458,9 +473,10 @@
         async function resetAllUsers(isAuto = false) {
             if(!isAuto && !confirm("¿Reiniciar TODOS los puntos?")) return;
             try {
-                await _supabase.from('profiles').update({ total_score: 0, current_level: 1, completed_at: null }).neq('id', '00000000-0000-0000-0000-000000000000');
+                // FIX: Resetear también el current_problem
+                await _supabase.from('profiles').update({ total_score: 0, current_level: 1, completed_at: null, current_problem: 1 }).neq('id', '00000000-0000-0000-0000-000000000000');
                 if(!isAuto) alert("¡Reiniciado!"); toggleAdmin(); updateRanking(); loadHallOfFame();
-                totalScore = 0; unlockedLevel = 1; hasFinishedGame = false; updateUI(); initGame();
+                totalScore = 0; unlockedLevel = 1; currentProblemInLevel = 1; hasFinishedGame = false; updateUI(); initGame();
                 if(!isAuto) { await _supabase.from('game_settings').update({ season_end_time: null }).eq('id', 1); document.getElementById('timer-display').innerText = "SIN INICIAR"; clearInterval(seasonInterval); document.getElementById('season-badge').classList.remove('active'); document.getElementById('season-badge').classList.add('finished'); }
             } catch(e) { alert("Error."); console.error(e); }
         }
@@ -478,11 +494,12 @@
         }
         function getDifficultyLabel(lvl) { if(lvl <= 2) return "Divisor: 1 Cifra"; if(lvl === 3 || lvl === 4 || lvl === 5 || lvl === 7 || lvl === 9) return "Divisor: 2 Cifras"; return "Divisor: 3 Cifras"; }
         
-        function lockGrid() { isGridLocked = true; document.getElementById('grid-lock-overlay').classList.remove('hidden'); disableCocienteInputs(true); }
+        function lockGrid() { isGridLocked = true; document.getElementById('grid-lock-overlay').classList.remove('hidden'); disableCocienteInputs(true); document.getElementById('valResiduo').disabled = true; }
         function unlockGrid() { 
             isGridLocked = false; 
             document.getElementById('grid-lock-overlay').classList.add('hidden'); 
             disableCocienteInputs(false); 
+            document.getElementById('valResiduo').disabled = false;
             document.getElementById('msg').innerText = "¡Antena completa!"; 
             document.getElementById('msg').style.color = "var(--success)"; 
             triggerEpicEffect(); 
