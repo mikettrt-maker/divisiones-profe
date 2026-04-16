@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - Temporada 1 (Estable)</title>
+    <title>Reto de División - Método Galera</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -50,21 +50,14 @@
         .progress-bar-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; box-shadow: 0 0 10px var(--success); }
 
         .main-layout { display: flex; flex-direction: row; gap: 20px; width: 100%; align-items: flex-start; flex-wrap: wrap; }
-        .game-area { flex: 3; display: flex; flex-direction: column; gap: 20px; min-width: 300px; }
-        .workspace-card { background: var(--bg-panel); padding: 30px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: flex; gap: 40px; justify-content: flex-start; align-items: flex-start; overflow-x: auto; width: 100%; box-sizing: border-box; border: 1px solid #333; }
-
-        /* SIDEBAR RESTAURADO (SIN MOVER) */
-        .ranking-sidebar { flex: 1; background: var(--bg-panel); padding: 20px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); min-width: 280px; border: 1px solid #333; }
+        
+        /* SIDEBAR A LA IZQUIERDA */
+        .ranking-sidebar { flex: 1; background: var(--bg-panel); padding: 20px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); min-width: 280px; border: 1px solid #333; order: -1; }
         .ranking-title { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); text-align: center; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; margin-bottom: 15px; text-transform: uppercase; font-family: 'Teko', sans-serif; }
         .ranking-list { list-style: none; padding: 0; margin: 0; max-height: 250px; overflow-y: auto; }
-        .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.05); border-left: 4px solid #333; }
+        .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.05); border-left: 4px solid #333; transition: all 0.3s; }
         
-        /* HALL OF FAME (INSERTADO DENTRO DEL SIDEBAR SIN MOVER NADA) */
-        .hall-of-fame { 
-            margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; 
-            background: transparent; border-left: none; border-radius: 0; 
-            position: relative; overflow: hidden;
-        }
+        .hall-of-fame { margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; background: transparent; position: relative; overflow: hidden; }
         .hall-of-fame::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--error), transparent); }
         .hall-title { font-family: 'Teko'; font-size: 1.8rem; color: var(--error); text-align: center; margin-bottom: 15px; text-shadow: 0 0 10px rgba(255,23,68,0.5); }
         .fame-list { list-style: none; padding: 0; margin: 0; max-height: 150px; overflow-y: auto; }
@@ -88,26 +81,43 @@
         .rank-tier-list { font-size: 0.7rem; font-weight: 700; opacity: 0.8; }
         .rank-score { font-weight: 700; color: var(--primary-color); font-size: 0.9rem; }
 
-        /* GRID & GAME */
+        /* GAME AREA */
+        .game-area { flex: 3; display: flex; flex-direction: column; gap: 20px; min-width: 300px; }
+        .workspace-card { background: var(--bg-panel); padding: 30px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: flex; gap: 20px; justify-content: flex-start; align-items: flex-start; overflow-x: auto; width: 100%; box-sizing: border-box; border: 1px solid #333; }
+
+        /* GALERA STRUCTURE FIX */
         .division-row { display: flex; flex-direction: row; align-items: flex-start; gap: 0; margin-top: 20px; flex-shrink: 0; }
+        
+        /* 1. DIVISOR (LEFT) */
         .col-divisor { display: flex; flex-direction: row; align-items: center; height: var(--cell-size); margin-top: 49px; }
         .input-div { width: var(--cell-size); height: var(--cell-size); border: 1px solid #555; background: black; font-size: 2rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; text-shadow: 0 0 5px var(--primary-color); }
+        
+        /* 2. VERTICAL LINE LEFT */
         .col-linea-v { width: 3px; height: var(--cell-size); background-color: var(--primary-color); margin-top: 49px; box-shadow: 0 0 8px var(--primary-color); }
-        .col-grid { display: flex; flex-direction: column; position: relative; }
-        .fila-cociente { display: flex; justify-content: flex-start; height: var(--cell-size); align-items: center; margin-bottom: 4px; }
-        .input-cociente { width: var(--cell-size); height: var(--cell-size); border: none; border-bottom: 2px solid #444; background: transparent; font-size: 1.8rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; font-family: 'Rajdhani', sans-serif; }
-        .linea-h { height: 3px; background-color: var(--primary-color); width: 100%; margin-bottom: 1px; box-shadow: 0 0 8px var(--primary-color); }
 
-        .grid-matriz { display: grid; grid-template-columns: repeat(9, var(--cell-size)); grid-template-rows: repeat(15, var(--cell-size)); background-color: #2a2a2a; border: 1px solid #444; }
-        .cell { width: var(--cell-size); height: var(--cell-size); background-color: #1a1a1a; border: 1px solid #333; text-align: center; font-size: 1.4rem; font-weight: 600; outline: none; cursor: text; box-sizing: border-box; color: white; transition: background 0.2s; }
-        .cell:focus { background: #333; box-shadow: inset 0 0 10px var(--primary-color); }
-        .cell-locked { background: #000; font-weight: 700; color: var(--primary-color); border-color: #333; }
+        /* 3. GRID (CENTER) */
+        .col-grid { display: flex; flex-direction: column; position: relative; }
         .grid-disabled-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 50; display: flex; align-items: center; justify-content: center; pointer-events: none; }
         .grid-disabled-overlay.hidden { display: none; }
         .lock-msg { background: var(--primary-color); color: black; padding: 10px 20px; border-radius: 2px; font-size: 1rem; font-weight: 700; box-shadow: 0 0 20px var(--primary-color); pointer-events: auto; text-align: center; text-transform: uppercase; }
         
+        /* Grid Internals */
+        .fila-horizontal-top { display: flex; justify-content: flex-start; height: 3px; background-color: var(--primary-color); box-shadow: 0 0 8px var(--primary-color); margin-bottom: 1px; }
+        .grid-matriz { display: grid; grid-template-columns: repeat(9, var(--cell-size)); grid-template-rows: repeat(15, var(--cell-size)); background-color: #2a2a2a; border: 1px solid #444; }
+        .cell { width: var(--cell-size); height: var(--cell-size); background-color: #1a1a1a; border: 1px solid #333; text-align: center; font-size: 1.4rem; font-weight: 600; outline: none; cursor: text; box-sizing: border-box; color: white; transition: background 0.2s; }
+        .cell:focus { background: #333; box-shadow: inset 0 0 10px var(--primary-color); }
+        .cell-locked { background: #000; font-weight: 700; color: var(--primary-color); border-color: #333; }
+        
+        /* 4. VERTICAL LINE RIGHT (FOR COCIENTE) */
+        .col-linea-v-right { width: 3px; height: 100%; background-color: var(--primary-color); margin-top: 0; box-shadow: 0 0 8px var(--primary-color); align-self: stretch; }
+        
+        /* 5. COCIENTE (RIGHT COLUMN) */
+        .col-cociente { display: flex; flex-direction: column; align-items: center; padding-left: 5px; }
+        .input-cociente-galera { width: var(--cell-size); height: var(--cell-size); border: none; background: transparent; font-size: 1.8rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; font-family: 'Rajdhani', sans-serif; border-bottom: 1px solid #333; margin-bottom: 2px; }
+        .input-cociente-galera:first-child { border-bottom: 1px solid var(--primary-color); }
+
         /* ANTENA */
-        .antena-panel { background: var(--bg-panel); border: 1px solid #333; padding: 15px; border-radius: 4px; border-top: 4px solid var(--primary-color); width: 260px; flex-shrink: 0; }
+        .antena-panel { background: var(--bg-panel); border: 1px solid #333; padding: 15px; border-radius: 4px; border-top: 4px solid var(--primary-color); width: 260px; flex-shrink: 0; margin-left: auto; }
         .antena-header { text-align: center; font-weight: 700; color: var(--primary-color); margin-bottom: 15px; font-size: 1.2rem; text-transform: uppercase; font-family: 'Teko', sans-serif; }
         .antena-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; opacity: 1; transition: opacity 0.3s; }
         .antena-row.locked-row { opacity: 0.4; }
@@ -117,8 +127,7 @@
         .status-wrong { background-color: rgba(255, 23, 68, 0.2) !important; border-color: var(--error) !important; color: var(--error); }
 
         .controls { background: black; padding: 20px; border-radius: 4px; border: 1px solid #333; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box; }
-        .result-box { display: flex; flex-direction: column; background: #1a1a1a; padding: 8px 15px; border-radius: 2px; border: 1px solid #333; }
-        .result-input { border: none; font-size: 1.8rem; font-weight: 700; width: 80px; text-align: center; color: var(--primary-color); background: transparent; font-family: 'Teko', sans-serif; }
+        .result-box { display: flex; flex-direction: column; background: #1a1a1a; padding: 8px 15px; border-radius: 2px; border: 1px solid #333; display: none; } /* Hidden as we use the new Galera inputs */
         button { border: none; padding: 10px 24px; font-weight: 600; border-radius: 2px; cursor: pointer; font-size: 1.1rem; color: black; text-transform: uppercase; font-family: 'Rajdhani', sans-serif; transition: all 0.2s; }
         .btn-primary { background: var(--primary-color); box-shadow: 0 0 15px var(--primary-color); }
         .btn-small { font-size: 0.9rem; padding: 5px 10px; background: #333; color: #ccc; border: 1px solid #555; }
@@ -131,10 +140,10 @@
         @keyframes scaleUp { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
         @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
 
-        /* FIRST BLOOD OVERLAY */
-        #first-blood-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99990; display: none; justify-content: center; align-items: center; pointer-events: none; }
-        .blood-text { font-family: 'Teko', sans-serif; font-size: 8rem; color: var(--error); text-transform: uppercase; font-weight: 800; text-shadow: 0 0 20px rgba(255,0,0,0.8), 4px 4px 0px #000; animation: bloodPulse 0.5s ease-out; opacity: 0; }
-        @keyframes bloodPulse { 0% { transform: scale(0.2) rotate(-10deg); opacity: 0; } 50% { transform: scale(1.2) rotate(5deg); opacity: 1; } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
+        /* EPIC OVERLAY */
+        #epic-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99990; display: none; justify-content: center; align-items: center; pointer-events: none; }
+        .epic-text { font-family: 'Teko', sans-serif; font-size: 8rem; color: var(--error); text-transform: uppercase; font-weight: 800; text-shadow: 0 0 20px rgba(255,0,0,0.8), 4px 4px 0px #000; animation: epicPulse 0.5s ease-out; opacity: 0; }
+        @keyframes epicPulse { 0% { transform: scale(0.2) rotate(-10deg); opacity: 0; } 50% { transform: scale(1.2) rotate(5deg); opacity: 1; } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
 
         /* CHAT UI */
         #chat-battle { position: fixed; bottom: 80px; right: 20px; width: 300px; z-index: 9000; background: rgba(0, 0, 0, 0.95); border: 1px solid #333; border-radius: 8px; display: none; }
@@ -174,53 +183,21 @@
         .avatar-locked { filter: grayscale(100%); opacity: 0.5; cursor: not-allowed; }
         .lock-icon { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.8); border-radius: 50%; color: #666; font-size: 1.2rem; pointer-events: none; }
 
-        @media (max-width: 900px) { .main-layout { flex-direction: column; } .ranking-sidebar { width: 100%; } }
+        @media (max-width: 900px) { .main-layout { flex-direction: column; } .ranking-sidebar { width: 100%; order: 0; } }
     </style>
 </head>
 <body>
 
     <div id="victory-screen"><div class="victory-title">JUEGO TERMINADO</div><div class="confetti"></div></div>
-    <div id="first-blood-overlay"><div class="blood-text" id="blood-text">¡PRIMERA SANGRE!</div></div>
-    <div id="admin-modal" onclick="if(event.target.id === 'admin-modal') toggleAdmin()">
-        <div class="admin-box" onclick="event.stopPropagation()">
-            <div class="admin-title"><i class="fas fa-user-shield"></i> PANEL ADMIN</div>
-            <p style="color:#aaa; margin-bottom: 30px;">Reiniciar Temporada</p>
-            <button class="btn-danger-big" onclick="resetAllUsers()"><i class="fas fa-redo"></i> REINICIAR TODO</button>
-        </div>
-    </div>
+    <div id="epic-overlay"><div class="epic-text" id="epic-text">¡BOOYAH!</div></div>
+    <div id="admin-modal" onclick="if(event.target.id === 'admin-modal') toggleAdmin()"><div class="admin-box" onclick="event.stopPropagation()"><div class="admin-title"><i class="fas fa-user-shield"></i> PANEL ADMIN</div><p style="color:#aaa; margin-bottom: 30px;">Reiniciar Temporada</p><button class="btn-danger-big" onclick="resetAllUsers()"><i class="fas fa-redo"></i> REINICIAR TODO</button></div></div>
 
     <button id="chat-toggle-btn" onclick="toggleChatUI()"><i class="fas fa-comments"></i></button>
-    <div id="chat-battle">
-        <div class="chat-header" onclick="toggleChatUI()"><span><i class="fas fa-bolt"></i> Chat</span><i class="fas fa-chevron-down"></i></div>
-        <div class="chat-messages" id="chat-messages"></div>
-        <div class="chat-input-bar">
-            <button class="emoji-btn" onclick="sendChat('👍')">👍</button><button class="emoji-btn" onclick="sendChat('🔥')">🔥</button>
-            <button class="emoji-btn" onclick="sendChat('🎉')">🎉</button><button class="emoji-btn" onclick="sendChat('😂')">😂</button>
-            <button class="emoji-btn" onclick="sendChat('🧠')">🧠</button><button class="emoji-btn" onclick="sendChat('💪')">💪</button>
-        </div>
-    </div>
+    <div id="chat-battle"><div class="chat-header" onclick="toggleChatUI()"><span><i class="fas fa-bolt"></i> Chat</span><i class="fas fa-chevron-down"></i></div><div class="chat-messages" id="chat-messages"></div><div class="chat-input-bar"><button class="emoji-btn" onclick="sendChat('👍')">👍</button><button class="emoji-btn" onclick="sendChat('🔥')">🔥</button><button class="emoji-btn" onclick="sendChat('🎉')">🎉</button><button class="emoji-btn" onclick="sendChat('😂')">😂</button><button class="emoji-btn" onclick="sendChat('🧠')">🧠</button><button class="emoji-btn" onclick="sendChat('💪')">💪</button></div></div>
 
-    <div id="login-screen" style="display:none;">
-        <div class="login-box">
-            <div class="login-avatar-preview"><img id="login-avatar-img" src="https://api.dicebear.com/8.x/identicon/svg?seed=Shadow"></div>
-            <h2>Reto de División</h2>
-            <p style="margin-bottom: 20px; color:#888;">Ingresa tu usuario</p>
-            <input type="text" id="login-username" class="login-input" placeholder="Usuario">
-            <input type="password" id="login-password" class="login-input" placeholder="Contraseña">
-            <button class="login-btn btn-primary" onclick="handleLogin()">Iniciar Sesión</button>
-            <button class="login-btn btn-check" onclick="handleRegister()" style="margin-top:5px; background:#333; color:#ccc;">Registrarse</button>
-            <div id="login-error" class="login-error"></div>
-        </div>
-    </div>
+    <div id="login-screen" style="display:none;"><div class="login-box"><div class="login-avatar-preview"><img id="login-avatar-img" src="https://api.dicebear.com/8.x/identicon/svg?seed=Shadow"></div><h2>Reto de División</h2><p style="margin-bottom: 20px; color:#888;">Ingresa tu usuario</p><input type="text" id="login-username" class="login-input" placeholder="Usuario"><input type="password" id="login-password" class="login-input" placeholder="Contraseña"><button class="login-btn btn-primary" onclick="handleLogin()">Iniciar Sesión</button><button class="login-btn btn-check" onclick="handleRegister()" style="margin-top:5px; background:#333; color:#ccc;">Registrarse</button><div id="login-error" class="login-error"></div></div></div>
 
-    <div id="avatar-modal" style="display:none; background: rgba(0,0,0,0.9);" onclick="if(event.target.id === 'avatar-modal') toggleAvatarModal()">
-        <div class="modal-box">
-            <h3 style="margin:0 0 10px 0; color:var(--primary-color); font-family:'Teko'; font-size:1.8rem; text-transform:uppercase;">Personaje</h3>
-            <div class="modal-section"><h4>Estándar</h4><div class="avatar-grid" id="avatar-options-standard"></div></div>
-            <div class="modal-section" id="exclusive-section" style="display:none;"><h4 style="color:var(--error);"> <i class="fas fa-lock-open"></i> Exclusivos Heroico</h4><div class="avatar-grid" id="avatar-options-exclusive"></div></div>
-            <button class="btn-primary" onclick="saveAvatarChoice()">Guardar</button>
-        </div>
-    </div>
+    <div id="avatar-modal" style="display:none; background: rgba(0,0,0,0.9);" onclick="if(event.target.id === 'avatar-modal') toggleAvatarModal()"><div class="modal-box"><h3 style="margin:0 0 10px 0; color:var(--primary-color); font-family:'Teko'; font-size:1.8rem; text-transform:uppercase;">Personaje</h3><div class="modal-section"><h4>Estándar</h4><div class="avatar-grid" id="avatar-options-standard"></div></div><div class="modal-section" id="exclusive-section" style="display:none;"><h4 style="color:var(--error);"> <i class="fas fa-lock-open"></i> Exclusivos Heroico</h4><div class="avatar-grid" id="avatar-options-exclusive"></div></div><button class="btn-primary" onclick="saveAvatarChoice()">Guardar</button></div></div>
 
     <header class="main-header">
         <div class="season-badge">TEMPORADA 1</div>
@@ -256,8 +233,14 @@
             <div class="game-area">
                 <div class="workspace-card">
                     <div class="division-row">
+                        
+                        <!-- 1. DIVISOR -->
                         <div class="col-divisor" id="divisorBox"></div>
+                        
+                        <!-- 2. LINEA VERTICAL IZQUIERDA -->
                         <div class="col-linea-v"></div>
+                        
+                        <!-- 3. GRID DIVIDENDO -->
                         <div class="col-grid" id="grid-wrapper">
                             <div class="grid-disabled-overlay" id="grid-lock-overlay"><div class="lock-msg"><i class="fas fa-lock"></i> ¡Completa la Antena!</div></div>
                             <div class="excel-toolbar">
@@ -266,10 +249,16 @@
                                 <button class="tool-btn" onclick="applyBorder('right')"><i class="fas fa-ellipsis-v"></i></button>
                                 <button class="tool-btn" onclick="applyBorder('clear')"><i class="fas fa-times"></i></button>
                             </div>
-                            <div class="fila-cociente" id="topRow"></div>
-                            <div class="linea-h" id="lineH"></div>
+                            <div class="fila-horizontal-top" id="lineH"></div> <!-- Linea Horizontal Arriba -->
                             <div class="grid-matriz" id="gridContainer"></div>
                         </div>
+
+                        <!-- 4. LINEA VERTICAL DERECHA (PARA GALERA) -->
+                        <div class="col-linea-v-right"></div>
+
+                        <!-- 5. COLUMNA COCIENTE (A LA DERECHA) -->
+                        <div class="col-cociente" id="col-cociente"></div>
+
                     </div>
                     <div class="antena-panel">
                         <div class="antena-header">Antena (x <span id="antenaLabel">...</span>)</div>
@@ -277,21 +266,20 @@
                     </div>
                 </div>
                 <div class="controls">
-                    <div style="display:flex; gap:15px;">
-                        <div class="result-box"><span style="font-size:0.8rem; color: #666; font-weight:600;">Cociente</span><input type="number" class="result-input" id="valCociente" placeholder="0"></div>
-                        <div class="result-box"><span style="font-size:0.8rem; color: #666; font-weight:600;">Residuo</span><input type="number" class="result-input" id="valResiduo" placeholder="0"></div>
+                    <!-- Inputs ocultos para compatibilidad, visualmente usamos la columna derecha -->
+                    <div style="display:flex; gap:15px; visibility: hidden;">
+                        <div class="result-box"><input type="number" class="result-input" id="valCociente" placeholder="0"></div>
+                        <div class="result-box"><input type="number" class="result-input" id="valResiduo" placeholder="0"></div>
                     </div>
                     <button id="btn-verify" class="btn-primary" onclick="verificarSolucion()">Verificar</button>
                 </div>
                 <div id="msg"></div>
             </div>
             
-            <!-- SIDEBAR RESTAURADO (ESTRUCTURA ORIGINAL) -->
+            <!-- SIDEBAR A LA IZQUIERDA -->
             <div class="ranking-sidebar">
                 <div class="ranking-title">Ranking</div>
                 <ul class="ranking-list" id="ranking-list"></ul>
-                
-                <!-- HALL OF FAME (AÑADIDO AL FINAL DEL SIDEBAR) -->
                 <div class="hall-of-fame">
                     <div class="hall-title"><i class="fas fa-trophy"></i> Salón de la Fama</div>
                     <ul class="fame-list" id="fame-list"></ul>
@@ -310,7 +298,7 @@
             playSuccess() { this.playTone(523, 100, 'square', 0.08); setTimeout(() => this.playTone(659, 150, 'square', 0.08), 100); },
             playError() { this.playTone(200, 300, 'sawtooth', 0.1); },
             playLevelUp() { const notes = [523, 659, 784, 1047]; notes.forEach((n, i) => setTimeout(() => this.playTone(n, 200, 'square', 0.1), i * 150)); },
-            playFirstBlood() { const notes = [200, 250, 300, 400, 600, 800]; notes.forEach((n, i) => setTimeout(() => this.playTone(n, 100, 'sawtooth', 0.2), i * 50)); }
+            playEpic() { const notes = [300, 400, 600, 900, 1200]; notes.forEach((n, i) => setTimeout(() => this.playTone(n, 80, 'sawtooth', 0.3), i * 40)); }
         };
 
         // CONFIG
@@ -327,48 +315,22 @@
         let currentAvatarStyle = 'adventurer';
         let isGridLocked = true;
         let hasFinishedGame = false;
-        
-        // --- ANTI-SPAM FIX ---
         let isProcessing = false; 
 
         let unlockedLevel = 1; 
         let isAdmin = false;
         const ADMIN_USER = 'profemiguel';
-
-        // CHAT
         let chatCooldown = false; let chatVisible = false;
 
         const ANTENNA_SEQUENCE = [1, 10, 5, 2, 4, 8, 3, 6, 7, 9];
         let currentAntennaIndex = 0;
 
-        const AVATAR_STYLES_STANDARD = [
-            { id: 'adventurer', name: 'Guerrero' }, { id: 'bottts', name: 'Robot' }, { id: 'pixel-art', name: 'Pixel' },
-            { id: 'lorelei', name: 'Fantasma' }, { id: 'big-ears', name: 'Alien' }, { id: 'open-peeps', name: 'Dibujo' },
-            { id: 'croodles', name: 'Boceto' }, { id: 'identicon', name: 'Matrix' }
-        ];
-        const AVATAR_STYLES_EXCLUSIVE = [
-            { id: 'micah', name: 'Élite' }, { id: 'personas', name: 'Dios' }, { id: 'thumbs', name: 'Leyenda' }
-        ];
+        const AVATAR_STYLES_STANDARD = [ { id: 'adventurer', name: 'Guerrero' }, { id: 'bottts', name: 'Robot' }, { id: 'pixel-art', name: 'Pixel' }, { id: 'lorelei', name: 'Fantasma' }, { id: 'big-ears', name: 'Alien' }, { id: 'open-peeps', name: 'Dibujo' }, { id: 'croodles', name: 'Boceto' }, { id: 'identicon', name: 'Matrix' } ];
+        const AVATAR_STYLES_EXCLUSIVE = [ { id: 'micah', name: 'Élite' }, { id: 'personas', name: 'Dios' }, { id: 'thumbs', name: 'Leyenda' } ];
 
-        const RANKS = [
-            { name: "Hierro", min: 0, max: 2999, icon: "🪨", css: "rank-iron", avatar: "avatar-iron" },
-            { name: "Bronce", min: 3000, max: 6999, icon: "🥉", css: "rank-bronze", avatar: "avatar-bronze" },
-            { name: "Plata", min: 7000, max: 12999, icon: "🥈", css: "rank-silver", avatar: "avatar-silver" },
-            { name: "Oro", min: 13000, max: 19999, icon: "🥇", css: "rank-gold", avatar: "avatar-gold" },
-            { name: "Platino", min: 20000, max: 29999, icon: "💠", css: "rank-platinum", avatar: "avatar-platinum" },
-            { name: "Diamante", min: 30000, max: 49999, icon: "💎", css: "rank-diamond", avatar: "avatar-diamond" },
-            { name: "Heroico", min: 50000, max: 999999, icon: "👑", css: "rank-heroic", avatar: "avatar-heroic" }
-        ];
+        const RANKS = [ { name: "Hierro", min: 0, max: 2999, icon: "🪨", css: "rank-iron", avatar: "avatar-iron" }, { name: "Bronce", min: 3000, max: 6999, icon: "🥉", css: "rank-bronze", avatar: "avatar-bronze" }, { name: "Plata", min: 7000, max: 12999, icon: "🥈", css: "rank-silver", avatar: "avatar-silver" }, { name: "Oro", min: 13000, max: 19999, icon: "🥇", css: "rank-gold", avatar: "avatar-gold" }, { name: "Platino", min: 20000, max: 29999, icon: "💠", css: "rank-platinum", avatar: "avatar-platinum" }, { name: "Diamante", min: 30000, max: 49999, icon: "💎", css: "rank-diamond", avatar: "avatar-diamond" }, { name: "Heroico", min: 50000, max: 999999, icon: "👑", css: "rank-heroic", avatar: "avatar-heroic" } ];
 
-        function getRankInfo(score) {
-            let rank = RANKS[0];
-            for(let i=0; i<RANKS.length; i++) { if(score >= RANKS[i].min) rank = RANKS[i]; }
-            let tier = "I"; let range = rank.max - rank.min;
-            if (score < rank.min + range/3) tier = "III";
-            else if (score < rank.min + (range/3)*2) tier = "II";
-            let pct = ((score - rank.min) / range) * 100; if(pct > 100) pct = 100;
-            return { ...rank, tier: tier, pct: pct };
-        }
+        function getRankInfo(score) { let rank = RANKS[0]; for(let i=0; i<RANKS.length; i++) { if(score >= RANKS[i].min) rank = RANKS[i]; } let tier = "I"; let range = rank.max - rank.min; if (score < rank.min + range/3) tier = "III"; else if (score < rank.min + (range/3)*2) tier = "II"; let pct = ((score - rank.min) / range) * 100; if(pct > 100) pct = 100; return { ...rank, tier: tier, pct: pct }; }
 
         const DB = { 
             1: [ {d: 456, div: 4}, {d: 789, div: 3}, {d: 125, div: 5}, {d: 982, div: 7}, {d: 641, div: 2}, {d: 333, div: 9}, {d: 805, div: 6}, {d: 219, div: 8}, {d: 567, div: 4}, {d: 901, div: 3} ],
@@ -383,287 +345,107 @@
             10: [ {d: 45678912, div: 234}, {d: 89012345, div: 567}, {d: 12345678, div: 901}, {d: 76543210, div: 412}, {d: 33445566, div: 777}, {d: 55667788, div: 125}, {d: 98765432, div: 850}, {d: 20406080, div: 315}, {d: 61234567, div: 621}, {d: 99999999, div: 999} ]
         };
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            try {
-                const { data: { session } } = await _supabase.auth.getSession();
-                if (session && session.user) { currentUser = session.user; showApp(); } else { showLogin(); }
-            } catch(e) { console.error(e); showLogin(); }
-        });
+        document.addEventListener('DOMContentLoaded', async () => { try { const { data: { session } } = await _supabase.auth.getSession(); if (session && session.user) { currentUser = session.user; showApp(); } else { showLogin(); } } catch(e) { console.error(e); showLogin(); } });
 
         let typingTimer; const doneTypingInterval = 500;
-        function showLogin() { 
-            document.getElementById('login-screen').style.display = 'flex'; 
-            document.querySelector('.app-container').style.display = 'none'; 
-            const input = document.getElementById('login-username'); const img = document.getElementById('login-avatar-img');
-            const newInput = input.cloneNode(true); input.parentNode.replaceChild(newInput, input);
-            document.getElementById('login-username').addEventListener('input', (e) => {
-                const val = e.target.value.trim(); clearTimeout(typingTimer);
-                if (val.length === 0) { img.src = "https://api.dicebear.com/8.x/identicon/svg?seed=Shadow"; } else {
-                    typingTimer = setTimeout(() => { img.src = `https://api.dicebear.com/8.x/adventurer/svg?seed=${val}`; }, doneTypingInterval);
-                }
-            });
-        }
+        function showLogin() { document.getElementById('login-screen').style.display = 'flex'; document.querySelector('.app-container').style.display = 'none'; const input = document.getElementById('login-username'); const img = document.getElementById('login-avatar-img'); const newInput = input.cloneNode(true); input.parentNode.replaceChild(newInput, input); document.getElementById('login-username').addEventListener('input', (e) => { const val = e.target.value.trim(); clearTimeout(typingTimer); if (val.length === 0) { img.src = "https://api.dicebear.com/8.x/identicon/svg?seed=Shadow"; } else { typingTimer = setTimeout(() => { img.src = `https://api.dicebear.com/8.x/adventurer/svg?seed=${val}`; }, doneTypingInterval); } }); }
         
-        async function showApp() { 
-            document.getElementById('login-screen').style.display = 'none'; 
-            document.querySelector('.app-container').style.display = 'flex'; 
-            if(currentUser) { try { await loadScore(currentUser); } catch(e){ console.error(e); } } 
-            initGame(); startRanking(); initChat(); loadHallOfFame();
-        }
+        async function showApp() { document.getElementById('login-screen').style.display = 'none'; document.querySelector('.app-container').style.display = 'flex'; if(currentUser) { try { await loadScore(currentUser); } catch(e){ console.error(e); } } initGame(); startRanking(); initChat(); loadHallOfFame(); }
 
-        async function handleLogin() {
-            const u = document.getElementById('login-username').value.trim(); const p = document.getElementById('login-password').value; const e = document.getElementById('login-error');
-            if (!u || p.length < 6) { e.textContent = "Datos incompletos."; e.style.display='block'; return; }
-            try { const { data, error } = await _supabase.auth.signInWithPassword({ email: u+"@profemiguel.com", password: p }); if (error) throw error; currentUser = data.user; showApp(); } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; }
-        }
-
-        async function handleRegister() {
-            const u = document.getElementById('login-username').value.trim(); const p = document.getElementById('login-password').value; const e = document.getElementById('login-error');
-            if (!u || p.length < 6) { e.textContent = "Datos incompletos."; e.style.display='block'; return; }
-            try { const { data, error } = await _supabase.auth.signUp({ email: u+"@profemiguel.com", password: p }); if (error) throw error; alert("Registrado. Entra ahora."); } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; }
-        }
+        async function handleLogin() { const u = document.getElementById('login-username').value.trim(); const p = document.getElementById('login-password').value; const e = document.getElementById('login-error'); if (!u || p.length < 6) { e.textContent = "Datos incompletos."; e.style.display='block'; return; } try { const { data, error } = await _supabase.auth.signInWithPassword({ email: u+"@profemiguel.com", password: p }); if (error) throw error; currentUser = data.user; showApp(); } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; } }
+        async function handleRegister() { const u = document.getElementById('login-username').value.trim(); const p = document.getElementById('login-password').value; const e = document.getElementById('login-error'); if (!u || p.length < 6) { e.textContent = "Datos incompletos."; e.style.display='block'; return; } try { const { data, error } = await _supabase.auth.signUp({ email: u+"@profemiguel.com", password: p }); if (error) throw error; alert("Registrado. Entra ahora."); } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; } }
         async function logout() { await _supabase.auth.signOut(); currentUser=null; totalScore=0; showLogin(); clearInterval(rankInt); }
 
-        async function loadScore(user) {
-            try { 
-                const { data } = await _supabase.from('profiles').select('total_score, avatar_style, current_level, completed_at').eq('id', user.id).single(); 
-                totalScore = (data && data.total_score) ? data.total_score : 0; 
-                currentAvatarStyle = (data && data.avatar_style) ? data.avatar_style : 'adventurer'; 
-                unlockedLevel = (data && data.current_level) ? data.current_level : 1;
-                hasFinishedGame = (data && data.completed_at); 
-            } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1; hasFinishedGame = false; }
-            
-            isAdmin = (user.email.split('@')[0] === ADMIN_USER);
-            document.getElementById('admin-header-btn').classList.toggle('visible', isAdmin);
+        async function loadScore(user) { try { const { data } = await _supabase.from('profiles').select('total_score, avatar_style, current_level, completed_at').eq('id', user.id).single(); totalScore = (data && data.total_score) ? data.total_score : 0; currentAvatarStyle = (data && data.avatar_style) ? data.avatar_style : 'adventurer'; unlockedLevel = (data && data.current_level) ? data.current_level : 1; hasFinishedGame = (data && data.completed_at); } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1; hasFinishedGame = false; } isAdmin = (user.email.split('@')[0] === ADMIN_USER); document.getElementById('admin-header-btn').classList.toggle('visible', isAdmin); if(hasFinishedGame) document.getElementById('msg').innerHTML = "<span style='color:var(--primary-color);'>¡Ya terminaste!</span>"; currentMainLevel = unlockedLevel; populateLevelSelect(); updateUI(); renderMainAvatar(); }
+        function populateLevelSelect() { const sel = document.getElementById('levelSelect'); sel.innerHTML = ''; for(let i=1; i<=TOTAL_LEVELS; i++) { let opt = document.createElement('option'); opt.value = i; opt.innerText = "Nivel " + i; if(i > unlockedLevel) { opt.disabled = true; opt.innerText += " 🔒"; } sel.appendChild(opt); } sel.value = currentMainLevel; }
 
-            if(hasFinishedGame) document.getElementById('msg').innerHTML = "<span style='color:var(--primary-color);'>¡Ya terminaste la Temporada 1!</span>";
-
-            currentMainLevel = unlockedLevel;
-            populateLevelSelect();
-            updateUI(); renderMainAvatar();
-        }
-
-        function populateLevelSelect() {
-            const sel = document.getElementById('levelSelect');
-            sel.innerHTML = '';
-            for(let i=1; i<=TOTAL_LEVELS; i++) {
-                let opt = document.createElement('option');
-                opt.value = i;
-                opt.innerText = "Nivel " + i;
-                if(i > unlockedLevel) { opt.disabled = true; opt.innerText += " 🔒"; }
-                sel.appendChild(opt);
-            }
-            sel.value = currentMainLevel;
-        }
-
-        function updateUI() {
-            document.getElementById('scoreDisplay').innerText = totalScore; const rI = getRankInfo(totalScore);
-            document.getElementById('userRankName').innerText = rI.icon + " " + rI.name + " " + rI.tier;
-            document.getElementById('userRankName').className = "rank-name " + rI.css;
-            document.getElementById('userRankBar').style.width = rI.pct + "%";
-            const avatarBox = document.getElementById('main-avatar-box'); avatarBox.className = "avatar-container " + rI.avatar;
-        }
+        function updateUI() { document.getElementById('scoreDisplay').innerText = totalScore; const rI = getRankInfo(totalScore); document.getElementById('userRankName').innerText = rI.icon + " " + rI.name + " " + rI.tier; document.getElementById('userRankName').className = "rank-name " + rI.css; document.getElementById('userRankBar').style.width = rI.pct + "%"; const avatarBox = document.getElementById('main-avatar-box'); avatarBox.className = "avatar-container " + rI.avatar; }
         function getAvatarUrl(seed, style) { return `https://api.dicebear.com/8.x/${style}/svg?seed=${seed}`; }
         function renderMainAvatar() { document.getElementById('main-avatar-img').src = getAvatarUrl(currentUser.email.split('@')[0], currentAvatarStyle); }
         function toggleAvatarModal() { const modal = document.getElementById('avatar-modal'); if(modal.style.display === 'none') { modal.style.display = 'flex'; renderAvatarOptions(); } else { modal.style.display = 'none'; } }
-        function renderAvatarOptions() {
-            const gridStandard = document.getElementById('avatar-options-standard'); const gridExclusive = document.getElementById('avatar-options-exclusive'); const exclusiveSection = document.getElementById('exclusive-section');
-            gridStandard.innerHTML = ''; gridExclusive.innerHTML = ''; const seed = currentUser.email.split('@')[0]; const isHeroic = totalScore >= 50000;
-            AVATAR_STYLES_STANDARD.forEach(style => { let div = document.createElement('div'); div.className = 'avatar-option' + (currentAvatarStyle === style.id ? ' selected' : ''); div.onclick = () => selectAvatarStyle(style.id); div.innerHTML = `<img src="${getAvatarUrl(seed, style.id)}"><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`; gridStandard.appendChild(div); });
-            if(isHeroic) { exclusiveSection.style.display = 'block'; AVATAR_STYLES_EXCLUSIVE.forEach(style => { let div = document.createElement('div'); div.className = 'avatar-option' + (currentAvatarStyle === style.id ? ' selected' : ''); div.onclick = () => selectAvatarStyle(style.id); div.innerHTML = `<img src="${getAvatarUrl(seed, style.id)}"><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`; gridExclusive.appendChild(div); }); }
-            else { exclusiveSection.style.display = 'block'; AVATAR_STYLES_EXCLUSIVE.forEach(style => { let div = document.createElement('div'); div.className = 'avatar-option avatar-locked'; div.innerHTML = `<img src="${getAvatarUrl('demo', style.id)}"><div class="lock-icon"><i class="fas fa-lock"></i></div><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`; gridExclusive.appendChild(div); }); }
-        }
+        function renderAvatarOptions() { const gridStandard = document.getElementById('avatar-options-standard'); const gridExclusive = document.getElementById('avatar-options-exclusive'); const exclusiveSection = document.getElementById('exclusive-section'); gridStandard.innerHTML = ''; gridExclusive.innerHTML = ''; const seed = currentUser.email.split('@')[0]; const isHeroic = totalScore >= 50000; AVATAR_STYLES_STANDARD.forEach(style => { let div = document.createElement('div'); div.className = 'avatar-option' + (currentAvatarStyle === style.id ? ' selected' : ''); div.onclick = () => selectAvatarStyle(style.id); div.innerHTML = `<img src="${getAvatarUrl(seed, style.id)}"><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`; gridStandard.appendChild(div); }); if(isHeroic) { exclusiveSection.style.display = 'block'; AVATAR_STYLES_EXCLUSIVE.forEach(style => { let div = document.createElement('div'); div.className = 'avatar-option' + (currentAvatarStyle === style.id ? ' selected' : ''); div.onclick = () => selectAvatarStyle(style.id); div.innerHTML = `<img src="${getAvatarUrl(seed, style.id)}"><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`; gridExclusive.appendChild(div); }); } else { exclusiveSection.style.display = 'block'; AVATAR_STYLES_EXCLUSIVE.forEach(style => { let div = document.createElement('div'); div.className = 'avatar-option avatar-locked'; div.innerHTML = `<img src="${getAvatarUrl('demo', style.id)}"><div class="lock-icon"><i class="fas fa-lock"></i></div><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`; gridExclusive.appendChild(div); }); } }
         function selectAvatarStyle(styleId) { const isExclusive = AVATAR_STYLES_EXCLUSIVE.some(s => s.id === styleId); if(isExclusive && totalScore < 50000) { alert("¡Este avatar es exclusivo!"); return; } currentAvatarStyle = styleId; renderAvatarOptions(); renderMainAvatar(); }
         async function saveAvatarChoice() { AudioEngine.playClick(); await _supabase.from('profiles').upsert({ id: currentUser.id, avatar_style: currentAvatarStyle }); toggleAvatarModal(); updateRanking(); }
         async function saveScore() { if (!currentUser) return; try { await _supabase.from('profiles').upsert({ id: currentUser.id, username: currentUser.email.split('@')[0], total_score: totalScore, current_level: unlockedLevel }); updateRanking(); } catch(e) { console.error(e); } }
         let rankInt; function startRanking() { updateRanking(); rankInt = setInterval(updateRanking, 5000); }
-        async function updateRanking() {
-            const list = document.getElementById('ranking-list');
-            try {
-                const { data, error } = await _supabase.from('profiles').select('username, total_score, avatar_style, completed_at').order('total_score', { ascending: false }).limit(10);
-                if(error) throw error;
-                if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; padding:10px; color:#666;">No hay datos.</li>'; return; }
-                list.innerHTML = data.filter(u => !u.completed_at).map((u, i) => { const s = u.total_score || 0; const rI = getRankInfo(s); const isMe = (currentUser && u.username === currentUser.email.split('@')[0]); let cls = "ranking-item " + rI.css; if(isMe) cls += " me"; const style = u.avatar_style || 'adventurer'; const avatarUrl = getAvatarUrl(u.username || 'guest', style); return `<li class="${cls}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avatarUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${u.username||'Yo'}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span></div></div><span class="rank-score">${s}</span></li>`; }).join('');
-            } catch(err) { list.innerHTML = '<li style="text-align:center; padding:10px; color:red;">Error.</li>'; }
-        }
-
-        // HALL OF FAME
-        async function loadHallOfFame() {
-            const list = document.getElementById('fame-list');
-            try {
-                const { data, error } = await _supabase.from('profiles').select('username, completed_at').not('completed_at', 'is', null).order('completed_at', { ascending: true }).limit(5);
-                if(error) throw error;
-                if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; color:#555; font-size:0.8rem; padding:10px;">Nadie ha terminado aún</li>'; return; }
-                list.innerHTML = data.map(u => {
-                    const date = new Date(u.completed_at);
-                    const timeStr = date.toLocaleDateString() + " " + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-                    return `<li class="fame-item"><i class="fas fa-medal" style="color:var(--primary-color)"></i> <span>${u.username}</span> <span class="fame-time">${timeStr}</span></li>`;
-                }).join('');
-            } catch(e) { console.error(e); }
-        }
-
-        // --- CHAT LOGIC ---
+        async function updateRanking() { const list = document.getElementById('ranking-list'); try { const { data, error } = await _supabase.from('profiles').select('username, total_score, avatar_style, completed_at').order('total_score', { ascending: false }).limit(10); if(error) throw error; if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; padding:10px; color:#666;">No hay datos.</li>'; return; } list.innerHTML = data.filter(u => !u.completed_at).map((u, i) => { const s = u.total_score || 0; const rI = getRankInfo(s); const isMe = (currentUser && u.username === currentUser.email.split('@')[0]); let cls = "ranking-item " + rI.css; if(isMe) cls += " me"; const style = u.avatar_style || 'adventurer'; const avatarUrl = getAvatarUrl(u.username || 'guest', style); return `<li class="${cls}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avatarUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${u.username||'Yo'}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span></div></div><span class="rank-score">${s}</span></li>`; }).join(''); } catch(err) { list.innerHTML = '<li style="text-align:center; padding:10px; color:red;">Error.</li>'; } }
+        async function loadHallOfFame() { const list = document.getElementById('fame-list'); try { const { data, error } = await _supabase.from('profiles').select('username, completed_at').not('completed_at', 'is', null).order('completed_at', { ascending: true }).limit(5); if(error) throw error; if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; color:#555; font-size:0.8rem; padding:10px;">Nadie ha terminado aún</li>'; return; } list.innerHTML = data.map(u => { const date = new Date(u.completed_at); const timeStr = date.toLocaleDateString() + " " + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); return `<li class="fame-item"><i class="fas fa-medal" style="color:var(--primary-color)"></i> <span>${u.username}</span> <span class="fame-time">${timeStr}</span></li>`; }).join(''); } catch(e) { console.error(e); } }
         function initChat() { const channel = _supabase.channel('public:chat_messages'); channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => { addChatMessage(payload.new); }).subscribe(); loadInitialChat(); }
         async function loadInitialChat() { try { const { data } = await _supabase.from('chat_messages').select('*').order('created_at', { ascending: false }).limit(15); const container = document.getElementById('chat-messages'); container.innerHTML = ''; if(data) data.reverse().forEach(msg => addChatMessage(msg)); } catch(e) { console.error(e); } }
         function addChatMessage(msg) { const container = document.getElementById('chat-messages'); const div = document.createElement('div'); div.className = 'chat-msg'; div.innerHTML = `<span>${msg.username}:</span> <span class="chat-emoji">${msg.emoji}</span>`; container.prepend(div); while (container.children.length > 15) container.removeChild(container.lastChild); }
         async function sendChat(emoji) { if(chatCooldown) return; if(!currentUser) return; chatCooldown = true; setTimeout(() => chatCooldown = false, 3000); AudioEngine.playClick(); try { await _supabase.from('chat_messages').insert({ user_id: currentUser.id, username: currentUser.email.split('@')[0], emoji: emoji }); } catch(e) { console.error(e); } }
         function toggleChatUI() { chatVisible = !chatVisible; document.getElementById('chat-battle').classList.toggle('visible', chatVisible); }
-
-        // --- ADMIN LOGIC ---
         function toggleAdmin() { const modal = document.getElementById('admin-modal'); modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex'; }
-        async function resetAllUsers() {
-            if(!confirm("¿Iniciar NUEVA TEMPORADA? Esto borra todo progreso.")) return;
-            try {
-                await _supabase.from('profiles').update({ total_score: 0, current_level: 1, completed_at: null }).neq('id', '00000000-0000-0000-0000-000000000000');
-                alert("¡Temporada reiniciada!");
-                toggleAdmin();
-                updateRanking();
-                loadHallOfFame();
-                totalScore = 0; unlockedLevel = 1; hasFinishedGame = false; updateUI(); initGame();
-            } catch(e) { alert("Error."); console.error(e); }
-        }
+        async function resetAllUsers() { if(!confirm("¿Iniciar NUEVA TEMPORADA?")) return; try { await _supabase.from('profiles').update({ total_score: 0, current_level: 1, completed_at: null }).neq('id', '00000000-0000-0000-0000-000000000000'); alert("¡Temporada reiniciada!"); toggleAdmin(); updateRanking(); loadHallOfFame(); totalScore = 0; unlockedLevel = 1; hasFinishedGame = false; updateUI(); initGame(); } catch(e) { alert("Error."); console.error(e); } }
 
         // --- GAME LOGIC ---
         function initGame() { loadProblem(); populateLevelSelect(); }
-        
-        function jumpToLevel(l) { 
-            AudioEngine.playClick(); 
-            const target = parseInt(l);
-            if(target > unlockedLevel) { alert("¡Debes completar el nivel anterior primero!"); document.getElementById('levelSelect').value = currentMainLevel; return; }
-            currentMainLevel = target; 
-            currentProblemInLevel = 1; 
-            loadProblem(); 
-        }
+        function jumpToLevel(l) { AudioEngine.playClick(); const target = parseInt(l); if(target > unlockedLevel) { alert("¡Debes completar el nivel anterior!"); document.getElementById('levelSelect').value = currentMainLevel; return; } currentMainLevel = target; currentProblemInLevel = 1; loadProblem(); }
         
         function loadProblem() {
             if(hasFinishedGame) return; 
-            // RESET ANTI-SPAM
-            isProcessing = false; 
-            const btn = document.getElementById('btn-verify');
-            btn.disabled = false;
-            btn.style.opacity = '1';
-            btn.innerText = "Verificar";
-
-            document.getElementById('subLevelCount').innerText = currentProblemInLevel; 
-            document.getElementById('progressBar').style.width = ((currentMainLevel - 1) / TOTAL_LEVELS) * 100 + '%'; 
-            populateLevelSelect();
+            isProcessing = false; const btn = document.getElementById('btn-verify'); btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "Verificar";
+            document.getElementById('subLevelCount').innerText = currentProblemInLevel; document.getElementById('progressBar').style.width = ((currentMainLevel - 1) / TOTAL_LEVELS) * 100 + '%'; populateLevelSelect();
             const d = DB[currentMainLevel]; if (d && d[currentProblemInLevel - 1]) { currentDividend = d[currentProblemInLevel - 1].d; currentDivisor = d[currentProblemInLevel - 1].div; }
             const label = getDifficultyLabel(currentMainLevel); document.getElementById('difficultyLabel').innerText = label; createUI(); createAntena(); resetAll(); lockGrid();
         }
         function getDifficultyLabel(lvl) { if(lvl <= 2) return "Divisor: 1 Cifra"; if(lvl === 3 || lvl === 4 || lvl === 5 || lvl === 7 || lvl === 9) return "Divisor: 2 Cifras"; return "Divisor: 3 Cifras"; }
         
-        function lockGrid() { isGridLocked = true; document.getElementById('grid-lock-overlay').classList.remove('hidden'); document.getElementById('valCociente').disabled = true; document.getElementById('valResiduo').disabled = true; document.getElementById('btnSelectMode').disabled = true; }
-        
-        function unlockGrid() { 
-            isGridLocked = false; 
-            document.getElementById('grid-lock-overlay').classList.add('hidden'); 
-            document.getElementById('valCociente').disabled = false; 
-            document.getElementById('valResiduo').disabled = false; 
-            document.getElementById('btnSelectMode').disabled = false; 
-            document.getElementById('msg').innerText = "¡Antena completa!"; 
-            document.getElementById('msg').style.color = "var(--success)"; 
-            triggerFirstBlood(); 
-        }
+        function lockGrid() { isGridLocked = true; document.getElementById('grid-lock-overlay').classList.remove('hidden'); disableCocienteInputs(true); document.getElementById('btnSelectMode').disabled = true; }
+        function unlockGrid() { isGridLocked = false; document.getElementById('grid-lock-overlay').classList.add('hidden'); disableCocienteInputs(false); document.getElementById('btnSelectMode').disabled = false; document.getElementById('msg').innerText = "¡Antena completa!"; document.getElementById('msg').style.color = "var(--success)"; triggerEpicEffect(); }
 
-        // FIRST BLOOD EFFECT
-        function triggerFirstBlood() {
-            AudioEngine.playFirstBlood();
-            const overlay = document.getElementById('first-blood-overlay');
-            const text = document.getElementById('blood-text');
-            const messages = ["¡PRIMERA SANGRE!", "¡LISTO!", "¡VAMOS!"];
-            text.innerText = messages[Math.floor(Math.random()*messages.length)];
-            overlay.style.display = 'flex';
-            text.style.animation = 'none';
-            void text.offsetWidth;
-            text.style.animation = 'bloodPulse 0.5s ease-out forwards';
-            setTimeout(() => { overlay.style.display = 'none'; }, 1500);
-        }
+        function triggerEpicEffect() { AudioEngine.playEpic(); const overlay = document.getElementById('epic-overlay'); const text = document.getElementById('epic-text'); const messages = ["¡BOOYAH!", "¡A LA CARGA!", "¡MÁXIMO PODER!"]; text.innerText = messages[Math.floor(Math.random()*messages.length)]; overlay.style.display = 'flex'; text.style.animation = 'none'; void text.offsetWidth; text.style.animation = 'epicPulse 0.5s ease-out forwards'; setTimeout(() => { overlay.style.display = 'none'; }, 1500); }
 
-        function showVictoryScreen(nextLevel) {
-            const screen = document.getElementById('victory-screen'); 
-            if (nextLevel > unlockedLevel) {
-                 const levelDisplay = document.getElementById('victory-level-display'); levelDisplay.innerText = "NIVEL " + nextLevel;
-                 createConfetti(); screen.classList.add('show'); AudioEngine.playLevelUp();
-                 unlockedLevel = nextLevel; 
-                 setTimeout(() => { screen.classList.remove('show'); document.querySelectorAll('.confetti').forEach(c => c.remove()); currentMainLevel = nextLevel; currentProblemInLevel = 1; loadProblem(); }, 3000);
-            } else {
-                 currentMainLevel = nextLevel; currentProblemInLevel = 1; loadProblem();
-            }
-        }
-
-        function showGameOver() {
-            const screen = document.getElementById('victory-screen');
-            const title = document.querySelector('.victory-title');
-            title.innerText = "¡SALÓN DE LA FAMA!";
-            createConfetti(); screen.classList.add('show');
-            AudioEngine.playLevelUp();
-            hasFinishedGame = true;
-            const completed_at = new Date().toISOString();
-            _supabase.from('profiles').update({ completed_at: completed_at }).eq('id', currentUser.id).then(() => loadHallOfFame());
-        }
-        
+        function showVictoryScreen(nextLevel) { const screen = document.getElementById('victory-screen'); if (nextLevel > unlockedLevel) { createConfetti(); screen.classList.add('show'); AudioEngine.playLevelUp(); unlockedLevel = nextLevel; setTimeout(() => { screen.classList.remove('show'); document.querySelectorAll('.confetti').forEach(c => c.remove()); currentMainLevel = nextLevel; currentProblemInLevel = 1; loadProblem(); }, 3000); } else { currentMainLevel = nextLevel; currentProblemInLevel = 1; loadProblem(); } }
+        function showGameOver() { const screen = document.getElementById('victory-screen'); const title = document.querySelector('.victory-title'); title.innerText = "¡SALÓN DE LA FAMA!"; createConfetti(); screen.classList.add('show'); AudioEngine.playLevelUp(); hasFinishedGame = true; const completed_at = new Date().toISOString(); _supabase.from('profiles').update({ completed_at: completed_at }).eq('id', currentUser.id).then(() => loadHallOfFame()); }
         function createConfetti() { const screen = document.getElementById('victory-screen'); const colors = ['#ffcc00', '#00e676', '#2979ff', '#f00', '#ff9800']; for (let i = 0; i < 50; i++) { const conf = document.createElement('div'); conf.className = 'confetti'; conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = -10 + 'px'; conf.style.background = colors[Math.floor(Math.random() * colors.length)]; conf.style.animationDuration = (Math.random() * 2 + 2) + 's'; screen.appendChild(conf); } }
         
         function createUI() {
-            const g = document.getElementById('gridContainer'); const dB = document.getElementById('divisorBox'); const tR = document.getElementById('topRow'); g.innerHTML = ''; dB.innerHTML = ''; tR.innerHTML = '';
+            const g = document.getElementById('gridContainer'); const dB = document.getElementById('divisorBox'); const cC = document.getElementById('col-cociente'); // New Column
+            g.innerHTML = ''; dB.innerHTML = ''; cC.innerHTML = '';
+            
+            // 1. Divisor
             String(currentDivisor).split('').forEach(n => { let i=document.createElement('input'); i.type='text'; i.className='input-div'; i.value=n; i.readOnly=true; dB.appendChild(i); });
+
+            // 2. Grid (Dividendo)
             for(let r=0; r<rows; r++) { for(let c=0; c<cols; c++) { let i = document.createElement('input'); i.type='text'; i.className='cell'; i.maxLength=1; i.id="c-"+r+"-"+c; i.addEventListener('mousedown', (e) => { if(sel && !isGridLocked){ e.preventDefault(); drag=true; sC={r,c}; eC={r,c}; updS(); } }); i.addEventListener('mouseenter', (e) => { if(sel && drag && !isGridLocked){ eC={r,c}; updS(); } }); i.addEventListener('input', (e) => { if(!sel && !isGridLocked && e.target.value){ let n=(c<cols-1)?"c-"+r+"-"+(c+1):(r<rows-1)?"c-"+(r+1)+"-0":null; if(n)document.getElementById(n).focus(); }}); g.appendChild(i); } }
             document.onmouseup = () => { drag=false; }; let sN = String(currentDividend); for(let i=0; i<sN.length; i++) { let cell = document.getElementById("c-0-"+i); cell.value = sN[i]; cell.classList.add('cell-locked'); cell.disabled = true; }
             document.getElementById('lineH').style.width = (sN.length * cellSize) + 'px';
-            for(let c=0; c<sN.length; c++) { let i=document.createElement('input'); i.type='text'; i.className='input-cociente'; i.maxLength=1; i.id="top-"+c; i.addEventListener('input', (e) => { syncT(); if(e.target.value && c<sN.length-1) document.getElementById("top-"+(c+1)).focus(); }); tR.appendChild(i); }
+
+            // 3. Cociente (Columna Derecha - Galera Style)
+            for(let i=0; i<sN.length; i++) { let inp = document.createElement('input'); inp.type = 'text'; inp.className = 'input-cociente-galera'; inp.maxLength = 1; inp.id = "top-"+i; inp.addEventListener('input', (e) => { syncT(); if(e.target.value && i<sN.length-1) document.getElementById("top-"+(i+1)).focus(); }); cC.appendChild(inp); }
         }
+
+        function disableCocienteInputs(disabled) { document.querySelectorAll('.input-cociente-galera').forEach(i => i.disabled = disabled); }
+
         let sel=false, drag=false, sC=null, eC=null, selC=new Set();
         function toggleSelectMode() { if(isGridLocked) return; sel=!sel; document.getElementById('btnSelectMode').classList.toggle('active', sel); if(!sel) clrS(); }
         function updS() { clrS(); if(!sC||!eC)return; let minR=Math.min(sC.r,eC.r),maxR=Math.max(sC.r,eC.r),minC=Math.min(sC.c,eC.c),maxC=Math.max(sC.c,eC.c); for(let r=minR;r<=maxR;r++)for(let c=minC;c<=maxC;c++){let el=document.getElementById("c-"+r+"-"+c); if(el){el.classList.add('cell-selected'); selC.add(el.id);}} }
         function clrS() { selC.forEach(id=>{let el=document.getElementById(id); if(el)el.classList.remove('cell-selected');}); selC.clear(); }
         function applyBorder(t) { if(isGridLocked) return; selC.forEach(id=>{let el=document.getElementById(id); if(el){if(t==='clear'){el.classList.remove('border-bottom','border-right');}else{el.classList.add("border-"+t);}}}); }
-        function syncT() { let v=""; document.querySelectorAll('.input-cociente').forEach(x=>v+=x.value); document.getElementById('valCociente').value=v; }
+        function syncT() { let v=""; document.querySelectorAll('.input-cociente-galera').forEach(x=>v+=x.value); document.getElementById('valCociente').value=v; }
 
         // --- ANTENA PROGRESSIVE LOGIC ---
         function createAntena() { const b=document.getElementById('antenaBody'); document.getElementById('antenaLabel').innerText=currentDivisor; b.innerHTML=''; for(let i=1;i<=10;i++){ let r=document.createElement('div'); r.className='antena-row locked-row'; r.id="row-"+i; r.innerHTML="<span>"+i+" x "+currentDivisor+" =</span><input type='number' class='antena-input' id='a"+i+"' disabled>"; b.appendChild(r); } currentAntennaIndex = 0; enableNextAntennaInput(); }
         function enableNextAntennaInput() { if (currentAntennaIndex >= ANTENNA_SEQUENCE.length) return; const currentId = ANTENNA_SEQUENCE[currentAntennaIndex]; const input = document.getElementById("a"+currentId); const row = document.getElementById("row-"+currentId); if(input) { input.disabled = false; input.focus(); row.classList.remove('locked-row'); input.oninput = () => checkAntennaInput(input, currentId); } }
         function checkAntennaInput(input, id) { const val = parseInt(input.value); const expected = id * currentDivisor; if (val === expected) { AudioEngine.playSuccess(); input.classList.add('status-ok'); input.disabled = true; input.classList.remove('status-wrong'); currentAntennaIndex++; if (currentAntennaIndex < ANTENNA_SEQUENCE.length) { enableNextAntennaInput(); } else { unlockGrid(); } } else { input.classList.add('status-wrong'); setTimeout(() => input.classList.remove('status-wrong'), 500); } }
-        function resetAll() { document.getElementById('valCociente').value=''; document.getElementById('valResiduo').value=''; document.querySelectorAll('.antena-input').forEach(i => { i.value=''; i.classList.remove('status-ok','status-wrong'); }); document.querySelectorAll('.input-cociente').forEach(i => i.value=''); document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value=''; i.disabled=false; }); document.querySelectorAll('.cell').forEach(c => c.classList.remove('border-bottom','border-right','cell-selected')); selC.clear(); }
+        function resetAll() { document.getElementById('valCociente').value=''; document.getElementById('valResiduo').value=''; document.querySelectorAll('.antena-input').forEach(i => { i.value=''; i.classList.remove('status-ok','status-wrong'); }); document.querySelectorAll('.input-cociente-galera').forEach(i => i.value=''); document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value=''; i.disabled=false; }); document.querySelectorAll('.cell').forEach(c => c.classList.remove('border-bottom','border-right','cell-selected')); selC.clear(); }
         
         async function verificarSolucion() {
-            // FIX: ANTI-SPAM
-            if(isProcessing) return;
-            
-            if(isGridLocked) { alert("¡Completa la Antena primero!"); return; }
-
-            // BLOQUEAR
-            isProcessing = true;
-            const btn = document.getElementById('btn-verify');
-            btn.disabled = true;
-            btn.style.opacity = '0.5';
-            btn.innerText = "Verificando...";
-
+            if(isProcessing) return; if(isGridLocked) { alert("¡Completa la Antena!"); return; }
+            isProcessing = true; const btn = document.getElementById('btn-verify'); btn.disabled = true; btn.style.opacity = '0.5'; btn.innerText = "Verificando...";
             let coc=parseInt(document.getElementById('valCociente').value); let res=parseInt(document.getElementById('valResiduo').value)||0;
             let rC=Math.floor(currentDividend/currentDivisor); let rR=currentDividend%currentDivisor;
             if(coc===rC && res===rR) {
                 totalScore += POINTS; updateUI(); await saveScore(); AudioEngine.playSuccess();
-                document.getElementById('msg').innerHTML="<span style='color:var(--success); font-weight:700;'>¡CORRECTO! +"+POINTS+"</span>";
+                document.getElementById('msg').innerHTML="<span style='color:var(--success); font-weight:700; font-size:1.2rem;'>¡CORRECTO! +"+POINTS+"</span>";
                 setTimeout(() => {
-                    if(currentProblemInLevel < PROBLEMS_PER_LEVEL) {
-                        currentProblemInLevel++;
-                        loadProblem();
-                    } else { 
-                        if(currentMainLevel < TOTAL_LEVELS) { 
-                            let nextLvl = currentMainLevel + 1; 
-                            showVictoryScreen(nextLvl); 
-                        } else { 
-                            showGameOver(); 
-                        } 
-                    }
+                    if(currentProblemInLevel < PROBLEMS_PER_LEVEL) { currentProblemInLevel++; loadProblem(); }
+                    else { if(currentMainLevel < TOTAL_LEVELS) { showVictoryScreen(currentMainLevel + 1); } else { showGameOver(); } }
                 }, 1500);
             } else { 
-                AudioEngine.playError(); 
-                document.getElementById('msg').innerHTML="<span style='color:var(--error); font-weight:700;'>INCORRECTO</span>";
-                // DESBLOQUEAR SI FALLA
-                isProcessing = false; 
-                btn.disabled = false;
-                btn.style.opacity = '1';
-                btn.innerText = "Verificar";
+                AudioEngine.playError(); document.getElementById('msg').innerHTML="<span style='color:var(--error); font-weight:700; font-size:1.2rem;'>INCORRECTO</span>";
+                isProcessing = false; btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "Verificar";
             }
         }
     </script>
