@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V8 Persistencia</title>
+    <title>Reto de División - V9 Persistencia Real</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -92,50 +92,26 @@
 
         /* --- LAYOUT GALERA --- */
         .division-row { display: flex; flex-direction: row; align-items: flex-start; gap: 0; margin-top: 10px; flex-shrink: 0; }
-        
-        /* 1. DIVISOR */
         .col-divisor { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; margin-top: 38px; margin-right: 3px; }
         .input-div { width: var(--cell-size); height: var(--cell-size); border: 1px solid #555; background: black; font-size: 1.4rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; display: flex; align-items: center; justify-content: center; text-shadow: 0 0 5px var(--primary-color); }
-        
-        /* 2. GRID CONTAINER */
         .col-grid { display: flex; flex-direction: column; position: relative; z-index: 1; }
         .grid-disabled-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 5; display: flex; align-items: center; justify-content: center; pointer-events: none; border-radius: 4px; }
         .grid-disabled-overlay.hidden { display: none; }
         .lock-msg { background: var(--primary-color); color: black; padding: 8px 15px; border-radius: 2px; font-size: 0.9rem; font-weight: 700; box-shadow: 0 0 20px var(--primary-color); pointer-events: auto; text-align: center; text-transform: uppercase; }
-        
-        /* C. COCIENTE ARRIBA */
         .fila-cociente-arriba { display: flex; justify-content: flex-start; height: var(--cell-size); align-items: flex-end; padding-bottom: 4px; }
-        .input-cociente-galera { 
-            width: var(--cell-size); height: var(--cell-size); 
-            border: 1px solid #555; background: #000; 
-            font-size: 1.4rem; font-weight: 700; color: var(--primary-color); 
-            text-align: center; outline: none; font-family: 'Rajdhani', sans-serif; 
-            margin-right: 1px; border-radius: 2px; cursor: text; pointer-events: auto; 
-        }
+        .input-cociente-galera { width: var(--cell-size); height: var(--cell-size); border: 1px solid #555; background: #000; font-size: 1.4rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; font-family: 'Rajdhani', sans-serif; margin-right: 1px; border-radius: 2px; cursor: text; pointer-events: auto; }
         .input-cociente-galera:disabled { background: #111; color: #444; border-color: #222; cursor: not-allowed; opacity: 0.5; pointer-events: none; }
-
-        /* D. LINEA HORIZONTAL */
         .fila-horizontal-top { height: 3px; background-color: var(--primary-color); box-shadow: 0 0 8px var(--primary-color); border-radius: 2px; width: 100%; }
-        
-        /* E. GRID MATRIZ */
         .grid-matriz { display: grid; grid-template-columns: repeat(9, var(--cell-size)); grid-template-rows: repeat(15, var(--cell-size)); background-color: #2a2a2a; border: 1px solid #444; border-radius: 0 0 4px 4px; border-top: none; }
         .cell { width: var(--cell-size); height: var(--cell-size); background-color: #1a1a1a; border: 1px solid #333; text-align: center; font-size: 1.1rem; font-weight: 600; outline: none; cursor: text; box-sizing: border-box; color: white; transition: background 0.2s; }
         .cell:focus { background: #333; box-shadow: inset 0 0 5px var(--primary-color); }
         .cell-locked { background: #000; font-weight: 700; color: var(--primary-color); border-color: #333; }
-
-        /* F. RESIDUO (ABAJO) */
         .fila-residuo { display: flex; justify-content: flex-end; margin-top: 5px; height: var(--cell-size); align-items: center; }
         .residuo-label { color: #888; font-size: 0.9rem; margin-right: 5px; text-transform: uppercase; }
-        .input-residuo { 
-            width: calc(var(--cell-size) * 2); height: var(--cell-size); 
-            border: 1px solid #555; background: #000; 
-            font-size: 1.4rem; font-weight: 700; color: var(--primary-color); 
-            text-align: center; outline: none; font-family: 'Rajdhani', sans-serif; 
-            border-radius: 2px; cursor: text; pointer-events: auto;
-        }
+        .input-residuo { width: calc(var(--cell-size) * 2); height: var(--cell-size); border: 1px solid #555; background: #000; font-size: 1.4rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; font-family: 'Rajdhani', sans-serif; border-radius: 2px; cursor: text; pointer-events: auto; }
         .input-residuo:disabled { background: #111; color: #444; border-color: #222; cursor: not-allowed; opacity: 0.5; pointer-events: none; }
 
-        /* ANTENA PANEL */
+        /* ANTENA */
         .antena-panel { background: var(--bg-panel); border: 1px solid #333; padding: 15px; border-radius: 4px; border-top: 4px solid var(--primary-color); width: 240px; flex-shrink: 0; margin-left: auto; }
         .antena-header { text-align: center; font-weight: 700; color: var(--primary-color); margin-bottom: 15px; font-size: 1.1rem; text-transform: uppercase; font-family: 'Teko', sans-serif; }
         .antena-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; opacity: 1; transition: opacity 0.3s; font-size: 0.9rem; }
@@ -181,13 +157,10 @@
         #admin-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 100000; overflow-y: auto; padding: 20px; }
         .admin-box { background: var(--bg-panel); padding: 30px; border-radius: 10px; border: 2px solid var(--primary-color); width: 600px; max-width: 100%; color: white; display: flex; flex-direction: column; gap: 20px; }
         .admin-title { font-family: 'Teko'; font-size: 2.5rem; color: var(--primary-color); margin-bottom: 10px; text-align: center; }
-        
         .admin-section { border-top: 1px solid #333; padding-top: 15px; }
         .admin-section h4 { margin: 0 0 10px 0; color: var(--primary-color); text-transform: uppercase; }
-        
         .timer-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
         .timer-input { width: 60px; padding: 8px; background: black; border: 1px solid #555; color: white; font-size: 1rem; border-radius: 4px; text-align: center; }
-        
         .user-list-admin { max-height: 300px; overflow-y: auto; border: 1px solid #333; background: #000; border-radius: 4px; }
         .user-row-admin { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #222; }
         .user-row-admin:last-child { border-bottom: none; }
@@ -195,7 +168,6 @@
         .user-score-admin { font-size: 0.9rem; color: #aaa; margin-right: 10px; }
         .btn-ban { background: #444; color: white; padding: 5px 10px; font-size: 0.8rem; }
         .btn-ban.active { background: var(--error); }
-
         .btn-danger-big { background: var(--error); color: white; font-size: 1.2rem; padding: 15px 30px; width: 100%; margin-top: 10px; }
 
         /* Modals Dark */
@@ -229,7 +201,6 @@
     <div id="admin-modal" onclick="if(event.target.id === 'admin-modal') toggleAdmin()">
         <div class="admin-box" onclick="event.stopPropagation()">
             <div class="admin-title"><i class="fas fa-user-shield"></i> PANEL ADMIN</div>
-            
             <div class="admin-section">
                 <h4><i class="fas fa-clock"></i> Temporada</h4>
                 <div id="timer-status" style="margin-bottom:10px; text-align:center; font-size:1.2rem; color:#aaa;">Cargando...</div>
@@ -239,12 +210,10 @@
                     <button class="btn-primary" onclick="startSeason()" style="font-size:1rem; padding: 8px 15px;">Iniciar</button>
                 </div>
             </div>
-
             <div class="admin-section">
                 <h4><i class="fas fa-users"></i> Usuarios</h4>
                 <div class="user-list-admin" id="admin-user-list"></div>
             </div>
-
             <div class="admin-section">
                 <button class="btn-danger-big" onclick="resetAllUsers()"><i class="fas fa-redo"></i> Reiniciar Puntos (Manual)</button>
             </div>
@@ -294,18 +263,12 @@
             <div class="game-area">
                 <div class="workspace-card">
                     <div class="division-row">
-                        <!-- 1. DIVISOR -->
                         <div class="col-divisor" id="divisorBox"></div>
-                        <!-- 2. GRID (Contains Quotient on Top) -->
                         <div class="col-grid" id="grid-wrapper">
                             <div class="grid-disabled-overlay" id="grid-lock-overlay"><div class="lock-msg"><i class="fas fa-lock"></i> ¡Completa la Antena!</div></div>
-                            <!-- QUOTIENT ROW (TOP) -->
                             <div class="fila-cociente-arriba" id="topRow"></div>
-                            <!-- DIVIDEND LINE -->
                             <div class="fila-horizontal-top" id="lineH"></div>
-                            <!-- MAIN GRID -->
                             <div class="grid-matriz" id="gridContainer"></div>
-                            <!-- RESIDUE ROW (BOTTOM) -->
                             <div class="fila-residuo">
                                 <span class="residuo-label">Residuo:</span>
                                 <input type="number" id="valResiduo" class="input-residuo" placeholder="0">
@@ -387,7 +350,6 @@
             try { const { data } = await _supabase.from('profiles').select('total_score, avatar_style, current_level, completed_at, is_banned, current_problem').eq('id', user.id).single(); 
                 if(data && data.is_banned) { alert("Tu cuenta está suspendida temporalmente."); logout(); return; }
                 totalScore = (data && data.total_score) ? data.total_score : 0; currentAvatarStyle = (data && data.avatar_style) ? data.avatar_style : 'adventurer'; unlockedLevel = (data && data.current_level) ? data.current_level : 1; 
-                // FIX: Cargar problema actual
                 currentProblemInLevel = (data && data.current_problem) ? data.current_problem : 1;
                 if(currentProblemInLevel > 10) currentProblemInLevel = 1; // Safety check
                 hasFinishedGame = (data && data.completed_at); 
@@ -403,7 +365,6 @@
         function selectAvatarStyle(styleId) { const isExclusive = AVATAR_STYLES_EXCLUSIVE.some(s => s.id === styleId); if(isExclusive && totalScore < 50000) { alert("¡Este avatar es exclusivo!"); return; } currentAvatarStyle = styleId; renderAvatarOptions(); renderMainAvatar(); }
         async function saveAvatarChoice() { AudioEngine.playClick(); await _supabase.from('profiles').upsert({ id: currentUser.id, avatar_style: currentAvatarStyle }); toggleAvatarModal(); updateRanking(); }
         async function saveScore() { if (!currentUser) return; try { 
-            // FIX: Guardar también el problema actual
             await _supabase.from('profiles').upsert({ id: currentUser.id, username: currentUser.email.split('@')[0], total_score: totalScore, current_level: unlockedLevel, current_problem: currentProblemInLevel }); 
             updateRanking(); 
         } catch(e) { console.error(e); } }
@@ -473,7 +434,6 @@
         async function resetAllUsers(isAuto = false) {
             if(!isAuto && !confirm("¿Reiniciar TODOS los puntos?")) return;
             try {
-                // FIX: Resetear también el current_problem
                 await _supabase.from('profiles').update({ total_score: 0, current_level: 1, completed_at: null, current_problem: 1 }).neq('id', '00000000-0000-0000-0000-000000000000');
                 if(!isAuto) alert("¡Reiniciado!"); toggleAdmin(); updateRanking(); loadHallOfFame();
                 totalScore = 0; unlockedLevel = 1; currentProblemInLevel = 1; hasFinishedGame = false; updateUI(); initGame();
@@ -507,23 +467,17 @@
 
         function triggerEpicEffect() { AudioEngine.playEpic(); const overlay = document.getElementById('epic-overlay'); const text = document.getElementById('epic-text'); const messages = ["¡BOOYAH!", "¡A LA CARGA!", "¡MÁXIMO PODER!"]; text.innerText = messages[Math.floor(Math.random()*messages.length)]; overlay.style.display = 'flex'; text.style.animation = 'none'; void text.offsetWidth; text.style.animation = 'epicPulse 0.5s ease-out forwards'; setTimeout(() => { overlay.style.display = 'none'; }, 1500); }
 
-        function showVictoryScreen(nextLevel) { const screen = document.getElementById('victory-screen'); if (nextLevel > unlockedLevel) { createConfetti(); screen.classList.add('show'); AudioEngine.playLevelUp(); unlockedLevel = nextLevel; setTimeout(() => { screen.classList.remove('show'); document.querySelectorAll('.confetti').forEach(c => c.remove()); currentMainLevel = nextLevel; currentProblemInLevel = 1; loadProblem(); }, 3000); } else { currentMainLevel = nextLevel; currentProblemInLevel = 1; loadProblem(); } }
-        function showGameOver() { const screen = document.getElementById('victory-screen'); const title = document.querySelector('.victory-title'); title.innerText = "¡SALÓN DE LA FAMA!"; createConfetti(); screen.classList.add('show'); AudioEngine.playLevelUp(); hasFinishedGame = true; const completed_at = new Date().toISOString(); _supabase.from('profiles').update({ completed_at: completed_at }).eq('id', currentUser.id).then(() => loadHallOfFame()); }
+        function showVictoryScreen() { createConfetti(); document.getElementById('victory-screen').classList.add('show'); AudioEngine.playLevelUp(); }
+        function hideVictoryScreen() { document.getElementById('victory-screen').classList.remove('show'); document.querySelectorAll('.confetti').forEach(c => c.remove()); }
         function createConfetti() { const screen = document.getElementById('victory-screen'); const colors = ['#ffcc00', '#00e676', '#2979ff', '#f00', '#ff9800']; for (let i = 0; i < 50; i++) { const conf = document.createElement('div'); conf.className = 'confetti'; conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = -10 + 'px'; conf.style.background = colors[Math.floor(Math.random() * colors.length)]; conf.style.animationDuration = (Math.random() * 2 + 2) + 's'; screen.appendChild(conf); } }
         
         function createUI() {
             const g = document.getElementById('gridContainer'); const dB = document.getElementById('divisorBox'); const tR = document.getElementById('topRow');
             g.innerHTML = ''; dB.innerHTML = ''; tR.innerHTML = '';
-            
-            // Divisor
             String(currentDivisor).split('').forEach(n => { let i=document.createElement('input'); i.type='text'; i.className='input-div'; i.value=n; i.readOnly=true; dB.appendChild(i); });
-            
-            // Grid
             for(let r=0; r<rows; r++) { for(let c=0; c<cols; c++) { let i = document.createElement('input'); i.type='text'; i.className='cell'; i.maxLength=1; i.id="c-"+r+"-"+c; i.addEventListener('input', (e) => { if(!isGridLocked && e.target.value){ let n=(c<cols-1)?"c-"+r+"-"+(c+1):(r<rows-1)?"c-"+(r+1)+"-0":null; if(n)document.getElementById(n).focus(); }}); g.appendChild(i); } }
             let sN = String(currentDividend); for(let i=0; i<sN.length; i++) { let cell = document.getElementById("c-0-"+i); cell.value = sN[i]; cell.classList.add('cell-locked'); cell.disabled = true; }
             document.getElementById('lineH').style.width = (sN.length * cellSize) + 'px';
-            
-            // Quotient (TOP)
             for(let i=0; i<sN.length; i++) { 
                 let inp = document.createElement('input'); 
                 inp.type = 'text'; 
@@ -548,13 +502,48 @@
             isProcessing = true; const btn = document.getElementById('btn-verify'); btn.disabled = true; btn.style.opacity = '0.5'; btn.innerText = "Verificando...";
             let coc=parseInt(document.getElementById('valCociente').value); let res=parseInt(document.getElementById('valResiduo').value)||0;
             let rC=Math.floor(currentDividend/currentDivisor); let rR=currentDividend%currentDivisor;
+            
             if(coc===rC && res===rR) {
-                totalScore += POINTS; updateUI(); await saveScore(); AudioEngine.playSuccess();
+                totalScore += POINTS; 
+                updateUI(); 
+                AudioEngine.playSuccess();
                 document.getElementById('msg').innerHTML="<span style='color:var(--success); font-weight:700; font-size:1.2rem;'>¡CORRECTO! +"+POINTS+"</span>";
-                setTimeout(() => {
-                    if(currentProblemInLevel < PROBLEMS_PER_LEVEL) { currentProblemInLevel++; loadProblem(); }
-                    else { if(currentMainLevel < TOTAL_LEVELS) { showVictoryScreen(currentMainLevel + 1); } else { showGameOver(); } }
-                }, 1500);
+                
+                // --- FIX: LÓGICA DE AVANCE ANTES DE GUARDAR ---
+                if(currentProblemInLevel < PROBLEMS_PER_LEVEL) {
+                    currentProblemInLevel++; 
+                } else {
+                    if(currentMainLevel < TOTAL_LEVELS) {
+                        unlockedLevel = currentMainLevel + 1;
+                        currentMainLevel++;
+                        currentProblemInLevel = 1;
+                        showVictoryScreen();
+                    } else {
+                        hasFinishedGame = true;
+                        const completed_at = new Date().toISOString();
+                        await _supabase.from('profiles').update({ completed_at: completed_at }).eq('id', currentUser.id);
+                        loadHallOfFame();
+                        // Save final state
+                        await saveScore();
+                        isProcessing = false;
+                        return;
+                    }
+                }
+                
+                // Guardar estado ACTUALIZADO (Problema siguiente o nivel nuevo)
+                await saveScore();
+                
+                // Esperar un poco si es victoria visual
+                if(document.getElementById('victory-screen').classList.contains('show')) {
+                     setTimeout(() => {
+                        hideVictoryScreen();
+                        loadProblem();
+                        isProcessing = false;
+                     }, 3000);
+                } else {
+                    loadProblem();
+                    isProcessing = false;
+                }
             } else { 
                 AudioEngine.playError(); document.getElementById('msg').innerHTML="<span style='color:var(--error); font-weight:700; font-size:1.2rem;'>INCORRECTO</span>";
                 isProcessing = false; btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "Verificar";
