@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - Corrección Inputs</title>
+    <title>Reto de División - Layout Corregido</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -90,72 +90,48 @@
         .game-area { flex: 3; display: flex; flex-direction: column; gap: 20px; min-width: 300px; }
         .workspace-card { background: var(--bg-panel); padding: 20px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: flex; gap: 15px; justify-content: flex-start; align-items: flex-start; overflow-x: auto; width: 100%; box-sizing: border-box; border: 1px solid #333; }
 
-        /* GALERA STRUCTURE */
-        .division-row { display: flex; flex-direction: row; align-items: stretch; gap: 0; margin-top: 10px; flex-shrink: 0; }
+        /* GALERA STRUCTURE - COCIENTE ARRIBA */
+        .division-row { display: flex; flex-direction: row; align-items: flex-end; gap: 0; margin-top: 10px; flex-shrink: 0; }
         
         /* 1. DIVISOR (LEFT) */
-        .col-divisor { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 4px; }
+        .col-divisor { display: flex; flex-direction: column; align-items: center; justify-content: flex-end; padding-bottom: 4px; margin-right: 3px; }
         .input-div { width: var(--cell-size); height: var(--cell-size); border: 1px solid #555; background: black; font-size: 1.4rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; display: flex; align-items: center; justify-content: center; text-shadow: 0 0 5px var(--primary-color); }
         
-        /* 2. LEFT VERTICAL LINE */
-        .col-linea-v { width: 3px; background-color: var(--primary-color); box-shadow: 0 0 8px var(--primary-color); align-self: stretch; }
-
-        /* 3. GRID CONTAINER */
+        /* 2. GRID CONTAINER (Contains Top Quotient + Grid) */
         .col-grid { display: flex; flex-direction: column; position: relative; z-index: 1; }
         .grid-disabled-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 5; display: flex; align-items: center; justify-content: center; pointer-events: none; border-radius: 4px; }
         .grid-disabled-overlay.hidden { display: none; }
         .lock-msg { background: var(--primary-color); color: black; padding: 8px 15px; border-radius: 2px; font-size: 0.9rem; font-weight: 700; box-shadow: 0 0 20px var(--primary-color); pointer-events: auto; text-align: center; text-transform: uppercase; }
         
-        .fila-horizontal-top { height: 3px; background-color: var(--primary-color); box-shadow: 0 0 8px var(--primary-color); border-radius: 2px; }
-        .grid-matriz { display: grid; grid-template-columns: repeat(9, var(--cell-size)); grid-template-rows: repeat(15, var(--cell-size)); background-color: #2a2a2a; border: 1px solid #444; border-radius: 0 0 4px 4px; }
-        .cell { width: var(--cell-size); height: var(--cell-size); background-color: #1a1a1a; border: 1px solid #333; text-align: center; font-size: 1.1rem; font-weight: 600; outline: none; cursor: text; box-sizing: border-box; color: white; transition: background 0.2s; }
-        .cell:focus { background: #333; box-shadow: inset 0 0 5px var(--primary-color); }
-        .cell-locked { background: #000; font-weight: 700; color: var(--primary-color); border-color: #333; }
-        
-        /* 4. RIGHT VERTICAL LINE */
-        .col-linea-v-right { width: 3px; background-color: var(--primary-color); align-self: stretch; box-shadow: 0 0 8px var(--primary-color); }
-
-        /* 5. COCIENTE (RIGHT COLUMN) - ULTIMATE FIX */
-        .col-cociente { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: flex-start; 
-            padding-left: 5px; /* Espacio extra */
-            padding-top: 4px; 
-            position: relative; 
-            z-index: 10; /* FUERZA QUE ESTÉ ARRIBA */
-        }
-        
-        /* Input Visible y Clicable */
+        /* Top Row: Quotient (ARRIBA) */
+        .fila-cociente-arriba { display: flex; justify-content: flex-start; height: var(--cell-size); align-items: flex-end; padding-bottom: 2px; margin-left: 1px; }
         .input-cociente-galera { 
             width: var(--cell-size); 
             height: var(--cell-size); 
             border: 1px solid #555; /* Borde visible */
-            background: #000; /* Fondo negro solido */
+            background: #000; 
             font-size: 1.4rem; 
             font-weight: 700; 
             color: var(--primary-color); 
             text-align: center; 
             outline: none; 
             font-family: 'Rajdhani', sans-serif; 
-            margin-bottom: 1px;
+            margin-right: 1px;
             border-radius: 2px;
-            cursor: text; /* Cursor de texto */
-            pointer-events: auto; /* ASEGURA QUE SE PUEDA CLICKEAR */
+            cursor: text; 
+            pointer-events: auto; 
         }
-        /* Borde superior doble para el primero */
-        .input-cociente-galera:first-child { border-top: 3px solid var(--primary-color); }
+        /* Estado deshabilitado */
+        .input-cociente-galera:disabled { background: #111; color: #444; border-color: #222; cursor: not-allowed; opacity: 0.5; pointer-events: none; }
 
-        /* Estado DESHABILITADO (Gris, obviamente bloqueado) */
-        .input-cociente-galera:disabled { 
-            background: #111; 
-            color: #444; 
-            border-color: #222; 
-            cursor: not-allowed; 
-            opacity: 0.5; 
-            pointer-events: none; /* Cuando está deshabilitado, SÍ bloqueamos eventos */
-        }
+        /* Dividend Line */
+        .fila-horizontal-top { height: 3px; background-color: var(--primary-color); box-shadow: 0 0 8px var(--primary-color); border-radius: 2px; width: 100%; }
+        
+        /* Main Grid */
+        .grid-matriz { display: grid; grid-template-columns: repeat(9, var(--cell-size)); grid-template-rows: repeat(15, var(--cell-size)); background-color: #2a2a2a; border: 1px solid #444; border-radius: 0 0 4px 4px; border-top: none; }
+        .cell { width: var(--cell-size); height: var(--cell-size); background-color: #1a1a1a; border: 1px solid #333; text-align: center; font-size: 1.1rem; font-weight: 600; outline: none; cursor: text; box-sizing: border-box; color: white; transition: background 0.2s; }
+        .cell:focus { background: #333; box-shadow: inset 0 0 5px var(--primary-color); }
+        .cell-locked { background: #000; font-weight: 700; color: var(--primary-color); border-color: #333; }
 
         /* ANTENA PANEL */
         .antena-panel { background: var(--bg-panel); border: 1px solid #333; padding: 15px; border-radius: 4px; border-top: 4px solid var(--primary-color); width: 240px; flex-shrink: 0; margin-left: auto; }
@@ -318,18 +294,16 @@
                     <div class="division-row">
                         <!-- 1. DIVISOR -->
                         <div class="col-divisor" id="divisorBox"></div>
-                        <!-- 2. LEFT VERTICAL LINE -->
-                        <div class="col-linea-v"></div>
-                        <!-- 3. GRID -->
+                        <!-- 2. GRID (Contains Quotient on Top) -->
                         <div class="col-grid" id="grid-wrapper">
                             <div class="grid-disabled-overlay" id="grid-lock-overlay"><div class="lock-msg"><i class="fas fa-lock"></i> ¡Completa la Antena!</div></div>
+                            <!-- QUOTIENT ROW (ARRIBA) -->
+                            <div class="fila-cociente-arriba" id="topRow"></div>
+                            <!-- DIVIDEND LINE -->
                             <div class="fila-horizontal-top" id="lineH"></div>
+                            <!-- MAIN GRID -->
                             <div class="grid-matriz" id="gridContainer"></div>
                         </div>
-                        <!-- 4. RIGHT VERTICAL LINE -->
-                        <div class="col-linea-v-right"></div>
-                        <!-- 5. COCIENTE -->
-                        <div class="col-cociente" id="col-cociente"></div>
                     </div>
                     <div class="antena-panel">
                         <div class="antena-header">Antena (x <span id="antenaLabel">...</span>)</div>
@@ -419,7 +393,21 @@
         async function saveAvatarChoice() { AudioEngine.playClick(); await _supabase.from('profiles').upsert({ id: currentUser.id, avatar_style: currentAvatarStyle }); toggleAvatarModal(); updateRanking(); }
         async function saveScore() { if (!currentUser) return; try { await _supabase.from('profiles').upsert({ id: currentUser.id, username: currentUser.email.split('@')[0], total_score: totalScore, current_level: unlockedLevel }); updateRanking(); } catch(e) { console.error(e); } }
         let rankInt; function startRanking() { updateRanking(); rankInt = setInterval(updateRanking, 5000); }
-        async function updateRanking() { const list = document.getElementById('ranking-list'); try { const { data, error } = await _supabase.from('profiles').select('username, total_score, avatar_style, completed_at, is_banned').order('total_score', { ascending: false }).limit(10); if(error) throw error; if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; padding:10px; color:#666;">No hay datos.</li>'; return; } list.innerHTML = data.filter(u => !u.completed_at && !u.is_banned).map((u, i) => { const s = u.total_score || 0; const rI = getRankInfo(s); const isMe = (currentUser && u.username === currentUser.email.split('@')[0]); let cls = "ranking-item " + rI.css; if(isMe) cls += " me"; const style = u.avatar_style || 'adventurer'; const avatarUrl = getAvatarUrl(u.username || 'guest', style); return `<li class="${cls}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avatarUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${u.username||'Yo'}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span></div></div><span class="rank-score">${s}</span></li>`; }).join(''); } catch(err) { list.innerHTML = '<li style="text-align:center; padding:10px; color:red;">Error.</li>'; } }
+        async function updateRanking() { 
+            const list = document.getElementById('ranking-list'); 
+            try { 
+                const { data, error } = await _supabase.from('profiles').select('username, total_score, avatar_style, completed_at, is_banned').order('total_score', { ascending: false }).limit(10); 
+                if(error) throw error; 
+                if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; padding:10px; color:#666;">No hay datos.</li>'; return; } 
+                // FIX: Mostrar usuarios con puntos (incluso si son 0) si no han terminado y no están baneados
+                list.innerHTML = data.filter(u => !u.completed_at && !u.is_banned).map((u, i) => { 
+                    const s = u.total_score || 0; const rI = getRankInfo(s); const isMe = (currentUser && u.username === currentUser.email.split('@')[0]); 
+                    let cls = "ranking-item " + rI.css; if(isMe) cls += " me"; 
+                    const style = u.avatar_style || 'adventurer'; const avatarUrl = getAvatarUrl(u.username || 'guest', style); 
+                    return `<li class="${cls}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avatarUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${u.username||'Yo'}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span></div></div><span class="rank-score">${s}</span></li>`; 
+                }).join(''); 
+            } catch(err) { list.innerHTML = '<li style="text-align:center; padding:10px; color:red;">Error.</li>'; } 
+        }
         async function loadHallOfFame() { const list = document.getElementById('fame-list'); try { const { data, error } = await _supabase.from('profiles').select('username, completed_at').not('completed_at', 'is', null).order('completed_at', { ascending: true }).limit(5); if(error) throw error; if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; color:#555; font-size:0.8rem; padding:10px;">Nadie ha terminado aún</li>'; return; } list.innerHTML = data.map(u => { const date = new Date(u.completed_at); const timeStr = date.toLocaleDateString() + " " + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); return `<li class="fame-item"><i class="fas fa-medal" style="color:var(--primary-color)"></i> <span>${u.username}</span> <span class="fame-time">${timeStr}</span></li>`; }).join(''); } catch(e) { console.error(e); } }
         function initChat() { const channel = _supabase.channel('public:chat_messages'); channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => { addChatMessage(payload.new); }).subscribe(); loadInitialChat(); }
         async function loadInitialChat() { try { const { data } = await _supabase.from('chat_messages').select('*').order('created_at', { ascending: false }).limit(15); const container = document.getElementById('chat-messages'); container.innerHTML = ''; if(data) data.reverse().forEach(msg => addChatMessage(msg)); } catch(e) { console.error(e); } }
@@ -508,14 +496,18 @@
         function createConfetti() { const screen = document.getElementById('victory-screen'); const colors = ['#ffcc00', '#00e676', '#2979ff', '#f00', '#ff9800']; for (let i = 0; i < 50; i++) { const conf = document.createElement('div'); conf.className = 'confetti'; conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = -10 + 'px'; conf.style.background = colors[Math.floor(Math.random() * colors.length)]; conf.style.animationDuration = (Math.random() * 2 + 2) + 's'; screen.appendChild(conf); } }
         
         function createUI() {
-            const g = document.getElementById('gridContainer'); const dB = document.getElementById('divisorBox'); const cC = document.getElementById('col-cociente');
-            g.innerHTML = ''; dB.innerHTML = ''; cC.innerHTML = '';
+            const g = document.getElementById('gridContainer'); const dB = document.getElementById('divisorBox'); const tR = document.getElementById('topRow');
+            g.innerHTML = ''; dB.innerHTML = ''; tR.innerHTML = '';
+            
+            // Divisor
             String(currentDivisor).split('').forEach(n => { let i=document.createElement('input'); i.type='text'; i.className='input-div'; i.value=n; i.readOnly=true; dB.appendChild(i); });
+            
+            // Grid
             for(let r=0; r<rows; r++) { for(let c=0; c<cols; c++) { let i = document.createElement('input'); i.type='text'; i.className='cell'; i.maxLength=1; i.id="c-"+r+"-"+c; i.addEventListener('input', (e) => { if(!isGridLocked && e.target.value){ let n=(c<cols-1)?"c-"+r+"-"+(c+1):(r<rows-1)?"c-"+(r+1)+"-0":null; if(n)document.getElementById(n).focus(); }}); g.appendChild(i); } }
             let sN = String(currentDividend); for(let i=0; i<sN.length; i++) { let cell = document.getElementById("c-0-"+i); cell.value = sN[i]; cell.classList.add('cell-locked'); cell.disabled = true; }
             document.getElementById('lineH').style.width = (sN.length * cellSize) + 'px';
             
-            // Create Quotient Inputs
+            // Quotient (ARRIBA)
             for(let i=0; i<sN.length; i++) { 
                 let inp = document.createElement('input'); 
                 inp.type = 'text'; 
@@ -523,7 +515,7 @@
                 inp.maxLength = 1; 
                 inp.id = "top-"+i; 
                 inp.addEventListener('input', (e) => { syncT(); if(e.target.value && i<sN.length-1) document.getElementById("top-"+(i+1)).focus(); }); 
-                cC.appendChild(inp); 
+                tR.appendChild(inp); 
             }
         }
         function disableCocienteInputs(disabled) { document.querySelectorAll('.input-cociente-galera').forEach(i => i.disabled = disabled); }
