@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - Temporada 1 (Parchado)</title>
+    <title>Reto de División - Temporada 1 (Estable)</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -53,15 +53,18 @@
         .game-area { flex: 3; display: flex; flex-direction: column; gap: 20px; min-width: 300px; }
         .workspace-card { background: var(--bg-panel); padding: 30px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: flex; gap: 40px; justify-content: flex-start; align-items: flex-start; overflow-x: auto; width: 100%; box-sizing: border-box; border: 1px solid #333; }
 
-        /* SIDEBAR */
-        .sidebar-container { flex: 1; display: flex; flex-direction: column; gap: 20px; min-width: 280px; }
-        .ranking-box { background: var(--bg-panel); padding: 20px; border-radius: 4px; border: 1px solid #333; }
+        /* SIDEBAR RESTAURADO (SIN MOVER) */
+        .ranking-sidebar { flex: 1; background: var(--bg-panel); padding: 20px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); min-width: 280px; border: 1px solid #333; }
         .ranking-title { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); text-align: center; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; margin-bottom: 15px; text-transform: uppercase; font-family: 'Teko', sans-serif; }
         .ranking-list { list-style: none; padding: 0; margin: 0; max-height: 250px; overflow-y: auto; }
         .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.05); border-left: 4px solid #333; }
         
-        /* HALL OF FAME */
-        .hall-of-fame { background: linear-gradient(45deg, #1a1a1a, #2a1a1a); border: 1px solid var(--error); border-radius: 4px; padding: 20px; position: relative; overflow: hidden; }
+        /* HALL OF FAME (INSERTADO DENTRO DEL SIDEBAR SIN MOVER NADA) */
+        .hall-of-fame { 
+            margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; 
+            background: transparent; border-left: none; border-radius: 0; 
+            position: relative; overflow: hidden;
+        }
         .hall-of-fame::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--error), transparent); }
         .hall-title { font-family: 'Teko'; font-size: 1.8rem; color: var(--error); text-align: center; margin-bottom: 15px; text-shadow: 0 0 10px rgba(255,23,68,0.5); }
         .fame-list { list-style: none; padding: 0; margin: 0; max-height: 150px; overflow-y: auto; }
@@ -129,21 +132,9 @@
         @keyframes fall { to { transform: translateY(100vh) rotate(720deg); } }
 
         /* FIRST BLOOD OVERLAY */
-        #first-blood-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99990;
-            display: none; justify-content: center; align-items: center; pointer-events: none;
-        }
-        .blood-text {
-            font-family: 'Teko', sans-serif; font-size: 8rem; color: var(--error);
-            text-transform: uppercase; font-weight: 800; text-shadow: 0 0 20px rgba(255,0,0,0.8), 4px 4px 0px #000;
-            animation: bloodPulse 0.5s ease-out;
-            opacity: 0;
-        }
-        @keyframes bloodPulse {
-            0% { transform: scale(0.2) rotate(-10deg); opacity: 0; }
-            50% { transform: scale(1.2) rotate(5deg); opacity: 1; }
-            100% { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
+        #first-blood-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99990; display: none; justify-content: center; align-items: center; pointer-events: none; }
+        .blood-text { font-family: 'Teko', sans-serif; font-size: 8rem; color: var(--error); text-transform: uppercase; font-weight: 800; text-shadow: 0 0 20px rgba(255,0,0,0.8), 4px 4px 0px #000; animation: bloodPulse 0.5s ease-out; opacity: 0; }
+        @keyframes bloodPulse { 0% { transform: scale(0.2) rotate(-10deg); opacity: 0; } 50% { transform: scale(1.2) rotate(5deg); opacity: 1; } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
 
         /* CHAT UI */
         #chat-battle { position: fixed; bottom: 80px; right: 20px; width: 300px; z-index: 9000; background: rgba(0, 0, 0, 0.95); border: 1px solid #333; border-radius: 8px; display: none; }
@@ -183,25 +174,18 @@
         .avatar-locked { filter: grayscale(100%); opacity: 0.5; cursor: not-allowed; }
         .lock-icon { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.8); border-radius: 50%; color: #666; font-size: 1.2rem; pointer-events: none; }
 
-        @media (max-width: 900px) { .main-layout { flex-direction: column; } .sidebar-container { width: 100%; } }
+        @media (max-width: 900px) { .main-layout { flex-direction: column; } .ranking-sidebar { width: 100%; } }
     </style>
 </head>
 <body>
 
     <div id="victory-screen"><div class="victory-title">JUEGO TERMINADO</div><div class="confetti"></div></div>
-
-    <!-- FIRST BLOOD EFFECT -->
-    <div id="first-blood-overlay">
-        <div class="blood-text" id="blood-text">¡PRIMERA SANGRE!</div>
-    </div>
-
-    <!-- ADMIN MODAL -->
+    <div id="first-blood-overlay"><div class="blood-text" id="blood-text">¡PRIMERA SANGRE!</div></div>
     <div id="admin-modal" onclick="if(event.target.id === 'admin-modal') toggleAdmin()">
         <div class="admin-box" onclick="event.stopPropagation()">
             <div class="admin-title"><i class="fas fa-user-shield"></i> PANEL ADMIN</div>
             <p style="color:#aaa; margin-bottom: 30px;">Reiniciar Temporada</p>
             <button class="btn-danger-big" onclick="resetAllUsers()"><i class="fas fa-redo"></i> REINICIAR TODO</button>
-            <div style="margin-top: 20px; font-size: 0.8rem; color: #666;">Esto inicia una nueva temporada.</div>
         </div>
     </div>
 
@@ -302,15 +286,14 @@
                 <div id="msg"></div>
             </div>
             
-            <!-- SIDEBAR -->
-            <div class="sidebar-container">
-                <div class="ranking-box">
-                    <div class="ranking-title">Ranking</div>
-                    <ul class="ranking-list" id="ranking-list"></ul>
-                </div>
+            <!-- SIDEBAR RESTAURADO (ESTRUCTURA ORIGINAL) -->
+            <div class="ranking-sidebar">
+                <div class="ranking-title">Ranking</div>
+                <ul class="ranking-list" id="ranking-list"></ul>
+                
+                <!-- HALL OF FAME (AÑADIDO AL FINAL DEL SIDEBAR) -->
                 <div class="hall-of-fame">
                     <div class="hall-title"><i class="fas fa-trophy"></i> Salón de la Fama</div>
-                    <div style="font-size:0.8rem; color:#888; text-align:center; margin-bottom:10px;">Temporada 1</div>
                     <ul class="fame-list" id="fame-list"></ul>
                 </div>
             </div>
@@ -346,9 +329,8 @@
         let hasFinishedGame = false;
         
         // --- ANTI-SPAM FIX ---
-        let isProcessing = false; // Variable para bloquear el botón
+        let isProcessing = false; 
 
-        // --- SYSTEM ---
         let unlockedLevel = 1; 
         let isAdmin = false;
         const ADMIN_USER = 'profemiguel';
@@ -434,6 +416,7 @@
             if (!u || p.length < 6) { e.textContent = "Datos incompletos."; e.style.display='block'; return; }
             try { const { data, error } = await _supabase.auth.signInWithPassword({ email: u+"@profemiguel.com", password: p }); if (error) throw error; currentUser = data.user; showApp(); } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; }
         }
+
         async function handleRegister() {
             const u = document.getElementById('login-username').value.trim(); const p = document.getElementById('login-password').value; const e = document.getElementById('login-error');
             if (!u || p.length < 6) { e.textContent = "Datos incompletos."; e.style.display='block'; return; }
@@ -553,8 +536,8 @@
         }
         
         function loadProblem() {
-            if(hasFinishedGame) return; // Stop if game over
-            // Reset anti-spam
+            if(hasFinishedGame) return; 
+            // RESET ANTI-SPAM
             isProcessing = false; 
             const btn = document.getElementById('btn-verify');
             btn.disabled = false;
@@ -644,11 +627,11 @@
         
         async function verificarSolucion() {
             // FIX: ANTI-SPAM
-            if(isProcessing) return; // Si ya está procesando, ignora el clic
+            if(isProcessing) return;
             
             if(isGridLocked) { alert("¡Completa la Antena primero!"); return; }
 
-            // Bloquear botón inmediatamente
+            // BLOQUEAR
             isProcessing = true;
             const btn = document.getElementById('btn-verify');
             btn.disabled = true;
@@ -660,12 +643,10 @@
             if(coc===rC && res===rR) {
                 totalScore += POINTS; updateUI(); await saveScore(); AudioEngine.playSuccess();
                 document.getElementById('msg').innerHTML="<span style='color:var(--success); font-weight:700;'>¡CORRECTO! +"+POINTS+"</span>";
-                
-                // Mantener bloqueado durante la transición
                 setTimeout(() => {
                     if(currentProblemInLevel < PROBLEMS_PER_LEVEL) {
                         currentProblemInLevel++;
-                        loadProblem(); // Esto resetea isProcessing a false
+                        loadProblem();
                     } else { 
                         if(currentMainLevel < TOTAL_LEVELS) { 
                             let nextLvl = currentMainLevel + 1; 
@@ -678,7 +659,7 @@
             } else { 
                 AudioEngine.playError(); 
                 document.getElementById('msg').innerHTML="<span style='color:var(--error); font-weight:700;'>INCORRECTO</span>";
-                // Desbloquear botón si falla para que pueda intentar de nuevo
+                // DESBLOQUEAR SI FALLA
                 isProcessing = false; 
                 btn.disabled = false;
                 btn.style.opacity = '1';
