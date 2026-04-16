@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - Método Galera</title>
+    <title>Reto de División - Temporada & Ban</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -11,7 +11,8 @@
     <style>
         :root {
             --primary-color: #ffcc00; --primary-light: #ff9800; --text-dark: #e0e0e0;
-            --bg-dark: #0f0f0f; --bg-panel: #1a1a1a; --success: #00e676; --error: #ff1744; --cell-size: 45px;
+            --bg-dark: #0f0f0f; --bg-panel: #1a1a1a; --success: #00e676; --error: #ff1744;
+            --cell-size: 32px; 
             --rank-iron: #9e9e9e; --rank-bronze: #d97706; --rank-silver: #bdbdbd;
             --rank-gold: #fbbf24; --rank-platinum: #06b6d4; --rank-diamond: #8b5cf6; --rank-heroic: #ef4444;
         }
@@ -19,7 +20,14 @@
         
         .main-header { width: 100%; background: linear-gradient(90deg, #000000, #1a1a1a); color: var(--primary-color); padding: 15px 0; text-align: center; box-shadow: 0 4px 20px rgba(255, 204, 0, 0.2); border-bottom: 2px solid var(--primary-color); display: flex; justify-content: center; align-items: center; gap: 20px; position: relative; }
         .main-header h1 { margin: 0; font-size: 2.2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-family: 'Teko', sans-serif; }
-        .season-badge { position: absolute; top: 5px; right: 20px; background: var(--primary-color); color: black; font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 800; }
+        
+        /* TIMER STYLES */
+        .season-badge { position: absolute; top: 5px; right: 20px; background: #333; color: var(--primary-color); font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 800; display: flex; align-items: center; gap: 5px; }
+        .season-badge.active { background: var(--primary-color); color: black; }
+        .season-badge.finished { background: var(--error); color: white; animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+        .timer-display { font-family: 'Teko'; font-size: 1.1rem; }
+
         .admin-btn { background: #333; color: var(--primary-color); padding: 5px 15px; font-size: 0.9rem; border: 1px solid var(--primary-color); border-radius: 4px; cursor: pointer; display: none; }
         .admin-btn.visible { display: block; }
         .app-container { width: 100%; max-width: 1500px; padding: 20px; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; }
@@ -51,7 +59,6 @@
 
         .main-layout { display: flex; flex-direction: row; gap: 20px; width: 100%; align-items: flex-start; flex-wrap: wrap; }
         
-        /* SIDEBAR A LA IZQUIERDA */
         .ranking-sidebar { flex: 1; background: var(--bg-panel); padding: 20px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); min-width: 280px; border: 1px solid #333; order: -1; }
         .ranking-title { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); text-align: center; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; margin-bottom: 15px; text-transform: uppercase; font-family: 'Teko', sans-serif; }
         .ranking-list { list-style: none; padding: 0; margin: 0; max-height: 250px; overflow-y: auto; }
@@ -81,53 +88,46 @@
         .rank-tier-list { font-size: 0.7rem; font-weight: 700; opacity: 0.8; }
         .rank-score { font-weight: 700; color: var(--primary-color); font-size: 0.9rem; }
 
-        /* GAME AREA */
         .game-area { flex: 3; display: flex; flex-direction: column; gap: 20px; min-width: 300px; }
-        .workspace-card { background: var(--bg-panel); padding: 30px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: flex; gap: 20px; justify-content: flex-start; align-items: flex-start; overflow-x: auto; width: 100%; box-sizing: border-box; border: 1px solid #333; }
+        .workspace-card { background: var(--bg-panel); padding: 20px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: flex; gap: 15px; justify-content: flex-start; align-items: flex-start; overflow-x: auto; width: 100%; box-sizing: border-box; border: 1px solid #333; }
 
-        /* GALERA STRUCTURE FIX */
-        .division-row { display: flex; flex-direction: row; align-items: flex-start; gap: 0; margin-top: 20px; flex-shrink: 0; }
-        
-        /* 1. DIVISOR (LEFT) */
-        .col-divisor { display: flex; flex-direction: row; align-items: center; height: var(--cell-size); margin-top: 49px; }
-        .input-div { width: var(--cell-size); height: var(--cell-size); border: 1px solid #555; background: black; font-size: 2rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center; text-shadow: 0 0 5px var(--primary-color); }
-        
-        /* 2. VERTICAL LINE LEFT */
-        .col-linea-v { width: 3px; height: var(--cell-size); background-color: var(--primary-color); margin-top: 49px; box-shadow: 0 0 8px var(--primary-color); }
-
-        /* 3. GRID (CENTER) */
+        /* GALERA STRUCTURE */
+        .division-row { display: flex; flex-direction: row; align-items: flex-start; gap: 0; margin-top: 10px; flex-shrink: 0; }
+        .col-divisor { display: flex; flex-direction: row; align-items: center; height: var(--cell-size); margin-top: 34px; }
+        .input-div { width: var(--cell-size); height: var(--cell-size); border: 1px solid #555; background: black; font-size: 1.4rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; display: flex; align-items: center; justify-content: center; text-shadow: 0 0 5px var(--primary-color); }
+        .col-linea-v { width: 3px; height: var(--cell-size); background-color: var(--primary-color); margin-top: 34px; box-shadow: 0 0 8px var(--primary-color); }
         .col-grid { display: flex; flex-direction: column; position: relative; }
-        .grid-disabled-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 50; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+        .grid-disabled-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 50; display: flex; align-items: center; justify-content: center; pointer-events: none; border-radius: 4px; }
         .grid-disabled-overlay.hidden { display: none; }
-        .lock-msg { background: var(--primary-color); color: black; padding: 10px 20px; border-radius: 2px; font-size: 1rem; font-weight: 700; box-shadow: 0 0 20px var(--primary-color); pointer-events: auto; text-align: center; text-transform: uppercase; }
-        
-        /* Grid Internals */
-        .fila-horizontal-top { display: flex; justify-content: flex-start; height: 3px; background-color: var(--primary-color); box-shadow: 0 0 8px var(--primary-color); margin-bottom: 1px; }
-        .grid-matriz { display: grid; grid-template-columns: repeat(9, var(--cell-size)); grid-template-rows: repeat(15, var(--cell-size)); background-color: #2a2a2a; border: 1px solid #444; }
-        .cell { width: var(--cell-size); height: var(--cell-size); background-color: #1a1a1a; border: 1px solid #333; text-align: center; font-size: 1.4rem; font-weight: 600; outline: none; cursor: text; box-sizing: border-box; color: white; transition: background 0.2s; }
-        .cell:focus { background: #333; box-shadow: inset 0 0 10px var(--primary-color); }
+        .lock-msg { background: var(--primary-color); color: black; padding: 8px 15px; border-radius: 2px; font-size: 0.9rem; font-weight: 700; box-shadow: 0 0 20px var(--primary-color); pointer-events: auto; text-align: center; text-transform: uppercase; }
+        .grid-header-toolbar { display: flex; height: 30px; align-items: center; justify-content: flex-start; gap: 5px; margin-bottom: 2px; padding-left: 2px; }
+        .tool-btn { background: #222; cursor: pointer; color: #888; border: none; display: flex; align-items: center; justify-content: center; width: 24px; height: 24px; border-radius: 2px; font-size: 0.8rem; }
+        .tool-btn:hover { background: #333; color: var(--primary-color); }
+        .tool-btn.active { background: var(--primary-color); color: black; }
+        .fila-horizontal-top { height: 3px; background-color: var(--primary-color); box-shadow: 0 0 8px var(--primary-color); border-radius: 2px; }
+        .grid-matriz { display: grid; grid-template-columns: repeat(9, var(--cell-size)); grid-template-rows: repeat(15, var(--cell-size)); background-color: #2a2a2a; border: 1px solid #444; border-radius: 0 0 4px 4px; }
+        .cell { width: var(--cell-size); height: var(--cell-size); background-color: #1a1a1a; border: 1px solid #333; text-align: center; font-size: 1.1rem; font-weight: 600; outline: none; cursor: text; box-sizing: border-box; color: white; transition: background 0.2s; }
+        .cell:focus { background: #333; box-shadow: inset 0 0 5px var(--primary-color); }
         .cell-locked { background: #000; font-weight: 700; color: var(--primary-color); border-color: #333; }
-        
-        /* 4. VERTICAL LINE RIGHT (FOR COCIENTE) */
-        .col-linea-v-right { width: 3px; height: 100%; background-color: var(--primary-color); margin-top: 0; box-shadow: 0 0 8px var(--primary-color); align-self: stretch; }
-        
-        /* 5. COCIENTE (RIGHT COLUMN) */
-        .col-cociente { display: flex; flex-direction: column; align-items: center; padding-left: 5px; }
-        .input-cociente-galera { width: var(--cell-size); height: var(--cell-size); border: none; background: transparent; font-size: 1.8rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; font-family: 'Rajdhani', sans-serif; border-bottom: 1px solid #333; margin-bottom: 2px; }
+        .col-linea-v-right { width: 3px; height: 100%; background-color: var(--primary-color); align-self: stretch; box-shadow: 0 0 8px var(--primary-color); }
+        .col-cociente { display: flex; flex-direction: column; align-items: center; padding-left: 2px; justify-content: flex-end; padding-bottom: 10px; height: 100%; }
+        .input-cociente-galera { width: var(--cell-size); height: var(--cell-size); border: none; background: transparent; font-size: 1.4rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; font-family: 'Rajdhani', sans-serif; border-bottom: 1px solid #333; margin-bottom: 1px; }
         .input-cociente-galera:first-child { border-bottom: 1px solid var(--primary-color); }
 
-        /* ANTENA */
-        .antena-panel { background: var(--bg-panel); border: 1px solid #333; padding: 15px; border-radius: 4px; border-top: 4px solid var(--primary-color); width: 260px; flex-shrink: 0; margin-left: auto; }
-        .antena-header { text-align: center; font-weight: 700; color: var(--primary-color); margin-bottom: 15px; font-size: 1.2rem; text-transform: uppercase; font-family: 'Teko', sans-serif; }
-        .antena-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; opacity: 1; transition: opacity 0.3s; }
+        /* ANTENA PANEL - FIX: Remove spinners */
+        .antena-panel { background: var(--bg-panel); border: 1px solid #333; padding: 15px; border-radius: 4px; border-top: 4px solid var(--primary-color); width: 240px; flex-shrink: 0; margin-left: auto; }
+        .antena-header { text-align: center; font-weight: 700; color: var(--primary-color); margin-bottom: 15px; font-size: 1.1rem; text-transform: uppercase; font-family: 'Teko', sans-serif; }
+        .antena-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; opacity: 1; transition: opacity 0.3s; font-size: 0.9rem; }
         .antena-row.locked-row { opacity: 0.4; }
-        .antena-input { width: 60px; height: 30px; font-size: 1rem; font-weight: 600; text-align: center; border: 1px solid #444; border-radius: 2px; background: black; color: white; }
+        
+        /* Force text input to hide spinners */
+        .antena-input { width: 50px; height: 26px; font-size: 0.9rem; font-weight: 600; text-align: center; border: 1px solid #444; border-radius: 2px; background: black; color: white; -moz-appearance: textfield; }
+        .antena-input::-webkit-outer-spin-button, .antena-input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
         .antena-input:disabled { background: #111; color: #555; border-color: #222; cursor: not-allowed; }
         .status-ok { background-color: rgba(0, 230, 118, 0.2) !important; border-color: var(--success) !important; color: var(--success); }
         .status-wrong { background-color: rgba(255, 23, 68, 0.2) !important; border-color: var(--error) !important; color: var(--error); }
 
         .controls { background: black; padding: 20px; border-radius: 4px; border: 1px solid #333; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box; }
-        .result-box { display: flex; flex-direction: column; background: #1a1a1a; padding: 8px 15px; border-radius: 2px; border: 1px solid #333; display: none; } /* Hidden as we use the new Galera inputs */
         button { border: none; padding: 10px 24px; font-weight: 600; border-radius: 2px; cursor: pointer; font-size: 1.1rem; color: black; text-transform: uppercase; font-family: 'Rajdhani', sans-serif; transition: all 0.2s; }
         .btn-primary { background: var(--primary-color); box-shadow: 0 0 15px var(--primary-color); }
         .btn-small { font-size: 0.9rem; padding: 5px 10px; background: #333; color: #ccc; border: 1px solid #555; }
@@ -158,10 +158,25 @@
         .emoji-btn:hover { transform: scale(1.3); filter: grayscale(0%); }
         #chat-toggle-btn { position: fixed; bottom: 20px; right: 20px; z-index: 9001; width: 50px; height: 50px; border-radius: 50%; background: var(--primary-color); color: black; font-size: 1.5rem; border: none; box-shadow: 0 0 15px var(--primary-color); display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
-        /* ADMIN MODAL */
-        #admin-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; justify-content: center; align-items: center; z-index: 100000; }
-        .admin-box { background: var(--bg-panel); padding: 40px; border-radius: 10px; border: 2px solid var(--primary-color); width: 400px; text-align: center; color: white; }
-        .admin-title { font-family: 'Teko'; font-size: 2.5rem; color: var(--primary-color); margin-bottom: 20px; }
+        /* ADMIN MODAL - UPDATED */
+        #admin-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 100000; overflow-y: auto; padding: 20px; }
+        .admin-box { background: var(--bg-panel); padding: 30px; border-radius: 10px; border: 2px solid var(--primary-color); width: 600px; max-width: 100%; color: white; display: flex; flex-direction: column; gap: 20px; }
+        .admin-title { font-family: 'Teko'; font-size: 2.5rem; color: var(--primary-color); margin-bottom: 10px; text-align: center; }
+        
+        .admin-section { border-top: 1px solid #333; padding-top: 15px; }
+        .admin-section h4 { margin: 0 0 10px 0; color: var(--primary-color); text-transform: uppercase; }
+        
+        .timer-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .timer-input { width: 60px; padding: 8px; background: black; border: 1px solid #555; color: white; font-size: 1rem; border-radius: 4px; text-align: center; }
+        
+        .user-list-admin { max-height: 300px; overflow-y: auto; border: 1px solid #333; background: #000; border-radius: 4px; }
+        .user-row-admin { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #222; }
+        .user-row-admin:last-child { border-bottom: none; }
+        .user-name-admin { font-weight: 600; }
+        .user-score-admin { font-size: 0.9rem; color: #aaa; margin-right: 10px; }
+        .btn-ban { background: #444; color: white; padding: 5px 10px; font-size: 0.8rem; }
+        .btn-ban.active { background: var(--error); }
+
         .btn-danger-big { background: var(--error); color: white; font-size: 1.2rem; padding: 15px 30px; width: 100%; margin-top: 10px; }
 
         /* Modals Dark */
@@ -190,7 +205,37 @@
 
     <div id="victory-screen"><div class="victory-title">JUEGO TERMINADO</div><div class="confetti"></div></div>
     <div id="epic-overlay"><div class="epic-text" id="epic-text">¡BOOYAH!</div></div>
-    <div id="admin-modal" onclick="if(event.target.id === 'admin-modal') toggleAdmin()"><div class="admin-box" onclick="event.stopPropagation()"><div class="admin-title"><i class="fas fa-user-shield"></i> PANEL ADMIN</div><p style="color:#aaa; margin-bottom: 30px;">Reiniciar Temporada</p><button class="btn-danger-big" onclick="resetAllUsers()"><i class="fas fa-redo"></i> REINICIAR TODO</button></div></div>
+    
+    <!-- ADMIN MODAL -->
+    <div id="admin-modal" onclick="if(event.target.id === 'admin-modal') toggleAdmin()">
+        <div class="admin-box" onclick="event.stopPropagation()">
+            <div class="admin-title"><i class="fas fa-user-shield"></i> PANEL ADMIN</div>
+            
+            <!-- SECCION TEMPORADA -->
+            <div class="admin-section">
+                <h4><i class="fas fa-clock"></i> Temporada</h4>
+                <div id="timer-status" style="margin-bottom:10px; text-align:center; font-size:1.2rem; color:#aaa;">Cargando...</div>
+                <div class="timer-controls">
+                    <input type="number" id="input-hours" class="timer-input" placeholder="Hrs" min="0">
+                    <input type="number" id="input-mins" class="timer-input" placeholder="Min" min="0">
+                    <button class="btn-primary" onclick="startSeason()" style="font-size:1rem; padding: 8px 15px;">Iniciar</button>
+                </div>
+            </div>
+
+            <!-- SECCION USUARIOS -->
+            <div class="admin-section">
+                <h4><i class="fas fa-users"></i> Usuarios</h4>
+                <div class="user-list-admin" id="admin-user-list">
+                    <!-- Se llena con JS -->
+                </div>
+            </div>
+
+            <!-- REINICIAR MANUAL -->
+            <div class="admin-section">
+                <button class="btn-danger-big" onclick="resetAllUsers()"><i class="fas fa-redo"></i> Reiniciar Puntos (Manual)</button>
+            </div>
+        </div>
+    </div>
 
     <button id="chat-toggle-btn" onclick="toggleChatUI()"><i class="fas fa-comments"></i></button>
     <div id="chat-battle"><div class="chat-header" onclick="toggleChatUI()"><span><i class="fas fa-bolt"></i> Chat</span><i class="fas fa-chevron-down"></i></div><div class="chat-messages" id="chat-messages"></div><div class="chat-input-bar"><button class="emoji-btn" onclick="sendChat('👍')">👍</button><button class="emoji-btn" onclick="sendChat('🔥')">🔥</button><button class="emoji-btn" onclick="sendChat('🎉')">🎉</button><button class="emoji-btn" onclick="sendChat('😂')">😂</button><button class="emoji-btn" onclick="sendChat('🧠')">🧠</button><button class="emoji-btn" onclick="sendChat('💪')">💪</button></div></div>
@@ -200,7 +245,9 @@
     <div id="avatar-modal" style="display:none; background: rgba(0,0,0,0.9);" onclick="if(event.target.id === 'avatar-modal') toggleAvatarModal()"><div class="modal-box"><h3 style="margin:0 0 10px 0; color:var(--primary-color); font-family:'Teko'; font-size:1.8rem; text-transform:uppercase;">Personaje</h3><div class="modal-section"><h4>Estándar</h4><div class="avatar-grid" id="avatar-options-standard"></div></div><div class="modal-section" id="exclusive-section" style="display:none;"><h4 style="color:var(--error);"> <i class="fas fa-lock-open"></i> Exclusivos Heroico</h4><div class="avatar-grid" id="avatar-options-exclusive"></div></div><button class="btn-primary" onclick="saveAvatarChoice()">Guardar</button></div></div>
 
     <header class="main-header">
-        <div class="season-badge">TEMPORADA 1</div>
+        <div class="season-badge" id="season-badge">
+            <i class="fas fa-clock"></i> <span class="timer-display" id="timer-display">--:--</span>
+        </div>
         <h1>Prof. Miguel</h1>
         <span style="color:#888; font-size:0.9rem;">Reto de División</span>
         <button id="admin-header-btn" class="admin-btn" onclick="toggleAdmin()"><i class="fas fa-user-shield"></i> Admin</button>
@@ -233,32 +280,21 @@
             <div class="game-area">
                 <div class="workspace-card">
                     <div class="division-row">
-                        
-                        <!-- 1. DIVISOR -->
                         <div class="col-divisor" id="divisorBox"></div>
-                        
-                        <!-- 2. LINEA VERTICAL IZQUIERDA -->
                         <div class="col-linea-v"></div>
-                        
-                        <!-- 3. GRID DIVIDENDO -->
                         <div class="col-grid" id="grid-wrapper">
                             <div class="grid-disabled-overlay" id="grid-lock-overlay"><div class="lock-msg"><i class="fas fa-lock"></i> ¡Completa la Antena!</div></div>
-                            <div class="excel-toolbar">
+                            <div class="grid-header-toolbar">
                                 <button class="tool-btn" id="btnSelectMode" onclick="toggleSelectMode()"><i class="fas fa-mouse-pointer"></i></button>
-                                <button class="tool-btn" onclick="applyBorder('bottom')"><i class="fas fa-ellipsis-h"></i></button>
-                                <button class="tool-btn" onclick="applyBorder('right')"><i class="fas fa-ellipsis-v"></i></button>
+                                <button class="tool-btn" onclick="applyBorder('bottom')"><i class="fas fa-minus"></i></button>
+                                <button class="tool-btn" onclick="applyBorder('right')"><i class="fas fa-grip-lines-vertical"></i></button>
                                 <button class="tool-btn" onclick="applyBorder('clear')"><i class="fas fa-times"></i></button>
                             </div>
-                            <div class="fila-horizontal-top" id="lineH"></div> <!-- Linea Horizontal Arriba -->
+                            <div class="fila-horizontal-top" id="lineH"></div>
                             <div class="grid-matriz" id="gridContainer"></div>
                         </div>
-
-                        <!-- 4. LINEA VERTICAL DERECHA (PARA GALERA) -->
                         <div class="col-linea-v-right"></div>
-
-                        <!-- 5. COLUMNA COCIENTE (A LA DERECHA) -->
                         <div class="col-cociente" id="col-cociente"></div>
-
                     </div>
                     <div class="antena-panel">
                         <div class="antena-header">Antena (x <span id="antenaLabel">...</span>)</div>
@@ -266,17 +302,12 @@
                     </div>
                 </div>
                 <div class="controls">
-                    <!-- Inputs ocultos para compatibilidad, visualmente usamos la columna derecha -->
-                    <div style="display:flex; gap:15px; visibility: hidden;">
-                        <div class="result-box"><input type="number" class="result-input" id="valCociente" placeholder="0"></div>
-                        <div class="result-box"><input type="number" class="result-input" id="valResiduo" placeholder="0"></div>
-                    </div>
+                    <div style="display:flex; gap:15px; visibility: hidden; position:absolute;"><input type="number" id="valCociente"><input type="number" id="valResiduo"></div>
                     <button id="btn-verify" class="btn-primary" onclick="verificarSolucion()">Verificar</button>
                 </div>
                 <div id="msg"></div>
             </div>
             
-            <!-- SIDEBAR A LA IZQUIERDA -->
             <div class="ranking-sidebar">
                 <div class="ranking-title">Ranking</div>
                 <ul class="ranking-list" id="ranking-list"></ul>
@@ -291,12 +322,9 @@
     <script>
         // --- SOUND ENGINE ---
         const AudioEngine = {
-            ctx: null,
-            init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
+            ctx: null, init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
             playTone(freq, duration, type = 'square', volume = 0.1) { this.init(); const osc = this.ctx.createOscillator(); const gain = this.ctx.createGain(); osc.type = type; osc.frequency.value = freq; gain.gain.value = volume; osc.connect(gain); gain.connect(this.ctx.destination); osc.start(); setTimeout(() => { osc.stop(); }, duration); },
-            playClick() { this.playTone(800, 50, 'square', 0.05); },
-            playSuccess() { this.playTone(523, 100, 'square', 0.08); setTimeout(() => this.playTone(659, 150, 'square', 0.08), 100); },
-            playError() { this.playTone(200, 300, 'sawtooth', 0.1); },
+            playClick() { this.playTone(800, 50, 'square', 0.05); }, playSuccess() { this.playTone(523, 100, 'square', 0.08); setTimeout(() => this.playTone(659, 150, 'square', 0.08), 100); }, playError() { this.playTone(200, 300, 'sawtooth', 0.1); },
             playLevelUp() { const notes = [523, 659, 784, 1047]; notes.forEach((n, i) => setTimeout(() => this.playTone(n, 200, 'square', 0.1), i * 150)); },
             playEpic() { const notes = [300, 400, 600, 900, 1200]; notes.forEach((n, i) => setTimeout(() => this.playTone(n, 80, 'sawtooth', 0.3), i * 40)); }
         };
@@ -306,30 +334,13 @@
         const SUPABASE_KEY = 'sb_publishable_RcfluyMTRxDP4chkK91-2Q_UwLdLrqP';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storage: window.sessionStorage, autoRefreshToken: false, persistSession: true, detectSessionInUrl: false } });
 
-        const TOTAL_LEVELS = 10; const PROBLEMS_PER_LEVEL = 10;
-        let currentMainLevel = 1; let currentProblemInLevel = 1;
-        let currentDivisor = 0; let currentDividend = 0;
-        const cols = 9; const rows = 15; const cellSize = 45;
-        let totalScore = 0; const POINTS = 100; 
-        let currentUser = null;
-        let currentAvatarStyle = 'adventurer';
-        let isGridLocked = true;
-        let hasFinishedGame = false;
-        let isProcessing = false; 
-
-        let unlockedLevel = 1; 
-        let isAdmin = false;
-        const ADMIN_USER = 'profemiguel';
+        const TOTAL_LEVELS = 10; const PROBLEMS_PER_LEVEL = 10; let currentMainLevel = 1; let currentProblemInLevel = 1; let currentDivisor = 0; let currentDividend = 0;
+        const cols = 9; const rows = 15; const cellSize = 32; let totalScore = 0; const POINTS = 100; let currentUser = null; let currentAvatarStyle = 'adventurer'; let isGridLocked = true; let hasFinishedGame = false; let isProcessing = false; let unlockedLevel = 1; let isAdmin = false; const ADMIN_USER = 'profemiguel';
         let chatCooldown = false; let chatVisible = false;
-
-        const ANTENNA_SEQUENCE = [1, 10, 5, 2, 4, 8, 3, 6, 7, 9];
-        let currentAntennaIndex = 0;
-
+        const ANTENNA_SEQUENCE = [1, 10, 5, 2, 4, 8, 3, 6, 7, 9]; let currentAntennaIndex = 0;
         const AVATAR_STYLES_STANDARD = [ { id: 'adventurer', name: 'Guerrero' }, { id: 'bottts', name: 'Robot' }, { id: 'pixel-art', name: 'Pixel' }, { id: 'lorelei', name: 'Fantasma' }, { id: 'big-ears', name: 'Alien' }, { id: 'open-peeps', name: 'Dibujo' }, { id: 'croodles', name: 'Boceto' }, { id: 'identicon', name: 'Matrix' } ];
         const AVATAR_STYLES_EXCLUSIVE = [ { id: 'micah', name: 'Élite' }, { id: 'personas', name: 'Dios' }, { id: 'thumbs', name: 'Leyenda' } ];
-
         const RANKS = [ { name: "Hierro", min: 0, max: 2999, icon: "🪨", css: "rank-iron", avatar: "avatar-iron" }, { name: "Bronce", min: 3000, max: 6999, icon: "🥉", css: "rank-bronze", avatar: "avatar-bronze" }, { name: "Plata", min: 7000, max: 12999, icon: "🥈", css: "rank-silver", avatar: "avatar-silver" }, { name: "Oro", min: 13000, max: 19999, icon: "🥇", css: "rank-gold", avatar: "avatar-gold" }, { name: "Platino", min: 20000, max: 29999, icon: "💠", css: "rank-platinum", avatar: "avatar-platinum" }, { name: "Diamante", min: 30000, max: 49999, icon: "💎", css: "rank-diamond", avatar: "avatar-diamond" }, { name: "Heroico", min: 50000, max: 999999, icon: "👑", css: "rank-heroic", avatar: "avatar-heroic" } ];
-
         function getRankInfo(score) { let rank = RANKS[0]; for(let i=0; i<RANKS.length; i++) { if(score >= RANKS[i].min) rank = RANKS[i]; } let tier = "I"; let range = rank.max - rank.min; if (score < rank.min + range/3) tier = "III"; else if (score < rank.min + (range/3)*2) tier = "II"; let pct = ((score - rank.min) / range) * 100; if(pct > 100) pct = 100; return { ...rank, tier: tier, pct: pct }; }
 
         const DB = { 
@@ -350,15 +361,20 @@
         let typingTimer; const doneTypingInterval = 500;
         function showLogin() { document.getElementById('login-screen').style.display = 'flex'; document.querySelector('.app-container').style.display = 'none'; const input = document.getElementById('login-username'); const img = document.getElementById('login-avatar-img'); const newInput = input.cloneNode(true); input.parentNode.replaceChild(newInput, input); document.getElementById('login-username').addEventListener('input', (e) => { const val = e.target.value.trim(); clearTimeout(typingTimer); if (val.length === 0) { img.src = "https://api.dicebear.com/8.x/identicon/svg?seed=Shadow"; } else { typingTimer = setTimeout(() => { img.src = `https://api.dicebear.com/8.x/adventurer/svg?seed=${val}`; }, doneTypingInterval); } }); }
         
-        async function showApp() { document.getElementById('login-screen').style.display = 'none'; document.querySelector('.app-container').style.display = 'flex'; if(currentUser) { try { await loadScore(currentUser); } catch(e){ console.error(e); } } initGame(); startRanking(); initChat(); loadHallOfFame(); }
+        async function showApp() { document.getElementById('login-screen').style.display = 'none'; document.querySelector('.app-container').style.display = 'flex'; if(currentUser) { try { await loadScore(currentUser); } catch(e){ console.error(e); } } initGame(); startRanking(); initChat(); loadHallOfFame(); initSeason(); }
 
         async function handleLogin() { const u = document.getElementById('login-username').value.trim(); const p = document.getElementById('login-password').value; const e = document.getElementById('login-error'); if (!u || p.length < 6) { e.textContent = "Datos incompletos."; e.style.display='block'; return; } try { const { data, error } = await _supabase.auth.signInWithPassword({ email: u+"@profemiguel.com", password: p }); if (error) throw error; currentUser = data.user; showApp(); } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; } }
         async function handleRegister() { const u = document.getElementById('login-username').value.trim(); const p = document.getElementById('login-password').value; const e = document.getElementById('login-error'); if (!u || p.length < 6) { e.textContent = "Datos incompletos."; e.style.display='block'; return; } try { const { data, error } = await _supabase.auth.signUp({ email: u+"@profemiguel.com", password: p }); if (error) throw error; alert("Registrado. Entra ahora."); } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; } }
         async function logout() { await _supabase.auth.signOut(); currentUser=null; totalScore=0; showLogin(); clearInterval(rankInt); }
 
-        async function loadScore(user) { try { const { data } = await _supabase.from('profiles').select('total_score, avatar_style, current_level, completed_at').eq('id', user.id).single(); totalScore = (data && data.total_score) ? data.total_score : 0; currentAvatarStyle = (data && data.avatar_style) ? data.avatar_style : 'adventurer'; unlockedLevel = (data && data.current_level) ? data.current_level : 1; hasFinishedGame = (data && data.completed_at); } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1; hasFinishedGame = false; } isAdmin = (user.email.split('@')[0] === ADMIN_USER); document.getElementById('admin-header-btn').classList.toggle('visible', isAdmin); if(hasFinishedGame) document.getElementById('msg').innerHTML = "<span style='color:var(--primary-color);'>¡Ya terminaste!</span>"; currentMainLevel = unlockedLevel; populateLevelSelect(); updateUI(); renderMainAvatar(); }
+        async function loadScore(user) {
+            try { const { data } = await _supabase.from('profiles').select('total_score, avatar_style, current_level, completed_at, is_banned').eq('id', user.id).single(); 
+                if(data && data.is_banned) { alert("Tu cuenta está suspendida temporalmente."); logout(); return; }
+                totalScore = (data && data.total_score) ? data.total_score : 0; currentAvatarStyle = (data && data.avatar_style) ? data.avatar_style : 'adventurer'; unlockedLevel = (data && data.current_level) ? data.current_level : 1; hasFinishedGame = (data && data.completed_at); 
+            } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1; hasFinishedGame = false; }
+            isAdmin = (user.email.split('@')[0] === ADMIN_USER); document.getElementById('admin-header-btn').classList.toggle('visible', isAdmin); if(hasFinishedGame) document.getElementById('msg').innerHTML = "<span style='color:var(--primary-color);'>¡Ya terminaste!</span>"; currentMainLevel = unlockedLevel; populateLevelSelect(); updateUI(); renderMainAvatar();
+        }
         function populateLevelSelect() { const sel = document.getElementById('levelSelect'); sel.innerHTML = ''; for(let i=1; i<=TOTAL_LEVELS; i++) { let opt = document.createElement('option'); opt.value = i; opt.innerText = "Nivel " + i; if(i > unlockedLevel) { opt.disabled = true; opt.innerText += " 🔒"; } sel.appendChild(opt); } sel.value = currentMainLevel; }
-
         function updateUI() { document.getElementById('scoreDisplay').innerText = totalScore; const rI = getRankInfo(totalScore); document.getElementById('userRankName').innerText = rI.icon + " " + rI.name + " " + rI.tier; document.getElementById('userRankName').className = "rank-name " + rI.css; document.getElementById('userRankBar').style.width = rI.pct + "%"; const avatarBox = document.getElementById('main-avatar-box'); avatarBox.className = "avatar-container " + rI.avatar; }
         function getAvatarUrl(seed, style) { return `https://api.dicebear.com/8.x/${style}/svg?seed=${seed}`; }
         function renderMainAvatar() { document.getElementById('main-avatar-img').src = getAvatarUrl(currentUser.email.split('@')[0], currentAvatarStyle); }
@@ -368,15 +384,120 @@
         async function saveAvatarChoice() { AudioEngine.playClick(); await _supabase.from('profiles').upsert({ id: currentUser.id, avatar_style: currentAvatarStyle }); toggleAvatarModal(); updateRanking(); }
         async function saveScore() { if (!currentUser) return; try { await _supabase.from('profiles').upsert({ id: currentUser.id, username: currentUser.email.split('@')[0], total_score: totalScore, current_level: unlockedLevel }); updateRanking(); } catch(e) { console.error(e); } }
         let rankInt; function startRanking() { updateRanking(); rankInt = setInterval(updateRanking, 5000); }
-        async function updateRanking() { const list = document.getElementById('ranking-list'); try { const { data, error } = await _supabase.from('profiles').select('username, total_score, avatar_style, completed_at').order('total_score', { ascending: false }).limit(10); if(error) throw error; if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; padding:10px; color:#666;">No hay datos.</li>'; return; } list.innerHTML = data.filter(u => !u.completed_at).map((u, i) => { const s = u.total_score || 0; const rI = getRankInfo(s); const isMe = (currentUser && u.username === currentUser.email.split('@')[0]); let cls = "ranking-item " + rI.css; if(isMe) cls += " me"; const style = u.avatar_style || 'adventurer'; const avatarUrl = getAvatarUrl(u.username || 'guest', style); return `<li class="${cls}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avatarUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${u.username||'Yo'}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span></div></div><span class="rank-score">${s}</span></li>`; }).join(''); } catch(err) { list.innerHTML = '<li style="text-align:center; padding:10px; color:red;">Error.</li>'; } }
+        async function updateRanking() { const list = document.getElementById('ranking-list'); try { const { data, error } = await _supabase.from('profiles').select('username, total_score, avatar_style, completed_at, is_banned').order('total_score', { ascending: false }).limit(10); if(error) throw error; if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; padding:10px; color:#666;">No hay datos.</li>'; return; } list.innerHTML = data.filter(u => !u.completed_at && !u.is_banned).map((u, i) => { const s = u.total_score || 0; const rI = getRankInfo(s); const isMe = (currentUser && u.username === currentUser.email.split('@')[0]); let cls = "ranking-item " + rI.css; if(isMe) cls += " me"; const style = u.avatar_style || 'adventurer'; const avatarUrl = getAvatarUrl(u.username || 'guest', style); return `<li class="${cls}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avatarUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${u.username||'Yo'}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span></div></div><span class="rank-score">${s}</span></li>`; }).join(''); } catch(err) { list.innerHTML = '<li style="text-align:center; padding:10px; color:red;">Error.</li>'; } }
         async function loadHallOfFame() { const list = document.getElementById('fame-list'); try { const { data, error } = await _supabase.from('profiles').select('username, completed_at').not('completed_at', 'is', null).order('completed_at', { ascending: true }).limit(5); if(error) throw error; if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; color:#555; font-size:0.8rem; padding:10px;">Nadie ha terminado aún</li>'; return; } list.innerHTML = data.map(u => { const date = new Date(u.completed_at); const timeStr = date.toLocaleDateString() + " " + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); return `<li class="fame-item"><i class="fas fa-medal" style="color:var(--primary-color)"></i> <span>${u.username}</span> <span class="fame-time">${timeStr}</span></li>`; }).join(''); } catch(e) { console.error(e); } }
         function initChat() { const channel = _supabase.channel('public:chat_messages'); channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => { addChatMessage(payload.new); }).subscribe(); loadInitialChat(); }
         async function loadInitialChat() { try { const { data } = await _supabase.from('chat_messages').select('*').order('created_at', { ascending: false }).limit(15); const container = document.getElementById('chat-messages'); container.innerHTML = ''; if(data) data.reverse().forEach(msg => addChatMessage(msg)); } catch(e) { console.error(e); } }
         function addChatMessage(msg) { const container = document.getElementById('chat-messages'); const div = document.createElement('div'); div.className = 'chat-msg'; div.innerHTML = `<span>${msg.username}:</span> <span class="chat-emoji">${msg.emoji}</span>`; container.prepend(div); while (container.children.length > 15) container.removeChild(container.lastChild); }
         async function sendChat(emoji) { if(chatCooldown) return; if(!currentUser) return; chatCooldown = true; setTimeout(() => chatCooldown = false, 3000); AudioEngine.playClick(); try { await _supabase.from('chat_messages').insert({ user_id: currentUser.id, username: currentUser.email.split('@')[0], emoji: emoji }); } catch(e) { console.error(e); } }
         function toggleChatUI() { chatVisible = !chatVisible; document.getElementById('chat-battle').classList.toggle('visible', chatVisible); }
-        function toggleAdmin() { const modal = document.getElementById('admin-modal'); modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex'; }
-        async function resetAllUsers() { if(!confirm("¿Iniciar NUEVA TEMPORADA?")) return; try { await _supabase.from('profiles').update({ total_score: 0, current_level: 1, completed_at: null }).neq('id', '00000000-0000-0000-0000-000000000000'); alert("¡Temporada reiniciada!"); toggleAdmin(); updateRanking(); loadHallOfFame(); totalScore = 0; unlockedLevel = 1; hasFinishedGame = false; updateUI(); initGame(); } catch(e) { alert("Error."); console.error(e); } }
+        function toggleAdmin() { const modal = document.getElementById('admin-modal'); modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex'; if(modal.style.display === 'flex') loadAdminUsers(); }
+
+        // --- SEASON LOGIC ---
+        let seasonInterval;
+        async function initSeason() {
+            try {
+                const { data } = await _supabase.from('game_settings').select('season_end_time').eq('id', 1).single();
+                if(data && data.season_end_time) {
+                    startCountdown(new Date(data.season_end_time));
+                } else {
+                    document.getElementById('timer-display').innerText = "SIN INICIAR";
+                    document.getElementById('season-badge').classList.add('finished');
+                }
+            } catch(e) { console.error("Error loading season", e); }
+        }
+
+        function startCountdown(endDate) {
+            clearInterval(seasonInterval);
+            seasonInterval = setInterval(() => {
+                const now = new Date();
+                const diff = endDate - now;
+
+                if (diff <= 0) {
+                    clearInterval(seasonInterval);
+                    document.getElementById('timer-display').innerText = "00:00:00";
+                    document.getElementById('season-badge').classList.add('finished');
+                    document.getElementById('season-badge').classList.remove('active');
+                    // Trigger reset if I am the admin (to avoid everyone trying to reset)
+                    if(isAdmin) {
+                        alert("¡Tiempo terminado! Reiniciando puntos...");
+                        resetAllUsers(true); // true = silent/auto
+                    }
+                    return;
+                }
+
+                const h = Math.floor(diff / 3600000);
+                const m = Math.floor((diff % 3600000) / 60000);
+                const s = Math.floor((diff % 60000) / 1000);
+                
+                document.getElementById('timer-display').innerText = 
+                    `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+                
+                document.getElementById('season-badge').classList.add('active');
+                document.getElementById('season-badge').classList.remove('finished');
+
+            }, 1000);
+        }
+
+        async function startSeason() {
+            const h = parseInt(document.getElementById('input-hours').value) || 0;
+            const m = parseInt(document.getElementById('input-mins').value) || 0;
+            if(h === 0 && m === 0) return alert("Ingresa tiempo.");
+            
+            const endTime = new Date(new Date().getTime() + (h * 3600000) + (m * 60000));
+            
+            try {
+                await _supabase.from('game_settings').upsert({ id: 1, season_end_time: endTime.toISOString() });
+                alert("¡Temporada iniciada!");
+                startCountdown(endTime);
+            } catch(e) { alert("Error al iniciar."); }
+        }
+
+        async function loadAdminUsers() {
+            const list = document.getElementById('admin-user-list');
+            list.innerHTML = 'Cargando...';
+            try {
+                const { data, error } = await _supabase.from('profiles').select('id, username, total_score, is_banned').order('total_score', { ascending: false });
+                if(error) throw error;
+                list.innerHTML = data.map(u => `
+                    <div class="user-row-admin">
+                        <div>
+                            <span class="user-name-admin">${u.username}</span>
+                            <span class="user-score-admin">${u.total_score} pts</span>
+                        </div>
+                        <button class="btn-ban ${u.is_banned ? 'active' : ''}" onclick="toggleBan('${u.id}', ${u.is_banned})">
+                            ${u.is_banned ? 'BANEADO' : 'Banear'}
+                        </button>
+                    </div>
+                `).join('');
+            } catch(e) { list.innerHTML = 'Error'; }
+        }
+
+        async function toggleBan(uid, currentStatus) {
+            try {
+                await _supabase.from('profiles').update({ is_banned: !currentStatus }).eq('id', uid);
+                loadAdminUsers();
+                updateRanking();
+            } catch(e) { alert("Error al banear."); }
+        }
+
+        async function resetAllUsers(isAuto = false) {
+            if(!isAuto && !confirm("¿Reiniciar TODOS los puntos?")) return;
+            try {
+                await _supabase.from('profiles').update({ total_score: 0, current_level: 1, completed_at: null }).neq('id', '00000000-0000-0000-0000-000000000000');
+                if(!isAuto) alert("¡Reiniciado!");
+                toggleAdmin(); updateRanking(); loadHallOfFame();
+                totalScore = 0; unlockedLevel = 1; hasFinishedGame = false; updateUI(); initGame();
+                // Clear timer
+                if(!isAuto) {
+                    await _supabase.from('game_settings').update({ season_end_time: null }).eq('id', 1);
+                    document.getElementById('timer-display').innerText = "SIN INICIAR";
+                    clearInterval(seasonInterval);
+                    document.getElementById('season-badge').classList.remove('active');
+                    document.getElementById('season-badge').classList.add('finished');
+                }
+            } catch(e) { alert("Error."); console.error(e); }
+        }
 
         // --- GAME LOGIC ---
         function initGame() { loadProblem(); populateLevelSelect(); }
@@ -401,23 +522,15 @@
         function createConfetti() { const screen = document.getElementById('victory-screen'); const colors = ['#ffcc00', '#00e676', '#2979ff', '#f00', '#ff9800']; for (let i = 0; i < 50; i++) { const conf = document.createElement('div'); conf.className = 'confetti'; conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = -10 + 'px'; conf.style.background = colors[Math.floor(Math.random() * colors.length)]; conf.style.animationDuration = (Math.random() * 2 + 2) + 's'; screen.appendChild(conf); } }
         
         function createUI() {
-            const g = document.getElementById('gridContainer'); const dB = document.getElementById('divisorBox'); const cC = document.getElementById('col-cociente'); // New Column
+            const g = document.getElementById('gridContainer'); const dB = document.getElementById('divisorBox'); const cC = document.getElementById('col-cociente');
             g.innerHTML = ''; dB.innerHTML = ''; cC.innerHTML = '';
-            
-            // 1. Divisor
             String(currentDivisor).split('').forEach(n => { let i=document.createElement('input'); i.type='text'; i.className='input-div'; i.value=n; i.readOnly=true; dB.appendChild(i); });
-
-            // 2. Grid (Dividendo)
             for(let r=0; r<rows; r++) { for(let c=0; c<cols; c++) { let i = document.createElement('input'); i.type='text'; i.className='cell'; i.maxLength=1; i.id="c-"+r+"-"+c; i.addEventListener('mousedown', (e) => { if(sel && !isGridLocked){ e.preventDefault(); drag=true; sC={r,c}; eC={r,c}; updS(); } }); i.addEventListener('mouseenter', (e) => { if(sel && drag && !isGridLocked){ eC={r,c}; updS(); } }); i.addEventListener('input', (e) => { if(!sel && !isGridLocked && e.target.value){ let n=(c<cols-1)?"c-"+r+"-"+(c+1):(r<rows-1)?"c-"+(r+1)+"-0":null; if(n)document.getElementById(n).focus(); }}); g.appendChild(i); } }
             document.onmouseup = () => { drag=false; }; let sN = String(currentDividend); for(let i=0; i<sN.length; i++) { let cell = document.getElementById("c-0-"+i); cell.value = sN[i]; cell.classList.add('cell-locked'); cell.disabled = true; }
             document.getElementById('lineH').style.width = (sN.length * cellSize) + 'px';
-
-            // 3. Cociente (Columna Derecha - Galera Style)
             for(let i=0; i<sN.length; i++) { let inp = document.createElement('input'); inp.type = 'text'; inp.className = 'input-cociente-galera'; inp.maxLength = 1; inp.id = "top-"+i; inp.addEventListener('input', (e) => { syncT(); if(e.target.value && i<sN.length-1) document.getElementById("top-"+(i+1)).focus(); }); cC.appendChild(inp); }
         }
-
         function disableCocienteInputs(disabled) { document.querySelectorAll('.input-cociente-galera').forEach(i => i.disabled = disabled); }
-
         let sel=false, drag=false, sC=null, eC=null, selC=new Set();
         function toggleSelectMode() { if(isGridLocked) return; sel=!sel; document.getElementById('btnSelectMode').classList.toggle('active', sel); if(!sel) clrS(); }
         function updS() { clrS(); if(!sC||!eC)return; let minR=Math.min(sC.r,eC.r),maxR=Math.max(sC.r,eC.r),minC=Math.min(sC.c,eC.c),maxC=Math.max(sC.c,eC.c); for(let r=minR;r<=maxR;r++)for(let c=minC;c<=maxC;c++){let el=document.getElementById("c-"+r+"-"+c); if(el){el.classList.add('cell-selected'); selC.add(el.id);}} }
@@ -425,9 +538,11 @@
         function applyBorder(t) { if(isGridLocked) return; selC.forEach(id=>{let el=document.getElementById(id); if(el){if(t==='clear'){el.classList.remove('border-bottom','border-right');}else{el.classList.add("border-"+t);}}}); }
         function syncT() { let v=""; document.querySelectorAll('.input-cociente-galera').forEach(x=>v+=x.value); document.getElementById('valCociente').value=v; }
 
-        // --- ANTENA PROGRESSIVE LOGIC ---
-        function createAntena() { const b=document.getElementById('antenaBody'); document.getElementById('antenaLabel').innerText=currentDivisor; b.innerHTML=''; for(let i=1;i<=10;i++){ let r=document.createElement('div'); r.className='antena-row locked-row'; r.id="row-"+i; r.innerHTML="<span>"+i+" x "+currentDivisor+" =</span><input type='number' class='antena-input' id='a"+i+"' disabled>"; b.appendChild(r); } currentAntennaIndex = 0; enableNextAntennaInput(); }
-        function enableNextAntennaInput() { if (currentAntennaIndex >= ANTENNA_SEQUENCE.length) return; const currentId = ANTENNA_SEQUENCE[currentAntennaIndex]; const input = document.getElementById("a"+currentId); const row = document.getElementById("row-"+currentId); if(input) { input.disabled = false; input.focus(); row.classList.remove('locked-row'); input.oninput = () => checkAntennaInput(input, currentId); } }
+        // --- ANTENA LOGIC (FIXED: Text Input) ---
+        function createAntena() { const b=document.getElementById('antenaBody'); document.getElementById('antenaLabel').innerText=currentDivisor; b.innerHTML=''; for(let i=1;i<=10;i++){ let r=document.createElement('div'); r.className='antena-row locked-row'; r.id="row-"+i; 
+            // FIX: type="text" inputmode="numeric" pattern="[0-9]*" prevents spinners
+            r.innerHTML="<span>"+i+" x "+currentDivisor+" =</span><input type='text' inputmode='numeric' pattern='[0-9]*' class='antena-input' id='a"+i+"' disabled>"; b.appendChild(r); } currentAntennaIndex = 0; enableNextAntennaInput(); }
+        function enableNextAntennaInput() { if (currentAntennaIndex >= ANTENNA_SEQUENCE.length) return; const currentId = ANTENNA_SEQUENCE[currentAntennaIndex]; const input = document.getElementById("a"+currentId); const row = document.getElementById("row-"+currentId); if(input) { input.disabled = false; input.focus(); row.classList.remove('locked-row'); input.oninput = (e) => { e.target.value = e.target.value.replace(/[^0-9]/g, ''); checkAntennaInput(input, currentId); }; } }
         function checkAntennaInput(input, id) { const val = parseInt(input.value); const expected = id * currentDivisor; if (val === expected) { AudioEngine.playSuccess(); input.classList.add('status-ok'); input.disabled = true; input.classList.remove('status-wrong'); currentAntennaIndex++; if (currentAntennaIndex < ANTENNA_SEQUENCE.length) { enableNextAntennaInput(); } else { unlockGrid(); } } else { input.classList.add('status-wrong'); setTimeout(() => input.classList.remove('status-wrong'), 500); } }
         function resetAll() { document.getElementById('valCociente').value=''; document.getElementById('valResiduo').value=''; document.querySelectorAll('.antena-input').forEach(i => { i.value=''; i.classList.remove('status-ok','status-wrong'); }); document.querySelectorAll('.input-cociente-galera').forEach(i => i.value=''); document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value=''; i.disabled=false; }); document.querySelectorAll('.cell').forEach(c => c.classList.remove('border-bottom','border-right','cell-selected')); selC.clear(); }
         
