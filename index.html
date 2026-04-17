@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V12.3 Final Fixes</title>
+    <title>Reto de División - V12.4 Final</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -70,7 +70,7 @@
         /* ELITE RANK STYLES */
         .ranking-item.elite { background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), transparent); border-left: 4px solid var(--rank-gold); }
         
-        /* RANK 1 LEGENDARY - V12.3 Fix */
+        /* RANK 1 LEGENDARY */
         .ranking-item.rank-1 {
             border: 2px solid #ffd700; 
             background: linear-gradient(90deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.05)); 
@@ -433,7 +433,7 @@
         async function saveScore() { if (!currentUser) return; try { await _supabase.from('profiles').upsert({ id: currentUser.id, username: currentUser.email.split('@')[0], total_score: totalScore, current_level: unlockedLevel, current_problem: currentProblemInLevel }); updateRanking(); } catch(e) { console.error(e); } }
         let rankInt; function startRanking() { updateRanking(); rankInt = setInterval(updateRanking, 5000); }
         
-        // V12.3: Ranking with Crown fix (moved to name)
+        // Ranking with Crown fix
         async function updateRanking() { 
             const list = document.getElementById('ranking-list'); 
             try { 
@@ -446,27 +446,18 @@
                     const s = u.total_score || 0; const rI = getRankInfo(s); const isMe = (currentUser && u.username === currentUser.email.split('@')[0]); 
                     let rankClass = "ranking-item " + rI.css;
                     let displayName = u.username || 'Yo';
-                    
-                    if(i === 0) { 
-                        rankClass += " rank-1"; 
-                        displayName = u.username + " 👑"; // Crown next to name
-                    } else if (i < 10) { 
-                        rankClass += " elite"; 
-                    }
-                    
+                    if(i === 0) { rankClass += " rank-1"; displayName = u.username + " 👑"; }
+                    else if (i < 10) { rankClass += " elite"; }
                     if(isMe) rankClass += " me"; 
                     const style = u.avatar_style || 'adventurer'; const avatarUrl = getAvatarUrl(u.username || 'guest', style); 
-                    return `<li class="${rankClass}">
-                        <span class="rank-pos">${i+1}.</span>
-                        <div class="rank-row"><img src="${avatarUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${displayName}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span></div></div><span class="rank-score">${s}</span>
-                    </li>`; 
+                    return `<li class="${rankClass}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avatarUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${displayName}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span></div></div><span class="rank-score">${s}</span></li>`; 
                 }).join(''); 
             } catch(err) { list.innerHTML = '<li style="text-align:center; padding:10px; color:red;">Error.</li>'; } 
         }
 
         async function loadHallOfFame() { const list = document.getElementById('fame-list'); try { const { data, error } = await _supabase.from('profiles').select('username, completed_at').not('completed_at', 'is', null).order('completed_at', { ascending: true }).limit(5); if(error) throw error; if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; color:#555; font-size:0.8rem; padding:10px;">Nadie ha terminado aún</li>'; return; } list.innerHTML = data.map(u => { const date = new Date(u.completed_at); const timeStr = date.toLocaleDateString() + " " + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); return `<li class="fame-item"><i class="fas fa-medal" style="color:var(--primary-color)"></i> <span>${u.username}</span> <span class="fame-time">${timeStr}</span></li>`; }).join(''); } catch(e) { console.error(e); } }
         
-        // V12: Chat Social System
+        // V12.4: Chat System (Fixed for 400 Error)
         function initChat() { 
             const channel = _supabase.channel('public:chat_messages'); 
             channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => { addChatMessage(payload.new); }).subscribe(); 
@@ -500,6 +491,7 @@
             if (select.querySelector(`option[value="${currentUserVal}"]`)) select.value = currentUserVal;
         }
 
+        // FIX: Enviar 'emoji' además de 'message_text' para evitar error 400
         async function sendQuickChat(text) { 
             if(chatCooldown) return; 
             if(!currentUser) return; 
@@ -508,9 +500,15 @@
             AudioEngine.playClick(); 
             const recipient = document.getElementById('chat-user-select').value;
             try { 
-                await _supabase.from('chat_messages').insert({ user_id: currentUser.id, username: currentUser.email.split('@')[0], recipient_username: recipient, message_text: text }); 
+                await _supabase.from('chat_messages').insert({ 
+                    user_id: currentUser.id, 
+                    username: currentUser.email.split('@')[0], 
+                    recipient_username: recipient, 
+                    message_text: text,
+                    emoji: text // <-- FIX: Enviar también emoji para compatibilidad
+                }); 
             } catch(e) { 
-                console.error("Chat Error Details:", e); 
+                console.error("Chat Error:", e); 
                 alert("Error al enviar: " + e.message); 
             } 
         }
