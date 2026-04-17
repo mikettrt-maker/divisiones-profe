@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V12 Social</title>
+    <title>Reto de División - V12.1 Fixes</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -60,7 +60,7 @@
         .ranking-sidebar { flex: 1; background: var(--bg-panel); padding: 20px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); min-width: 280px; border: 1px solid #333; order: -1; }
         .ranking-title { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); text-align: center; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; margin-bottom: 15px; text-transform: uppercase; font-family: 'Teko', sans-serif; }
         
-        /* RANKING LIST FIX - SCROLL */
+        /* RANKING LIST */
         .ranking-list { list-style: none; padding: 0; margin: 0; max-height: 400px; overflow-y: auto; padding-right: 5px; }
         .ranking-list::-webkit-scrollbar { width: 6px; }
         .ranking-list::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
@@ -69,14 +69,22 @@
         
         /* ELITE RANK STYLES */
         .ranking-item.elite { background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), transparent); border-left: 4px solid var(--rank-gold); }
-        .ranking-item.elite::before { content: ""; position: absolute; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at left, rgba(255,215,0,0.05), transparent); pointer-events: none; }
         
-        /* RANK 1 LEGENDARY */
-        .ranking-item.rank-1 { border: 2px solid #ffd700; background: linear-gradient(90deg, rgba(255, 215, 0, 0.15), transparent); box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); animation: champPulse 3s infinite; }
-        .rank-1 .rank-name-list { color: #ffd700; font-size: 1.1rem; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
-        .rank-1 .rank-pos { color: #ffd700; font-size: 1.2rem; }
-        .rank-1 .list-avatar { border-color: #ffd700; box-shadow: 0 0 15px #ffd700; }
-        @keyframes champPulse { 0% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); } 50% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); } 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); } }
+        /* RANK 1 LEGENDARY FIX */
+        .ranking-item.rank-1 {
+            border: 2px solid #ffd700; 
+            background: linear-gradient(90deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.05)); 
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); 
+            animation: champGlow 2s infinite alternate;
+        }
+        .ranking-item.rank-1 .rank-name-list { color: #ffd700; font-size: 1.1rem; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+        .ranking-item.rank-1 .rank-pos { color: #ffd700; font-size: 1.2rem; }
+        .ranking-item.rank-1 .list-avatar { border-color: #ffd700; box-shadow: 0 0 15px #ffd700; transform: scale(1.1); }
+        
+        /* Crown positioning fix */
+        .crown-icon { position: absolute; top: -5px; left: -10px; font-size: 1.2rem; z-index: 2; animation: crownBounce 1.5s infinite; }
+        @keyframes champGlow { 0% { border-color: #ffd700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); } 100% { border-color: #fff; box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); } }
+        @keyframes crownBounce { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
 
         .hall-of-fame { margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; background: transparent; position: relative; overflow: hidden; }
         .hall-of-fame::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--error), transparent); }
@@ -86,7 +94,7 @@
         .fame-time { font-size: 0.75rem; color: #aaa; margin-left: auto; }
 
         .rank-row { display: flex; align-items: center; gap: 10px; flex-grow: 1; }
-        .list-avatar { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #333; flex-shrink: 0; }
+        .list-avatar { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #333; flex-shrink: 0; transition: transform 0.2s; }
         
         .rank-iron { color: var(--rank-iron); border-color: var(--rank-iron); }
         .rank-bronze { color: var(--rank-bronze); border-color: var(--rank-bronze); }
@@ -96,7 +104,7 @@
         .rank-diamond { color: var(--rank-diamond); border-color: var(--rank-diamond); }
         .rank-heroic { color: var(--rank-heroic); border-color: var(--rank-heroic); }
         
-        .rank-pos { font-weight: 700; color: #666; width: 20px; font-size: 1rem; }
+        .rank-pos { font-weight: 700; color: #666; width: 20px; font-size: 1rem; position: relative; }
         .rank-info { flex-grow: 1; display: flex; flex-direction: column; }
         .rank-name-list { font-weight: 600; font-size: 0.9rem; }
         .rank-tier-list { font-size: 0.7rem; font-weight: 700; opacity: 0.8; }
@@ -155,7 +163,7 @@
         .epic-text { font-family: 'Teko', sans-serif; font-size: 8rem; color: var(--error); text-transform: uppercase; font-weight: 800; text-shadow: 0 0 20px rgba(255,0,0,0.8), 4px 4px 0px #000; animation: epicPulse 0.5s ease-out; opacity: 0; }
         @keyframes epicPulse { 0% { transform: scale(0.2) rotate(-10deg); opacity: 0; } 50% { transform: scale(1.2) rotate(5deg); opacity: 1; } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
 
-        /* CHAT UI V12 - SOCIAL */
+        /* CHAT UI V12 */
         #chat-battle { position: fixed; bottom: 80px; right: 20px; width: 320px; z-index: 9000; background: rgba(0, 0, 0, 0.98); border: 1px solid #333; border-radius: 8px; display: none; }
         #chat-battle.visible { display: block; }
         .chat-header { padding: 8px 15px; background: #111; color: var(--primary-color); font-weight: 700; border-bottom: 1px solid #333; display: flex; justify-content: space-between; cursor: pointer;}
@@ -165,7 +173,6 @@
         .chat-msg .to-user { color: var(--success); font-weight: 700; }
         .chat-msg .msg-text { color: white; }
         
-        /* Chat Input Area */
         .chat-input-bar { display: flex; flex-direction: column; gap: 5px; padding: 10px; border-top: 1px solid #333; background: #111; }
         .chat-user-select { width: 100%; padding: 8px; background: #000; border: 1px solid #444; color: white; border-radius: 4px; font-family: 'Rajdhani'; font-size: 0.9rem; }
         .quick-msg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
@@ -430,36 +437,33 @@
         async function saveScore() { if (!currentUser) return; try { await _supabase.from('profiles').upsert({ id: currentUser.id, username: currentUser.email.split('@')[0], total_score: totalScore, current_level: unlockedLevel, current_problem: currentProblemInLevel }); updateRanking(); } catch(e) { console.error(e); } }
         let rankInt; function startRanking() { updateRanking(); rankInt = setInterval(updateRanking, 5000); }
         
-        // V12: RANKING GLOBAL & ELITE STYLES
+        // V12.1: RANKING GLOBAL & ELITE STYLES
         async function updateRanking() { 
             const list = document.getElementById('ranking-list'); 
             try { 
-                // REMOVED .limit(10) TO SHOW ALL
                 const { data, error } = await _supabase.from('profiles').select('username, total_score, avatar_style, completed_at, is_banned').order('total_score', { ascending: false }); 
                 if(error) throw error; 
                 if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; padding:10px; color:#666;">No hay datos.</li>'; return; } 
-                
-                // Filter active users
                 const activeUsers = data.filter(u => !u.completed_at && !u.is_banned);
-                // Update Chat User List
                 updateChatUserList(activeUsers);
-
                 list.innerHTML = activeUsers.map((u, i) => { 
                     const s = u.total_score || 0; const rI = getRankInfo(s); const isMe = (currentUser && u.username === currentUser.email.split('@')[0]); 
-                    
-                    // V12: ELITE LOGIC
                     let rankClass = "ranking-item " + rI.css;
-                    let posPrefix = "";
+                    // Fix: Structure for Rank 1 to handle crown
+                    let posContent = i+1 + ".";
                     if(i === 0) { 
                         rankClass += " rank-1"; 
-                        posPrefix = "👑"; 
+                        posContent = "1."; // Just number, crown is in CSS or absolute
                     } else if (i < 10) { 
                         rankClass += " elite"; 
                     }
-                    
                     if(isMe) rankClass += " me"; 
                     const style = u.avatar_style || 'adventurer'; const avatarUrl = getAvatarUrl(u.username || 'guest', style); 
-                    return `<li class="${rankClass}"><span class="rank-pos">${posPrefix}${i+1}.</span><div class="rank-row"><img src="${avatarUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${u.username||'Yo'}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span></div></div><span class="rank-score">${s}</span></li>`; 
+                    // Fix: Add crown span absolute positioned before text
+                    return `<li class="${rankClass}">
+                        <span class="rank-pos">${posContent}<span class="crown-icon">👑</span></span>
+                        <div class="rank-row"><img src="${avatarUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${u.username||'Yo'}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span></div></div><span class="rank-score">${s}</span>
+                    </li>`; 
                 }).join(''); 
             } catch(err) { list.innerHTML = '<li style="text-align:center; padding:10px; color:red;">Error.</li>'; } 
         }
@@ -478,9 +482,8 @@
             const container = document.getElementById('chat-messages'); 
             const div = document.createElement('div'); 
             div.className = 'chat-msg'; 
-            // V12: Format "Author to Recipient: Message"
             const recipient = msg.recipient_username || 'Todos';
-            const text = msg.message_text || msg.emoji; // Support old format fallback
+            const text = msg.message_text || msg.emoji; 
             div.innerHTML = `<span class="author">${msg.username}</span> <span style="color:#888">a</span> <span class="to-user">@${recipient}</span>: <span class="msg-text">${text}</span>`; 
             container.prepend(div); 
             while (container.children.length > 20) container.removeChild(container.lastChild); 
@@ -505,12 +508,12 @@
             if(chatCooldown) return; 
             if(!currentUser) return; 
             chatCooldown = true; 
-            setTimeout(() => chatCooldown = false, 2000); // Reduced cooldown
+            setTimeout(() => chatCooldown = false, 2000); 
             AudioEngine.playClick(); 
             const recipient = document.getElementById('chat-user-select').value;
             try { 
                 await _supabase.from('chat_messages').insert({ user_id: currentUser.id, username: currentUser.email.split('@')[0], recipient_username: recipient, message_text: text }); 
-            } catch(e) { console.error(e); } 
+            } catch(e) { console.error(e); alert("No se pudo enviar el mensaje. Revisa la consola (F12) para ver el error de permisos."); } 
         }
         
         function toggleChatUI() { chatVisible = !chatVisible; document.getElementById('chat-battle').classList.toggle('visible', chatVisible); }
@@ -589,7 +592,6 @@
             isProcessing = true; const btn = document.getElementById('btn-verify'); btn.disabled = true; btn.style.opacity = '0.5'; btn.innerText = "Verificando...";
             let coc=parseInt(document.getElementById('valCociente').value); let res=parseInt(document.getElementById('valResiduo').value)||0;
             let rC=Math.floor(currentDividend/currentDivisor); let rR=currentDividend%currentDivisor;
-            
             if(coc===rC && res===rR) {
                 totalScore += POINTS; updateUI(); AudioEngine.playSuccess();
                 document.getElementById('msg').innerHTML="<span style='color:var(--success); font-weight:700; font-size:1.2rem;'>¡CORRECTO! +"+POINTS+"</span>";
