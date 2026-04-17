@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V10 Dashboard</title>
+    <title>Reto de División - V11 Dashboard Fix</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -402,11 +402,18 @@
         async function loadScore(user) {
             try { const { data } = await _supabase.from('profiles').select('total_score, avatar_style, current_level, completed_at, is_banned, current_problem, total_time_played, total_errors').eq('id', user.id).single(); 
                 if(data && data.is_banned) { alert("Tu cuenta está suspendida temporalmente."); logout(); return; }
-                totalScore = (data && data.total_score) ? data.total_score : 0; currentAvatarStyle = (data && data.avatar_style) ? data.avatar_style : 'adventurer'; unlockedLevel = (data && data.current_level) ? data.current_level : 1; 
+                totalScore = (data && data.total_score) ? data.total_score : 0; 
+                currentAvatarStyle = (data && data.avatar_style) ? data.avatar_style : 'adventurer'; 
+                unlockedLevel = (data && data.current_level) ? data.current_level : 1; 
                 currentProblemInLevel = (data && data.current_problem) ? data.current_problem : 1;
                 if(currentProblemInLevel > 10) currentProblemInLevel = 1;
                 hasFinishedGame = (data && data.completed_at); 
-            } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1; currentProblemInLevel = 1; hasFinishedGame = false; }
+
+                // FIX V11: Cargar tiempo y errores acumulados
+                playTimeCounter = (data && data.total_time_played) ? data.total_time_played : 0;
+                totalErrors = (data && data.total_errors) ? data.total_errors : 0;
+
+            } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1; currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0; totalErrors = 0; }
             isAdmin = (user.email.split('@')[0] === ADMIN_USER); document.getElementById('admin-header-btn').classList.toggle('visible', isAdmin); if(hasFinishedGame) document.getElementById('msg').innerHTML = "<span style='color:var(--primary-color);'>¡Ya terminaste!</span>"; currentMainLevel = unlockedLevel; populateLevelSelect(); updateUI(); renderMainAvatar();
         }
         function populateLevelSelect() { const sel = document.getElementById('levelSelect'); sel.innerHTML = ''; for(let i=1; i<=TOTAL_LEVELS; i++) { let opt = document.createElement('option'); opt.value = i; opt.innerText = "Nivel " + i; if(i > unlockedLevel) { opt.disabled = true; opt.innerText += " 🔒"; } sel.appendChild(opt); } sel.value = currentMainLevel; }
@@ -745,13 +752,16 @@
                     else { hasFinishedGame = true; const completed_at = new Date().toISOString(); await _supabase.from('profiles').update({ completed_at: completed_at }).eq('id', currentUser.id); loadHallOfFame(); await saveScore(); isProcessing = false; return; } 
                 }
                 
+                // FIX V11: Guardar tiempo y errores al acertar
+                await saveTime();
                 await saveScore(); // Saves position
                 
                 if(document.getElementById('victory-screen').classList.contains('show')) { setTimeout(() => { hideVictoryScreen(); loadProblem(); isProcessing = false; }, 3000); } 
                 else { loadProblem(); isProcessing = false; }
             } else { 
                 AudioEngine.playError(); document.getElementById('msg').innerHTML="<span style='color:var(--error); font-weight:700; font-size:1.2rem;'>INCORRECTO</span>";
-                totalErrors++; saveTime(); // Save error count
+                totalErrors++; 
+                saveTime(); // Save error count immediately
                 isProcessing = false; btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "Verificar";
             }
         }
