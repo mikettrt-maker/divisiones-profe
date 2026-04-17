@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V9 Persistencia Real</title>
+    <title>Reto de División - V10 Dashboard</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -12,8 +12,7 @@
         :root {
             --primary-color: #ffcc00; --primary-light: #ff9800; --text-dark: #e0e0e0;
             --bg-dark: #0f0f0f; --bg-panel: #1a1a1a; --success: #00e676; --error: #ff1744;
-            --cell-size: 32px; 
-            --rank-iron: #9e9e9e; --rank-bronze: #d97706; --rank-silver: #bdbdbd;
+            --cell-size: 32px; --rank-iron: #9e9e9e; --rank-bronze: #d97706; --rank-silver: #bdbdbd;
             --rank-gold: #fbbf24; --rank-platinum: #06b6d4; --rank-diamond: #8b5cf6; --rank-heroic: #ef4444;
         }
         body { margin: 0; font-family: 'Rajdhani', sans-serif; background-color: var(--bg-dark); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
@@ -153,22 +152,42 @@
         .emoji-btn:hover { transform: scale(1.3); filter: grayscale(0%); }
         #chat-toggle-btn { position: fixed; bottom: 20px; right: 20px; z-index: 9001; width: 50px; height: 50px; border-radius: 50%; background: var(--primary-color); color: black; font-size: 1.5rem; border: none; box-shadow: 0 0 15px var(--primary-color); display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
-        /* ADMIN MODAL */
-        #admin-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: none; justify-content: center; align-items: center; z-index: 100000; overflow-y: auto; padding: 20px; }
-        .admin-box { background: var(--bg-panel); padding: 30px; border-radius: 10px; border: 2px solid var(--primary-color); width: 600px; max-width: 100%; color: white; display: flex; flex-direction: column; gap: 20px; }
-        .admin-title { font-family: 'Teko'; font-size: 2.5rem; color: var(--primary-color); margin-bottom: 10px; text-align: center; }
-        .admin-section { border-top: 1px solid #333; padding-top: 15px; }
-        .admin-section h4 { margin: 0 0 10px 0; color: var(--primary-color); text-transform: uppercase; }
-        .timer-controls { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
-        .timer-input { width: 60px; padding: 8px; background: black; border: 1px solid #555; color: white; font-size: 1rem; border-radius: 4px; text-align: center; }
-        .user-list-admin { max-height: 300px; overflow-y: auto; border: 1px solid #333; background: #000; border-radius: 4px; }
-        .user-row-admin { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-bottom: 1px solid #222; }
-        .user-row-admin:last-child { border-bottom: none; }
-        .user-name-admin { font-weight: 600; }
-        .user-score-admin { font-size: 0.9rem; color: #aaa; margin-right: 10px; }
-        .btn-ban { background: #444; color: white; padding: 5px 10px; font-size: 0.8rem; }
-        .btn-ban.active { background: var(--error); }
-        .btn-danger-big { background: var(--error); color: white; font-size: 1.2rem; padding: 15px 30px; width: 100%; margin-top: 10px; }
+        /* ADMIN DASHBOARD V10 */
+        #admin-dashboard { width: 100%; display: none; flex-direction: column; gap: 20px; }
+        .dash-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
+        @media (max-width: 900px) { .dash-grid { grid-template-columns: 1fr; } }
+        
+        .dash-card { background: var(--bg-panel); border: 1px solid #333; border-radius: 8px; padding: 20px; }
+        .dash-title { font-family: 'Teko'; font-size: 1.5rem; color: var(--primary-color); border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
+        
+        .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .ctrl-btn { padding: 15px; border-radius: 6px; border: 1px solid #444; background: #222; color: white; text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
+        .ctrl-btn i { font-size: 1.5rem; }
+        .ctrl-btn.active { background: var(--primary-color); color: black; border-color: var(--primary-color); }
+        .ctrl-btn.danger { border-color: var(--error); color: var(--error); }
+        .ctrl-btn.danger:hover { background: var(--error); color: white; }
+        
+        .student-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 15px; max-height: 70vh; overflow-y: auto; padding-right: 5px; }
+        .student-card { background: #111; border-radius: 6px; padding: 15px; border: 1px solid #333; display: flex; flex-direction: column; gap: 10px; position: relative; transition: 0.2s; }
+        .student-card:hover { border-color: var(--primary-color); }
+        .student-card.offline { opacity: 0.5; }
+        
+        .sc-header { display: flex; align-items: center; gap: 10px; }
+        .sc-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #555; }
+        .sc-info { flex-grow: 1; }
+        .sc-name { font-weight: 700; font-size: 1rem; }
+        .sc-status { font-size: 0.75rem; display: flex; align-items: center; gap: 4px; }
+        .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #666; }
+        .status-dot.online { background: var(--success); box-shadow: 0 0 5px var(--success); }
+        
+        .sc-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 0.8rem; color: #aaa; background: #000; padding: 8px; border-radius: 4px; }
+        .sc-stat-val { color: var(--primary-color); font-weight: 700; font-size: 1rem; }
+        
+        .sc-actions { display: flex; justify-content: flex-end; gap: 5px; margin-top: 5px; }
+        .sc-btn { background: #333; border: none; color: #aaa; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; }
+        .sc-btn:hover { background: #444; color: white; }
+        .sc-btn.ban { background: rgba(255,23,68,0.1); color: var(--error); border: 1px solid transparent; }
+        .sc-btn.ban.active { background: var(--error); color: white; }
 
         /* Modals Dark */
         #login-screen, #avatar-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); display: flex; justify-content: center; align-items: center; z-index: 9999; }
@@ -188,8 +207,6 @@
         .avatar-option img { width: 50px; height: 50px; border-radius: 50%; background: #000; }
         .avatar-locked { filter: grayscale(100%); opacity: 0.5; cursor: not-allowed; }
         .lock-icon { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.8); border-radius: 50%; color: #666; font-size: 1.2rem; pointer-events: none; }
-
-        @media (max-width: 900px) { .main-layout { flex-direction: column; } .ranking-sidebar { width: 100%; order: 0; } }
     </style>
 </head>
 <body>
@@ -197,29 +214,6 @@
     <div id="victory-screen"><div class="victory-title">JUEGO TERMINADO</div><div class="confetti"></div></div>
     <div id="epic-overlay"><div class="epic-text" id="epic-text">¡BOOYAH!</div></div>
     
-    <!-- ADMIN MODAL -->
-    <div id="admin-modal" onclick="if(event.target.id === 'admin-modal') toggleAdmin()">
-        <div class="admin-box" onclick="event.stopPropagation()">
-            <div class="admin-title"><i class="fas fa-user-shield"></i> PANEL ADMIN</div>
-            <div class="admin-section">
-                <h4><i class="fas fa-clock"></i> Temporada</h4>
-                <div id="timer-status" style="margin-bottom:10px; text-align:center; font-size:1.2rem; color:#aaa;">Cargando...</div>
-                <div class="timer-controls">
-                    <input type="number" id="input-hours" class="timer-input" placeholder="Hrs" min="0">
-                    <input type="number" id="input-mins" class="timer-input" placeholder="Min" min="0">
-                    <button class="btn-primary" onclick="startSeason()" style="font-size:1rem; padding: 8px 15px;">Iniciar</button>
-                </div>
-            </div>
-            <div class="admin-section">
-                <h4><i class="fas fa-users"></i> Usuarios</h4>
-                <div class="user-list-admin" id="admin-user-list"></div>
-            </div>
-            <div class="admin-section">
-                <button class="btn-danger-big" onclick="resetAllUsers()"><i class="fas fa-redo"></i> Reiniciar Puntos (Manual)</button>
-            </div>
-        </div>
-    </div>
-
     <button id="chat-toggle-btn" onclick="toggleChatUI()"><i class="fas fa-comments"></i></button>
     <div id="chat-battle"><div class="chat-header" onclick="toggleChatUI()"><span><i class="fas fa-bolt"></i> Chat</span><i class="fas fa-chevron-down"></i></div><div class="chat-messages" id="chat-messages"></div><div class="chat-input-bar"><button class="emoji-btn" onclick="sendChat('👍')">👍</button><button class="emoji-btn" onclick="sendChat('🔥')">🔥</button><button class="emoji-btn" onclick="sendChat('🎉')">🎉</button><button class="emoji-btn" onclick="sendChat('😂')">😂</button><button class="emoji-btn" onclick="sendChat('🧠')">🧠</button><button class="emoji-btn" onclick="sendChat('💪')">💪</button></div></div>
 
@@ -233,11 +227,11 @@
         </div>
         <h1>Prof. Miguel</h1>
         <span style="color:#888; font-size:0.9rem;">Reto de División</span>
-        <button id="admin-header-btn" class="admin-btn" onclick="toggleAdmin()"><i class="fas fa-user-shield"></i> Admin</button>
+        <button id="admin-header-btn" class="admin-btn" onclick="toggleAdminDashboard()"><i class="fas fa-user-shield"></i> Panel Admin</button>
     </header>
 
     <div class="app-container">
-        <div class="panel">
+        <div class="panel" id="top-bar-panel">
             <div>
                 <label style="font-weight: 600; color: #888;">Nivel Actual:</label>
                 <select id="levelSelect" class="level-select" onchange="jumpToLevel(this.value)"></select>
@@ -259,7 +253,60 @@
             </div>
         </div>
 
-        <div class="main-layout">
+        <!-- ADMIN DASHBOARD V10 -->
+        <div id="admin-dashboard">
+            <div class="dash-grid">
+                <!-- Controls Sidebar -->
+                <div class="dash-card">
+                    <div class="dash-title">Controles <i class="fas fa-cog"></i></div>
+                    
+                    <div class="control-grid">
+                        <!-- Pause -->
+                        <div id="btn-pause" class="ctrl-btn" onclick="togglePause()">
+                            <i class="fas fa-pause"></i>
+                            <span>Pausar Juego</span>
+                        </div>
+                        
+                        <!-- Exam Mode -->
+                        <div id="btn-exam" class="ctrl-btn" onclick="toggleExamMode()">
+                            <i class="fas fa-file-alt"></i>
+                            <span>Modo Examen</span>
+                        </div>
+                        
+                        <!-- Start Season -->
+                        <div class="ctrl-btn" onclick="showSeasonModal()">
+                            <i class="fas fa-clock"></i>
+                            <span>Temporada</span>
+                        </div>
+                        
+                        <!-- Reset -->
+                        <div class="ctrl-btn danger" onclick="resetAllUsers()">
+                            <i class="fas fa-redo"></i>
+                            <span>Reiniciar Todo</span>
+                        </div>
+                    </div>
+
+                    <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
+                        <h4 style="color:var(--primary-color); margin:0 0 10px 0; text-transform:uppercase;">Leyenda</h4>
+                        <div style="font-size: 0.85rem; color: #aaa; display:flex; flex-direction:column; gap:5px;">
+                            <span><i class="fas fa-circle" style="color:var(--success); font-size:0.6rem; margin-right:5px;"></i> Conectado</span>
+                            <span><i class="fas fa-circle" style="color:#555; font-size:0.6rem; margin-right:5px;"></i> Desconectado</span>
+                            <span><i class="fas fa-skull" style="color:var(--error); font-size:0.7rem; margin-right:5px;"></i> Baneado</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Area -->
+                <div class="dash-card">
+                    <div class="dash-title">Alumnos <span id="student-count" style="font-size:1rem; color:#aaa;">0 activos</span></div>
+                    <div class="student-grid" id="student-grid">
+                        <!-- Cards injected here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-layout" id="game-layout">
             <div class="game-area">
                 <div class="workspace-card">
                     <div class="division-row">
@@ -340,18 +387,24 @@
         let typingTimer; const doneTypingInterval = 500;
         function showLogin() { document.getElementById('login-screen').style.display = 'flex'; document.querySelector('.app-container').style.display = 'none'; const input = document.getElementById('login-username'); const img = document.getElementById('login-avatar-img'); const newInput = input.cloneNode(true); input.parentNode.replaceChild(newInput, input); document.getElementById('login-username').addEventListener('input', (e) => { const val = e.target.value.trim(); clearTimeout(typingTimer); if (val.length === 0) { img.src = "https://api.dicebear.com/8.x/identicon/svg?seed=Shadow"; } else { typingTimer = setTimeout(() => { img.src = `https://api.dicebear.com/8.x/adventurer/svg?seed=${val}`; }, doneTypingInterval); } }); }
         
-        async function showApp() { document.getElementById('login-screen').style.display = 'none'; document.querySelector('.app-container').style.display = 'flex'; if(currentUser) { try { await loadScore(currentUser); } catch(e){ console.error(e); } } initGame(); startRanking(); initChat(); loadHallOfFame(); initSeason(); }
+        async function showApp() { document.getElementById('login-screen').style.display = 'none'; document.querySelector('.app-container').style.display = 'flex'; if(currentUser) { try { await loadScore(currentUser); } catch(e){ console.error(e); } } 
+            if(isAdmin) {
+                showAdminDashboard();
+            } else {
+                initGame(); startRanking(); initChat(); loadHallOfFame(); initSeason(); startStudentHeartbeat();
+            }
+        }
 
         async function handleLogin() { const u = document.getElementById('login-username').value.trim(); const p = document.getElementById('login-password').value; const e = document.getElementById('login-error'); if (!u || p.length < 6) { e.textContent = "Datos incompletos."; e.style.display='block'; return; } try { const { data, error } = await _supabase.auth.signInWithPassword({ email: u+"@profemiguel.com", password: p }); if (error) throw error; currentUser = data.user; showApp(); } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; } }
         async function handleRegister() { const u = document.getElementById('login-username').value.trim(); const p = document.getElementById('login-password').value; const e = document.getElementById('login-error'); if (!u || p.length < 6) { e.textContent = "Datos incompletos."; e.style.display='block'; return; } try { const { data, error } = await _supabase.auth.signUp({ email: u+"@profemiguel.com", password: p }); if (error) throw error; alert("Registrado. Entra ahora."); } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; } }
         async function logout() { await _supabase.auth.signOut(); currentUser=null; totalScore=0; showLogin(); clearInterval(rankInt); }
 
         async function loadScore(user) {
-            try { const { data } = await _supabase.from('profiles').select('total_score, avatar_style, current_level, completed_at, is_banned, current_problem').eq('id', user.id).single(); 
+            try { const { data } = await _supabase.from('profiles').select('total_score, avatar_style, current_level, completed_at, is_banned, current_problem, total_time_played, total_errors').eq('id', user.id).single(); 
                 if(data && data.is_banned) { alert("Tu cuenta está suspendida temporalmente."); logout(); return; }
                 totalScore = (data && data.total_score) ? data.total_score : 0; currentAvatarStyle = (data && data.avatar_style) ? data.avatar_style : 'adventurer'; unlockedLevel = (data && data.current_level) ? data.current_level : 1; 
                 currentProblemInLevel = (data && data.current_problem) ? data.current_problem : 1;
-                if(currentProblemInLevel > 10) currentProblemInLevel = 1; // Safety check
+                if(currentProblemInLevel > 10) currentProblemInLevel = 1;
                 hasFinishedGame = (data && data.completed_at); 
             } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1; currentProblemInLevel = 1; hasFinishedGame = false; }
             isAdmin = (user.email.split('@')[0] === ADMIN_USER); document.getElementById('admin-header-btn').classList.toggle('visible', isAdmin); if(hasFinishedGame) document.getElementById('msg').innerHTML = "<span style='color:var(--primary-color);'>¡Ya terminaste!</span>"; currentMainLevel = unlockedLevel; populateLevelSelect(); updateUI(); renderMainAvatar();
@@ -389,64 +442,238 @@
         function addChatMessage(msg) { const container = document.getElementById('chat-messages'); const div = document.createElement('div'); div.className = 'chat-msg'; div.innerHTML = `<span>${msg.username}:</span> <span class="chat-emoji">${msg.emoji}</span>`; container.prepend(div); while (container.children.length > 15) container.removeChild(container.lastChild); }
         async function sendChat(emoji) { if(chatCooldown) return; if(!currentUser) return; chatCooldown = true; setTimeout(() => chatCooldown = false, 3000); AudioEngine.playClick(); try { await _supabase.from('chat_messages').insert({ user_id: currentUser.id, username: currentUser.email.split('@')[0], emoji: emoji }); } catch(e) { console.error(e); } }
         function toggleChatUI() { chatVisible = !chatVisible; document.getElementById('chat-battle').classList.toggle('visible', chatVisible); }
-        function toggleAdmin() { const modal = document.getElementById('admin-modal'); modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex'; if(modal.style.display === 'flex') loadAdminUsers(); }
+
+        // --- NEW: STUDENT HEARTBEAT & TIME TRACKING ---
+        let playTimeCounter = 0;
+        let totalErrors = 0;
+        function startStudentHeartbeat() {
+            // Update last_seen every 15 seconds
+            setInterval(async () => {
+                if(currentUser && !isAdmin) {
+                    await _supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', currentUser.id);
+                }
+            }, 15000);
+            
+            // Track active play time
+            setInterval(() => {
+                if(!isGridLocked && !hasFinishedGame) {
+                    playTimeCounter++;
+                    // Save every 60 seconds
+                    if(playTimeCounter % 60 === 0) {
+                        saveTime();
+                    }
+                }
+            }, 1000);
+        }
+
+        async function saveTime() {
+            if(!currentUser) return;
+            try {
+                await _supabase.from('profiles').update({ 
+                    total_time_played: playTimeCounter, 
+                    total_errors: totalErrors 
+                }).eq('id', currentUser.id);
+            } catch(e) { console.error(e); }
+        }
+
+        // --- ADMIN DASHBOARD LOGIC ---
+        function showAdminDashboard() {
+            document.getElementById('game-layout').style.display = 'none';
+            document.getElementById('top-bar-panel').style.display = 'none';
+            document.getElementById('admin-dashboard').style.display = 'flex';
+            loadDashboardData();
+            setInterval(loadDashboardData, 5000); // Refresh every 5s
+        }
+
+        function toggleAdminDashboard() {
+            if(document.getElementById('admin-dashboard').style.display === 'flex') {
+                // Close dashboard (logout or back to game? Let's just close for now or logout)
+                logout();
+            } else {
+                showAdminDashboard();
+            }
+        }
+
+        async function loadDashboardData() {
+            const grid = document.getElementById('student-grid');
+            try {
+                // Get global settings
+                const { data: settings } = await _supabase.from('game_settings').select('*').single();
+                updateControlButtons(settings);
+                initSeason(settings); // Update timer
+                
+                // Get students
+                const { data: students, error } = await _supabase.from('profiles').select('*').order('total_score', { ascending: false });
+                if(error) throw error;
+
+                const now = new Date();
+                const onlineThreshold = 30000; // 30 seconds
+
+                grid.innerHTML = students.map(u => {
+                    const isOnline = u.last_seen && (now - new Date(u.last_seen) < onlineThreshold);
+                    const isBanned = u.is_banned;
+                    const mins = u.total_time_played ? Math.floor(u.total_time_played / 60) : 0;
+                    const secs = u.total_time_played ? u.total_time_played % 60 : 0;
+                    const timeStr = `${mins}m ${secs}s`;
+
+                    return `
+                        <div class="student-card ${isOnline && !isBanned ? '' : 'offline'}">
+                            <div class="sc-header">
+                                <img src="${getAvatarUrl(u.username || 'guest', u.avatar_style)}" class="sc-avatar">
+                                <div class="sc-info">
+                                    <div class="sc-name">${u.username}</div>
+                                    <div class="sc-status">
+                                        <span class="status-dot ${isOnline && !isBanned ? 'online' : ''}"></span>
+                                        ${isBanned ? 'Baneado' : (isOnline ? 'En línea' : 'Offline')}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="sc-stats">
+                                <div>Puntos<br><span class="sc-stat-val">${u.total_score || 0}</span></div>
+                                <div>Nivel<br><span class="sc-stat-val">${u.current_level || 1}</span></div>
+                                <div>Tiempo<br><span class="sc-stat-val">${timeStr}</span></div>
+                                <div>Errores<br><span class="sc-stat-val">${u.total_errors || 0}</span></div>
+                            </div>
+                            <div class="sc-actions">
+                                <button class="sc-btn ban ${isBanned ? 'active' : ''}" onclick="toggleBan('${u.id}', ${isBanned})">
+                                    ${isBanned ? 'Desbanear' : 'Banear'}
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+                
+                // Update count
+                const onlineCount = students.filter(u => (now - new Date(u.last_seen) < 30000) && !u.is_banned).length;
+                document.getElementById('student-count').innerText = onlineCount + " en línea";
+
+            } catch(e) { console.error(e); grid.innerHTML = "Error"; }
+        }
+
+        function updateControlButtons(settings) {
+            const pauseBtn = document.getElementById('btn-pause');
+            const examBtn = document.getElementById('btn-exam');
+            
+            if(settings.is_paused) {
+                pauseBtn.classList.add('active');
+                pauseBtn.querySelector('span').innerText = "Reanudar";
+            } else {
+                pauseBtn.classList.remove('active');
+                pauseBtn.querySelector('span').innerText = "Pausar Juego";
+            }
+
+            if(settings.exam_level && settings.exam_level > 0) {
+                examBtn.classList.add('active');
+                examBtn.querySelector('span').innerText = "Fin Examen";
+            } else {
+                examBtn.classList.remove('active');
+                examBtn.querySelector('span').innerText = "Modo Examen";
+            }
+        }
+
+        async function togglePause() {
+            const { data: settings } = await _supabase.from('game_settings').select('is_paused').single();
+            const newState = !settings.is_paused;
+            await _supabase.from('game_settings').update({ is_paused: newState }).eq('id', 1);
+            loadDashboardData();
+        }
+
+        async function toggleExamMode() {
+            const { data: settings } = await _supabase.from('game_settings').select('exam_level').single();
+            // Toggle between off (0) and Level 1 (or prompt)
+            const newLevel = settings.exam_level > 0 ? 0 : 1; 
+            await _supabase.from('game_settings').update({ exam_level: newLevel, is_paused: false }).eq('id', 1); // Unpause when starting exam
+            loadDashboardData();
+        }
+
+        function showSeasonModal() {
+            const hrs = prompt("Horas de temporada:", "0");
+            const mins = prompt("Minutos:", "0");
+            if(hrs || mins) startSeason(parseInt(hrs), parseInt(mins));
+        }
+
+        async function startSeason(h, m) {
+            if(h === 0 && m === 0) return alert("Ingresa tiempo.");
+            const endTime = new Date(new Date().getTime() + (h * 3600000) + (m * 60000));
+            try { await _supabase.from('game_settings').upsert({ id: 1, season_end_time: endTime.toISOString(), is_paused: false, exam_level: 0 }); alert("¡Temporada iniciada!"); loadDashboardData(); } catch(e) { alert("Error al iniciar."); }
+        }
+
+        async function toggleBan(uid, currentStatus) {
+            try { await _supabase.from('profiles').update({ is_banned: !currentStatus }).eq('id', uid); loadDashboardData(); } catch(e) { alert("Error"); }
+        }
+
+        async function resetAllUsers() {
+            if(!confirm("¿Reiniciar TODOS los puntos y tiempo?")) return;
+            try {
+                await _supabase.from('profiles').update({ total_score: 0, current_level: 1, completed_at: null, current_problem: 1, total_time_played: 0, total_errors: 0 }).neq('id', '00000000-0000-0000-0000-000000000000');
+                await _supabase.from('game_settings').update({ season_end_time: null, is_paused: false, exam_level: 0 }).eq('id', 1);
+                alert("¡Reiniciado!");
+                loadDashboardData();
+            } catch(e) { alert("Error."); }
+        }
+
+        // --- STUDENT CHECKS (PAUSE/EXAM) ---
+        async function checkGlobalState() {
+            if(isAdmin) return;
+            try {
+                const { data } = await _supabase.from('game_settings').select('*').single();
+                
+                // Pause Check
+                if(data.is_paused) {
+                    lockGrid();
+                    document.getElementById('msg').innerHTML = "<span style='color:var(--error); font-size:1.5rem;'>⏸️ JUEGO PAUSADO POR EL PROFESOR</span>";
+                    return false;
+                }
+                
+                // Exam Mode Check
+                if(data.exam_level > 0) {
+                    if(currentMainLevel !== data.exam_level) {
+                        currentMainLevel = data.exam_level;
+                        unlockedLevel = data.exam_level;
+                        loadProblem();
+                        alert("Modo Examen: Nivel " + data.exam_level);
+                    }
+                }
+                return true;
+            } catch(e) { return true; }
+        }
 
         // --- SEASON LOGIC ---
         let seasonInterval;
-        async function initSeason() {
-            try {
-                const { data } = await _supabase.from('game_settings').select('season_end_time').eq('id', 1).single();
-                if(data && data.season_end_time) { startCountdown(new Date(data.season_end_time)); } else { document.getElementById('timer-display').innerText = "SIN INICIAR"; document.getElementById('season-badge').classList.add('finished'); }
-            } catch(e) { console.error("Error loading season", e); }
+        async function initSeason(settings) {
+            let data = settings;
+            if(!data) {
+                const res = await _supabase.from('game_settings').select('season_end_time').eq('id', 1).single();
+                data = res.data;
+            }
+            
+            if(data && data.season_end_time) { startCountdown(new Date(data.season_end_time)); } else { 
+                document.getElementById('timer-display').innerText = isAdmin ? "SIN INICIAR" : "--:--"; 
+                document.getElementById('season-badge').classList.add('finished'); 
+            }
         }
         function startCountdown(endDate) {
             clearInterval(seasonInterval);
             seasonInterval = setInterval(() => {
                 const now = new Date(); const diff = endDate - now;
-                if (diff <= 0) { clearInterval(seasonInterval); document.getElementById('timer-display').innerText = "00:00:00"; document.getElementById('season-badge').classList.add('finished'); document.getElementById('season-badge').classList.remove('active'); if(isAdmin) { alert("¡Tiempo terminado! Reiniciando puntos..."); resetAllUsers(true); } return; }
+                if (diff <= 0) { clearInterval(seasonInterval); document.getElementById('timer-display').innerText = "00:00:00"; document.getElementById('season-badge').classList.add('finished'); document.getElementById('season-badge').classList.remove('active'); if(isAdmin) { alert("¡Tiempo terminado! Reiniciando puntos..."); resetAllUsers(); } return; }
                 const h = Math.floor(diff / 3600000); const m = Math.floor((diff % 3600000) / 60000); const s = Math.floor((diff % 60000) / 1000);
                 document.getElementById('timer-display').innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
                 document.getElementById('season-badge').classList.add('active'); document.getElementById('season-badge').classList.remove('finished');
             }, 1000);
-        }
-        async function startSeason() {
-            const h = parseInt(document.getElementById('input-hours').value) || 0; const m = parseInt(document.getElementById('input-mins').value) || 0;
-            if(h === 0 && m === 0) return alert("Ingresa tiempo.");
-            const endTime = new Date(new Date().getTime() + (h * 3600000) + (m * 60000));
-            try { await _supabase.from('game_settings').upsert({ id: 1, season_end_time: endTime.toISOString() }); alert("¡Temporada iniciada!"); startCountdown(endTime); } catch(e) { alert("Error al iniciar."); }
-        }
-        async function loadAdminUsers() {
-            const list = document.getElementById('admin-user-list'); list.innerHTML = 'Cargando...';
-            try {
-                const { data, error } = await _supabase.from('profiles').select('id, username, total_score, is_banned').order('total_score', { ascending: false });
-                if(error) throw error;
-                list.innerHTML = data.map(u => `
-                    <div class="user-row-admin">
-                        <div><span class="user-name-admin">${u.username}</span><span class="user-score-admin">${u.total_score} pts</span></div>
-                        <button class="btn-ban ${u.is_banned ? 'active' : ''}" onclick="toggleBan('${u.id}', ${u.is_banned})">${u.is_banned ? 'BANEADO' : 'Banear'}</button>
-                    </div>
-                `).join('');
-            } catch(e) { list.innerHTML = 'Error'; }
-        }
-        async function toggleBan(uid, currentStatus) {
-            try { await _supabase.from('profiles').update({ is_banned: !currentStatus }).eq('id', uid); loadAdminUsers(); updateRanking(); } catch(e) { alert("Error al banear."); }
-        }
-        async function resetAllUsers(isAuto = false) {
-            if(!isAuto && !confirm("¿Reiniciar TODOS los puntos?")) return;
-            try {
-                await _supabase.from('profiles').update({ total_score: 0, current_level: 1, completed_at: null, current_problem: 1 }).neq('id', '00000000-0000-0000-0000-000000000000');
-                if(!isAuto) alert("¡Reiniciado!"); toggleAdmin(); updateRanking(); loadHallOfFame();
-                totalScore = 0; unlockedLevel = 1; currentProblemInLevel = 1; hasFinishedGame = false; updateUI(); initGame();
-                if(!isAuto) { await _supabase.from('game_settings').update({ season_end_time: null }).eq('id', 1); document.getElementById('timer-display').innerText = "SIN INICIAR"; clearInterval(seasonInterval); document.getElementById('season-badge').classList.remove('active'); document.getElementById('season-badge').classList.add('finished'); }
-            } catch(e) { alert("Error."); console.error(e); }
         }
 
         // --- GAME LOGIC ---
         function initGame() { loadProblem(); populateLevelSelect(); }
         function jumpToLevel(l) { AudioEngine.playClick(); const target = parseInt(l); if(target > unlockedLevel) { alert("¡Debes completar el nivel anterior!"); document.getElementById('levelSelect').value = currentMainLevel; return; } currentMainLevel = target; currentProblemInLevel = 1; loadProblem(); }
         
-        function loadProblem() {
+        async function loadProblem() {
             if(hasFinishedGame) return; 
+            
+            // Check Pause/Exam
+            const canPlay = await checkGlobalState();
+            if(!canPlay) return;
+
             isProcessing = false; const btn = document.getElementById('btn-verify'); btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "Verificar";
             document.getElementById('subLevelCount').innerText = currentProblemInLevel; document.getElementById('progressBar').style.width = ((currentMainLevel - 1) / TOTAL_LEVELS) * 100 + '%'; populateLevelSelect();
             const d = DB[currentMainLevel]; if (d && d[currentProblemInLevel - 1]) { currentDividend = d[currentProblemInLevel - 1].d; currentDivisor = d[currentProblemInLevel - 1].div; }
@@ -499,6 +726,8 @@
         
         async function verificarSolucion() {
             if(isProcessing) return; if(isGridLocked) { alert("¡Completa la Antena!"); return; }
+            if(!(await checkGlobalState())) return; // Check Pause again
+
             isProcessing = true; const btn = document.getElementById('btn-verify'); btn.disabled = true; btn.style.opacity = '0.5'; btn.innerText = "Verificando...";
             let coc=parseInt(document.getElementById('valCociente').value); let res=parseInt(document.getElementById('valResiduo').value)||0;
             let rC=Math.floor(currentDividend/currentDivisor); let rR=currentDividend%currentDivisor;
@@ -509,43 +738,20 @@
                 AudioEngine.playSuccess();
                 document.getElementById('msg').innerHTML="<span style='color:var(--success); font-weight:700; font-size:1.2rem;'>¡CORRECTO! +"+POINTS+"</span>";
                 
-                // --- FIX: LÓGICA DE AVANCE ANTES DE GUARDAR ---
-                if(currentProblemInLevel < PROBLEMS_PER_LEVEL) {
-                    currentProblemInLevel++; 
-                } else {
-                    if(currentMainLevel < TOTAL_LEVELS) {
-                        unlockedLevel = currentMainLevel + 1;
-                        currentMainLevel++;
-                        currentProblemInLevel = 1;
-                        showVictoryScreen();
-                    } else {
-                        hasFinishedGame = true;
-                        const completed_at = new Date().toISOString();
-                        await _supabase.from('profiles').update({ completed_at: completed_at }).eq('id', currentUser.id);
-                        loadHallOfFame();
-                        // Save final state
-                        await saveScore();
-                        isProcessing = false;
-                        return;
-                    }
+                // Logic Advance
+                if(currentProblemInLevel < PROBLEMS_PER_LEVEL) { currentProblemInLevel++; } 
+                else { 
+                    if(currentMainLevel < TOTAL_LEVELS) { unlockedLevel = currentMainLevel + 1; currentMainLevel++; currentProblemInLevel = 1; showVictoryScreen(); } 
+                    else { hasFinishedGame = true; const completed_at = new Date().toISOString(); await _supabase.from('profiles').update({ completed_at: completed_at }).eq('id', currentUser.id); loadHallOfFame(); await saveScore(); isProcessing = false; return; } 
                 }
                 
-                // Guardar estado ACTUALIZADO (Problema siguiente o nivel nuevo)
-                await saveScore();
+                await saveScore(); // Saves position
                 
-                // Esperar un poco si es victoria visual
-                if(document.getElementById('victory-screen').classList.contains('show')) {
-                     setTimeout(() => {
-                        hideVictoryScreen();
-                        loadProblem();
-                        isProcessing = false;
-                     }, 3000);
-                } else {
-                    loadProblem();
-                    isProcessing = false;
-                }
+                if(document.getElementById('victory-screen').classList.contains('show')) { setTimeout(() => { hideVictoryScreen(); loadProblem(); isProcessing = false; }, 3000); } 
+                else { loadProblem(); isProcessing = false; }
             } else { 
                 AudioEngine.playError(); document.getElementById('msg').innerHTML="<span style='color:var(--error); font-weight:700; font-size:1.2rem;'>INCORRECTO</span>";
+                totalErrors++; saveTime(); // Save error count
                 isProcessing = false; btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "Verificar";
             }
         }
