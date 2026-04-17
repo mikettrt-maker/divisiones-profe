@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V12.1 Fixes</title>
+    <title>Reto de División - V12.2 Fixes</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -70,7 +70,7 @@
         /* ELITE RANK STYLES */
         .ranking-item.elite { background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), transparent); border-left: 4px solid var(--rank-gold); }
         
-        /* RANK 1 LEGENDARY FIX */
+        /* RANK 1 LEGENDARY FIX - Only applies to .rank-1 */
         .ranking-item.rank-1 {
             border: 2px solid #ffd700; 
             background: linear-gradient(90deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.05)); 
@@ -82,7 +82,7 @@
         .ranking-item.rank-1 .list-avatar { border-color: #ffd700; box-shadow: 0 0 15px #ffd700; transform: scale(1.1); }
         
         /* Crown positioning fix */
-        .crown-icon { position: absolute; top: -5px; left: -10px; font-size: 1.2rem; z-index: 2; animation: crownBounce 1.5s infinite; }
+        .crown-icon { position: absolute; top: -10px; left: -5px; font-size: 1.2rem; z-index: 2; animation: crownBounce 1.5s infinite; }
         @keyframes champGlow { 0% { border-color: #ffd700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); } 100% { border-color: #fff; box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); } }
         @keyframes crownBounce { 0%, 100% { transform: rotate(-10deg); } 50% { transform: rotate(10deg); } }
 
@@ -437,7 +437,7 @@
         async function saveScore() { if (!currentUser) return; try { await _supabase.from('profiles').upsert({ id: currentUser.id, username: currentUser.email.split('@')[0], total_score: totalScore, current_level: unlockedLevel, current_problem: currentProblemInLevel }); updateRanking(); } catch(e) { console.error(e); } }
         let rankInt; function startRanking() { updateRanking(); rankInt = setInterval(updateRanking, 5000); }
         
-        // V12.1: RANKING GLOBAL & ELITE STYLES
+        // V12.2: RANKING GLOBAL & ELITE STYLES FIX
         async function updateRanking() { 
             const list = document.getElementById('ranking-list'); 
             try { 
@@ -449,19 +449,20 @@
                 list.innerHTML = activeUsers.map((u, i) => { 
                     const s = u.total_score || 0; const rI = getRankInfo(s); const isMe = (currentUser && u.username === currentUser.email.split('@')[0]); 
                     let rankClass = "ranking-item " + rI.css;
-                    // Fix: Structure for Rank 1 to handle crown
-                    let posContent = i+1 + ".";
+                    let crownHtml = ""; // Initialize empty
+                    
+                    // Logic for Rank 1 only
                     if(i === 0) { 
                         rankClass += " rank-1"; 
-                        posContent = "1."; // Just number, crown is in CSS or absolute
+                        crownHtml = '<span class="crown-icon">👑</span>'; 
                     } else if (i < 10) { 
                         rankClass += " elite"; 
                     }
+                    
                     if(isMe) rankClass += " me"; 
                     const style = u.avatar_style || 'adventurer'; const avatarUrl = getAvatarUrl(u.username || 'guest', style); 
-                    // Fix: Add crown span absolute positioned before text
                     return `<li class="${rankClass}">
-                        <span class="rank-pos">${posContent}<span class="crown-icon">👑</span></span>
+                        <span class="rank-pos">${i+1}. ${crownHtml}</span>
                         <div class="rank-row"><img src="${avatarUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${u.username||'Yo'}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span></div></div><span class="rank-score">${s}</span>
                     </li>`; 
                 }).join(''); 
@@ -513,7 +514,10 @@
             const recipient = document.getElementById('chat-user-select').value;
             try { 
                 await _supabase.from('chat_messages').insert({ user_id: currentUser.id, username: currentUser.email.split('@')[0], recipient_username: recipient, message_text: text }); 
-            } catch(e) { console.error(e); alert("No se pudo enviar el mensaje. Revisa la consola (F12) para ver el error de permisos."); } 
+            } catch(e) { 
+                console.error(e); 
+                alert("Error al enviar mensaje. ¿Ejecutaste el SQL? Revisa la consola (F12)."); 
+            } 
         }
         
         function toggleChatUI() { chatVisible = !chatVisible; document.getElementById('chat-battle').classList.toggle('visible', chatVisible); }
