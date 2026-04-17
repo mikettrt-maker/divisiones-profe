@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V11 Dashboard Fix</title>
+    <title>Reto de División - V12 Social</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -59,9 +59,25 @@
         
         .ranking-sidebar { flex: 1; background: var(--bg-panel); padding: 20px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); min-width: 280px; border: 1px solid #333; order: -1; }
         .ranking-title { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); text-align: center; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; margin-bottom: 15px; text-transform: uppercase; font-family: 'Teko', sans-serif; }
-        .ranking-list { list-style: none; padding: 0; margin: 0; max-height: 250px; overflow-y: auto; }
-        .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.05); border-left: 4px solid #333; transition: all 0.3s; }
         
+        /* RANKING LIST FIX - SCROLL */
+        .ranking-list { list-style: none; padding: 0; margin: 0; max-height: 400px; overflow-y: auto; padding-right: 5px; }
+        .ranking-list::-webkit-scrollbar { width: 6px; }
+        .ranking-list::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+        
+        .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.03); border-left: 4px solid #333; transition: all 0.3s; position: relative; overflow: hidden; }
+        
+        /* ELITE RANK STYLES */
+        .ranking-item.elite { background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), transparent); border-left: 4px solid var(--rank-gold); }
+        .ranking-item.elite::before { content: ""; position: absolute; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at left, rgba(255,215,0,0.05), transparent); pointer-events: none; }
+        
+        /* RANK 1 LEGENDARY */
+        .ranking-item.rank-1 { border: 2px solid #ffd700; background: linear-gradient(90deg, rgba(255, 215, 0, 0.15), transparent); box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); animation: champPulse 3s infinite; }
+        .rank-1 .rank-name-list { color: #ffd700; font-size: 1.1rem; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+        .rank-1 .rank-pos { color: #ffd700; font-size: 1.2rem; }
+        .rank-1 .list-avatar { border-color: #ffd700; box-shadow: 0 0 15px #ffd700; }
+        @keyframes champPulse { 0% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); } 50% { box-shadow: 0 0 30px rgba(255, 215, 0, 0.5); } 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.2); } }
+
         .hall-of-fame { margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; background: transparent; position: relative; overflow: hidden; }
         .hall-of-fame::before { content: ""; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--error), transparent); }
         .hall-title { font-family: 'Teko'; font-size: 1.8rem; color: var(--error); text-align: center; margin-bottom: 15px; text-shadow: 0 0 10px rgba(255,23,68,0.5); }
@@ -73,12 +89,12 @@
         .list-avatar { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #333; flex-shrink: 0; }
         
         .rank-iron { color: var(--rank-iron); border-color: var(--rank-iron); }
-        .rank-bronze { color: var(--rank-bronze); border-color: var(--rank-bronze); background: rgba(217, 119, 6, 0.1); }
+        .rank-bronze { color: var(--rank-bronze); border-color: var(--rank-bronze); }
         .rank-silver { color: var(--rank-silver); border-color: var(--rank-silver); }
-        .rank-gold { color: var(--rank-gold); border-color: var(--rank-gold); background: rgba(251, 191, 36, 0.1); }
-        .rank-platinum { color: var(--rank-platinum); border-color: var(--rank-platinum); background: rgba(0, 188, 212, 0.1); }
-        .rank-diamond { color: var(--rank-diamond); border-color: var(--rank-diamond); background: rgba(124, 77, 255, 0.1); }
-        .rank-heroic { color: var(--rank-heroic); border-color: var(--rank-heroic); background: rgba(255, 23, 68, 0.1); }
+        .rank-gold { color: var(--rank-gold); border-color: var(--rank-gold); }
+        .rank-platinum { color: var(--rank-platinum); border-color: var(--rank-platinum); }
+        .rank-diamond { color: var(--rank-diamond); border-color: var(--rank-diamond); }
+        .rank-heroic { color: var(--rank-heroic); border-color: var(--rank-heroic); }
         
         .rank-pos { font-weight: 700; color: #666; width: 20px; font-size: 1rem; }
         .rank-info { flex-grow: 1; display: flex; flex-direction: column; }
@@ -139,20 +155,27 @@
         .epic-text { font-family: 'Teko', sans-serif; font-size: 8rem; color: var(--error); text-transform: uppercase; font-weight: 800; text-shadow: 0 0 20px rgba(255,0,0,0.8), 4px 4px 0px #000; animation: epicPulse 0.5s ease-out; opacity: 0; }
         @keyframes epicPulse { 0% { transform: scale(0.2) rotate(-10deg); opacity: 0; } 50% { transform: scale(1.2) rotate(5deg); opacity: 1; } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
 
-        /* CHAT UI */
-        #chat-battle { position: fixed; bottom: 80px; right: 20px; width: 300px; z-index: 9000; background: rgba(0, 0, 0, 0.95); border: 1px solid #333; border-radius: 8px; display: none; }
+        /* CHAT UI V12 - SOCIAL */
+        #chat-battle { position: fixed; bottom: 80px; right: 20px; width: 320px; z-index: 9000; background: rgba(0, 0, 0, 0.98); border: 1px solid #333; border-radius: 8px; display: none; }
         #chat-battle.visible { display: block; }
         .chat-header { padding: 8px 15px; background: #111; color: var(--primary-color); font-weight: 700; border-bottom: 1px solid #333; display: flex; justify-content: space-between; cursor: pointer;}
-        .chat-messages { height: 200px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column-reverse; }
-        .chat-msg { margin-bottom: 5px; font-size: 0.95rem; }
-        .chat-msg span { color: #888; }
-        .chat-emoji { font-size: 1.2rem; margin-left: 5px; }
-        .chat-input-bar { display: flex; padding: 8px; border-top: 1px solid #333; background: #111; justify-content: space-around; }
-        .emoji-btn { background: transparent; border: none; font-size: 1.5rem; cursor: pointer; padding: 5px 10px; filter: grayscale(50%); }
-        .emoji-btn:hover { transform: scale(1.3); filter: grayscale(0%); }
+        .chat-messages { height: 250px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column-reverse; font-size: 0.95rem; }
+        .chat-msg { margin-bottom: 8px; line-height: 1.4; }
+        .chat-msg .author { color: var(--primary-color); font-weight: 700; }
+        .chat-msg .to-user { color: var(--success); font-weight: 700; }
+        .chat-msg .msg-text { color: white; }
+        
+        /* Chat Input Area */
+        .chat-input-bar { display: flex; flex-direction: column; gap: 5px; padding: 10px; border-top: 1px solid #333; background: #111; }
+        .chat-user-select { width: 100%; padding: 8px; background: #000; border: 1px solid #444; color: white; border-radius: 4px; font-family: 'Rajdhani'; font-size: 0.9rem; }
+        .quick-msg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+        .quick-btn { background: #222; border: 1px solid #444; color: #ddd; padding: 6px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 5px; }
+        .quick-btn:hover { background: #333; border-color: var(--primary-color); }
+        .quick-btn i { color: var(--primary-color); }
+
         #chat-toggle-btn { position: fixed; bottom: 20px; right: 20px; z-index: 9001; width: 50px; height: 50px; border-radius: 50%; background: var(--primary-color); color: black; font-size: 1.5rem; border: none; box-shadow: 0 0 15px var(--primary-color); display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
-        /* ADMIN DASHBOARD V10 */
+        /* ADMIN DASHBOARD */
         #admin-dashboard { width: 100%; display: none; flex-direction: column; gap: 20px; }
         .dash-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
         @media (max-width: 900px) { .dash-grid { grid-template-columns: 1fr; } }
@@ -215,7 +238,23 @@
     <div id="epic-overlay"><div class="epic-text" id="epic-text">¡BOOYAH!</div></div>
     
     <button id="chat-toggle-btn" onclick="toggleChatUI()"><i class="fas fa-comments"></i></button>
-    <div id="chat-battle"><div class="chat-header" onclick="toggleChatUI()"><span><i class="fas fa-bolt"></i> Chat</span><i class="fas fa-chevron-down"></i></div><div class="chat-messages" id="chat-messages"></div><div class="chat-input-bar"><button class="emoji-btn" onclick="sendChat('👍')">👍</button><button class="emoji-btn" onclick="sendChat('🔥')">🔥</button><button class="emoji-btn" onclick="sendChat('🎉')">🎉</button><button class="emoji-btn" onclick="sendChat('😂')">😂</button><button class="emoji-btn" onclick="sendChat('🧠')">🧠</button><button class="emoji-btn" onclick="sendChat('💪')">💪</button></div></div>
+    <div id="chat-battle">
+        <div class="chat-header" onclick="toggleChatUI()"><span><i class="fas fa-bolt"></i> Chat Dirigido</span><i class="fas fa-chevron-down"></i></div>
+        <div class="chat-messages" id="chat-messages"></div>
+        <div class="chat-input-bar">
+            <select id="chat-user-select" class="chat-user-select">
+                <option value="todos">Para: Todos 👥</option>
+            </select>
+            <div class="quick-msg-grid">
+                <button class="quick-btn" onclick="sendQuickChat('¡Vas con todo! 🔥')"><i class="fas fa-fire"></i> ¡Vas con todo!</button>
+                <button class="quick-btn" onclick="sendQuickChat('¡Ánimo! 💪')"><i class="fas fa-dumbbell"></i> ¡Ánimo!</button>
+                <button class="quick-btn" onclick="sendQuickChat('¡Genial! ⭐')"><i class="fas fa-star"></i> ¡Genial!</button>
+                <button class="quick-btn" onclick="sendQuickChat('¡Tú puedes! 🚀')"><i class="fas fa-rocket"></i> ¡Tú puedes!</button>
+                <button class="quick-btn" onclick="sendQuickChat('¡Crack! 🧠')"><i class="fas fa-brain"></i> ¡Crack!</button>
+                <button class="quick-btn" onclick="sendQuickChat('👍')"><i class="fas fa-thumbs-up"></i> Like</button>
+            </div>
+        </div>
+    </div>
 
     <div id="login-screen" style="display:none;"><div class="login-box"><div class="login-avatar-preview"><img id="login-avatar-img" src="https://api.dicebear.com/8.x/identicon/svg?seed=Shadow"></div><h2>Reto de División</h2><p style="margin-bottom: 20px; color:#888;">Ingresa tu usuario</p><input type="text" id="login-username" class="login-input" placeholder="Usuario"><input type="password" id="login-password" class="login-input" placeholder="Contraseña"><button class="login-btn btn-primary" onclick="handleLogin()">Iniciar Sesión</button><button class="login-btn btn-check" onclick="handleRegister()" style="margin-top:5px; background:#333; color:#ccc;">Registrarse</button><div id="login-error" class="login-error"></div></div></div>
 
@@ -253,39 +292,17 @@
             </div>
         </div>
 
-        <!-- ADMIN DASHBOARD V10 -->
+        <!-- ADMIN DASHBOARD -->
         <div id="admin-dashboard">
             <div class="dash-grid">
-                <!-- Controls Sidebar -->
                 <div class="dash-card">
                     <div class="dash-title">Controles <i class="fas fa-cog"></i></div>
-                    
                     <div class="control-grid">
-                        <!-- Pause -->
-                        <div id="btn-pause" class="ctrl-btn" onclick="togglePause()">
-                            <i class="fas fa-pause"></i>
-                            <span>Pausar Juego</span>
-                        </div>
-                        
-                        <!-- Exam Mode -->
-                        <div id="btn-exam" class="ctrl-btn" onclick="toggleExamMode()">
-                            <i class="fas fa-file-alt"></i>
-                            <span>Modo Examen</span>
-                        </div>
-                        
-                        <!-- Start Season -->
-                        <div class="ctrl-btn" onclick="showSeasonModal()">
-                            <i class="fas fa-clock"></i>
-                            <span>Temporada</span>
-                        </div>
-                        
-                        <!-- Reset -->
-                        <div class="ctrl-btn danger" onclick="resetAllUsers()">
-                            <i class="fas fa-redo"></i>
-                            <span>Reiniciar Todo</span>
-                        </div>
+                        <div id="btn-pause" class="ctrl-btn" onclick="togglePause()"><i class="fas fa-pause"></i><span>Pausar Juego</span></div>
+                        <div id="btn-exam" class="ctrl-btn" onclick="toggleExamMode()"><i class="fas fa-file-alt"></i><span>Modo Examen</span></div>
+                        <div class="ctrl-btn" onclick="showSeasonModal()"><i class="fas fa-clock"></i><span>Temporada</span></div>
+                        <div class="ctrl-btn danger" onclick="resetAllUsers()"><i class="fas fa-redo"></i><span>Reiniciar Todo</span></div>
                     </div>
-
                     <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
                         <h4 style="color:var(--primary-color); margin:0 0 10px 0; text-transform:uppercase;">Leyenda</h4>
                         <div style="font-size: 0.85rem; color: #aaa; display:flex; flex-direction:column; gap:5px;">
@@ -295,13 +312,9 @@
                         </div>
                     </div>
                 </div>
-
-                <!-- Main Area -->
                 <div class="dash-card">
                     <div class="dash-title">Alumnos <span id="student-count" style="font-size:1rem; color:#aaa;">0 activos</span></div>
-                    <div class="student-grid" id="student-grid">
-                        <!-- Cards injected here -->
-                    </div>
+                    <div class="student-grid" id="student-grid"></div>
                 </div>
             </div>
         </div>
@@ -316,10 +329,7 @@
                             <div class="fila-cociente-arriba" id="topRow"></div>
                             <div class="fila-horizontal-top" id="lineH"></div>
                             <div class="grid-matriz" id="gridContainer"></div>
-                            <div class="fila-residuo">
-                                <span class="residuo-label">Residuo:</span>
-                                <input type="number" id="valResiduo" class="input-residuo" placeholder="0">
-                            </div>
+                            <div class="fila-residuo"><span class="residuo-label">Residuo:</span><input type="number" id="valResiduo" class="input-residuo" placeholder="0"></div>
                         </div>
                     </div>
                     <div class="antena-panel">
@@ -335,7 +345,7 @@
             </div>
             
             <div class="ranking-sidebar">
-                <div class="ranking-title">Ranking</div>
+                <div class="ranking-title">Ranking Global</div>
                 <ul class="ranking-list" id="ranking-list"></ul>
                 <div class="hall-of-fame">
                     <div class="hall-title"><i class="fas fa-trophy"></i> Salón de la Fama</div>
@@ -388,11 +398,7 @@
         function showLogin() { document.getElementById('login-screen').style.display = 'flex'; document.querySelector('.app-container').style.display = 'none'; const input = document.getElementById('login-username'); const img = document.getElementById('login-avatar-img'); const newInput = input.cloneNode(true); input.parentNode.replaceChild(newInput, input); document.getElementById('login-username').addEventListener('input', (e) => { const val = e.target.value.trim(); clearTimeout(typingTimer); if (val.length === 0) { img.src = "https://api.dicebear.com/8.x/identicon/svg?seed=Shadow"; } else { typingTimer = setTimeout(() => { img.src = `https://api.dicebear.com/8.x/adventurer/svg?seed=${val}`; }, doneTypingInterval); } }); }
         
         async function showApp() { document.getElementById('login-screen').style.display = 'none'; document.querySelector('.app-container').style.display = 'flex'; if(currentUser) { try { await loadScore(currentUser); } catch(e){ console.error(e); } } 
-            if(isAdmin) {
-                showAdminDashboard();
-            } else {
-                initGame(); startRanking(); initChat(); loadHallOfFame(); initSeason(); startStudentHeartbeat();
-            }
+            if(isAdmin) { showAdminDashboard(); } else { initGame(); startRanking(); initChat(); loadHallOfFame(); initSeason(); startStudentHeartbeat(); }
         }
 
         async function handleLogin() { const u = document.getElementById('login-username').value.trim(); const p = document.getElementById('login-password').value; const e = document.getElementById('login-error'); if (!u || p.length < 6) { e.textContent = "Datos incompletos."; e.style.display='block'; return; } try { const { data, error } = await _supabase.auth.signInWithPassword({ email: u+"@profemiguel.com", password: p }); if (error) throw error; currentUser = data.user; showApp(); } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; } }
@@ -408,11 +414,8 @@
                 currentProblemInLevel = (data && data.current_problem) ? data.current_problem : 1;
                 if(currentProblemInLevel > 10) currentProblemInLevel = 1;
                 hasFinishedGame = (data && data.completed_at); 
-
-                // FIX V11: Cargar tiempo y errores acumulados
                 playTimeCounter = (data && data.total_time_played) ? data.total_time_played : 0;
                 totalErrors = (data && data.total_errors) ? data.total_errors : 0;
-
             } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1; currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0; totalErrors = 0; }
             isAdmin = (user.email.split('@')[0] === ADMIN_USER); document.getElementById('admin-header-btn').classList.toggle('visible', isAdmin); if(hasFinishedGame) document.getElementById('msg').innerHTML = "<span style='color:var(--primary-color);'>¡Ya terminaste!</span>"; currentMainLevel = unlockedLevel; populateLevelSelect(); updateUI(); renderMainAvatar();
         }
@@ -424,263 +427,131 @@
         function renderAvatarOptions() { const gridStandard = document.getElementById('avatar-options-standard'); const gridExclusive = document.getElementById('avatar-options-exclusive'); const exclusiveSection = document.getElementById('exclusive-section'); gridStandard.innerHTML = ''; gridExclusive.innerHTML = ''; const seed = currentUser.email.split('@')[0]; const isHeroic = totalScore >= 50000; AVATAR_STYLES_STANDARD.forEach(style => { let div = document.createElement('div'); div.className = 'avatar-option' + (currentAvatarStyle === style.id ? ' selected' : ''); div.onclick = () => selectAvatarStyle(style.id); div.innerHTML = `<img src="${getAvatarUrl(seed, style.id)}"><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`; gridStandard.appendChild(div); }); if(isHeroic) { exclusiveSection.style.display = 'block'; AVATAR_STYLES_EXCLUSIVE.forEach(style => { let div = document.createElement('div'); div.className = 'avatar-option' + (currentAvatarStyle === style.id ? ' selected' : ''); div.onclick = () => selectAvatarStyle(style.id); div.innerHTML = `<img src="${getAvatarUrl(seed, style.id)}"><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`; gridExclusive.appendChild(div); }); } else { exclusiveSection.style.display = 'block'; AVATAR_STYLES_EXCLUSIVE.forEach(style => { let div = document.createElement('div'); div.className = 'avatar-option avatar-locked'; div.innerHTML = `<img src="${getAvatarUrl('demo', style.id)}"><div class="lock-icon"><i class="fas fa-lock"></i></div><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`; gridExclusive.appendChild(div); }); } }
         function selectAvatarStyle(styleId) { const isExclusive = AVATAR_STYLES_EXCLUSIVE.some(s => s.id === styleId); if(isExclusive && totalScore < 50000) { alert("¡Este avatar es exclusivo!"); return; } currentAvatarStyle = styleId; renderAvatarOptions(); renderMainAvatar(); }
         async function saveAvatarChoice() { AudioEngine.playClick(); await _supabase.from('profiles').upsert({ id: currentUser.id, avatar_style: currentAvatarStyle }); toggleAvatarModal(); updateRanking(); }
-        async function saveScore() { if (!currentUser) return; try { 
-            await _supabase.from('profiles').upsert({ id: currentUser.id, username: currentUser.email.split('@')[0], total_score: totalScore, current_level: unlockedLevel, current_problem: currentProblemInLevel }); 
-            updateRanking(); 
-        } catch(e) { console.error(e); } }
+        async function saveScore() { if (!currentUser) return; try { await _supabase.from('profiles').upsert({ id: currentUser.id, username: currentUser.email.split('@')[0], total_score: totalScore, current_level: unlockedLevel, current_problem: currentProblemInLevel }); updateRanking(); } catch(e) { console.error(e); } }
         let rankInt; function startRanking() { updateRanking(); rankInt = setInterval(updateRanking, 5000); }
+        
+        // V12: RANKING GLOBAL & ELITE STYLES
         async function updateRanking() { 
             const list = document.getElementById('ranking-list'); 
             try { 
-                const { data, error } = await _supabase.from('profiles').select('username, total_score, avatar_style, completed_at, is_banned').order('total_score', { ascending: false }).limit(10); 
+                // REMOVED .limit(10) TO SHOW ALL
+                const { data, error } = await _supabase.from('profiles').select('username, total_score, avatar_style, completed_at, is_banned').order('total_score', { ascending: false }); 
                 if(error) throw error; 
                 if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; padding:10px; color:#666;">No hay datos.</li>'; return; } 
-                list.innerHTML = data.filter(u => !u.completed_at && !u.is_banned).map((u, i) => { 
+                
+                // Filter active users
+                const activeUsers = data.filter(u => !u.completed_at && !u.is_banned);
+                // Update Chat User List
+                updateChatUserList(activeUsers);
+
+                list.innerHTML = activeUsers.map((u, i) => { 
                     const s = u.total_score || 0; const rI = getRankInfo(s); const isMe = (currentUser && u.username === currentUser.email.split('@')[0]); 
-                    let cls = "ranking-item " + rI.css; if(isMe) cls += " me"; 
+                    
+                    // V12: ELITE LOGIC
+                    let rankClass = "ranking-item " + rI.css;
+                    let posPrefix = "";
+                    if(i === 0) { 
+                        rankClass += " rank-1"; 
+                        posPrefix = "👑"; 
+                    } else if (i < 10) { 
+                        rankClass += " elite"; 
+                    }
+                    
+                    if(isMe) rankClass += " me"; 
                     const style = u.avatar_style || 'adventurer'; const avatarUrl = getAvatarUrl(u.username || 'guest', style); 
-                    return `<li class="${cls}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avatarUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${u.username||'Yo'}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span></div></div><span class="rank-score">${s}</span></li>`; 
+                    return `<li class="${rankClass}"><span class="rank-pos">${posPrefix}${i+1}.</span><div class="rank-row"><img src="${avatarUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${u.username||'Yo'}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span></div></div><span class="rank-score">${s}</span></li>`; 
                 }).join(''); 
             } catch(err) { list.innerHTML = '<li style="text-align:center; padding:10px; color:red;">Error.</li>'; } 
         }
+
         async function loadHallOfFame() { const list = document.getElementById('fame-list'); try { const { data, error } = await _supabase.from('profiles').select('username, completed_at').not('completed_at', 'is', null).order('completed_at', { ascending: true }).limit(5); if(error) throw error; if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; color:#555; font-size:0.8rem; padding:10px;">Nadie ha terminado aún</li>'; return; } list.innerHTML = data.map(u => { const date = new Date(u.completed_at); const timeStr = date.toLocaleDateString() + " " + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); return `<li class="fame-item"><i class="fas fa-medal" style="color:var(--primary-color)"></i> <span>${u.username}</span> <span class="fame-time">${timeStr}</span></li>`; }).join(''); } catch(e) { console.error(e); } }
-        function initChat() { const channel = _supabase.channel('public:chat_messages'); channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => { addChatMessage(payload.new); }).subscribe(); loadInitialChat(); }
-        async function loadInitialChat() { try { const { data } = await _supabase.from('chat_messages').select('*').order('created_at', { ascending: false }).limit(15); const container = document.getElementById('chat-messages'); container.innerHTML = ''; if(data) data.reverse().forEach(msg => addChatMessage(msg)); } catch(e) { console.error(e); } }
-        function addChatMessage(msg) { const container = document.getElementById('chat-messages'); const div = document.createElement('div'); div.className = 'chat-msg'; div.innerHTML = `<span>${msg.username}:</span> <span class="chat-emoji">${msg.emoji}</span>`; container.prepend(div); while (container.children.length > 15) container.removeChild(container.lastChild); }
-        async function sendChat(emoji) { if(chatCooldown) return; if(!currentUser) return; chatCooldown = true; setTimeout(() => chatCooldown = false, 3000); AudioEngine.playClick(); try { await _supabase.from('chat_messages').insert({ user_id: currentUser.id, username: currentUser.email.split('@')[0], emoji: emoji }); } catch(e) { console.error(e); } }
+        
+        // V12: CHAT SOCIAL SYSTEM
+        function initChat() { 
+            const channel = _supabase.channel('public:chat_messages'); 
+            channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => { addChatMessage(payload.new); }).subscribe(); 
+            loadInitialChat(); 
+        }
+        async function loadInitialChat() { try { const { data } = await _supabase.from('chat_messages').select('*').order('created_at', { ascending: false }).limit(20); const container = document.getElementById('chat-messages'); container.innerHTML = ''; if(data) data.reverse().forEach(msg => addChatMessage(msg)); } catch(e) { console.error(e); } }
+        
+        function addChatMessage(msg) { 
+            const container = document.getElementById('chat-messages'); 
+            const div = document.createElement('div'); 
+            div.className = 'chat-msg'; 
+            // V12: Format "Author to Recipient: Message"
+            const recipient = msg.recipient_username || 'Todos';
+            const text = msg.message_text || msg.emoji; // Support old format fallback
+            div.innerHTML = `<span class="author">${msg.username}</span> <span style="color:#888">a</span> <span class="to-user">@${recipient}</span>: <span class="msg-text">${text}</span>`; 
+            container.prepend(div); 
+            while (container.children.length > 20) container.removeChild(container.lastChild); 
+        }
+
+        function updateChatUserList(users) {
+            const select = document.getElementById('chat-user-select');
+            const currentUserVal = select.value;
+            select.innerHTML = '<option value="todos">Para: Todos 👥</option>';
+            users.forEach(u => {
+                if(u.username !== currentUser.email.split('@')[0]) {
+                    const opt = document.createElement('option');
+                    opt.value = u.username;
+                    opt.innerText = u.username;
+                    select.appendChild(opt);
+                }
+            });
+            if (select.querySelector(`option[value="${currentUserVal}"]`)) select.value = currentUserVal;
+        }
+
+        async function sendQuickChat(text) { 
+            if(chatCooldown) return; 
+            if(!currentUser) return; 
+            chatCooldown = true; 
+            setTimeout(() => chatCooldown = false, 2000); // Reduced cooldown
+            AudioEngine.playClick(); 
+            const recipient = document.getElementById('chat-user-select').value;
+            try { 
+                await _supabase.from('chat_messages').insert({ user_id: currentUser.id, username: currentUser.email.split('@')[0], recipient_username: recipient, message_text: text }); 
+            } catch(e) { console.error(e); } 
+        }
+        
         function toggleChatUI() { chatVisible = !chatVisible; document.getElementById('chat-battle').classList.toggle('visible', chatVisible); }
 
-        // --- NEW: STUDENT HEARTBEAT & TIME TRACKING ---
+        // --- STUDENT HEARTBEAT & TIME TRACKING ---
         let playTimeCounter = 0;
         let totalErrors = 0;
         function startStudentHeartbeat() {
-            // Update last_seen every 15 seconds
-            setInterval(async () => {
-                if(currentUser && !isAdmin) {
-                    await _supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', currentUser.id);
-                }
-            }, 15000);
-            
-            // Track active play time
-            setInterval(() => {
-                if(!isGridLocked && !hasFinishedGame) {
-                    playTimeCounter++;
-                    // Save every 60 seconds
-                    if(playTimeCounter % 60 === 0) {
-                        saveTime();
-                    }
-                }
-            }, 1000);
+            setInterval(async () => { if(currentUser && !isAdmin) { await _supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', currentUser.id); } }, 15000);
+            setInterval(() => { if(!isGridLocked && !hasFinishedGame) { playTimeCounter++; if(playTimeCounter % 60 === 0) { saveTime(); } } }, 1000);
         }
-
-        async function saveTime() {
-            if(!currentUser) return;
-            try {
-                await _supabase.from('profiles').update({ 
-                    total_time_played: playTimeCounter, 
-                    total_errors: totalErrors 
-                }).eq('id', currentUser.id);
-            } catch(e) { console.error(e); }
-        }
+        async function saveTime() { if(!currentUser) return; try { await _supabase.from('profiles').update({ total_time_played: playTimeCounter, total_errors: totalErrors }).eq('id', currentUser.id); } catch(e) { console.error(e); } }
 
         // --- ADMIN DASHBOARD LOGIC ---
-        function showAdminDashboard() {
-            document.getElementById('game-layout').style.display = 'none';
-            document.getElementById('top-bar-panel').style.display = 'none';
-            document.getElementById('admin-dashboard').style.display = 'flex';
-            loadDashboardData();
-            setInterval(loadDashboardData, 5000); // Refresh every 5s
-        }
+        function showAdminDashboard() { document.getElementById('game-layout').style.display = 'none'; document.getElementById('top-bar-panel').style.display = 'none'; document.getElementById('admin-dashboard').style.display = 'flex'; loadDashboardData(); setInterval(loadDashboardData, 5000); }
+        function toggleAdminDashboard() { if(document.getElementById('admin-dashboard').style.display === 'flex') { logout(); } else { showAdminDashboard(); } }
+        async function loadDashboardData() { const grid = document.getElementById('student-grid'); try { const { data: settings } = await _supabase.from('game_settings').select('*').single(); updateControlButtons(settings); initSeason(settings); const { data: students, error } = await _supabase.from('profiles').select('*').order('total_score', { ascending: false }); if(error) throw error; const now = new Date(); const onlineThreshold = 30000; grid.innerHTML = students.map(u => { const isOnline = u.last_seen && (now - new Date(u.last_seen) < onlineThreshold); const isBanned = u.is_banned; const mins = u.total_time_played ? Math.floor(u.total_time_played / 60) : 0; const secs = u.total_time_played ? u.total_time_played % 60 : 0; const timeStr = `${mins}m ${secs}s`; return `<div class="student-card ${isOnline && !isBanned ? '' : 'offline'}"><div class="sc-header"><img src="${getAvatarUrl(u.username || 'guest', u.avatar_style)}" class="sc-avatar"><div class="sc-info"><div class="sc-name">${u.username}</div><div class="sc-status"><span class="status-dot ${isOnline && !isBanned ? 'online' : ''}"></span>${isBanned ? 'Baneado' : (isOnline ? 'En línea' : 'Offline')}</div></div></div><div class="sc-stats"><div>Puntos<br><span class="sc-stat-val">${u.total_score || 0}</span></div><div>Nivel<br><span class="sc-stat-val">${u.current_level || 1}</span></div><div>Tiempo<br><span class="sc-stat-val">${timeStr}</span></div><div>Errores<br><span class="sc-stat-val">${u.total_errors || 0}</span></div></div><div class="sc-actions"><button class="sc-btn ban ${isBanned ? 'active' : ''}" onclick="toggleBan('${u.id}', ${isBanned})">${isBanned ? 'Desbanear' : 'Banear'}</button></div></div>`; }).join(''); const onlineCount = students.filter(u => (now - new Date(u.last_seen) < 30000) && !u.is_banned).length; document.getElementById('student-count').innerText = onlineCount + " en línea"; } catch(e) { console.error(e); grid.innerHTML = "Error"; } }
+        function updateControlButtons(settings) { const pauseBtn = document.getElementById('btn-pause'); const examBtn = document.getElementById('btn-exam'); if(settings.is_paused) { pauseBtn.classList.add('active'); pauseBtn.querySelector('span').innerText = "Reanudar"; } else { pauseBtn.classList.remove('active'); pauseBtn.querySelector('span').innerText = "Pausar Juego"; } if(settings.exam_level && settings.exam_level > 0) { examBtn.classList.add('active'); examBtn.querySelector('span').innerText = "Fin Examen"; } else { examBtn.classList.remove('active'); examBtn.querySelector('span').innerText = "Modo Examen"; } }
+        async function togglePause() { const { data: settings } = await _supabase.from('game_settings').select('is_paused').single(); const newState = !settings.is_paused; await _supabase.from('game_settings').update({ is_paused: newState }).eq('id', 1); loadDashboardData(); }
+        async function toggleExamMode() { const { data: settings } = await _supabase.from('game_settings').select('exam_level').single(); const newLevel = settings.exam_level > 0 ? 0 : 1; await _supabase.from('game_settings').update({ exam_level: newLevel, is_paused: false }).eq('id', 1); loadDashboardData(); }
+        function showSeasonModal() { const hrs = prompt("Horas de temporada:", "0"); const mins = prompt("Minutos:", "0"); if(hrs || mins) startSeason(parseInt(hrs), parseInt(mins)); }
+        async function startSeason(h, m) { if(h === 0 && m === 0) return alert("Ingresa tiempo."); const endTime = new Date(new Date().getTime() + (h * 3600000) + (m * 60000)); try { await _supabase.from('game_settings').upsert({ id: 1, season_end_time: endTime.toISOString(), is_paused: false, exam_level: 0 }); alert("¡Temporada iniciada!"); loadDashboardData(); } catch(e) { alert("Error al iniciar."); } }
+        async function toggleBan(uid, currentStatus) { try { await _supabase.from('profiles').update({ is_banned: !currentStatus }).eq('id', uid); loadDashboardData(); } catch(e) { alert("Error"); } }
+        async function resetAllUsers() { if(!confirm("¿Reiniciar TODOS los puntos y tiempo?")) return; try { await _supabase.from('profiles').update({ total_score: 0, current_level: 1, completed_at: null, current_problem: 1, total_time_played: 0, total_errors: 0 }).neq('id', '00000000-0000-0000-0000-000000000000'); await _supabase.from('game_settings').update({ season_end_time: null, is_paused: false, exam_level: 0 }).eq('id', 1); alert("¡Reiniciado!"); loadDashboardData(); } catch(e) { alert("Error."); } }
 
-        function toggleAdminDashboard() {
-            if(document.getElementById('admin-dashboard').style.display === 'flex') {
-                // Close dashboard (logout or back to game? Let's just close for now or logout)
-                logout();
-            } else {
-                showAdminDashboard();
-            }
-        }
-
-        async function loadDashboardData() {
-            const grid = document.getElementById('student-grid');
-            try {
-                // Get global settings
-                const { data: settings } = await _supabase.from('game_settings').select('*').single();
-                updateControlButtons(settings);
-                initSeason(settings); // Update timer
-                
-                // Get students
-                const { data: students, error } = await _supabase.from('profiles').select('*').order('total_score', { ascending: false });
-                if(error) throw error;
-
-                const now = new Date();
-                const onlineThreshold = 30000; // 30 seconds
-
-                grid.innerHTML = students.map(u => {
-                    const isOnline = u.last_seen && (now - new Date(u.last_seen) < onlineThreshold);
-                    const isBanned = u.is_banned;
-                    const mins = u.total_time_played ? Math.floor(u.total_time_played / 60) : 0;
-                    const secs = u.total_time_played ? u.total_time_played % 60 : 0;
-                    const timeStr = `${mins}m ${secs}s`;
-
-                    return `
-                        <div class="student-card ${isOnline && !isBanned ? '' : 'offline'}">
-                            <div class="sc-header">
-                                <img src="${getAvatarUrl(u.username || 'guest', u.avatar_style)}" class="sc-avatar">
-                                <div class="sc-info">
-                                    <div class="sc-name">${u.username}</div>
-                                    <div class="sc-status">
-                                        <span class="status-dot ${isOnline && !isBanned ? 'online' : ''}"></span>
-                                        ${isBanned ? 'Baneado' : (isOnline ? 'En línea' : 'Offline')}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="sc-stats">
-                                <div>Puntos<br><span class="sc-stat-val">${u.total_score || 0}</span></div>
-                                <div>Nivel<br><span class="sc-stat-val">${u.current_level || 1}</span></div>
-                                <div>Tiempo<br><span class="sc-stat-val">${timeStr}</span></div>
-                                <div>Errores<br><span class="sc-stat-val">${u.total_errors || 0}</span></div>
-                            </div>
-                            <div class="sc-actions">
-                                <button class="sc-btn ban ${isBanned ? 'active' : ''}" onclick="toggleBan('${u.id}', ${isBanned})">
-                                    ${isBanned ? 'Desbanear' : 'Banear'}
-                                </button>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-                
-                // Update count
-                const onlineCount = students.filter(u => (now - new Date(u.last_seen) < 30000) && !u.is_banned).length;
-                document.getElementById('student-count').innerText = onlineCount + " en línea";
-
-            } catch(e) { console.error(e); grid.innerHTML = "Error"; }
-        }
-
-        function updateControlButtons(settings) {
-            const pauseBtn = document.getElementById('btn-pause');
-            const examBtn = document.getElementById('btn-exam');
-            
-            if(settings.is_paused) {
-                pauseBtn.classList.add('active');
-                pauseBtn.querySelector('span').innerText = "Reanudar";
-            } else {
-                pauseBtn.classList.remove('active');
-                pauseBtn.querySelector('span').innerText = "Pausar Juego";
-            }
-
-            if(settings.exam_level && settings.exam_level > 0) {
-                examBtn.classList.add('active');
-                examBtn.querySelector('span').innerText = "Fin Examen";
-            } else {
-                examBtn.classList.remove('active');
-                examBtn.querySelector('span').innerText = "Modo Examen";
-            }
-        }
-
-        async function togglePause() {
-            const { data: settings } = await _supabase.from('game_settings').select('is_paused').single();
-            const newState = !settings.is_paused;
-            await _supabase.from('game_settings').update({ is_paused: newState }).eq('id', 1);
-            loadDashboardData();
-        }
-
-        async function toggleExamMode() {
-            const { data: settings } = await _supabase.from('game_settings').select('exam_level').single();
-            // Toggle between off (0) and Level 1 (or prompt)
-            const newLevel = settings.exam_level > 0 ? 0 : 1; 
-            await _supabase.from('game_settings').update({ exam_level: newLevel, is_paused: false }).eq('id', 1); // Unpause when starting exam
-            loadDashboardData();
-        }
-
-        function showSeasonModal() {
-            const hrs = prompt("Horas de temporada:", "0");
-            const mins = prompt("Minutos:", "0");
-            if(hrs || mins) startSeason(parseInt(hrs), parseInt(mins));
-        }
-
-        async function startSeason(h, m) {
-            if(h === 0 && m === 0) return alert("Ingresa tiempo.");
-            const endTime = new Date(new Date().getTime() + (h * 3600000) + (m * 60000));
-            try { await _supabase.from('game_settings').upsert({ id: 1, season_end_time: endTime.toISOString(), is_paused: false, exam_level: 0 }); alert("¡Temporada iniciada!"); loadDashboardData(); } catch(e) { alert("Error al iniciar."); }
-        }
-
-        async function toggleBan(uid, currentStatus) {
-            try { await _supabase.from('profiles').update({ is_banned: !currentStatus }).eq('id', uid); loadDashboardData(); } catch(e) { alert("Error"); }
-        }
-
-        async function resetAllUsers() {
-            if(!confirm("¿Reiniciar TODOS los puntos y tiempo?")) return;
-            try {
-                await _supabase.from('profiles').update({ total_score: 0, current_level: 1, completed_at: null, current_problem: 1, total_time_played: 0, total_errors: 0 }).neq('id', '00000000-0000-0000-0000-000000000000');
-                await _supabase.from('game_settings').update({ season_end_time: null, is_paused: false, exam_level: 0 }).eq('id', 1);
-                alert("¡Reiniciado!");
-                loadDashboardData();
-            } catch(e) { alert("Error."); }
-        }
-
-        // --- STUDENT CHECKS (PAUSE/EXAM) ---
-        async function checkGlobalState() {
-            if(isAdmin) return;
-            try {
-                const { data } = await _supabase.from('game_settings').select('*').single();
-                
-                // Pause Check
-                if(data.is_paused) {
-                    lockGrid();
-                    document.getElementById('msg').innerHTML = "<span style='color:var(--error); font-size:1.5rem;'>⏸️ JUEGO PAUSADO POR EL PROFESOR</span>";
-                    return false;
-                }
-                
-                // Exam Mode Check
-                if(data.exam_level > 0) {
-                    if(currentMainLevel !== data.exam_level) {
-                        currentMainLevel = data.exam_level;
-                        unlockedLevel = data.exam_level;
-                        loadProblem();
-                        alert("Modo Examen: Nivel " + data.exam_level);
-                    }
-                }
-                return true;
-            } catch(e) { return true; }
-        }
+        // --- STUDENT CHECKS ---
+        async function checkGlobalState() { if(isAdmin) return; try { const { data } = await _supabase.from('game_settings').select('*').single(); if(data.is_paused) { lockGrid(); document.getElementById('msg').innerHTML = "<span style='color:var(--error); font-size:1.5rem;'>⏸️ JUEGO PAUSADO POR EL PROFESOR</span>"; return false; } if(data.exam_level > 0) { if(currentMainLevel !== data.exam_level) { currentMainLevel = data.exam_level; unlockedLevel = data.exam_level; loadProblem(); alert("Modo Examen: Nivel " + data.exam_level); } } return true; } catch(e) { return true; } }
 
         // --- SEASON LOGIC ---
         let seasonInterval;
-        async function initSeason(settings) {
-            let data = settings;
-            if(!data) {
-                const res = await _supabase.from('game_settings').select('season_end_time').eq('id', 1).single();
-                data = res.data;
-            }
-            
-            if(data && data.season_end_time) { startCountdown(new Date(data.season_end_time)); } else { 
-                document.getElementById('timer-display').innerText = isAdmin ? "SIN INICIAR" : "--:--"; 
-                document.getElementById('season-badge').classList.add('finished'); 
-            }
-        }
-        function startCountdown(endDate) {
-            clearInterval(seasonInterval);
-            seasonInterval = setInterval(() => {
-                const now = new Date(); const diff = endDate - now;
-                if (diff <= 0) { clearInterval(seasonInterval); document.getElementById('timer-display').innerText = "00:00:00"; document.getElementById('season-badge').classList.add('finished'); document.getElementById('season-badge').classList.remove('active'); if(isAdmin) { alert("¡Tiempo terminado! Reiniciando puntos..."); resetAllUsers(); } return; }
-                const h = Math.floor(diff / 3600000); const m = Math.floor((diff % 3600000) / 60000); const s = Math.floor((diff % 60000) / 1000);
-                document.getElementById('timer-display').innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-                document.getElementById('season-badge').classList.add('active'); document.getElementById('season-badge').classList.remove('finished');
-            }, 1000);
-        }
+        async function initSeason(settings) { let data = settings; if(!data) { const res = await _supabase.from('game_settings').select('season_end_time').eq('id', 1).single(); data = res.data; } if(data && data.season_end_time) { startCountdown(new Date(data.season_end_time)); } else { document.getElementById('timer-display').innerText = isAdmin ? "SIN INICIAR" : "--:--"; document.getElementById('season-badge').classList.add('finished'); } }
+        function startCountdown(endDate) { clearInterval(seasonInterval); seasonInterval = setInterval(() => { const now = new Date(); const diff = endDate - now; if (diff <= 0) { clearInterval(seasonInterval); document.getElementById('timer-display').innerText = "00:00:00"; document.getElementById('season-badge').classList.add('finished'); document.getElementById('season-badge').classList.remove('active'); if(isAdmin) { alert("¡Tiempo terminado! Reiniciando puntos..."); resetAllUsers(); } return; } const h = Math.floor(diff / 3600000); const m = Math.floor((diff % 3600000) / 60000); const s = Math.floor((diff % 60000) / 1000); document.getElementById('timer-display').innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`; document.getElementById('season-badge').classList.add('active'); document.getElementById('season-badge').classList.remove('finished'); }, 1000); }
 
-        // --- GAME LOGIC ---
+        // --- GAME LOGIC (UNTOUCHED) ---
         function initGame() { loadProblem(); populateLevelSelect(); }
         function jumpToLevel(l) { AudioEngine.playClick(); const target = parseInt(l); if(target > unlockedLevel) { alert("¡Debes completar el nivel anterior!"); document.getElementById('levelSelect').value = currentMainLevel; return; } currentMainLevel = target; currentProblemInLevel = 1; loadProblem(); }
         
         async function loadProblem() {
             if(hasFinishedGame) return; 
-            
-            // Check Pause/Exam
             const canPlay = await checkGlobalState();
             if(!canPlay) return;
-
             isProcessing = false; const btn = document.getElementById('btn-verify'); btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "Verificar";
             document.getElementById('subLevelCount').innerText = currentProblemInLevel; document.getElementById('progressBar').style.width = ((currentMainLevel - 1) / TOTAL_LEVELS) * 100 + '%'; populateLevelSelect();
             const d = DB[currentMainLevel]; if (d && d[currentProblemInLevel - 1]) { currentDividend = d[currentProblemInLevel - 1].d; currentDivisor = d[currentProblemInLevel - 1].div; }
@@ -689,18 +560,8 @@
         function getDifficultyLabel(lvl) { if(lvl <= 2) return "Divisor: 1 Cifra"; if(lvl === 3 || lvl === 4 || lvl === 5 || lvl === 7 || lvl === 9) return "Divisor: 2 Cifras"; return "Divisor: 3 Cifras"; }
         
         function lockGrid() { isGridLocked = true; document.getElementById('grid-lock-overlay').classList.remove('hidden'); disableCocienteInputs(true); document.getElementById('valResiduo').disabled = true; }
-        function unlockGrid() { 
-            isGridLocked = false; 
-            document.getElementById('grid-lock-overlay').classList.add('hidden'); 
-            disableCocienteInputs(false); 
-            document.getElementById('valResiduo').disabled = false;
-            document.getElementById('msg').innerText = "¡Antena completa!"; 
-            document.getElementById('msg').style.color = "var(--success)"; 
-            triggerEpicEffect(); 
-        }
-
+        function unlockGrid() { isGridLocked = false; document.getElementById('grid-lock-overlay').classList.add('hidden'); disableCocienteInputs(false); document.getElementById('valResiduo').disabled = false; document.getElementById('msg').innerText = "¡Antena completa!"; document.getElementById('msg').style.color = "var(--success)"; triggerEpicEffect(); }
         function triggerEpicEffect() { AudioEngine.playEpic(); const overlay = document.getElementById('epic-overlay'); const text = document.getElementById('epic-text'); const messages = ["¡BOOYAH!", "¡A LA CARGA!", "¡MÁXIMO PODER!"]; text.innerText = messages[Math.floor(Math.random()*messages.length)]; overlay.style.display = 'flex'; text.style.animation = 'none'; void text.offsetWidth; text.style.animation = 'epicPulse 0.5s ease-out forwards'; setTimeout(() => { overlay.style.display = 'none'; }, 1500); }
-
         function showVictoryScreen() { createConfetti(); document.getElementById('victory-screen').classList.add('show'); AudioEngine.playLevelUp(); }
         function hideVictoryScreen() { document.getElementById('victory-screen').classList.remove('show'); document.querySelectorAll('.confetti').forEach(c => c.remove()); }
         function createConfetti() { const screen = document.getElementById('victory-screen'); const colors = ['#ffcc00', '#00e676', '#2979ff', '#f00', '#ff9800']; for (let i = 0; i < 50; i++) { const conf = document.createElement('div'); conf.className = 'confetti'; conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = -10 + 'px'; conf.style.background = colors[Math.floor(Math.random() * colors.length)]; conf.style.animationDuration = (Math.random() * 2 + 2) + 's'; screen.appendChild(conf); } }
@@ -712,20 +573,11 @@
             for(let r=0; r<rows; r++) { for(let c=0; c<cols; c++) { let i = document.createElement('input'); i.type='text'; i.className='cell'; i.maxLength=1; i.id="c-"+r+"-"+c; i.addEventListener('input', (e) => { if(!isGridLocked && e.target.value){ let n=(c<cols-1)?"c-"+r+"-"+(c+1):(r<rows-1)?"c-"+(r+1)+"-0":null; if(n)document.getElementById(n).focus(); }}); g.appendChild(i); } }
             let sN = String(currentDividend); for(let i=0; i<sN.length; i++) { let cell = document.getElementById("c-0-"+i); cell.value = sN[i]; cell.classList.add('cell-locked'); cell.disabled = true; }
             document.getElementById('lineH').style.width = (sN.length * cellSize) + 'px';
-            for(let i=0; i<sN.length; i++) { 
-                let inp = document.createElement('input'); 
-                inp.type = 'text'; 
-                inp.className = 'input-cociente-galera'; 
-                inp.maxLength = 1; 
-                inp.id = "top-"+i; 
-                inp.addEventListener('input', (e) => { syncT(); if(e.target.value && i<sN.length-1) document.getElementById("top-"+(i+1)).focus(); }); 
-                tR.appendChild(inp); 
-            }
+            for(let i=0; i<sN.length; i++) { let inp = document.createElement('input'); inp.type = 'text'; inp.className = 'input-cociente-galera'; inp.maxLength = 1; inp.id = "top-"+i; inp.addEventListener('input', (e) => { syncT(); if(e.target.value && i<sN.length-1) document.getElementById("top-"+(i+1)).focus(); }); tR.appendChild(inp); }
         }
         function disableCocienteInputs(disabled) { document.querySelectorAll('.input-cociente-galera').forEach(i => i.disabled = disabled); }
         function syncT() { let v=""; document.querySelectorAll('.input-cociente-galera').forEach(x=>v+=x.value); document.getElementById('valCociente').value=v; }
 
-        // --- ANTENA LOGIC ---
         function createAntena() { const b=document.getElementById('antenaBody'); document.getElementById('antenaLabel').innerText=currentDivisor; b.innerHTML=''; for(let i=1;i<=10;i++){ let r=document.createElement('div'); r.className='antena-row locked-row'; r.id="row-"+i; r.innerHTML="<span>"+i+" x "+currentDivisor+" =</span><input type='text' inputmode='numeric' pattern='[0-9]*' class='antena-input' id='a"+i+"' disabled>"; b.appendChild(r); } currentAntennaIndex = 0; enableNextAntennaInput(); }
         function enableNextAntennaInput() { if (currentAntennaIndex >= ANTENNA_SEQUENCE.length) return; const currentId = ANTENNA_SEQUENCE[currentAntennaIndex]; const input = document.getElementById("a"+currentId); const row = document.getElementById("row-"+currentId); if(input) { input.disabled = false; input.focus(); row.classList.remove('locked-row'); input.oninput = (e) => { e.target.value = e.target.value.replace(/[^0-9]/g, ''); checkAntennaInput(input, currentId); }; } }
         function checkAntennaInput(input, id) { const val = parseInt(input.value); const expected = id * currentDivisor; if (val === expected) { AudioEngine.playSuccess(); input.classList.add('status-ok'); input.disabled = true; input.classList.remove('status-wrong'); currentAntennaIndex++; if (currentAntennaIndex < ANTENNA_SEQUENCE.length) { enableNextAntennaInput(); } else { unlockGrid(); } } else { input.classList.add('status-wrong'); setTimeout(() => input.classList.remove('status-wrong'), 500); } }
@@ -733,35 +585,20 @@
         
         async function verificarSolucion() {
             if(isProcessing) return; if(isGridLocked) { alert("¡Completa la Antena!"); return; }
-            if(!(await checkGlobalState())) return; // Check Pause again
-
+            if(!(await checkGlobalState())) return;
             isProcessing = true; const btn = document.getElementById('btn-verify'); btn.disabled = true; btn.style.opacity = '0.5'; btn.innerText = "Verificando...";
             let coc=parseInt(document.getElementById('valCociente').value); let res=parseInt(document.getElementById('valResiduo').value)||0;
             let rC=Math.floor(currentDividend/currentDivisor); let rR=currentDividend%currentDivisor;
             
             if(coc===rC && res===rR) {
-                totalScore += POINTS; 
-                updateUI(); 
-                AudioEngine.playSuccess();
+                totalScore += POINTS; updateUI(); AudioEngine.playSuccess();
                 document.getElementById('msg').innerHTML="<span style='color:var(--success); font-weight:700; font-size:1.2rem;'>¡CORRECTO! +"+POINTS+"</span>";
-                
-                // Logic Advance
-                if(currentProblemInLevel < PROBLEMS_PER_LEVEL) { currentProblemInLevel++; } 
-                else { 
-                    if(currentMainLevel < TOTAL_LEVELS) { unlockedLevel = currentMainLevel + 1; currentMainLevel++; currentProblemInLevel = 1; showVictoryScreen(); } 
-                    else { hasFinishedGame = true; const completed_at = new Date().toISOString(); await _supabase.from('profiles').update({ completed_at: completed_at }).eq('id', currentUser.id); loadHallOfFame(); await saveScore(); isProcessing = false; return; } 
-                }
-                
-                // FIX V11: Guardar tiempo y errores al acertar
-                await saveTime();
-                await saveScore(); // Saves position
-                
-                if(document.getElementById('victory-screen').classList.contains('show')) { setTimeout(() => { hideVictoryScreen(); loadProblem(); isProcessing = false; }, 3000); } 
-                else { loadProblem(); isProcessing = false; }
+                if(currentProblemInLevel < PROBLEMS_PER_LEVEL) { currentProblemInLevel++; } else { if(currentMainLevel < TOTAL_LEVELS) { unlockedLevel = currentMainLevel + 1; currentMainLevel++; currentProblemInLevel = 1; showVictoryScreen(); } else { hasFinishedGame = true; const completed_at = new Date().toISOString(); await _supabase.from('profiles').update({ completed_at: completed_at }).eq('id', currentUser.id); loadHallOfFame(); await saveScore(); isProcessing = false; return; } }
+                await saveTime(); await saveScore();
+                if(document.getElementById('victory-screen').classList.contains('show')) { setTimeout(() => { hideVictoryScreen(); loadProblem(); isProcessing = false; }, 3000); } else { loadProblem(); isProcessing = false; }
             } else { 
                 AudioEngine.playError(); document.getElementById('msg').innerHTML="<span style='color:var(--error); font-weight:700; font-size:1.2rem;'>INCORRECTO</span>";
-                totalErrors++; 
-                saveTime(); // Save error count immediately
+                totalErrors++; saveTime();
                 isProcessing = false; btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "Verificar";
             }
         }
