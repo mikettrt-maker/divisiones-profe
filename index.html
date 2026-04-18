@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V12.4 Final</title>
+    <title>Reto de División - V13 Admin Tools</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -20,11 +20,28 @@
         .main-header { width: 100%; background: linear-gradient(90deg, #000000, #1a1a1a); color: var(--primary-color); padding: 15px 0; text-align: center; box-shadow: 0 4px 20px rgba(255, 204, 0, 0.2); border-bottom: 2px solid var(--primary-color); display: flex; justify-content: center; align-items: center; gap: 20px; position: relative; }
         .main-header h1 { margin: 0; font-size: 2.2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-family: 'Teko', sans-serif; }
         
-        .season-badge { position: absolute; top: 5px; right: 20px; background: #333; color: var(--primary-color); font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 800; display: flex; align-items: center; gap: 5px; }
-        .season-badge.active { background: var(--primary-color); color: black; }
-        .season-badge.finished { background: var(--error); color: white; animation: pulse 1s infinite; }
+        /* V13: RELOJ GIGANTE */
+        .season-badge { 
+            position: absolute; 
+            top: 50%; 
+            right: 20px; 
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.8); 
+            color: var(--primary-color); 
+            padding: 5px 20px; 
+            border-radius: 8px; 
+            font-weight: 800; 
+            display: flex; 
+            align-items: center; 
+            gap: 10px; 
+            border: 2px solid var(--primary-color);
+            box-shadow: 0 0 20px rgba(255, 204, 0, 0.3);
+        }
+        .season-badge i { font-size: 1.5rem; }
+        .season-badge.active { background: var(--primary-color); color: black; box-shadow: 0 0 30px var(--primary-color); }
+        .season-badge.finished { background: var(--error); color: white; border-color: var(--error); animation: pulse 1s infinite; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
-        .timer-display { font-family: 'Teko'; font-size: 1.1rem; }
+        .timer-display { font-family: 'Teko'; font-size: 2.8rem; line-height: 1; }
 
         .admin-btn { background: #333; color: var(--primary-color); padding: 5px 15px; font-size: 0.9rem; border: 1px solid var(--primary-color); border-radius: 4px; cursor: pointer; display: none; }
         .admin-btn.visible { display: block; }
@@ -159,7 +176,7 @@
         .epic-text { font-family: 'Teko', sans-serif; font-size: 8rem; color: var(--error); text-transform: uppercase; font-weight: 800; text-shadow: 0 0 20px rgba(255,0,0,0.8), 4px 4px 0px #000; animation: epicPulse 0.5s ease-out; opacity: 0; }
         @keyframes epicPulse { 0% { transform: scale(0.2) rotate(-10deg); opacity: 0; } 50% { transform: scale(1.2) rotate(5deg); opacity: 1; } 100% { transform: scale(1) rotate(0deg); opacity: 1; } }
 
-        /* CHAT UI V12 */
+        /* CHAT UI V12.5 */
         #chat-battle { position: fixed; bottom: 80px; right: 20px; width: 320px; z-index: 9000; background: rgba(0, 0, 0, 0.98); border: 1px solid #333; border-radius: 8px; display: none; }
         #chat-battle.visible { display: block; }
         .chat-header { padding: 8px 15px; background: #111; color: var(--primary-color); font-weight: 700; border-bottom: 1px solid #333; display: flex; justify-content: space-between; cursor: pointer;}
@@ -176,7 +193,19 @@
         .quick-btn:hover { background: #333; border-color: var(--primary-color); }
         .quick-btn i { color: var(--primary-color); }
 
-        #chat-toggle-btn { position: fixed; bottom: 20px; right: 20px; z-index: 9001; width: 50px; height: 50px; border-radius: 50%; background: var(--primary-color); color: black; font-size: 1.5rem; border: none; box-shadow: 0 0 15px var(--primary-color); display: flex; align-items: center; justify-content: center; cursor: pointer; }
+        #chat-toggle-btn { position: fixed; bottom: 20px; right: 20px; z-index: 9001; width: 50px; height: 50px; border-radius: 50%; background: var(--primary-color); color: black; font-size: 1.5rem; border: none; box-shadow: 0 0 15px var(--primary-color); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.3s; }
+        
+        /* V12.5: Animación de parpadeo para notificación */
+        #chat-toggle-btn.notify { 
+            background: var(--error); 
+            color: white; 
+            animation: chatPulse 1.5s infinite; 
+        } 
+        @keyframes chatPulse { 
+            0% { box-shadow: 0 0 0 0 rgba(255, 23, 68, 0.7); } 
+            70% { box-shadow: 0 0 0 15px rgba(255, 23, 68, 0); } 
+            100% { box-shadow: 0 0 0 0 rgba(255, 23, 68, 0); } 
+        }
 
         /* ADMIN DASHBOARD */
         #admin-dashboard { width: 100%; display: none; flex-direction: column; gap: 20px; }
@@ -304,6 +333,8 @@
                         <div id="btn-pause" class="ctrl-btn" onclick="togglePause()"><i class="fas fa-pause"></i><span>Pausar Juego</span></div>
                         <div id="btn-exam" class="ctrl-btn" onclick="toggleExamMode()"><i class="fas fa-file-alt"></i><span>Modo Examen</span></div>
                         <div class="ctrl-btn" onclick="showSeasonModal()"><i class="fas fa-clock"></i><span>Temporada</span></div>
+                        <!-- V13: Nuevo botón de limpieza -->
+                        <div class="ctrl-btn danger" onclick="cleanInactiveUsers()"><i class="fas fa-broom"></i><span>Limpiar Cuentas</span></div>
                         <div class="ctrl-btn danger" onclick="resetAllUsers()"><i class="fas fa-redo"></i><span>Reiniciar Todo</span></div>
                     </div>
                     <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
@@ -457,7 +488,7 @@
 
         async function loadHallOfFame() { const list = document.getElementById('fame-list'); try { const { data, error } = await _supabase.from('profiles').select('username, completed_at').not('completed_at', 'is', null).order('completed_at', { ascending: true }).limit(5); if(error) throw error; if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; color:#555; font-size:0.8rem; padding:10px;">Nadie ha terminado aún</li>'; return; } list.innerHTML = data.map(u => { const date = new Date(u.completed_at); const timeStr = date.toLocaleDateString() + " " + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); return `<li class="fame-item"><i class="fas fa-medal" style="color:var(--primary-color)"></i> <span>${u.username}</span> <span class="fame-time">${timeStr}</span></li>`; }).join(''); } catch(e) { console.error(e); } }
         
-        // V12.4: Chat System (Fixed for 400 Error)
+        // V12.5: Chat System (Visual Notification)
         function initChat() { 
             const channel = _supabase.channel('public:chat_messages'); 
             channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => { addChatMessage(payload.new); }).subscribe(); 
@@ -474,6 +505,11 @@
             div.innerHTML = `<span class="author">${msg.username}</span> <span style="color:#888">a</span> <span class="to-user">@${recipient}</span>: <span class="msg-text">${text}</span>`; 
             container.prepend(div); 
             while (container.children.length > 20) container.removeChild(container.lastChild); 
+            
+            // V12.5: Notificación Visual (Parpadeo Rojo)
+            if(!chatVisible) {
+                document.getElementById('chat-toggle-btn').classList.add('notify');
+            }
         }
 
         function updateChatUserList(users) {
@@ -491,13 +527,11 @@
             if (select.querySelector(`option[value="${currentUserVal}"]`)) select.value = currentUserVal;
         }
 
-        // FIX: Enviar 'emoji' además de 'message_text' para evitar error 400
         async function sendQuickChat(text) { 
             if(chatCooldown) return; 
             if(!currentUser) return; 
             chatCooldown = true; 
             setTimeout(() => chatCooldown = false, 2000); 
-            AudioEngine.playClick(); 
             const recipient = document.getElementById('chat-user-select').value;
             try { 
                 await _supabase.from('chat_messages').insert({ 
@@ -505,7 +539,7 @@
                     username: currentUser.email.split('@')[0], 
                     recipient_username: recipient, 
                     message_text: text,
-                    emoji: text // <-- FIX: Enviar también emoji para compatibilidad
+                    emoji: text
                 }); 
             } catch(e) { 
                 console.error("Chat Error:", e); 
@@ -513,7 +547,12 @@
             } 
         }
         
-        function toggleChatUI() { chatVisible = !chatVisible; document.getElementById('chat-battle').classList.toggle('visible', chatVisible); }
+        function toggleChatUI() { 
+            chatVisible = !chatVisible; 
+            document.getElementById('chat-battle').classList.toggle('visible', chatVisible); 
+            // V12.5: Quitar notificación al abrir
+            document.getElementById('chat-toggle-btn').classList.remove('notify');
+        }
 
         // --- STUDENT HEARTBEAT & TIME TRACKING ---
         let playTimeCounter = 0;
@@ -535,6 +574,20 @@
         async function startSeason(h, m) { if(h === 0 && m === 0) return alert("Ingresa tiempo."); const endTime = new Date(new Date().getTime() + (h * 3600000) + (m * 60000)); try { await _supabase.from('game_settings').upsert({ id: 1, season_end_time: endTime.toISOString(), is_paused: false, exam_level: 0 }); alert("¡Temporada iniciada!"); loadDashboardData(); } catch(e) { alert("Error al iniciar."); } }
         async function toggleBan(uid, currentStatus) { try { await _supabase.from('profiles').update({ is_banned: !currentStatus }).eq('id', uid); loadDashboardData(); } catch(e) { alert("Error"); } }
         async function resetAllUsers() { if(!confirm("¿Reiniciar TODOS los puntos y tiempo?")) return; try { await _supabase.from('profiles').update({ total_score: 0, current_level: 1, completed_at: null, current_problem: 1, total_time_played: 0, total_errors: 0 }).neq('id', '00000000-0000-0000-0000-000000000000'); await _supabase.from('game_settings').update({ season_end_time: null, is_paused: false, exam_level: 0 }).eq('id', 1); alert("¡Reiniciado!"); loadDashboardData(); } catch(e) { alert("Error."); } }
+        
+        // V13: Función de limpieza
+        async function cleanInactiveUsers() {
+            if(!confirm("¿Borrar todas las cuentas con 0 puntos? (Excepto admin)")) return;
+            try {
+                // Borra perfiles con score 0 y que no sean el admin
+                const { error } = await _supabase.from('profiles').delete().eq('total_score', 0).neq('username', ADMIN_USER);
+                if(error) throw error;
+                alert("Limpieza completada con éxito.");
+                loadDashboardData();
+            } catch(e) {
+                alert("Error al limpiar: " + e.message);
+            }
+        }
 
         // --- STUDENT CHECKS ---
         async function checkGlobalState() { if(isAdmin) return; try { const { data } = await _supabase.from('game_settings').select('*').single(); if(data.is_paused) { lockGrid(); document.getElementById('msg').innerHTML = "<span style='color:var(--error); font-size:1.5rem;'>⏸️ JUEGO PAUSADO POR EL PROFESOR</span>"; return false; } if(data.exam_level > 0) { if(currentMainLevel !== data.exam_level) { currentMainLevel = data.exam_level; unlockedLevel = data.exam_level; loadProblem(); alert("Modo Examen: Nivel " + data.exam_level); } } return true; } catch(e) { return true; } }
