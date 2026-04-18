@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V14.2 Antena Completa</title>
+    <title>Reto de División - V14.3 Antenas Funcionando</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -334,7 +334,7 @@
                         </div>
                     </div>
                     
-                    <!-- AQUI ESTA LA ANTENA RESTAURADA -->
+                    <!-- ANTENA PANEL HTML -->
                     <div class="antena-panel">
                         <div class="antena-header">Antena (x <span id="antenaLabel">...</span>)</div>
                         <div id="antenaBody"></div>
@@ -606,8 +606,18 @@
         // --- GAME LOGIC (RESTORED) ---
         function initGame() { loadProblem(); populateLevelSelect(); }
         function jumpToLevel(l) { AudioEngine.playClick(); const target = parseInt(l); if(target > unlockedLevel) { alert("¡Debes completar el nivel anterior!"); document.getElementById('levelSelect').value = currentMainLevel; return; } currentMainLevel = target; currentProblemInLevel = 1; loadProblem(); }
-        async function loadProblem() { if(hasFinishedGame) return; const canPlay = await checkGlobalState(); if(!canPlay) return; isProcessing = false; const btn = document.getElementById('btn-verify'); btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "Verificar"; document.getElementById('subLevelCount').innerText = currentProblemInLevel; document.getElementById('progressBar').style.width = ((currentMainLevel - 1) / TOTAL_LEVELS) * 100 + '%'; populateLevelSelect(); const d = DB[currentMainLevel]; if (d && d[currentProblemInLevel - 1]) { currentDividend = d[currentProblemInLevel - 1].d; currentDivisor = d[currentProblemInLevel - 1].div; } const label = getDifficultyLabel(currentMainLevel); document.getElementById('difficultyLabel').innerText = label; createUI(); createAntena(); resetAll(); lockGrid(); }
+        
+        async function loadProblem() {
+            if(hasFinishedGame) return; 
+            const canPlay = await checkGlobalState();
+            if(!canPlay) return;
+            isProcessing = false; const btn = document.getElementById('btn-verify'); btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "Verificar";
+            document.getElementById('subLevelCount').innerText = currentProblemInLevel; document.getElementById('progressBar').style.width = ((currentMainLevel - 1) / TOTAL_LEVELS) * 100 + '%'; populateLevelSelect();
+            const d = DB[currentMainLevel]; if (d && d[currentProblemInLevel - 1]) { currentDividend = d[currentProblemInLevel - 1].d; currentDivisor = d[currentProblemInLevel - 1].div; }
+            const label = getDifficultyLabel(currentMainLevel); document.getElementById('difficultyLabel').innerText = label; createUI(); createAntena(); resetAll(); lockGrid();
+        }
         function getDifficultyLabel(lvl) { if(lvl <= 2) return "Divisor: 1 Cifra"; if(lvl === 3 || lvl === 4 || lvl === 5 || lvl === 7 || lvl === 9) return "Divisor: 2 Cifras"; return "Divisor: 3 Cifras"; }
+        
         function lockGrid() { isGridLocked = true; document.getElementById('grid-lock-overlay').classList.remove('hidden'); disableCocienteInputs(true); document.getElementById('valResiduo').disabled = true; }
         function unlockGrid() { isGridLocked = false; document.getElementById('grid-lock-overlay').classList.add('hidden'); disableCocienteInputs(false); document.getElementById('valResiduo').disabled = false; document.getElementById('msg').innerText = "¡Antena completa!"; document.getElementById('msg').style.color = "var(--success)"; triggerEpicEffect(); }
         function triggerEpicEffect() { AudioEngine.playEpic(); const overlay = document.getElementById('epic-overlay'); const text = document.getElementById('epic-text'); const messages = ["¡BOOYAH!", "¡A LA CARGA!", "¡MÁXIMO PODER!"]; text.innerText = messages[Math.floor(Math.random()*messages.length)]; overlay.style.display = 'flex'; text.style.animation = 'none'; void text.offsetWidth; text.style.animation = 'epicPulse 0.5s ease-out forwards'; setTimeout(() => { overlay.style.display = 'none'; }, 1500); }
@@ -628,7 +638,7 @@
         function disableCocienteInputs(disabled) { document.querySelectorAll('.input-cociente-galera').forEach(i => i.disabled = disabled); }
         function syncT() { let v=""; document.querySelectorAll('.input-cociente-galera').forEach(x=>v+=x.value); document.getElementById('valCociente').value=v; }
 
-        // CREATE ANTENA (RESTORED FULLY)
+        // CREATE ANTENA (FULLY RESTORED)
         function createAntena() { 
             const b=document.getElementById('antenaBody'); 
             document.getElementById('antenaLabel').innerText=currentDivisor; 
