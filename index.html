@@ -1414,14 +1414,22 @@
     function resetAll() { document.getElementById('valCociente').value=''; document.getElementById('valResiduo').value=''; document.querySelectorAll('.antena-input').forEach(i => { i.value=''; i.classList.remove('status-ok','status-wrong'); }); document.querySelectorAll('.input-cociente-galera').forEach(i => i.value=''); document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value=''; i.disabled=false; }); }
     
     // ============================================================
-    // VERIFICAR SOLUCIÓN — V17: CON RACHA + HISTORIAL DE ERRORES
+       // ============================================================
+    // VERIFICAR SOLUCIÓN — V17.2 (SIN REVELAR RESPUESTA)
     // ============================================================
     async function verificarSolucion() {
         if(isProcessing) return; if(isGridLocked) { alert("¡Completa la Antena!"); return; }
         if(!(await checkGlobalState())) return;
-        isProcessing = true; const btn = document.getElementById('btn-verify'); btn.disabled = true; btn.style.opacity = '0.5'; btn.innerText = "Verificando...";
-        let coc=parseInt(document.getElementById('valCociente').value); let res=parseInt(document.getElementById('valResiduo').value)||0;
-        let rC=Math.floor(currentDividend/currentDivisor); let rR=currentDividend%currentDivisor;
+        
+        isProcessing = true; 
+        const btn = document.getElementById('btn-verify'); 
+        btn.disabled = true; btn.style.opacity = '0.5'; 
+        btn.innerText = "Verificando...";
+        
+        let coc=parseInt(document.getElementById('valCociente').value); 
+        let res=parseInt(document.getElementById('valResiduo').value)||0;
+        let rC=Math.floor(currentDividend/currentDivisor); 
+        let rR=currentDividend%currentDivisor;
 
         if(coc===rC && res===rR) {
             // ✅ CORRECTO
@@ -1431,7 +1439,7 @@
             // V17: Incrementar racha
             incrementStreak();
 
-            // Bonus de monedas por racha (ya se suma en incrementStreak via STREAK_BONUSES)
+            // Bonus de monedas por racha
             currentCoins += earnedCoins;
             updateCoinDisplay();
             
@@ -1450,16 +1458,18 @@
         } else { 
             // ❌ INCORRECTO
             AudioEngine.playError(); 
-            document.getElementById('msg').innerHTML="<span style='color:var(--error); font-weight:700; font-size:1.2rem;'>INCORRECTO — Cociente correcto: "+rC+", Residuo: "+rR+"</span>";
+            
+            // CAMBIO: No mostrar la respuesta aquí.
+            document.getElementById('msg').innerHTML="<span style='color:var(--error); font-weight:700; font-size:1.2rem;'>¡INCORRECTO! Revisa tus operaciones.</span>";
+            
             totalErrors++; saveTime();
 
-            // V17: Registrar error + reset racha
+            // V17: Registrar error en historial (para revisión posterior)
             recordError(currentDividend, currentDivisor, coc, res, rC, rR);
+            
+            // Resetear racha
             resetStreak();
 
             isProcessing = false; btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "Verificar";
         }
     }
-    </script>
-</body>
-</html>
