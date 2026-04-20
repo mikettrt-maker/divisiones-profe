@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V17.2 (Sin Respuestas)</title>
+    <title>Reto de División - V17.3 (Estable)</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -200,14 +200,6 @@
         .error-entry-time { font-size: 0.75rem; color: #666; }
         .error-entry-detail { font-size: 0.85rem; color: #aaa; }
         .error-entry-correct { color: var(--success); font-weight: 700; font-size: 0.9rem; margin-top: 5px; }
-
-        /* Review Panel */
-        .review-panel { background: rgba(0,230,118,0.05); border: 1px solid rgba(0,230,118,0.3); border-radius: 4px; padding: 12px; margin-top: 10px; display: none; }
-        .review-panel.visible { display: block; }
-        .review-title { font-family: 'Teko'; font-size: 1.3rem; color: var(--success); margin-bottom: 8px; }
-        .review-step { font-size: 0.9rem; color: #ccc; padding: 5px 0; border-bottom: 1px solid #222; }
-        .review-step:last-child { border: none; }
-        .review-step strong { color: var(--primary-color); }
 
         /* TOAST */
         .toast-container { position: fixed; bottom: 90px; left: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
@@ -563,7 +555,7 @@
 
     <script>
     // ============================================================
-    // SOUND ENGINE
+    // CONFIG & SETUP
     // ============================================================
     const AudioEngine = {
         ctx: null, init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
@@ -577,7 +569,6 @@
         playTomatoAlert() { this.playTone(180, 150, 'sawtooth', 0.2); setTimeout(() => this.playTone(150, 200, 'sawtooth', 0.2), 160); }
     };
 
-    // AMBIENT SOUND
     let ambientOn = false; let ambientNodes = []; let ambientGain = null;
     function startAmbientSound() {
         AudioEngine.init(); const ctx = AudioEngine.ctx; ambientGain = ctx.createGain(); ambientGain.gain.value = 0.03; ambientGain.connect(ctx.destination);
@@ -592,7 +583,6 @@
         if(ambientOn) { startAmbientSound(); btn.classList.add('on'); btn.innerHTML = '<i class="fas fa-volume-up"></i>'; } else { stopAmbientSound(); btn.classList.remove('on'); btn.innerHTML = '<i class="fas fa-volume-mute"></i>'; }
     }
 
-    // TOAST
     function showToast(msg, type = 'success', duration = 4000) { const container = document.getElementById('toast-container'); const toast = document.createElement('div'); toast.className = `toast ${type}`; toast.innerHTML = msg; container.appendChild(toast); setTimeout(() => { if(toast.parentNode) toast.parentNode.removeChild(toast); }, duration); }
 
     // STREAK
@@ -605,15 +595,7 @@
     // ERROR HISTORY
     let errorHistory = []; let consecutiveErrors = 0;
     function recordError(dividend, divisor, myCociente, myResiduo, correctCociente, correctResiduo) { errorHistory.push({ dividend, divisor, myCociente, myResiduo, correctCociente, correctResiduo, timestamp: new Date().toLocaleTimeString() }); consecutiveErrors++; }
-    function recordSuccess() { consecutiveErrors = 0; hideReviewPanel(); }
-    function showReviewPanel(dividend, divisor, cociente, residuo) { const panel = document.getElementById('review-panel'); const steps = document.getElementById('review-steps'); panel.classList.add('visible'); const stepsHTML = generateDivisionSteps(dividend, divisor, cociente, residuo); steps.innerHTML = stepsHTML; }
-    function hideReviewPanel() { document.getElementById('review-panel').classList.remove('visible'); }
-    function generateDivisionSteps(dividend, divisor, cociente, residuo) {
-        const divStr = String(dividend); let steps = []; let partial = 0; let quotientDigits = [];
-        steps.push(`<div class="review-step">🔢 Dividendo: <strong>${dividend}</strong> ÷ Divisor: <strong>${divisor}</strong></div>`);
-        for(let i = 0; i < divStr.length; i++) { partial = partial * 10 + parseInt(divStr[i]); const q = Math.floor(partial / divisor); quotientDigits.push(q); const sub = q * divisor; const rem = partial - sub; steps.push(`<div class="review-step">Bajas el <strong>${divStr[i]}</strong> → parcial = <strong>${partial}</strong> → <strong>${partial}</strong> ÷ ${divisor} = <strong>${q}</strong>, resto = <strong>${rem}</strong></div>`); partial = rem; }
-        steps.push(`<div class="review-step" style="color:var(--success); margin-top:8px;">✅ Cociente: <strong>${cociente}</strong> — Residuo: <strong>${residuo}</strong></div>`); return steps.join('');
-    }
+    function recordSuccess() { consecutiveErrors = 0; }
     function openErrorHistory() {
         const modal = document.getElementById('error-history-modal'); const body = document.getElementById('error-history-body'); modal.style.display = 'flex';
         if(errorHistory.length === 0) { body.innerHTML = '<p style="color:var(--success); text-align:center; font-size:1.1rem;">🎉 ¡Sin errores registrados!</p>'; return; }
@@ -660,10 +642,11 @@
         }).join('');
     }
 
-    // CONFIG
+    // SUPABASE INIT
     const SUPABASE_URL = 'https://oskrniownbbzkgnwunzz.supabase.co'; const SUPABASE_KEY = 'sb_publishable_RcfluyMTRxDP4chkK91-2Q_UwLdLrqP';
     const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storage: window.sessionStorage, autoRefreshToken: false, persistSession: true, detectSessionInUrl: false } });
 
+    // GLOBAL VARS
     const TOTAL_LEVELS = 10; const PROBLEMS_PER_LEVEL = 10; let currentMainLevel = 1; let currentProblemInLevel = 1; let currentDivisor = 0; let currentDividend = 0;
     const cols = 9; const rows = 15; const cellSize = 32; let totalScore = 0; const POINTS = 100; let currentUser = null; let currentAvatarStyle = 'adventurer'; let isGridLocked = true; let hasFinishedGame = false; let isProcessing = false; let unlockedLevel = 1; let isAdmin = false; const ADMIN_USER = 'profemiguel';
     let chatCooldown = false; let chatVisible = false;
@@ -757,7 +740,39 @@
     function openTierModal(level, unlocked, claimed) { if(!unlocked) return alert("¡Aún no alcanzas este nivel!"); if(claimed) return alert("Ya reclamaste este premio."); const tier = BP_REWARDS.find(t => t.level === level); if(!tier) return; currentViewingTier = tier; document.getElementById('bp-modal-icon').innerText = tier.icon; document.getElementById('bp-modal-title').innerText = tier.name; document.getElementById('bp-modal-desc').innerText = tier.desc; document.getElementById('bp-modal').style.display = 'flex'; }
     function closeBPModal() { document.getElementById('bp-modal').style.display = 'none'; currentViewingTier = null; }
     async function claimBPItem() { if(!currentViewingTier) return; AudioEngine.playSuccess(); claimedBPRewards.push(currentViewingTier.level); const updates = { claimed_bp_rewards: claimedBPRewards }; if(currentViewingTier.type === 'item') { if(currentViewingTier.item === 'item_tomatoes') { itemTomatoes += currentViewingTier.qty; updates[currentViewingTier.item] = itemTomatoes; } else if (currentViewingTier.item === 'item_shield_until') { const expiry = new Date(new Date().getTime() + (currentViewingTier.days * 24 * 60 * 60 * 1000)); updates[currentViewingTier.item] = expiry.toISOString(); } else { updates[currentViewingTier.item] = true; } } else if (currentViewingTier.type === 'font') { updates.unlocked_font = 'freefire'; } try { await _supabase.from('profiles').update(updates).eq('id', currentUser.id); alert("¡Recompensa reclamada!"); closeBPModal(); await loadScore(currentUser); } catch(e) { alert("Error al reclamar: " + e.message); } }
-    async function buyBattlePass() { if(currentCoins < 500) return alert("No tienes suficientes DiviCoins. Necesitas 500."); if(hasBP) return alert("Ya tienes el pase."); if(!confirm("¿Comprar Pase de Batalla por 500 DiviCoins?")) return; currentCoins -= 500; hasBP = true; try { await _supabase.from('profiles').update({ coins: currentCoins, has_battle_pass: true }).eq('id', currentUser.id); updateCoinDisplay(); updateBattlePassUI(); AudioEngine.playSuccess(); alert("¡Pase desbloqueado! Reclama tus premios."); } catch(e) { alert("Error al comprar."); } }
+    
+    // FIX: BUY BATTLE PASS
+    async function buyBattlePass() { 
+        if(currentCoins < 500) return alert("No tienes suficientes DiviCoins. Necesitas 500."); 
+        if(hasBP) return alert("Ya tienes el pase."); 
+        if(!confirm("¿Comprar Pase de Batalla por 500 DiviCoins?")) return; 
+        
+        // Optimistic UI update
+        const prevCoins = currentCoins;
+        currentCoins -= 500; 
+        hasBP = true; 
+        updateCoinDisplay();
+        updateBattlePassUI();
+        
+        try {
+            const { error } = await _supabase.from('profiles')
+                .update({ coins: currentCoins, has_battle_pass: true })
+                .eq('id', currentUser.id);
+                
+            if (error) throw error;
+            
+            AudioEngine.playSuccess(); 
+            alert("¡Pase desbloqueado! Reclama tus premios."); 
+        } catch(e) {
+            // Revert on failure
+            currentCoins = prevCoins;
+            hasBP = false;
+            updateCoinDisplay();
+            updateBattlePassUI();
+            alert("Error al comprar: " + e.message); 
+            console.error(e);
+        } 
+    }
 
     function populateLevelSelect() { const sel = document.getElementById('levelSelect'); sel.innerHTML = ''; for(let i=1; i<=TOTAL_LEVELS; i++) { let opt = document.createElement('option'); opt.value = i; opt.innerText = "Nivel " + i; if(i > unlockedLevel) { opt.disabled = true; opt.innerText += " 🔒"; } sel.appendChild(opt); } sel.value = currentMainLevel; }
     function updateUI() { document.getElementById('scoreDisplay').innerText = totalScore; const rI = getRankInfo(totalScore); document.getElementById('userRankName').innerText = rI.icon + " " + rI.name + " " + rI.tier; document.getElementById('userRankName').className = "rank-name " + rI.css; document.getElementById('userRankBar').style.width = rI.pct + "%"; const avatarBox = document.getElementById('main-avatar-box'); avatarBox.className = "avatar-container " + rI.avatar; }
@@ -873,9 +888,35 @@
     function showSeasonModal() { const hrs = prompt("Horas de temporada:", "0"); const mins = prompt("Minutos:", "0"); if(hrs || mins) startSeason(parseInt(hrs), parseInt(mins)); }
     async function startSeason(h, m) { if(h === 0 && m === 0) return alert("Ingresa tiempo."); const endTime = new Date(new Date().getTime() + (h * 3600000) + (m * 60000)); const { data: settings } = await _supabase.from('game_settings').select('season_number').single(); const nextSeason = (settings?.season_number || 0) + 1; try { await _supabase.from('game_settings').upsert({ id: 1, season_end_time: endTime.toISOString(), is_paused: false, exam_level: 0, season_number: nextSeason }); alert("¡Temporada " + nextSeason + " iniciada!"); loadDashboardData(); } catch(e) { alert("Error al iniciar."); } }
     async function toggleBan(uid, currentStatus) { try { await _supabase.from('profiles').update({ is_banned: !currentStatus }).eq('id', uid); loadDashboardData(); } catch(e) { alert("Error"); } }
-    async function cleanInactiveUsers() { if(!confirm("¿Borrar TODAS las cuentas con 0 puntos?")) return; try { await _supabase.from('profiles').delete().eq('total_score', 0).neq('username', ADMIN_USER); alert("Limpieza completada."); loadDashboardData(); } catch(e) { alert("Error: " + e.message); } }
+    
+    // FIX: LIMPIAR CUENTAS
+    async function cleanInactiveUsers() { 
+        if(!confirm("¿Borrar TODAS las cuentas inactivas (0 puntos o sin jugar)?")) return; 
+        try { 
+            const { error } = await _supabase.from('profiles')
+                .delete()
+                .or('total_score.eq.0,total_score.is.null') 
+                .neq('username', ADMIN_USER); 
+            
+            if(error) throw error; 
+            alert("Limpieza completada."); 
+            loadDashboardData(); 
+        } catch(e) { 
+            alert("Error: " + e.message); 
+        } 
+    }
+    
     async function deleteUser(uid, name) { if(!confirm(`¿Borrar la cuenta "${name}" permanentemente?`)) return; try { await _supabase.from('profiles').delete().eq('id', uid); alert(`Usuario ${name} eliminado.`); loadDashboardData(); } catch(e) { alert("Error al borrar: " + e.message); } }
-    async function resetAllUsers() { if(!confirm("¿Reiniciar TODOS los puntos y tiempo?")) return; try { await _supabase.from('profiles').update({ total_score: 0, current_level: 1, completed_at: null, current_problem: 1, total_time_played: 0, total_errors: 0, squad_id: 0, coins: 0, has_battle_pass: false, claimed_bp_rewards: {}, item_tomatoes: 0, item_shield_until: null }).neq('id', '00000000-0000-0000-0000-000000000000'); await _supabase.from('game_settings').update({ season_end_time: null, is_paused: false, exam_level: 0 }).eq('id', 1); alert("¡Reiniciado!"); loadDashboardData(); } catch(e) { alert("Error."); } }
+    
+    async function resetAllUsers() { if(!confirm("¿Reiniciar TODOS los puntos y tiempo?")) return; try { 
+        await _supabase.from('profiles').update({ 
+            total_score: 0, current_level: 1, completed_at: null, current_problem: 1, total_time_played: 0, total_errors: 0, squad_id: 0, coins: 0, has_battle_pass: false, claimed_bp_rewards: {}, item_tomatoes: 0, item_shield_until: null 
+        }).neq('id', '00000000-0000-0000-0000-000000000000'); 
+        
+        await _supabase.from('game_settings').update({ season_end_time: null, is_paused: false, exam_level: 0 }).eq('id', 1); 
+        alert("¡Reiniciado!"); loadDashboardData(); 
+    } catch(e) { alert("Error."); } }
+    
     async function assignSquad(userId, squadId) { try { await _supabase.from('profiles').update({ squad_id: squadId }).eq('id', userId); loadDashboardData(); } catch(e) { alert("Error al asignar escuadra"); } }
 
     // STUDENT CHECKS
@@ -902,7 +943,7 @@
         isProcessing = false; const btn = document.getElementById('btn-verify'); btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "Verificar";
         document.getElementById('subLevelCount').innerText = currentProblemInLevel; document.getElementById('progressBar').style.width = ((currentMainLevel - 1) / TOTAL_LEVELS) * 100 + '%'; populateLevelSelect();
         const d = DB[currentMainLevel]; if (d && d[currentProblemInLevel - 1]) { currentDividend = d[currentProblemInLevel - 1].d; currentDivisor = d[currentProblemInLevel - 1].div; }
-        const label = getDifficultyLabel(currentMainLevel); document.getElementById('difficultyLabel').innerText = label; createUI(); createAntena(); resetAll(); lockGrid(); hideReviewPanel();
+        const label = getDifficultyLabel(currentMainLevel); document.getElementById('difficultyLabel').innerText = label; createUI(); createAntena(); resetAll(); lockGrid();
     }
     function getDifficultyLabel(lvl) { if(lvl <= 2) return "Divisor: 1 Cifra"; if(lvl === 3 || lvl === 4 || lvl === 5 || lvl === 7 || lvl === 9) return "Divisor: 2 Cifras"; return "Divisor: 3 Cifras"; }
     
@@ -931,8 +972,7 @@
     function resetAll() { document.getElementById('valCociente').value=''; document.getElementById('valResiduo').value=''; document.querySelectorAll('.antena-input').forEach(i => { i.value=''; i.classList.remove('status-ok','status-wrong'); }); document.querySelectorAll('.input-cociente-galera').forEach(i => i.value=''); document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value=''; i.disabled=false; }); }
     
     // ============================================================
-    // ============================================================
-    // VERIFICAR SOLUCIÓN — V17.2 (SIN REVELAR RESPUESTA)
+    // VERIFICAR SOLUCIÓN — V17.3 (FIX FINAL)
     // ============================================================
     async function verificarSolucion() {
         if(isProcessing) return; if(isGridLocked) { alert("¡Completa la Antena!"); return; }
@@ -949,11 +989,9 @@
         let rR=currentDividend%currentDivisor;
 
         if(coc===rC && res===rR) {
-            // ✅ CORRECTO
             totalScore += POINTS; updateUI(); AudioEngine.playSuccess();
             let earnedCoins = 5;
 
-            // Incrementar racha
             incrementStreak();
             currentCoins += earnedCoins;
             updateCoinDisplay();
@@ -971,18 +1009,12 @@
             if(document.getElementById('victory-screen').style.display === 'flex') { setTimeout(() => { hideVictoryScreen(); loadProblem(); isProcessing = false; }, 3000); } 
             else { loadProblem(); isProcessing = false; }
         } else { 
-            // ❌ INCORRECTO
             AudioEngine.playError(); 
             
-            // CAMBIO: No mostrar la respuesta correcta aquí
             document.getElementById('msg').innerHTML="<span style='color:var(--error); font-weight:700; font-size:1.2rem;'>¡INCORRECTO! Revisa tus operaciones.</span>";
             
             totalErrors++; saveTime();
-
-            // Registrar error en historial (para revisión posterior)
             recordError(currentDividend, currentDivisor, coc, res, rC, rR);
-            
-            // Resetear racha
             resetStreak();
 
             isProcessing = false; btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "Verificar";
