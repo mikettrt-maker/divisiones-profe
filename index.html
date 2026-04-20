@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V12.7 (Layout Fix)</title>
+    <title>Reto de División - V13.0 (CriptoEconomía)</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -50,7 +50,6 @@
         .panel { background: var(--bg-panel); padding: 15px 25px; border-radius: 4px; box-shadow: 0 5px 15px rgba(0,0,0,0.5); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; border: 1px solid #333; }
         .level-select { padding: 8px 12px; border-radius: 2px; border: 1px solid var(--primary-color); background: black; color: var(--primary-color); font-family: 'Rajdhani', sans-serif; font-weight: 700; cursor: pointer; outline: none; text-transform: uppercase; }
         
-        /* V12.7: Nuevo contenedor para Avatar + Escuadra */
         .avatar-squad-wrapper { display: flex; flex-direction: column; align-items: center; gap: 5px; }
         
         .avatar-container { width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 2px solid var(--primary-color); background-color: #000; position: relative; box-shadow: 0 0 10px var(--primary-color); flex-shrink: 0; cursor: pointer; }
@@ -67,11 +66,15 @@
 
         .user-info-panel { display: flex; align-items: center; gap: 20px; }
         
-        /* V12.7: Display de Escuadra debajo del avatar */
         .squad-display { display: flex; flex-direction: column; align-items: center; }
         .squad-shield { width: 35px; height: 40px; }
         .squad-name-small { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
 
+        /* V13.0: Estilos de Monedas */
+        .coin-display-container { display: flex; align-items: center; gap: 5px; background: rgba(255, 204, 0, 0.1); padding: 5px 10px; border-radius: 20px; border: 1px solid var(--primary-color); }
+        .coin-icon { font-size: 1rem; color: var(--primary-color); }
+        .coin-count { font-family: 'Teko'; font-size: 1.2rem; font-weight: 700; color: var(--primary-color); line-height: 1; }
+        
         .rank-box { display: flex; flex-direction: column; align-items: center; background: black; padding: 5px 15px; border-radius: 4px; border: 1px solid #444; min-width: 120px; }
         .rank-name { font-size: 1rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
         .rank-progress { width: 100%; height: 4px; background: #333; border-radius: 0; margin-top: 4px; overflow: hidden; }
@@ -86,26 +89,12 @@
         .ranking-sidebar { flex: 1; background: var(--bg-panel); padding: 20px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); min-width: 280px; border: 1px solid #333; order: -1; }
         .ranking-title { font-size: 1.5rem; font-weight: 700; color: var(--primary-color); text-align: center; border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; margin-bottom: 15px; text-transform: uppercase; font-family: 'Teko', sans-serif; }
         
-        /* RANKING LIST */
         .ranking-list { list-style: none; padding: 0; margin: 0; max-height: 400px; overflow-y: auto; padding-right: 5px; }
-        .ranking-list::-webkit-scrollbar { width: 6px; }
-        .ranking-list::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
-        
         .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.03); border-left: 4px solid #333; transition: all 0.3s; position: relative; overflow: hidden; }
-        
-        /* ELITE RANK STYLES */
         .ranking-item.elite { background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), transparent); border-left: 4px solid var(--rank-gold); }
-        
-        /* RANK 1 LEGENDARY */
-        .ranking-item.rank-1 {
-            border: 2px solid #ffd700; 
-            background: linear-gradient(90deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.05)); 
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); 
-            animation: champGlow 2s infinite alternate;
-        }
+        .ranking-item.rank-1 { border: 2px solid #ffd700; background: linear-gradient(90deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.05)); box-shadow: 0 0 15px rgba(255, 215, 0, 0.3); animation: champGlow 2s infinite alternate; }
         .ranking-item.rank-1 .rank-name-list { color: #ffd700; font-size: 1.2rem; text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
         .ranking-item.rank-1 .list-avatar { border-color: #ffd700; box-shadow: 0 0 15px #ffd700; transform: scale(1.1); }
-        
         @keyframes champGlow { 0% { border-color: #ffd700; box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); } 100% { border-color: #fff; box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); } }
 
         .hall-of-fame { margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; background: transparent; position: relative; overflow: hidden; }
@@ -132,7 +121,7 @@
         .rank-tier-list { font-size: 0.7rem; font-weight: 700; opacity: 0.8; }
         .rank-score { font-weight: 700; color: var(--primary-color); font-size: 0.9rem; }
 
-        /* V12.6: Escuadra Ranking */
+        /* Escuadras */
         .squad-ranking-section { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; }
         .squad-list { list-style: none; padding: 0; margin: 0; }
         .squad-rank-item { display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.2); padding: 10px; margin-bottom: 8px; border-radius: 4px; border-left: 4px solid #444; }
@@ -175,12 +164,20 @@
         .status-ok { background-color: rgba(0, 230, 118, 0.2) !important; border-color: var(--success) !important; color: var(--success); }
         .status-wrong { background-color: rgba(255, 23, 68, 0.2) !important; border-color: var(--error) !important; color: var(--error); }
 
-        .controls { background: black; padding: 20px; border-radius: 4px; border: 1px solid #333; display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box; }
+        /* CONTROLES Y PASE DE BATALLA */
+        .controls { background: black; padding: 20px; border-radius: 4px; border: 1px solid #333; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box; }
         button { border: none; padding: 10px 24px; font-weight: 600; border-radius: 2px; cursor: pointer; font-size: 1.1rem; color: black; text-transform: uppercase; font-family: 'Rajdhani', sans-serif; transition: all 0.2s; }
         .btn-primary { background: var(--primary-color); box-shadow: 0 0 15px var(--primary-color); }
         .btn-small { font-size: 0.9rem; padding: 5px 10px; background: #333; color: #ccc; border: 1px solid #555; }
         #msg { width: 100%; text-align: center; font-weight: 600; margin-top: 10px; font-size: 1.1rem; }
 
+        /* V13.0: Pase de Batalla (Placeholder) */
+        .battle-pass-panel { width: 100%; background: #111; border: 1px solid #444; border-radius: 4px; padding: 10px; margin-top: 5px; display: flex; flex-direction: column; gap: 5px; }
+        .bp-header { display: flex; justify-content: space-between; font-size: 0.9rem; color: #aaa; font-weight: 700; text-transform: uppercase; }
+        .bp-progress-bar { height: 8px; background: #333; border-radius: 4px; overflow: hidden; position: relative; }
+        .bp-progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary-color), var(--success)); transition: width 0.5s; }
+        .bp-node { width: 16px; height: 16px; border-radius: 50%; background: #333; border: 2px solid #555; position: absolute; top: -4px; }
+        
         /* VICTORY SCREEN */
         #victory-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 99999; display: none; flex-direction: column; justify-content: center; align-items: center; }
         .victory-title { font-size: 7rem; color: var(--primary-color); font-weight: 700; text-shadow: 0 0 30px var(--primary-color); font-family: 'Teko', sans-serif; animation: scaleUp 0.3s; text-transform: uppercase; }
@@ -292,8 +289,6 @@
                 <button class="quick-btn" onclick="sendQuickChat('¡Ánimo! 💪')"><i class="fas fa-dumbbell"></i> ¡Ánimo!</button>
                 <button class="quick-btn" onclick="sendQuickChat('¡Genial! ⭐')"><i class="fas fa-star"></i> ¡Genial!</button>
                 <button class="quick-btn" onclick="sendQuickChat('¡Tú puedes! 🚀')"><i class="fas fa-rocket"></i> ¡Tú puedes!</button>
-                <button class="quick-btn" onclick="sendQuickChat('¡Crack! 🧠')"><i class="fas fa-brain"></i> ¡Crack!</button>
-                <button class="quick-btn" onclick="sendQuickChat('👍')"><i class="fas fa-thumbs-up"></i> Like</button>
             </div>
         </div>
     </div>
@@ -320,7 +315,6 @@
             <div class="progress-bar-container"><div class="progress-bar-fill" id="progressBar"></div></div>
             
             <div class="user-info-panel">
-                <!-- V12.7: Avatar y Escuadra juntos -->
                 <div class="avatar-squad-wrapper" onclick="toggleAvatarModal()" title="Cambiar Avatar">
                     <div class="avatar-container" id="main-avatar-box"><img id="main-avatar-img" class="avatar-img" src="" alt="Avatar"></div>
                     <div class="squad-display" id="squad-display" style="display:none;">
@@ -333,6 +327,13 @@
                      <div style="font-size: 0.8rem; color: #888;" id="difficultyLabel">...</div>
                      <div style="font-size: 0.9rem; color:#aaa;">Ej. <span id="subLevelCount">1</span>/10</div>
                 </div>
+                
+                <!-- V13.0: Monedas en el Header -->
+                <div class="coin-display-container" title="DiviCoins ganadas">
+                    <i class="fas fa-coins coin-icon"></i>
+                    <span class="coin-count" id="coinDisplay">0</span>
+                </div>
+
                 <div class="rank-box" id="userRankBox">
                     <div class="rank-name" id="userRankName">...</div>
                     <div class="rank-progress"><div class="rank-progress-bar" id="userRankBar" style="width: 0%"></div></div>
@@ -353,14 +354,6 @@
                         <div class="ctrl-btn" onclick="showSeasonModal()"><i class="fas fa-clock"></i><span>Temporada</span></div>
                         <div class="ctrl-btn danger" onclick="cleanInactiveUsers()"><i class="fas fa-broom"></i><span>Limpiar Cuentas</span></div>
                         <div class="ctrl-btn danger" onclick="resetAllUsers()"><i class="fas fa-redo"></i><span>Reiniciar Todo</span></div>
-                    </div>
-                    <div style="margin-top: 20px; border-top: 1px solid #333; padding-top: 15px;">
-                        <h4 style="color:var(--primary-color); margin:0 0 10px 0; text-transform:uppercase;">Leyenda</h4>
-                        <div style="font-size: 0.85rem; color: #aaa; display:flex; flex-direction:column; gap:5px;">
-                            <span><i class="fas fa-circle" style="color:var(--success); font-size:0.6rem; margin-right:5px;"></i> Conectado</span>
-                            <span><i class="fas fa-circle" style="color:#555; font-size:0.6rem; margin-right:5px;"></i> Desconectado</span>
-                            <span><i class="fas fa-skull" style="color:var(--error); font-size:0.7rem; margin-right:5px;"></i> Baneado</span>
-                        </div>
                     </div>
                 </div>
                 <div class="dash-card">
@@ -388,11 +381,29 @@
                         <div id="antenaBody"></div>
                     </div>
                 </div>
+                
+                <!-- CONTROLES Y PASE DE BATALLA -->
                 <div class="controls">
                     <input type="hidden" id="valCociente">
                     <button id="btn-verify" class="btn-primary" onclick="verificarSolucion()">Verificar</button>
+                    <div id="msg"></div>
+
+                    <!-- V13.0: Espacio para Pase de Batalla -->
+                    <div class="battle-pass-panel">
+                        <div class="bp-header">
+                            <span>Pase de Batalla</span>
+                            <span style="color:var(--primary-color)">Nivel 1</span>
+                        </div>
+                        <div class="bp-progress-bar">
+                            <div class="bp-progress-fill" style="width: 15%"></div>
+                            <!-- Nodos placeholder -->
+                            <div class="bp-node" style="left: 15%; background:var(--success); border-color:var(--success);"></div>
+                            <div class="bp-node" style="left: 40%;"></div>
+                            <div class="bp-node" style="left: 65%;"></div>
+                            <div class="bp-node" style="left: 90%;"></div>
+                        </div>
+                    </div>
                 </div>
-                <div id="msg"></div>
             </div>
             
             <div class="ranking-sidebar">
@@ -436,7 +447,11 @@
         const RANKS = [ { name: "Hierro", min: 0, max: 2999, icon: "🪨", css: "rank-iron", avatar: "avatar-iron" }, { name: "Bronce", min: 3000, max: 6999, icon: "🥉", css: "rank-bronze", avatar: "avatar-bronze" }, { name: "Plata", min: 7000, max: 12999, icon: "🥈", css: "rank-silver", avatar: "avatar-silver" }, { name: "Oro", min: 13000, max: 19999, icon: "🥇", css: "rank-gold", avatar: "avatar-gold" }, { name: "Platino", min: 20000, max: 29999, icon: "💠", css: "rank-platinum", avatar: "avatar-platinum" }, { name: "Diamante", min: 30000, max: 49999, icon: "💎", css: "rank-diamond", avatar: "avatar-diamond" }, { name: "Heroico", min: 50000, max: 999999, icon: "👑", css: "rank-heroic", avatar: "avatar-heroic" } ];
         function getRankInfo(score) { let rank = RANKS[0]; for(let i=0; i<RANKS.length; i++) { if(score >= RANKS[i].min) rank = RANKS[i]; } let tier = "I"; let range = rank.max - rank.min; if (score < rank.min + range/3) tier = "III"; else if (score < rank.min + (range/3)*2) tier = "II"; let pct = ((score - rank.min) / range) * 100; if(pct > 100) pct = 100; return { ...rank, tier: tier, pct: pct }; }
 
-        // V12.6: SQUADS
+        // V13.0: Variables de Monedas
+        let currentCoins = 0;
+        let lastCoinUpdate = Date.now(); 
+
+        // SQUADS
         const SQUADS = {
             1: { name: "Los Titanes", color: "#e74c3c", 
                 svg: `<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#2c0404" stroke="#e74c3c" stroke-width="4"/><path d="M30 60L45 75L70 40" stroke="#e74c3c" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>` },
@@ -472,10 +487,10 @@
 
         async function handleLogin() { const u = document.getElementById('login-username').value.trim(); const p = document.getElementById('login-password').value; const e = document.getElementById('login-error'); if (!u || p.length < 6) { e.textContent = "Datos incompletos."; e.style.display='block'; return; } try { const { data, error } = await _supabase.auth.signInWithPassword({ email: u+"@profemiguel.com", password: p }); if (error) throw error; currentUser = data.user; showApp(); } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; } }
         async function handleRegister() { const u = document.getElementById('login-username').value.trim(); const p = document.getElementById('login-password').value; const e = document.getElementById('login-error'); if (!u || p.length < 6) { e.textContent = "Datos incompletos."; e.style.display='block'; return; } try { const { data, error } = await _supabase.auth.signUp({ email: u+"@profemiguel.com", password: p }); if (error) throw error; alert("Registrado. Entra ahora."); } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; } }
-        async function logout() { await _supabase.auth.signOut(); currentUser=null; totalScore=0; showLogin(); clearInterval(rankInt); }
+        async function logout() { await _supabase.auth.signOut(); currentUser=null; totalScore=0; currentCoins=0; showLogin(); clearInterval(rankInt); }
 
         async function loadScore(user) {
-            try { const { data } = await _supabase.from('profiles').select('total_score, avatar_style, current_level, completed_at, is_banned, current_problem, total_time_played, total_errors, squad_id').eq('id', user.id).single(); 
+            try { const { data } = await _supabase.from('profiles').select('total_score, avatar_style, current_level, completed_at, is_banned, current_problem, total_time_played, total_errors, squad_id, coins').eq('id', user.id).single(); 
                 if(data && data.is_banned) { alert("Tu cuenta está suspendida temporalmente."); logout(); return; }
                 totalScore = (data && data.total_score) ? data.total_score : 0; 
                 currentAvatarStyle = (data && data.avatar_style) ? data.avatar_style : 'adventurer'; 
@@ -486,7 +501,10 @@
                 playTimeCounter = (data && data.total_time_played) ? data.total_time_played : 0;
                 totalErrors = (data && data.total_errors) ? data.total_errors : 0;
                 
-                // V12.7: Cargar Escuadra
+                // V13.0: Cargar Monedas
+                currentCoins = (data && data.coins) ? data.coins : 0;
+                updateCoinDisplay();
+
                 if(data.squad_id && SQUADS[data.squad_id]) {
                     const squad = SQUADS[data.squad_id];
                     document.getElementById('squad-display').style.display = 'flex';
@@ -497,9 +515,15 @@
                     document.getElementById('squad-display').style.display = 'none';
                 }
 
-            } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1; currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0; totalErrors = 0; }
+            } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1; currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0; totalErrors = 0; currentCoins = 0; }
             isAdmin = (user.email.split('@')[0] === ADMIN_USER); document.getElementById('admin-header-btn').classList.toggle('visible', isAdmin); if(hasFinishedGame) document.getElementById('msg').innerHTML = "<span style='color:var(--primary-color);'>¡Ya terminaste!</span>"; currentMainLevel = unlockedLevel; populateLevelSelect(); updateUI(); renderMainAvatar();
         }
+        
+        // V13.0: Función para mostrar monedas
+        function updateCoinDisplay() {
+            document.getElementById('coinDisplay').innerText = currentCoins;
+        }
+
         function populateLevelSelect() { const sel = document.getElementById('levelSelect'); sel.innerHTML = ''; for(let i=1; i<=TOTAL_LEVELS; i++) { let opt = document.createElement('option'); opt.value = i; opt.innerText = "Nivel " + i; if(i > unlockedLevel) { opt.disabled = true; opt.innerText += " 🔒"; } sel.appendChild(opt); } sel.value = currentMainLevel; }
         function updateUI() { document.getElementById('scoreDisplay').innerText = totalScore; const rI = getRankInfo(totalScore); document.getElementById('userRankName').innerText = rI.icon + " " + rI.name + " " + rI.tier; document.getElementById('userRankName').className = "rank-name " + rI.css; document.getElementById('userRankBar').style.width = rI.pct + "%"; const avatarBox = document.getElementById('main-avatar-box'); avatarBox.className = "avatar-container " + rI.avatar; }
         function getAvatarUrl(seed, style) { return `https://api.dicebear.com/8.x/${style}/svg?seed=${seed}`; }
@@ -508,10 +532,9 @@
         function renderAvatarOptions() { const gridStandard = document.getElementById('avatar-options-standard'); const gridExclusive = document.getElementById('avatar-options-exclusive'); const exclusiveSection = document.getElementById('exclusive-section'); gridStandard.innerHTML = ''; gridExclusive.innerHTML = ''; const seed = currentUser.email.split('@')[0]; const isHeroic = totalScore >= 50000; AVATAR_STYLES_STANDARD.forEach(style => { let div = document.createElement('div'); div.className = 'avatar-option' + (currentAvatarStyle === style.id ? ' selected' : ''); div.onclick = () => selectAvatarStyle(style.id); div.innerHTML = `<img src="${getAvatarUrl(seed, style.id)}"><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`; gridStandard.appendChild(div); }); if(isHeroic) { exclusiveSection.style.display = 'block'; AVATAR_STYLES_EXCLUSIVE.forEach(style => { let div = document.createElement('div'); div.className = 'avatar-option' + (currentAvatarStyle === style.id ? ' selected' : ''); div.onclick = () => selectAvatarStyle(style.id); div.innerHTML = `<img src="${getAvatarUrl(seed, style.id)}"><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`; gridExclusive.appendChild(div); }); } else { exclusiveSection.style.display = 'block'; AVATAR_STYLES_EXCLUSIVE.forEach(style => { let div = document.createElement('div'); div.className = 'avatar-option avatar-locked'; div.innerHTML = `<img src="${getAvatarUrl('demo', style.id)}"><div class="lock-icon"><i class="fas fa-lock"></i></div><span style="font-size:0.7rem; font-weight:600; display:block;">${style.name}</span>`; gridExclusive.appendChild(div); }); } }
         function selectAvatarStyle(styleId) { const isExclusive = AVATAR_STYLES_EXCLUSIVE.some(s => s.id === styleId); if(isExclusive && totalScore < 50000) { alert("¡Este avatar es exclusivo!"); return; } currentAvatarStyle = styleId; renderAvatarOptions(); renderMainAvatar(); }
         async function saveAvatarChoice() { AudioEngine.playClick(); await _supabase.from('profiles').upsert({ id: currentUser.id, avatar_style: currentAvatarStyle }); toggleAvatarModal(); updateRanking(); }
-        async function saveScore() { if (!currentUser) return; try { await _supabase.from('profiles').upsert({ id: currentUser.id, username: currentUser.email.split('@')[0], total_score: totalScore, current_level: unlockedLevel, current_problem: currentProblemInLevel }); updateRanking(); } catch(e) { console.error(e); } }
+        async function saveScore() { if (!currentUser) return; try { await _supabase.from('profiles').upsert({ id: currentUser.id, username: currentUser.email.split('@')[0], total_score: totalScore, current_level: unlockedLevel, current_problem: currentProblemInLevel, coins: currentCoins }); updateRanking(); } catch(e) { console.error(e); } }
         let rankInt; function startRanking() { updateRanking(); rankInt = setInterval(updateRanking, 5000); }
         
-        // Ranking + Squad Shield
         async function updateRanking() { 
             const list = document.getElementById('ranking-list'); 
             try { 
@@ -566,7 +589,6 @@
 
         async function loadHallOfFame() { const list = document.getElementById('fame-list'); try { const { data, error } = await _supabase.from('profiles').select('username, completed_at').not('completed_at', 'is', null).order('completed_at', { ascending: true }).limit(5); if(error) throw error; if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; color:#555; font-size:0.8rem; padding:10px;">Nadie ha terminado aún</li>'; return; } list.innerHTML = data.map(u => { const date = new Date(u.completed_at); const timeStr = date.toLocaleDateString() + " " + date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}); return `<li class="fame-item"><i class="fas fa-medal" style="color:var(--primary-color)"></i> <span>${u.username}</span> <span class="fame-time">${timeStr}</span></li>`; }).join(''); } catch(e) { console.error(e); } }
         
-        // Chat System
         function initChat() { 
             const channel = _supabase.channel('public:chat_messages'); 
             channel.on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chat_messages' }, payload => { addChatMessage(payload.new); }).subscribe(); 
@@ -644,13 +666,14 @@
                 if(error) throw error; 
                 const now = new Date(); const onlineThreshold = 30000; 
                 
+                let squadOptionsHtml = Object.entries(SQUADS).map(([id, s]) => `<option value="${id}">${s.name}</option>`).join('');
+
                 grid.innerHTML = students.map(u => { 
                     const isOnline = u.last_seen && (now - new Date(u.last_seen) < onlineThreshold); const isBanned = u.is_banned; const mins = u.total_time_played ? Math.floor(u.total_time_played / 60) : 0; const secs = u.total_time_played ? u.total_time_played % 60 : 0; const timeStr = `${mins}m ${secs}s`; 
                     
-                    // FIX: Generar opciones dentro del mapa para seleccionar la correcta
-                    let squadOptionsHtml = `<option value="0" ${u.squad_id == 0 ? 'selected' : ''}>Sin Escuadra</option>`;
+                    let selectedSquadHtml = `<option value="0" ${u.squad_id == 0 ? 'selected' : ''}>Sin Escuadra</option>`;
                     Object.entries(SQUADS).forEach(([id, s]) => {
-                        squadOptionsHtml += `<option value="${id}" ${u.squad_id == id ? 'selected' : ''}>${s.name}</option>`;
+                        selectedSquadHtml += `<option value="${id}" ${u.squad_id == id ? 'selected' : ''}>${s.name}</option>`;
                     });
 
                     return `<div class="student-card ${isOnline && !isBanned ? '' : 'offline'}">
@@ -669,7 +692,7 @@
                         </div>
                         <div class="sc-squad-control">
                             <select class="squad-select-admin" onchange="assignSquad('${u.id}', this.value)">
-                                ${squadOptionsHtml}
+                                ${selectedSquadHtml}
                             </select>
                         </div>
                         <div class="sc-actions">
@@ -690,9 +713,8 @@
         async function toggleBan(uid, currentStatus) { try { await _supabase.from('profiles').update({ is_banned: !currentStatus }).eq('id', uid); loadDashboardData(); } catch(e) { alert("Error"); } }
         async function cleanInactiveUsers() { if(!confirm("¿Borrar TODAS las cuentas con 0 puntos?")) return; try { await _supabase.from('profiles').delete().eq('total_score', 0).neq('username', ADMIN_USER); alert("Limpieza completada."); loadDashboardData(); } catch(e) { alert("Error: " + e.message); } }
         async function deleteUser(uid, name) { if(!confirm(`¿Borrar la cuenta "${name}" permanentemente?`)) return; try { await _supabase.from('profiles').delete().eq('id', uid); alert(`Usuario ${name} eliminado.`); loadDashboardData(); } catch(e) { alert("Error al borrar: " + e.message); } }
-        async function resetAllUsers() { if(!confirm("¿Reiniciar TODOS los puntos y tiempo?")) return; try { await _supabase.from('profiles').update({ total_score: 0, current_level: 1, completed_at: null, current_problem: 1, total_time_played: 0, total_errors: 0, squad_id: 0 }).neq('id', '00000000-0000-0000-0000-000000000000'); await _supabase.from('game_settings').update({ season_end_time: null, is_paused: false, exam_level: 0 }).eq('id', 1); alert("¡Reiniciado!"); loadDashboardData(); } catch(e) { alert("Error."); } }
+        async function resetAllUsers() { if(!confirm("¿Reiniciar TODOS los puntos y tiempo?")) return; try { await _supabase.from('profiles').update({ total_score: 0, current_level: 1, completed_at: null, current_problem: 1, total_time_played: 0, total_errors: 0, squad_id: 0, coins: 0 }).neq('id', '00000000-0000-0000-0000-000000000000'); await _supabase.from('game_settings').update({ season_end_time: null, is_paused: false, exam_level: 0 }).eq('id', 1); alert("¡Reiniciado!"); loadDashboardData(); } catch(e) { alert("Error."); } }
         
-        // V12.6: Assign Squad
         async function assignSquad(userId, squadId) { try { await _supabase.from('profiles').update({ squad_id: squadId }).eq('id', userId); loadDashboardData(); } catch(e) { alert("Error al asignar escuadra"); } }
 
         // --- STUDENT CHECKS ---
@@ -751,7 +773,15 @@
             let rC=Math.floor(currentDividend/currentDivisor); let rR=currentDividend%currentDivisor;
             if(coc===rC && res===rR) {
                 totalScore += POINTS; updateUI(); AudioEngine.playSuccess();
-                document.getElementById('msg').innerHTML="<span style='color:var(--success); font-weight:700; font-size:1.2rem;'>¡CORRECTO! +"+POINTS+"</span>";
+                
+                // V13.0: PAGO POR ÉXITO (MINADO DE DIVICOINS)
+                let earnedCoins = 5; // Base
+                currentCoins += earnedCoins;
+                updateCoinDisplay();
+                // Guardado optimizado (se guarda en saveScore para no hacer muchas llamadas)
+                
+                document.getElementById('msg').innerHTML="<span style='color:var(--success); font-weight:700; font-size:1.2rem;'>¡CORRECTO! +"+POINTS+" pts & +"+earnedCoins+" 💰</span>";
+                
                 if(currentProblemInLevel < PROBLEMS_PER_LEVEL) { currentProblemInLevel++; } else { if(currentMainLevel < TOTAL_LEVELS) { unlockedLevel = currentMainLevel + 1; currentMainLevel++; currentProblemInLevel = 1; showVictoryScreen(); } else { hasFinishedGame = true; const completed_at = new Date().toISOString(); await _supabase.from('profiles').update({ completed_at: completed_at }).eq('id', currentUser.id); loadHallOfFame(); await saveScore(); isProcessing = false; return; } }
                 await saveTime(); await saveScore();
                 if(document.getElementById('victory-screen').classList.contains('show')) { setTimeout(() => { hideVictoryScreen(); loadProblem(); isProcessing = false; }, 3000); } else { loadProblem(); isProcessing = false; }
