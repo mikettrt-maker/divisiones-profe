@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V14.1 (Fixed)</title>
+    <title>Reto de División - V14.2 (Banner Izquierda)</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -20,20 +20,34 @@
         .main-header { width: 100%; background: linear-gradient(90deg, #000000, #1a1a1a); color: var(--primary-color); padding: 15px 0; text-align: center; box-shadow: 0 4px 20px rgba(255, 204, 0, 0.2); border-bottom: 2px solid var(--primary-color); display: flex; justify-content: center; align-items: center; gap: 20px; position: relative; }
         .main-header h1 { margin: 0; font-size: 2.2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-family: 'Teko', sans-serif; }
         
-        /* V14.1: Banner de Temporada (Debajo del título a la derecha) */
+        /* V14.2: Banner de Temporada IZQUIERDA con MOVIMIENTO */
         .season-banner-top {
             position: absolute;
-            top: 5px;
-            right: 20px;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
             font-family: 'Teko';
-            font-size: 1rem;
-            color: rgba(255, 204, 0, 0.7);
+            font-size: 1.4rem;
+            color: var(--primary-color);
             letter-spacing: 1px;
             text-transform: uppercase;
             z-index: 10;
+            width: 220px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-align: left;
+        }
+        .marquee-text {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marqueeScroll 12s linear infinite;
+        }
+        @keyframes marqueeScroll {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(-100%, 0); }
         }
 
-        /* RELOJ GRANDE */
+        /* RELOJ GRANDE (Se mantiene a la derecha) */
         .season-badge { 
             position: absolute; 
             top: 50%; 
@@ -320,12 +334,18 @@
     <div id="avatar-modal" style="display:none; background: rgba(0,0,0,0.9);" onclick="if(event.target.id === 'avatar-modal') toggleAvatarModal()"><div class="modal-box"><h3 style="margin:0 0 10px 0; color:var(--primary-color); font-family:'Teko'; font-size:1.8rem; text-transform:uppercase;">Personaje</h3><div class="modal-section"><h4>Estándar</h4><div class="avatar-grid" id="avatar-options-standard"></div></div><div class="modal-section" id="exclusive-section" style="display:none;"><h4 style="color:var(--error);"> <i class="fas fa-lock-open"></i> Exclusivos Heroico</h4><div class="avatar-grid" id="avatar-options-exclusive"></div></div><button class="btn-primary" onclick="saveAvatarChoice()">Guardar</button></div></div>
 
     <header class="main-header">
+        <!-- RELOJ (Derecha) -->
         <div class="season-badge" id="season-badge">
             <i class="fas fa-clock"></i> <span class="timer-display" id="timer-display">--:--</span>
         </div>
+        
         <h1>Prof. Miguel</h1>
-        <!-- V14.1: Banner de Temporada -->
-        <div class="season-banner-top">FreeDivisión Temporada <span id="season-num-display">1</span></div>
+        
+        <!-- V14.2: Banner Izquierda con Movimiento -->
+        <div class="season-banner-top">
+            <div class="marquee-text">FreeDivisión Temporada <span id="season-num-display">1</span></div>
+        </div>
+        
         <span style="color:#888; font-size:0.9rem;">Reto de División</span>
         <button id="admin-header-btn" class="admin-btn" onclick="toggleAdminDashboard()"><i class="fas fa-user-shield"></i> Panel Admin</button>
     </header>
@@ -380,7 +400,7 @@
                         <div class="ctrl-btn danger" onclick="resetAllUsers()"><i class="fas fa-redo"></i><span>Reiniciar Todo</span></div>
                     </div>
 
-                    <!-- V14.1: Tabla de Escuadras -->
+                    <!-- Tabla de Escuadras -->
                     <div class="squad-table-container">
                         <div class="dash-title" style="font-size:1.2rem; border:none; margin-bottom:5px; padding-bottom:0;">Estado Escuadras</div>
                         <table class="squad-admin-table">
@@ -688,7 +708,7 @@
         }
         async function saveTime() { if(!currentUser) return; try { await _supabase.from('profiles').update({ total_time_played: playTimeCounter, total_errors: totalErrors }).eq('id', currentUser.id); } catch(e) { console.error(e); } }
 
-        // --- ADMIN DASHBOARD LOGIC ---
+        // --- ADMIN DASHBOARD LOGIC (FIXED) ---
         function showAdminDashboard() { document.getElementById('game-layout').style.display = 'none'; document.getElementById('top-bar-panel').style.display = 'none'; document.getElementById('admin-dashboard').style.display = 'flex'; loadDashboardData(); setInterval(loadDashboardData, 5000); }
         function toggleAdminDashboard() { if(document.getElementById('admin-dashboard').style.display === 'flex') { logout(); } else { showAdminDashboard(); } }
         
@@ -701,7 +721,7 @@
                 if(error) throw error; 
                 const now = new Date(); const onlineThreshold = 30000; 
                 
-                // V14.1: Calcular datos de escuadras
+                // Squad Stats Logic
                 let squadStats = {};
                 Object.keys(SQUADS).forEach(id => squadStats[id] = { count: 0, score: 0 });
                 students.forEach(u => {
@@ -710,7 +730,7 @@
                         squadStats[u.squad_id].score += (u.total_score || 0);
                     }
                 });
-                // Renderizar tabla de escuadras
+                // Render Table
                 const tbody = document.getElementById('squad-admin-tbody');
                 tbody.innerHTML = Object.entries(squadStats).map(([id, stats]) => {
                     const squad = SQUADS[id];
@@ -722,7 +742,7 @@
                     </tr>`;
                 }).join('');
 
-                // Renderizar tarjetas de alumnos
+                // Student Cards
                 grid.innerHTML = students.map(u => { 
                     const isOnline = u.last_seen && (now - new Date(u.last_seen) < onlineThreshold); const isBanned = u.is_banned; const mins = u.total_time_played ? Math.floor(u.total_time_played / 60) : 0; const secs = u.total_time_played ? u.total_time_played % 60 : 0; const timeStr = `${mins}m ${secs}s`; 
                     
@@ -760,7 +780,6 @@
             } catch(e) { console.error(e); grid.innerHTML = "Error al cargar datos"; } 
         }
 
-        // V14.1: Protección contra null
         function updateControlButtons(settings) { 
             const pauseBtn = document.getElementById('btn-pause'); 
             const examBtn = document.getElementById('btn-exam'); 
