@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V14.0 (Panel Escuadras)</title>
+    <title>Reto de División - V14.1 (Fixed)</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -17,40 +17,28 @@
         }
         body { margin: 0; font-family: 'Rajdhani', sans-serif; background-color: var(--bg-dark); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
-        .main-header { width: 100%; background: linear-gradient(90deg, #000000, #1a1a1a); color: var(--primary-color); padding: 15px 0; text-align: center; box-shadow: 0 4px 20px rgba(255, 204, 0, 0.2); border-bottom: 2px solid var(--primary-color); display: flex; justify-content: center; align-items: center; gap: 20px; position: relative; height: 80px; box-sizing: border-box; }
+        .main-header { width: 100%; background: linear-gradient(90deg, #000000, #1a1a1a); color: var(--primary-color); padding: 15px 0; text-align: center; box-shadow: 0 4px 20px rgba(255, 204, 0, 0.2); border-bottom: 2px solid var(--primary-color); display: flex; justify-content: center; align-items: center; gap: 20px; position: relative; }
         .main-header h1 { margin: 0; font-size: 2.2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-family: 'Teko', sans-serif; }
         
-        /* V14.0: Banner de Temporada Arriba del Reloj */
+        /* V14.1: Banner de Temporada (Debajo del título a la derecha) */
         .season-banner-top {
             position: absolute;
-            top: 8px;
+            top: 5px;
             right: 20px;
-            background: linear-gradient(90deg, transparent, rgba(255, 204, 0, 0.1), transparent);
-            color: var(--primary-color);
-            padding: 0 10px;
             font-family: 'Teko';
             font-size: 1rem;
+            color: rgba(255, 204, 0, 0.7);
             letter-spacing: 1px;
-            white-space: nowrap;
-            overflow: hidden;
-            width: 200px;
-            text-align: right;
-        }
-        .marquee-text {
-            display: inline-block;
-            animation: marqueeScroll 8s linear infinite;
-            padding-left: 100%;
-        }
-        @keyframes marqueeScroll {
-            0% { transform: translate(0, 0); }
-            100% { transform: translate(-100%, 0); }
+            text-transform: uppercase;
+            z-index: 10;
         }
 
         /* RELOJ GRANDE */
         .season-badge { 
             position: absolute; 
-            top: 28px; 
+            top: 50%; 
             right: 20px; 
+            transform: translateY(-50%); 
             background: rgba(0,0,0,0.8); 
             color: var(--primary-color); 
             padding: 5px 20px; 
@@ -249,7 +237,7 @@
         .ctrl-btn.danger { border-color: var(--error); color: var(--error); }
         .ctrl-btn.danger:hover { background: var(--error); color: white; }
 
-        /* V14.0: Tabla de Escuadras en Admin */
+        /* V14.1: Tabla de Escuadras en Admin */
         .squad-table-container { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; }
         .squad-admin-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
         .squad-admin-table th { text-align: left; color: #888; padding: 8px 4px; border-bottom: 1px solid #444; font-size: 0.8rem; text-transform: uppercase; }
@@ -335,13 +323,9 @@
         <div class="season-badge" id="season-badge">
             <i class="fas fa-clock"></i> <span class="timer-display" id="timer-display">--:--</span>
         </div>
-        
-        <!-- V14.0: Banner de Temporada -->
-        <div class="season-banner-top">
-            <div class="marquee-text">FreeDivisión Temporada <span id="season-num-display">1</span></div>
-        </div>
-
         <h1>Prof. Miguel</h1>
+        <!-- V14.1: Banner de Temporada -->
+        <div class="season-banner-top">FreeDivisión Temporada <span id="season-num-display">1</span></div>
         <span style="color:#888; font-size:0.9rem;">Reto de División</span>
         <button id="admin-header-btn" class="admin-btn" onclick="toggleAdminDashboard()"><i class="fas fa-user-shield"></i> Panel Admin</button>
     </header>
@@ -368,7 +352,7 @@
                      <div style="font-size: 0.9rem; color:#aaa;">Ej. <span id="subLevelCount">1</span>/10</div>
                 </div>
                 
-                <!-- Monedas en el Header -->
+                <!-- Monedas -->
                 <div class="coin-display-container" title="DiviCoins ganadas">
                     <i class="fas fa-coins coin-icon"></i>
                     <span class="coin-count" id="coinDisplay">0</span>
@@ -396,7 +380,7 @@
                         <div class="ctrl-btn danger" onclick="resetAllUsers()"><i class="fas fa-redo"></i><span>Reiniciar Todo</span></div>
                     </div>
 
-                    <!-- V14.0: Tabla de Escuadras -->
+                    <!-- V14.1: Tabla de Escuadras -->
                     <div class="squad-table-container">
                         <div class="dash-title" style="font-size:1.2rem; border:none; margin-bottom:5px; padding-bottom:0;">Estado Escuadras</div>
                         <table class="squad-admin-table">
@@ -409,7 +393,7 @@
                                 </tr>
                             </thead>
                             <tbody id="squad-admin-tbody">
-                                <!-- Se llena dinámicamente -->
+                                <tr><td colspan="4" style="text-align:center; color:#555;">Cargando...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -558,7 +542,6 @@
                 playTimeCounter = (data && data.total_time_played) ? data.total_time_played : 0;
                 totalErrors = (data && data.total_errors) ? data.total_errors : 0;
                 
-                // Monedas
                 currentCoins = (data && data.coins) ? data.coins : 0;
                 updateCoinDisplay();
 
@@ -568,17 +551,13 @@
                     document.getElementById('user-squad-shield').innerHTML = squad.svg;
                     document.getElementById('user-squad-name').innerText = squad.name;
                     document.getElementById('user-squad-name').style.color = squad.color;
-                } else {
-                    document.getElementById('squad-display').style.display = 'none';
-                }
+                } else { document.getElementById('squad-display').style.display = 'none'; }
 
             } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1; currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0; totalErrors = 0; currentCoins = 0; }
             isAdmin = (user.email.split('@')[0] === ADMIN_USER); document.getElementById('admin-header-btn').classList.toggle('visible', isAdmin); if(hasFinishedGame) document.getElementById('msg').innerHTML = "<span style='color:var(--primary-color);'>¡Ya terminaste!</span>"; currentMainLevel = unlockedLevel; populateLevelSelect(); updateUI(); renderMainAvatar();
         }
         
-        function updateCoinDisplay() {
-            document.getElementById('coinDisplay').innerText = currentCoins;
-        }
+        function updateCoinDisplay() { document.getElementById('coinDisplay').innerText = currentCoins; }
 
         function populateLevelSelect() { const sel = document.getElementById('levelSelect'); sel.innerHTML = ''; for(let i=1; i<=TOTAL_LEVELS; i++) { let opt = document.createElement('option'); opt.value = i; opt.innerText = "Nivel " + i; if(i > unlockedLevel) { opt.disabled = true; opt.innerText += " 🔒"; } sel.appendChild(opt); } sel.value = currentMainLevel; }
         function updateUI() { document.getElementById('scoreDisplay').innerText = totalScore; const rI = getRankInfo(totalScore); document.getElementById('userRankName').innerText = rI.icon + " " + rI.name + " " + rI.tier; document.getElementById('userRankName').className = "rank-name " + rI.css; document.getElementById('userRankBar').style.width = rI.pct + "%"; const avatarBox = document.getElementById('main-avatar-box'); avatarBox.className = "avatar-container " + rI.avatar; }
@@ -722,7 +701,7 @@
                 if(error) throw error; 
                 const now = new Date(); const onlineThreshold = 30000; 
                 
-                // V14.0: Calcular datos de escuadras
+                // V14.1: Calcular datos de escuadras
                 let squadStats = {};
                 Object.keys(SQUADS).forEach(id => squadStats[id] = { count: 0, score: 0 });
                 students.forEach(u => {
@@ -745,7 +724,7 @@
 
                 // Renderizar tarjetas de alumnos
                 grid.innerHTML = students.map(u => { 
-                    const isOnline = u.last_seen && (now - new Date(u.last_seen) < onlineThreshold); const isBanned = u.is_banned; const mins = u.total_time_played ? Math.floor(u.total_time_played / 60) : 0; const secs = u.total_time_played ? u.total_time_played % 60 : 0; const timeStr = `${mins}m ${secs}s; 
+                    const isOnline = u.last_seen && (now - new Date(u.last_seen) < onlineThreshold); const isBanned = u.is_banned; const mins = u.total_time_played ? Math.floor(u.total_time_played / 60) : 0; const secs = u.total_time_played ? u.total_time_played % 60 : 0; const timeStr = `${mins}m ${secs}s`; 
                     
                     let selectedSquadHtml = `<option value="0" ${u.squad_id == 0 ? 'selected' : ''}>Sin Escuadra</option>`;
                     Object.entries(SQUADS).forEach(([id, s]) => {
@@ -778,15 +757,24 @@
                     </div>`; 
                 }).join(''); 
                 const onlineCount = students.filter(u => (now - new Date(u.last_seen) < 30000) && !u.is_banned).length; document.getElementById('student-count').innerText = onlineCount + " en línea"; 
-            } catch(e) { console.error(e); grid.innerHTML = "Error"; } 
+            } catch(e) { console.error(e); grid.innerHTML = "Error al cargar datos"; } 
         }
 
-        function updateControlButtons(settings) { const pauseBtn = document.getElementById('btn-pause'); const examBtn = document.getElementById('btn-exam'); if(settings.is_paused) { pauseBtn.classList.add('active'); pauseBtn.querySelector('span').innerText = "Reanudar"; } else { pauseBtn.classList.remove('active'); pauseBtn.querySelector('span').innerText = "Pausar Juego"; } if(settings.exam_level && settings.exam_level > 0) { examBtn.classList.add('active'); examBtn.querySelector('span').innerText = "Fin Examen"; } else { examBtn.classList.remove('active'); examBtn.querySelector('span').innerText = "Modo Examen"; } }
+        // V14.1: Protección contra null
+        function updateControlButtons(settings) { 
+            const pauseBtn = document.getElementById('btn-pause'); 
+            const examBtn = document.getElementById('btn-exam'); 
+            if(settings) {
+                if(settings.is_paused) { pauseBtn.classList.add('active'); pauseBtn.querySelector('span').innerText = "Reanudar"; } 
+                else { pauseBtn.classList.remove('active'); pauseBtn.querySelector('span').innerText = "Pausar Juego"; } 
+                if(settings.exam_level && settings.exam_level > 0) { examBtn.classList.add('active'); examBtn.querySelector('span').innerText = "Fin Examen"; } 
+                else { examBtn.classList.remove('active'); examBtn.querySelector('span').innerText = "Modo Examen"; } 
+            }
+        }
         async function togglePause() { const { data: settings } = await _supabase.from('game_settings').select('is_paused').single(); const newState = !settings.is_paused; await _supabase.from('game_settings').update({ is_paused: newState }).eq('id', 1); loadDashboardData(); }
         async function toggleExamMode() { const { data: settings } = await _supabase.from('game_settings').select('exam_level').single(); const newLevel = settings.exam_level > 0 ? 0 : 1; await _supabase.from('game_settings').update({ exam_level: newLevel, is_paused: false }).eq('id', 1); loadDashboardData(); }
         function showSeasonModal() { const hrs = prompt("Horas de temporada:", "0"); const mins = prompt("Minutos:", "0"); if(hrs || mins) startSeason(parseInt(hrs), parseInt(mins)); }
         async function startSeason(h, m) { if(h === 0 && m === 0) return alert("Ingresa tiempo."); const endTime = new Date(new Date().getTime() + (h * 3600000) + (m * 60000)); 
-            // V14.0: Incrementar número de temporada
             const { data: settings } = await _supabase.from('game_settings').select('season_number').single();
             const nextSeason = (settings?.season_number || 0) + 1;
             try { await _supabase.from('game_settings').upsert({ id: 1, season_end_time: endTime.toISOString(), is_paused: false, exam_level: 0, season_number: nextSeason }); alert("¡Temporada " + nextSeason + " iniciada!"); loadDashboardData(); } catch(e) { alert("Error al iniciar."); } 
@@ -799,14 +787,13 @@
         async function assignSquad(userId, squadId) { try { await _supabase.from('profiles').update({ squad_id: squadId }).eq('id', userId); loadDashboardData(); } catch(e) { alert("Error al asignar escuadra"); } }
 
         // --- STUDENT CHECKS ---
-        async function checkGlobalState() { if(isAdmin) return; try { const { data } = await _supabase.from('game_settings').select('*').single(); if(data.is_paused) { lockGrid(); document.getElementById('msg').innerHTML = "<span style='color:var(--error); font-size:1.5rem;'>⏸️ JUEGO PAUSADO POR EL PROFESOR</span>"; return false; } if(data.exam_level > 0) { if(currentMainLevel !== data.exam_level) { currentMainLevel = data.exam_level; unlockedLevel = data.exam_level; loadProblem(); alert("Modo Examen: Nivel " + data.exam_level); } } return true; } catch(e) { return true; } }
+        async function checkGlobalState() { if(isAdmin) return; try { const { data } = await _supabase.from('game_settings').select('*').single(); if(data && data.is_paused) { lockGrid(); document.getElementById('msg').innerHTML = "<span style='color:var(--error); font-size:1.5rem;'>⏸️ JUEGO PAUSADO POR EL PROFESOR</span>"; return false; } if(data && data.exam_level > 0) { if(currentMainLevel !== data.exam_level) { currentMainLevel = data.exam_level; unlockedLevel = data.exam_level; loadProblem(); alert("Modo Examen: Nivel " + data.exam_level); } } return true; } catch(e) { return true; } }
 
         // --- SEASON LOGIC ---
         let seasonInterval;
         async function initSeason(settings) { 
             let data = settings; 
             if(!data) { const res = await _supabase.from('game_settings').select('season_end_time, season_number').eq('id', 1).single(); data = res.data; } 
-            // V14.0: Update Season Number Display
             const seasonNum = (data && data.season_number) ? data.season_number : 1;
             document.getElementById('season-num-display').innerText = seasonNum;
             
@@ -834,7 +821,7 @@
         function triggerEpicEffect() { AudioEngine.playEpic(); const overlay = document.getElementById('epic-overlay'); const text = document.getElementById('epic-text'); const messages = ["¡BOOYAH!", "¡A LA CARGA!", "¡MÁXIMO PODER!"]; text.innerText = messages[Math.floor(Math.random()*messages.length)]; overlay.style.display = 'flex'; text.style.animation = 'none'; void text.offsetWidth; text.style.animation = 'epicPulse 0.5s ease-out forwards'; setTimeout(() => { overlay.style.display = 'none'; }, 1500); }
         function showVictoryScreen() { createConfetti(); document.getElementById('victory-screen').classList.add('show'); AudioEngine.playLevelUp(); }
         function hideVictoryScreen() { document.getElementById('victory-screen').classList.remove('show'); document.querySelectorAll('.confetti').forEach(c => c.remove()); }
-        function createConfetti() { const screen = document.getElementById('victory-screen'); const colors = ['#ffcc00', '#00e676, '#2979ff', '#f00', '#ff9800']; for (let i = 0; i < 50; i++) { const conf = document.createElement('div'); conf.className = 'confetti'; conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = -10 + 'px'; conf.style.background = colors[Math.floor(Math.random() * colors.length)]; conf.style.animationDuration = (Math.random() * 2 + 2) + 's'; screen.appendChild(conf); } }
+        function createConfetti() { const screen = document.getElementById('victory-screen'); const colors = ['#ffcc00', '#00e676', '#2979ff', '#f00', '#ff9800']; for (let i = 0; i < 50; i++) { const conf = document.createElement('div'); conf.className = 'confetti'; conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = -10 + 'px'; conf.style.background = colors[Math.floor(Math.random() * colors.length)]; conf.style.animationDuration = (Math.random() * 2 + 2) + 's'; screen.appendChild(conf); } }
         
         function createUI() {
             const g = document.getElementById('gridContainer'); const dB = document.getElementById('divisorBox'); const tR = document.getElementById('topRow');
