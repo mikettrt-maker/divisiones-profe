@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V15.0 (Battle Pass)</title>
+    <title>Reto de División - V16.0 (Combate)</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -93,16 +93,21 @@
         .avatar-heroic { border-color: var(--rank-heroic); box-shadow: 0 0 20px var(--rank-heroic); background: rgba(255, 23, 68, 0.1); animation: heroPulse 2s infinite; }
         @keyframes heroPulse { 0% { box-shadow: 0 0 0 0 rgba(255, 23, 68, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(255, 23, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 23, 68, 0); } }
 
-        .user-info-panel { display: flex; align-items: center; gap: 20px; }
+        .user-info-panel { display: flex; align-items: center; gap: 15px; }
         
         .squad-display { display: flex; flex-direction: column; align-items: center; }
         .squad-shield { width: 35px; height: 40px; }
         .squad-name-small { font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
 
-        /* Monedas */
+        /* Monedas e Items */
         .coin-display-container { display: flex; align-items: center; gap: 5px; background: rgba(255, 204, 0, 0.1); padding: 5px 10px; border-radius: 20px; border: 1px solid var(--primary-color); }
         .coin-icon { font-size: 1rem; color: var(--primary-color); }
         .coin-count { font-family: 'Teko'; font-size: 1.2rem; font-weight: 700; color: var(--primary-color); line-height: 1; }
+        
+        /* Inventario Rapido */
+        .inventory-quick { display: flex; gap: 10px; align-items: center; }
+        .inv-item { display: flex; align-items: center; gap: 3px; background: #222; padding: 3px 8px; border-radius: 4px; border: 1px solid #444; font-size: 0.9rem; color: #ccc; }
+        .inv-item.active { border-color: var(--success); color: var(--success); }
         
         .rank-box { display: flex; flex-direction: column; align-items: center; background: black; padding: 5px 15px; border-radius: 4px; border: 1px solid #444; min-width: 120px; }
         .rank-name { font-size: 1rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
@@ -149,6 +154,10 @@
         .rank-name-list { font-weight: 600; font-size: 0.9rem; }
         .rank-tier-list { font-size: 0.7rem; font-weight: 700; opacity: 0.8; }
         .rank-score { font-weight: 700; color: var(--primary-color); font-size: 0.9rem; }
+
+        /* V16: Botón de Ataque */
+        .attack-btn { background: rgba(255,0,0,0.1); border: 1px solid var(--error); color: var(--error); padding: 2px 6px; border-radius: 4px; cursor: pointer; font-size: 1rem; margin-left: 5px; transition: 0.2s; }
+        .attack-btn:hover { background: var(--error); color: white; }
 
         /* Escuadras Ranking */
         .squad-ranking-section { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; }
@@ -200,7 +209,7 @@
         .btn-small { font-size: 0.9rem; padding: 5px 10px; background: #333; color: #ccc; border: 1px solid #555; }
         #msg { width: 100%; text-align: center; font-weight: 600; margin-top: 10px; font-size: 1.1rem; }
 
-        /* V15.0: PASE DE BATALLA */
+        /* PASE DE BATALLA */
         .battle-pass-panel { width: 100%; background: #111; border: 1px solid #444; border-radius: 4px; padding: 15px; margin-top: 5px; display: flex; flex-direction: column; gap: 10px; }
         .bp-header { display: flex; justify-content: space-between; font-size: 1rem; color: var(--primary-color); font-weight: 700; text-transform: uppercase; align-items: center; }
         .bp-progress-wrap { display: flex; align-items: center; gap: 10px; }
@@ -398,6 +407,16 @@
                     <i class="fas fa-coins coin-icon"></i>
                     <span class="coin-count" id="coinDisplay">0</span>
                 </div>
+                
+                <!-- V16: Inventario Rápido -->
+                <div class="inventory-quick">
+                    <div class="inv-item" id="inv-tomatoes" title="Tomates (Atacan -50pts)">
+                        <span>🍅</span> <span id="inv-tom-count">0</span>
+                    </div>
+                    <div class="inv-item" id="inv-shield" title="Escudo Activo">
+                        <span>🛡️</span>
+                    </div>
+                </div>
 
                 <div class="rank-box" id="userRankBox">
                     <div class="rank-name" id="userRankName">...</div>
@@ -537,10 +556,12 @@
         const RANKS = [ { name: "Hierro", min: 0, max: 2999, icon: "🪨", css: "rank-iron", avatar: "avatar-iron" }, { name: "Bronce", min: 3000, max: 6999, icon: "🥉", css: "rank-bronze", avatar: "avatar-bronze" }, { name: "Plata", min: 7000, max: 12999, icon: "🥈", css: "rank-silver", avatar: "avatar-silver" }, { name: "Oro", min: 13000, max: 19999, icon: "🥇", css: "rank-gold", avatar: "avatar-gold" }, { name: "Platino", min: 20000, max: 29999, icon: "💠", css: "rank-platinum", avatar: "avatar-platinum" }, { name: "Diamante", min: 30000, max: 49999, icon: "💎", css: "rank-diamond", avatar: "avatar-diamond" }, { name: "Heroico", min: 50000, max: 999999, icon: "👑", css: "rank-heroic", avatar: "avatar-heroic" } ];
         function getRankInfo(score) { let rank = RANKS[0]; for(let i=0; i<RANKS.length; i++) { if(score >= RANKS[i].min) rank = RANKS[i]; } let tier = "I"; let range = rank.max - rank.min; if (score < rank.min + range/3) tier = "III"; else if (score < rank.min + (range/3)*2) tier = "II"; let pct = ((score - rank.min) / range) * 100; if(pct > 100) pct = 100; return { ...rank, tier: tier, pct: pct }; }
 
-        // Monedas y BP
+        // Monedas y BP e Inventario
         let currentCoins = 0;
         let hasBP = false;
         let claimedBPRewards = [];
+        let itemTomatoes = 0;
+        let itemShieldUntil = null;
 
         // Definición de Recompensas BP
         const BP_REWARDS = [
@@ -587,7 +608,7 @@
 
         async function handleLogin() { const u = document.getElementById('login-username').value.trim(); const p = document.getElementById('login-password').value; const e = document.getElementById('login-error'); if (!u || p.length < 6) { e.textContent = "Datos incompletos."; e.style.display='block'; return; } try { const { data, error } = await _supabase.auth.signInWithPassword({ email: u+"@profemiguel.com", password: p }); if (error) throw error; currentUser = data.user; showApp(); } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; } }
         async function handleRegister() { const u = document.getElementById('login-username').value.trim(); const p = document.getElementById('login-password').value; const e = document.getElementById('login-error'); if (!u || p.length < 6) { e.textContent = "Datos incompletos."; e.style.display='block'; return; } try { const { data, error } = await _supabase.auth.signUp({ email: u+"@profemiguel.com", password: p }); if (error) throw error; alert("Registrado. Entra ahora."); } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; } }
-        async function logout() { await _supabase.auth.signOut(); currentUser=null; totalScore=0; currentCoins=0; hasBP=false; showLogin(); clearInterval(rankInt); }
+        async function logout() { await _supabase.auth.signOut(); currentUser=null; totalScore=0; currentCoins=0; hasBP=false; itemTomatoes=0; showLogin(); clearInterval(rankInt); }
 
         async function loadScore(user) {
             try { const { data } = await _supabase.from('profiles').select('*').eq('id', user.id).single(); 
@@ -604,8 +625,11 @@
                 currentCoins = (data && data.coins) ? data.coins : 0;
                 hasBP = (data && data.has_battle_pass) || false;
                 claimedBPRewards = (data && data.claimed_bp_rewards) || [];
+                itemTomatoes = (data && data.item_tomatoes) || 0;
+                itemShieldUntil = (data && data.item_shield_until) ? new Date(data.item_shield_until) : null;
 
                 updateCoinDisplay();
+                updateInventoryUI();
                 updateBattlePassUI();
 
                 if(data.squad_id && SQUADS[data.squad_id]) {
@@ -616,11 +640,24 @@
                     document.getElementById('user-squad-name').style.color = squad.color;
                 } else { document.getElementById('squad-display').style.display = 'none'; }
 
-            } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1; currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0; totalErrors = 0; currentCoins = 0; hasBP = false; }
+            } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1; currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0; totalErrors = 0; currentCoins = 0; hasBP = false; itemTomatoes=0; }
             isAdmin = (user.email.split('@')[0] === ADMIN_USER); document.getElementById('admin-header-btn').classList.toggle('visible', isAdmin); if(hasFinishedGame) document.getElementById('msg').innerHTML = "<span style='color:var(--primary-color);'>¡Ya terminaste!</span>"; currentMainLevel = unlockedLevel; populateLevelSelect(); updateUI(); renderMainAvatar();
         }
         
         function updateCoinDisplay() { document.getElementById('coinDisplay').innerText = currentCoins; }
+        
+        // V16: Inventory UI
+        function updateInventoryUI() {
+            document.getElementById('inv-tom-count').innerText = itemTomatoes;
+            const shieldDiv = document.getElementById('inv-shield');
+            if(itemShieldUntil && itemShieldUntil > new Date()) {
+                shieldDiv.classList.add('active');
+                shieldDiv.title = "Escudo activo hasta: " + itemShieldUntil.toLocaleString();
+            } else {
+                shieldDiv.classList.remove('active');
+                shieldDiv.title = "Sin escudo";
+            }
+        }
 
         // --- BATTLE PASS LOGIC ---
         function updateBattlePassUI() {
@@ -688,18 +725,14 @@
 
         async function claimBPItem() {
             if(!currentViewingTier) return;
-            
             AudioEngine.playSuccess();
-            
-            // Add item to local state
             claimedBPRewards.push(currentViewingTier.level);
-            
-            // Update DB
             const updates = { claimed_bp_rewards: claimedBPRewards };
             
             if(currentViewingTier.type === 'item') {
                 if(currentViewingTier.item === 'item_tomatoes') {
-                    updates[currentViewingTier.item] = (await getCurrentItemValue(currentViewingTier.item)) + currentViewingTier.qty;
+                    itemTomatoes += currentViewingTier.qty;
+                    updates[currentViewingTier.item] = itemTomatoes;
                 } else if (currentViewingTier.item === 'item_shield_until') {
                     const expiry = new Date(new Date().getTime() + (currentViewingTier.days * 24 * 60 * 60 * 1000));
                     updates[currentViewingTier.item] = expiry.toISOString();
@@ -714,18 +747,10 @@
                 await _supabase.from('profiles').update(updates).eq('id', currentUser.id);
                 alert("¡Recompensa reclamada!");
                 closeBPModal();
-                await loadScore(currentUser); // Reload everything
+                await loadScore(currentUser);
             } catch(e) {
                 alert("Error al reclamar: " + e.message);
             }
-        }
-
-        async function getCurrentItemValue(col) {
-            if(!currentUser) return 0;
-            try {
-                const { data } = await _supabase.from('profiles').select(col).eq('id', currentUser.id).single();
-                return data[col] || 0;
-            } catch(e) { return 0; }
         }
 
         async function buyBattlePass() {
@@ -759,10 +784,65 @@
         async function saveScore() { if (!currentUser) return; try { await _supabase.from('profiles').upsert({ id: currentUser.id, username: currentUser.email.split('@')[0], total_score: totalScore, current_level: unlockedLevel, current_problem: currentProblemInLevel, coins: currentCoins }); updateRanking(); } catch(e) { console.error(e); } }
         let rankInt; function startRanking() { updateRanking(); rankInt = setInterval(updateRanking, 5000); }
         
+        // V16: Ataque con Tomates
+        async function attackUser(targetId, targetName) {
+            if(itemTomatoes <= 0) return alert("No tienes tomates. ¡Compra el Pase de Batalla!");
+            if(!confirm(`¿Gastar 1 tomate para atacar a ${targetName}? (-50 pts si no tiene escudo)`)) return;
+
+            // Optimistic UI
+            itemTomatoes--;
+            updateInventoryUI();
+            
+            try {
+                // 1. Obtener datos de la víctima
+                const { data: victim } = await _supabase.from('profiles').select('total_score, item_shield_until').eq('id', targetId).single();
+                if(!victim) return alert("Usuario no encontrado.");
+                
+                let updates = {};
+                let msg = "";
+
+                // 2. Checar Escudo
+                const hasShield = victim.item_shield_until ? new Date(victim.item_shield_until) > new Date() : false;
+
+                if(hasShield) {
+                    // Escudo activo: romper escudo, NO restar puntos
+                    updates.item_shield_until = null; // Romper escudo
+                    msg = `🛡️ ¡${targetName} tenía un ESCUDO! El ataque falló.`;
+                } else {
+                    // Sin escudo: quitar 50 puntos
+                    const newScore = Math.max(0, victim.total_score - 50);
+                    updates.total_score = newScore;
+                    msg = `🍅 ¡Atacaste a ${targetName}! Perdió 50 puntos.`;
+                }
+
+                // 3. Ejecutar ataque
+                await _supabase.from('profiles').update(updates).eq('id', targetId);
+                
+                // 4. Descontar tomate al atacante
+                await _supabase.from('profiles').update({ item_tomatoes: itemTomatoes }).eq('id', currentUser.id);
+                
+                // 5. Enviar notificación
+                await _supabase.from('chat_messages').insert({ 
+                    user_id: '00000000-0000-0000-0000-000000000000', 
+                    username: 'SISTEMA', 
+                    recipient_username: targetName,
+                    message_text: msg
+                });
+
+                alert(msg);
+                updateRanking();
+
+            } catch(e) {
+                alert("Error al atacar: " + e.message);
+                itemTomatoes++; // Revert
+                updateInventoryUI();
+            }
+        }
+
         async function updateRanking() { 
             const list = document.getElementById('ranking-list'); 
             try { 
-                const { data, error } = await _supabase.from('profiles').select('username, total_score, avatar_style, completed_at, is_banned, squad_id').order('total_score', { ascending: false }); 
+                const { data, error } = await _supabase.from('profiles').select('id, username, total_score, avatar_style, completed_at, is_banned, squad_id').order('total_score', { ascending: false }); 
                 if(error) throw error; 
                 if (!data || data.length === 0) { list.innerHTML = '<li style="text-align:center; padding:10px; color:#666;">No hay datos.</li>'; return; } 
                 const activeUsers = data.filter(u => !u.completed_at && !u.is_banned);
@@ -781,7 +861,25 @@
                         squadShield = `<div style="width:16px; height:18px;">${SQUADS[u.squad_id].svg}</div>`;
                     }
 
-                    return `<li class="${rankClass}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avatarUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${displayName}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span></div>${squadShield}</div><span class="rank-score">${s}</span></li>`; 
+                    // V16: Botón de ataque
+                    let attackBtn = '';
+                    if(!isMe && itemTomatoes > 0) {
+                        attackBtn = `<button class="attack-btn" onclick="attackUser('${u.id}', '${u.username}')" title="Lanzar tomate (-50pts)">🍅</button>`;
+                    }
+
+                    return `<li class="${rankClass}">
+                        <span class="rank-pos">${i+1}.</span>
+                        <div class="rank-row">
+                            <img src="${avatarUrl}" class="list-avatar ${rI.avatar}">
+                            <div class="rank-info">
+                                <span class="rank-name-list">${displayName}</span>
+                                <span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span>
+                            </div>
+                            ${squadShield}
+                        </div>
+                        <span class="rank-score">${s}</span>
+                        ${attackBtn}
+                    </li>`; 
                 }).join(''); 
 
                 updateSquadRanking(data);
@@ -967,7 +1065,7 @@
         async function toggleBan(uid, currentStatus) { try { await _supabase.from('profiles').update({ is_banned: !currentStatus }).eq('id', uid); loadDashboardData(); } catch(e) { alert("Error"); } }
         async function cleanInactiveUsers() { if(!confirm("¿Borrar TODAS las cuentas con 0 puntos?")) return; try { await _supabase.from('profiles').delete().eq('total_score', 0).neq('username', ADMIN_USER); alert("Limpieza completada."); loadDashboardData(); } catch(e) { alert("Error: " + e.message); } }
         async function deleteUser(uid, name) { if(!confirm(`¿Borrar la cuenta "${name}" permanentemente?`)) return; try { await _supabase.from('profiles').delete().eq('id', uid); alert(`Usuario ${name} eliminado.`); loadDashboardData(); } catch(e) { alert("Error al borrar: " + e.message); } }
-        async function resetAllUsers() { if(!confirm("¿Reiniciar TODOS los puntos y tiempo?")) return; try { await _supabase.from('profiles').update({ total_score: 0, current_level: 1, completed_at: null, current_problem: 1, total_time_played: 0, total_errors: 0, squad_id: 0, coins: 0, has_battle_pass: false, claimed_bp_rewards: {} }).neq('id', '00000000-0000-0000-0000-000000000000'); await _supabase.from('game_settings').update({ season_end_time: null, is_paused: false, exam_level: 0 }).eq('id', 1); alert("¡Reiniciado!"); loadDashboardData(); } catch(e) { alert("Error."); } }
+        async function resetAllUsers() { if(!confirm("¿Reiniciar TODOS los puntos y tiempo?")) return; try { await _supabase.from('profiles').update({ total_score: 0, current_level: 1, completed_at: null, current_problem: 1, total_time_played: 0, total_errors: 0, squad_id: 0, coins: 0, has_battle_pass: false, claimed_bp_rewards: {}, item_tomatoes: 0, item_shield_until: null }).neq('id', '00000000-0000-0000-0000-000000000000'); await _supabase.from('game_settings').update({ season_end_time: null, is_paused: false, exam_level: 0 }).eq('id', 1); alert("¡Reiniciado!"); loadDashboardData(); } catch(e) { alert("Error."); } }
         
         async function assignSquad(userId, squadId) { try { await _supabase.from('profiles').update({ squad_id: squadId }).eq('id', userId); loadDashboardData(); } catch(e) { alert("Error al asignar escuadra"); } }
 
