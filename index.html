@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V13 Estable</title>
+    <title>Reto de División - V13.5 Antena Rescatada</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -20,7 +20,7 @@
         .main-header { width: 100%; background: linear-gradient(90deg, #000000, #1a1a1a); color: var(--primary-color); padding: 15px 0; text-align: center; box-shadow: 0 4px 20px rgba(255, 204, 0, 0.2); border-bottom: 2px solid var(--primary-color); display: flex; justify-content: center; align-items: center; gap: 20px; position: relative; }
         .main-header h1 { margin: 0; font-size: 2.2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-family: 'Teko', sans-serif; }
         
-        /* V13: RELOJ GIGANTE */
+        /* RELOJ GIGANTE */
         .season-badge { 
             position: absolute; 
             top: 50%; 
@@ -84,10 +84,8 @@
         
         .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,0.03); border-left: 4px solid #333; transition: all 0.3s; position: relative; overflow: hidden; }
         
-        /* ELITE RANK STYLES */
         .ranking-item.elite { background: linear-gradient(90deg, rgba(255, 215, 0, 0.1), transparent); border-left: 4px solid var(--rank-gold); }
         
-        /* RANK 1 LEGENDARY */
         .ranking-item.rank-1 {
             border: 2px solid #ffd700; 
             background: linear-gradient(90deg, rgba(255, 215, 0, 0.2), rgba(255, 215, 0, 0.05)); 
@@ -126,7 +124,7 @@
         .game-area { flex: 3; display: flex; flex-direction: column; gap: 20px; min-width: 300px; }
         .workspace-card { background: var(--bg-panel); padding: 20px; border-radius: 4px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); display: flex; gap: 15px; justify-content: flex-start; align-items: flex-start; overflow-x: auto; width: 100%; box-sizing: border-box; border: 1px solid #333; }
 
-        /* --- LAYOUT GALERA (INTACTO) --- */
+        /* --- LAYOUT GALERA --- */
         .division-row { display: flex; flex-direction: row; align-items: flex-start; gap: 0; margin-top: 10px; flex-shrink: 0; }
         .col-divisor { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; margin-top: 38px; margin-right: 3px; }
         .input-div { width: var(--cell-size); height: var(--cell-size); border: 1px solid #555; background: black; font-size: 1.4rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; display: flex; align-items: center; justify-content: center; text-shadow: 0 0 5px var(--primary-color); }
@@ -147,8 +145,8 @@
         .input-residuo { width: calc(var(--cell-size) * 2); height: var(--cell-size); border: 1px solid #555; background: #000; font-size: 1.4rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; font-family: 'Rajdhani', sans-serif; border-radius: 2px; cursor: text; pointer-events: auto; }
         .input-residuo:disabled { background: #111; color: #444; border-color: #222; cursor: not-allowed; opacity: 0.5; pointer-events: none; }
 
-        /* ANTENA (RESTAURADA) */
-        .antena-panel { background: var(--bg-panel); border: 1px solid #333; padding: 15px; border-radius: 4px; border-top: 4px solid var(--primary-color); width: 240px; flex-shrink: 0; margin-left: auto; }
+        /* ANTENA (RESTAURADA Y VISIBLE) */
+        .antena-panel { background: var(--bg-panel); border: 1px solid #333; padding: 15px; border-radius: 4px; border-top: 4px solid var(--primary-color); width: 240px; flex-shrink: 0; display: flex; flex-direction: column; min-height: 400px; }
         .antena-header { text-align: center; font-weight: 700; color: var(--primary-color); margin-bottom: 15px; font-size: 1.1rem; text-transform: uppercase; font-family: 'Teko', sans-serif; }
         .antena-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; opacity: 1; transition: opacity 0.3s; font-size: 0.9rem; }
         .antena-row.locked-row { opacity: 0.4; }
@@ -334,6 +332,7 @@
                             <div class="fila-residuo"><span class="residuo-label">Residuo:</span><input type="number" id="valResiduo" class="input-residuo" placeholder="0"></div>
                         </div>
                     </div>
+                    <!-- ANTENA PANEL HTML (Verificado que está aquí) -->
                     <div class="antena-panel">
                         <div class="antena-header">Antena (x <span id="antenaLabel">...</span>)</div>
                         <div id="antenaBody"></div>
@@ -432,7 +431,6 @@
         async function saveScore() { if (!currentUser) return; try { await _supabase.from('profiles').upsert({ id: currentUser.id, username: currentUser.email.split('@')[0], total_score: totalScore, current_level: unlockedLevel, current_problem: currentProblemInLevel }); updateRanking(); } catch(e) { console.error(e); } }
         let rankInt; function startRanking() { updateRanking(); rankInt = setInterval(updateRanking, 5000); }
         
-        // Ranking with Crown fix
         async function updateRanking() { 
             const list = document.getElementById('ranking-list'); 
             try { 
@@ -531,7 +529,7 @@
         async function initSeason(settings) { let data = settings; if(!data) { const res = await _supabase.from('game_settings').select('season_end_time').eq('id', 1).single(); data = res.data; } if(data && data.season_end_time) { startCountdown(new Date(data.season_end_time)); } else { document.getElementById('timer-display').innerText = isAdmin ? "SIN INICIAR" : "--:--"; document.getElementById('season-badge').classList.add('finished'); } }
         function startCountdown(endDate) { clearInterval(seasonInterval); seasonInterval = setInterval(() => { const now = new Date(); const diff = endDate - now; if (diff <= 0) { clearInterval(seasonInterval); document.getElementById('timer-display').innerText = "00:00:00"; document.getElementById('season-badge').classList.add('finished'); document.getElementById('season-badge').classList.remove('active'); if(isAdmin) { alert("¡Tiempo terminado! Reiniciando puntos..."); resetAllUsers(); } return; } const h = Math.floor(diff / 3600000); const m = Math.floor((diff % 3600000) / 60000); const s = Math.floor((diff % 60000) / 1000); document.getElementById('timer-display').innerText = `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`; document.getElementById('season-badge').classList.add('active'); document.getElementById('season-badge').classList.remove('finished'); }, 1000); }
 
-        // --- GAME LOGIC (RESTORED) ---
+        // --- GAME LOGIC (FIXED) ---
         function initGame() { loadProblem(); populateLevelSelect(); }
         function jumpToLevel(l) { AudioEngine.playClick(); const target = parseInt(l); if(target > unlockedLevel) { alert("¡Debes completar el nivel anterior!"); document.getElementById('levelSelect').value = currentMainLevel; return; } currentMainLevel = target; currentProblemInLevel = 1; loadProblem(); }
         
@@ -539,12 +537,28 @@
             if(hasFinishedGame) return; 
             const canPlay = await checkGlobalState();
             if(!canPlay) return;
+            
+            // 1. OBTENER DATOS (SEGURO)
+            const d = DB[currentMainLevel]; 
+            if (d && d[currentProblemInLevel - 1]) { 
+                currentDividend = d[currentProblemInLevel - 1].d; 
+                currentDivisor = d[currentProblemInLevel - 1].div; 
+            } else {
+                currentDividend = 0; currentDivisor = 0; // Fallback
+            }
+
             isProcessing = false; const btn = document.getElementById('btn-verify'); btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "Verificar";
             document.getElementById('subLevelCount').innerText = currentProblemInLevel; document.getElementById('progressBar').style.width = ((currentMainLevel - 1) / TOTAL_LEVELS) * 100 + '%'; populateLevelSelect();
-            const d = DB[currentMainLevel]; if (d && d[currentProblemInLevel - 1]) { currentDividend = d[currentProblemInLevel - 1].d; currentDivisor = d[currentProblemInLevel - 1].div; }
-            const label = getDifficultyLabel(currentMainLevel); document.getElementById('difficultyLabel').innerText = label; createUI(); createAntena(); resetAll(); lockGrid();
+            const label = getDifficultyLabel(currentMainLevel); document.getElementById('difficultyLabel').innerText = label; 
+            
+            // 2. CREAR UI
+            createUI(); 
+            createAntena(); 
+            resetAll(); 
+            lockGrid();
         }
         function getDifficultyLabel(lvl) { if(lvl <= 2) return "Divisor: 1 Cifra"; if(lvl === 3 || lvl === 4 || lvl === 5 || lvl === 7 || lvl === 9) return "Divisor: 2 Cifras"; return "Divisor: 3 Cifras"; }
+        
         function lockGrid() { isGridLocked = true; document.getElementById('grid-lock-overlay').classList.remove('hidden'); disableCocienteInputs(true); document.getElementById('valResiduo').disabled = true; }
         function unlockGrid() { isGridLocked = false; document.getElementById('grid-lock-overlay').classList.add('hidden'); disableCocienteInputs(false); document.getElementById('valResiduo').disabled = false; document.getElementById('msg').innerText = "¡Antena completa!"; document.getElementById('msg').style.color = "var(--success)"; triggerEpicEffect(); }
         function triggerEpicEffect() { AudioEngine.playEpic(); const overlay = document.getElementById('epic-overlay'); const text = document.getElementById('epic-text'); const messages = ["¡BOOYAH!", "¡A LA CARGA!", "¡MÁXIMO PODER!"]; text.innerText = messages[Math.floor(Math.random()*messages.length)]; overlay.style.display = 'flex'; text.style.animation = 'none'; void text.offsetWidth; text.style.animation = 'epicPulse 0.5s ease-out forwards'; setTimeout(() => { overlay.style.display = 'none'; }, 1500); }
@@ -552,7 +566,7 @@
         function hideVictoryScreen() { document.getElementById('victory-screen').classList.remove('show'); document.querySelectorAll('.confetti').forEach(c => c.remove()); }
         function createConfetti() { const screen = document.getElementById('victory-screen'); const colors = ['#ffcc00', '#00e676', '#2979ff', '#f00', '#ff9800']; for (let i = 0; i < 50; i++) { const conf = document.createElement('div'); conf.className = 'confetti'; conf.style.left = Math.random() * 100 + 'vw'; conf.style.top = -10 + 'px'; conf.style.background = colors[Math.floor(Math.random() * colors.length)]; conf.style.animationDuration = (Math.random() * 2 + 2) + 's'; screen.appendChild(conf); } }
         
-        // CREATE UI (RESTORED)
+        // CREATE UI (Restaurado)
         function createUI() {
             const g = document.getElementById('gridContainer'); const dB = document.getElementById('divisorBox'); const tR = document.getElementById('topRow');
             g.innerHTML = ''; dB.innerHTML = ''; tR.innerHTML = '';
@@ -565,16 +579,36 @@
         function disableCocienteInputs(disabled) { document.querySelectorAll('.input-cociente-galera').forEach(i => i.disabled = disabled); }
         function syncT() { let v=""; document.querySelectorAll('.input-cociente-galera').forEach(x=>v+=x.value); document.getElementById('valCociente').value=v; }
 
-        // CREATE ANTENA (RESTORED)
+        // CREATE ANTENA (RESTAURADO Y SEGURO)
         function createAntena() { 
             const b=document.getElementById('antenaBody'); 
-            document.getElementById('antenaLabel').innerText=currentDivisor; 
+            const label=document.getElementById('antenaLabel');
+            
+            // Actualizar Label
+            label.innerText = currentDivisor;
+            
+            // Limpiar cuerpo
             b.innerHTML=''; 
+            
+            // Crear filas con DOM (Seguro)
             for(let i=1;i<=10;i++){ 
                 let r=document.createElement('div'); 
                 r.className='antena-row locked-row'; 
                 r.id="row-"+i; 
-                r.innerHTML="<span>"+i+" x "+currentDivisor+" =</span><input type='text' inputmode='numeric' pattern='[0-9]*' class='antena-input' id='a"+i+"' disabled>"; 
+                
+                let span = document.createElement('span');
+                span.innerText = i + " x " + currentDivisor + " =";
+                
+                let input = document.createElement('input');
+                input.type = 'text';
+                input.inputMode = 'numeric';
+                input.pattern = '[0-9]*';
+                input.className = 'antena-input';
+                input.id = 'a'+i;
+                input.disabled = true;
+                
+                r.appendChild(span);
+                r.appendChild(input);
                 b.appendChild(r); 
             } 
             currentAntennaIndex = 0; enableNextAntennaInput(); 
