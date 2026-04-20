@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V14.2 (Banner Izquierda)</title>
+    <title>Reto de División - V14.3 (Banner Grande)</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -20,23 +20,28 @@
         .main-header { width: 100%; background: linear-gradient(90deg, #000000, #1a1a1a); color: var(--primary-color); padding: 15px 0; text-align: center; box-shadow: 0 4px 20px rgba(255, 204, 0, 0.2); border-bottom: 2px solid var(--primary-color); display: flex; justify-content: center; align-items: center; gap: 20px; position: relative; }
         .main-header h1 { margin: 0; font-size: 2.2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-family: 'Teko', sans-serif; }
         
-              /* V14.2: Banner de Temporada IZQUIERDA con MOVIMIENTO (GRANDE) */
+        /* V14.3: Banner de Temporada IZQUIERDA (GRANDE Y CON MOVIMIENTO) */
         .season-banner-top {
             position: absolute;
             left: 20px;
             top: 50%;
             transform: translateY(-50%);
             font-family: 'Teko';
-            font-size: 2.2rem; /* Aumenté el tamaño de 1.4rem a 2.2rem */
+            font-size: 2.4rem; /* TAMAÑO GRANDE */
             color: var(--primary-color);
             letter-spacing: 1px;
             text-transform: uppercase;
             z-index: 10;
-            width: 300px; /* Aumenté el ancho para que quepa el texto grande */
+            width: 350px; /* ANCHO SUFICIENTE */
             overflow: hidden;
             white-space: nowrap;
             text-align: left;
-            text-shadow: 0 0 10px rgba(255, 204, 0, 0.5); /* Le puse un brillo suave */
+            text-shadow: 0 0 10px rgba(255, 204, 0, 0.5);
+        }
+        .marquee-text {
+            display: inline-block;
+            padding-left: 100%;
+            animation: marqueeScroll 10s linear infinite; /* MOVIMIENTO */
         }
         @keyframes marqueeScroll {
             0% { transform: translate(0, 0); }
@@ -247,7 +252,7 @@
         .ctrl-btn.danger { border-color: var(--error); color: var(--error); }
         .ctrl-btn.danger:hover { background: var(--error); color: white; }
 
-        /* V14.1: Tabla de Escuadras en Admin */
+        /* Tabla de Escuadras en Admin */
         .squad-table-container { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; }
         .squad-admin-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
         .squad-admin-table th { text-align: left; color: #888; padding: 8px 4px; border-bottom: 1px solid #444; font-size: 0.8rem; text-transform: uppercase; }
@@ -337,7 +342,7 @@
         
         <h1>Prof. Miguel</h1>
         
-        <!-- V14.2: Banner Izquierda con Movimiento -->
+        <!-- V14.3: Banner Izquierda (GRANDE Y EN MOVIMIENTO) -->
         <div class="season-banner-top">
             <div class="marquee-text">FreeDivisión Temporada <span id="season-num-display">1</span></div>
         </div>
