@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V14.3 (Banner Grande)</title>
+    <title>Reto de División - V15.0 (Battle Pass)</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -14,25 +14,26 @@
             --bg-dark: #0f0f0f; --bg-panel: #1a1a1a; --success: #00e676; --error: #ff1744;
             --cell-size: 32px; --rank-iron: #9e9e9e; --rank-bronze: #d97706; --rank-silver: #bdbdbd;
             --rank-gold: #fbbf24; --rank-platinum: #06b6d4; --rank-diamond: #8b5cf6; --rank-heroic: #ef4444;
+            --bp-gold: #ffd700;
         }
         body { margin: 0; font-family: 'Rajdhani', sans-serif; background-color: var(--bg-dark); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
         
         .main-header { width: 100%; background: linear-gradient(90deg, #000000, #1a1a1a); color: var(--primary-color); padding: 15px 0; text-align: center; box-shadow: 0 4px 20px rgba(255, 204, 0, 0.2); border-bottom: 2px solid var(--primary-color); display: flex; justify-content: center; align-items: center; gap: 20px; position: relative; }
         .main-header h1 { margin: 0; font-size: 2.2rem; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; font-family: 'Teko', sans-serif; }
         
-        /* V14.3: Banner de Temporada IZQUIERDA (GRANDE Y CON MOVIMIENTO) */
+        /* Banner Izquierda */
         .season-banner-top {
             position: absolute;
             left: 20px;
             top: 50%;
             transform: translateY(-50%);
             font-family: 'Teko';
-            font-size: 2.4rem; /* TAMAÑO GRANDE */
+            font-size: 2.4rem;
             color: var(--primary-color);
             letter-spacing: 1px;
             text-transform: uppercase;
             z-index: 10;
-            width: 350px; /* ANCHO SUFICIENTE */
+            width: 350px;
             overflow: hidden;
             white-space: nowrap;
             text-align: left;
@@ -41,14 +42,14 @@
         .marquee-text {
             display: inline-block;
             padding-left: 100%;
-            animation: marqueeScroll 10s linear infinite; /* MOVIMIENTO */
+            animation: marqueeScroll 10s linear infinite;
         }
         @keyframes marqueeScroll {
             0% { transform: translate(0, 0); }
             100% { transform: translate(-100%, 0); }
         }
 
-        /* RELOJ GRANDE (Se mantiene a la derecha) */
+        /* RELOJ */
         .season-badge { 
             position: absolute; 
             top: 50%; 
@@ -181,7 +182,7 @@
         .input-residuo { width: calc(var(--cell-size) * 2); height: var(--cell-size); border: 1px solid #555; background: #000; font-size: 1.4rem; font-weight: 700; color: var(--primary-color); text-align: center; outline: none; font-family: 'Rajdhani', sans-serif; border-radius: 2px; cursor: text; pointer-events: auto; }
         .input-residuo:disabled { background: #111; color: #444; border-color: #222; cursor: not-allowed; opacity: 0.5; pointer-events: none; }
 
-        /* ANTENA (SIN TOCAR) */
+        /* ANTENA */
         .antena-panel { background: var(--bg-panel); border: 1px solid #333; padding: 15px; border-radius: 4px; border-top: 4px solid var(--primary-color); width: 240px; flex-shrink: 0; margin-left: auto; }
         .antena-header { text-align: center; font-weight: 700; color: var(--primary-color); margin-bottom: 15px; font-size: 1.1rem; text-transform: uppercase; font-family: 'Teko', sans-serif; }
         .antena-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; opacity: 1; transition: opacity 0.3s; font-size: 0.9rem; }
@@ -192,22 +193,42 @@
         .status-ok { background-color: rgba(0, 230, 118, 0.2) !important; border-color: var(--success) !important; color: var(--success); }
         .status-wrong { background-color: rgba(255, 23, 68, 0.2) !important; border-color: var(--error) !important; color: var(--error); }
 
-        /* CONTROLES Y PASE DE BATALLA */
+        /* CONTROLES */
         .controls { background: black; padding: 20px; border-radius: 4px; border: 1px solid #333; display: flex; flex-direction: column; align-items: center; justify-content: center; flex-wrap: wrap; gap: 15px; width: 100%; box-sizing: border-box; }
         button { border: none; padding: 10px 24px; font-weight: 600; border-radius: 2px; cursor: pointer; font-size: 1.1rem; color: black; text-transform: uppercase; font-family: 'Rajdhani', sans-serif; transition: all 0.2s; }
         .btn-primary { background: var(--primary-color); box-shadow: 0 0 15px var(--primary-color); }
         .btn-small { font-size: 0.9rem; padding: 5px 10px; background: #333; color: #ccc; border: 1px solid #555; }
         #msg { width: 100%; text-align: center; font-weight: 600; margin-top: 10px; font-size: 1.1rem; }
 
-        /* Pase de Batalla Placeholder */
-        .battle-pass-panel { width: 100%; background: #111; border: 1px solid #444; border-radius: 4px; padding: 10px; margin-top: 5px; display: flex; flex-direction: column; gap: 5px; }
-        .bp-header { display: flex; justify-content: space-between; font-size: 0.9rem; color: #aaa; font-weight: 700; text-transform: uppercase; }
-        .bp-progress-bar { height: 8px; background: #333; border-radius: 4px; overflow: hidden; position: relative; }
-        .bp-progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary-color), var(--success)); transition: width 0.5s; }
-        .bp-node { width: 16px; height: 16px; border-radius: 50%; background: #333; border: 2px solid #555; position: absolute; top: -4px; }
+        /* V15.0: PASE DE BATALLA */
+        .battle-pass-panel { width: 100%; background: #111; border: 1px solid #444; border-radius: 4px; padding: 15px; margin-top: 5px; display: flex; flex-direction: column; gap: 10px; }
+        .bp-header { display: flex; justify-content: space-between; font-size: 1rem; color: var(--primary-color); font-weight: 700; text-transform: uppercase; align-items: center; }
+        .bp-progress-wrap { display: flex; align-items: center; gap: 10px; }
+        .bp-xp-text { font-family: 'Teko'; font-size: 1.2rem; color: #fff; }
         
+        .bp-buy-btn { background: linear-gradient(45deg, var(--primary-color), var(--primary-light)); border: none; padding: 8px 20px; border-radius: 4px; font-weight: 700; cursor: pointer; color: black; text-transform: uppercase; font-size: 0.9rem; }
+        
+        .bp-tiers { display: flex; justify-content: space-between; margin-top: 10px; }
+        .bp-tier { display: flex; flex-direction: column; align-items: center; width: 18%; position: relative; }
+        .bp-tier-node { width: 40px; height: 40px; border-radius: 50%; background: #333; border: 2px solid #555; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; color: #666; position: relative; z-index: 2; transition: all 0.3s; cursor: pointer; }
+        .bp-tier-node.unlocked { background: #222; border-color: var(--primary-color); color: var(--primary-color); box-shadow: 0 0 10px rgba(255, 204, 0, 0.3); }
+        .bp-tier-node.claimed { background: var(--success); border-color: var(--success); color: black; }
+        .bp-tier-node::after { content: ''; position: absolute; top: 50%; left: 100%; width: 100%; height: 2px; background: #333; z-index: 1; }
+        .bp-tier:last-child .bp-tier-node::after { display: none; }
+        
+        .bp-tier-label { font-size: 0.7rem; margin-top: 5px; color: #888; text-align: center; }
+        .bp-tier-desc { font-size: 0.65rem; color: #555; text-align: center; margin-top: 2px; min-height: 20px; }
+        
+        /* Modal Battle Pass */
+        .bp-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 99999; display: none; justify-content: center; align-items: center; }
+        .bp-modal-content { background: #111; border: 1px solid var(--primary-color); padding: 30px; border-radius: 8px; width: 90%; max-width: 500px; text-align: center; }
+        .bp-reward-icon { font-size: 4rem; margin-bottom: 10px; }
+        .bp-reward-title { font-family: 'Teko'; font-size: 2rem; color: var(--primary-color); margin-bottom: 10px; }
+        .bp-reward-desc { color: #aaa; margin-bottom: 20px; }
+        .bp-reward-btn { background: var(--success); color: black; padding: 10px 30px; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 1.1rem; }
+
         /* VICTORY SCREEN */
-        #victory-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 99999; display: none; flex-direction: column; justify-content: center; align-items: center; }
+        #victory-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); z-index: 99998; display: none; flex-direction: column; justify-content: center; align-items: center; }
         .victory-title { font-size: 7rem; color: var(--primary-color); font-weight: 700; text-shadow: 0 0 30px var(--primary-color); font-family: 'Teko', sans-serif; animation: scaleUp 0.3s; text-transform: uppercase; }
         .confetti { position: absolute; width: 10px; height: 10px; background: #f00; animation: fall linear forwards; }
         @keyframes scaleUp { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
@@ -227,32 +248,27 @@
         .chat-msg .author { color: var(--primary-color); font-weight: 700; }
         .chat-msg .to-user { color: var(--success); font-weight: 700; }
         .chat-msg .msg-text { color: white; }
-        
         .chat-input-bar { display: flex; flex-direction: column; gap: 5px; padding: 10px; border-top: 1px solid #333; background: #111; }
         .chat-user-select { width: 100%; padding: 8px; background: #000; border: 1px solid #444; color: white; border-radius: 4px; font-family: 'Rajdhani'; font-size: 0.9rem; }
         .quick-msg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
         .quick-btn { background: #222; border: 1px solid #444; color: #ddd; padding: 6px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 5px; }
         .quick-btn:hover { background: #333; border-color: var(--primary-color); }
         .quick-btn i { color: var(--primary-color); }
-
         #chat-toggle-btn { position: fixed; bottom: 20px; right: 20px; z-index: 9001; width: 50px; height: 50px; border-radius: 50%; background: var(--primary-color); color: black; font-size: 1.5rem; border: none; box-shadow: 0 0 15px var(--primary-color); display: flex; align-items: center; justify-content: center; cursor: pointer; }
 
         /* ADMIN DASHBOARD */
         #admin-dashboard { width: 100%; display: none; flex-direction: column; gap: 20px; }
         .dash-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
         @media (max-width: 900px) { .dash-grid { grid-template-columns: 1fr; } }
-        
         .dash-card { background: var(--bg-panel); border: 1px solid #333; border-radius: 8px; padding: 20px; }
         .dash-title { font-family: 'Teko'; font-size: 1.5rem; color: var(--primary-color); border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        
         .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
         .ctrl-btn { padding: 15px; border-radius: 6px; border: 1px solid #444; background: #222; color: white; text-align: center; cursor: pointer; transition: 0.2s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
         .ctrl-btn i { font-size: 1.5rem; }
         .ctrl-btn.active { background: var(--primary-color); color: black; border-color: var(--primary-color); }
         .ctrl-btn.danger { border-color: var(--error); color: var(--error); }
         .ctrl-btn.danger:hover { background: var(--error); color: white; }
-
-        /* Tabla de Escuadras en Admin */
+        
         .squad-table-container { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; }
         .squad-admin-table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
         .squad-admin-table th { text-align: left; color: #888; padding: 8px 4px; border-bottom: 1px solid #444; font-size: 0.8rem; text-transform: uppercase; }
@@ -265,7 +281,6 @@
         .student-card { background: #111; border-radius: 6px; padding: 15px; border: 1px solid #333; display: flex; flex-direction: column; gap: 10px; position: relative; transition: 0.2s; }
         .student-card:hover { border-color: var(--primary-color); }
         .student-card.offline { opacity: 0.5; }
-        
         .sc-header { display: flex; align-items: center; gap: 10px; }
         .sc-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #555; }
         .sc-info { flex-grow: 1; }
@@ -273,13 +288,10 @@
         .sc-status { font-size: 0.75rem; display: flex; align-items: center; gap: 4px; }
         .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #666; }
         .status-dot.online { background: var(--success); box-shadow: 0 0 5px var(--success); }
-        
         .sc-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 0.8rem; color: #aaa; background: #000; padding: 8px; border-radius: 4px; }
         .sc-stat-val { color: var(--primary-color); font-weight: 700; font-size: 1rem; }
-        
         .sc-squad-control { margin-top: 5px; }
         .squad-select-admin { width: 100%; background: #000; border: 1px solid #444; color: white; padding: 4px; border-radius: 4px; font-size: 0.8rem; }
-        
         .sc-actions { display: flex; justify-content: flex-end; gap: 5px; margin-top: 5px; }
         .sc-btn { background: #333; border: none; color: #aaa; padding: 4px 8px; border-radius: 4px; font-size: 0.8rem; cursor: pointer; }
         .sc-btn:hover { background: #444; color: white; }
@@ -313,6 +325,17 @@
     <div id="victory-screen"><div class="victory-title">JUEGO TERMINADO</div><div class="confetti"></div></div>
     <div id="epic-overlay"><div class="epic-text" id="epic-text">¡BOOYAH!</div></div>
     
+    <!-- Modal Battle Pass -->
+    <div id="bp-modal" class="bp-modal" onclick="if(event.target.id === 'bp-modal') closeBPModal()">
+        <div class="bp-modal-content">
+            <div class="bp-reward-icon" id="bp-modal-icon">🎁</div>
+            <div class="bp-reward-title" id="bp-modal-title">Recompensa Desbloqueada</div>
+            <div class="bp-reward-desc" id="bp-modal-desc">Has obtenido un premio.</div>
+            <button class="bp-reward-btn" id="bp-modal-btn" onclick="claimBPItem()">¡Reclamar!</button>
+            <button style="margin-top:10px; background:none; border:1px solid #555; color:#888; padding:8px 20px; cursor:pointer;" onclick="closeBPModal()">Cerrar</button>
+        </div>
+    </div>
+    
     <button id="chat-toggle-btn" onclick="toggleChatUI()"><i class="fas fa-comments"></i></button>
     <div id="chat-battle">
         <div class="chat-header" onclick="toggleChatUI()"><span><i class="fas fa-bolt"></i> Chat Dirigido</span><i class="fas fa-chevron-down"></i></div>
@@ -335,14 +358,12 @@
     <div id="avatar-modal" style="display:none; background: rgba(0,0,0,0.9);" onclick="if(event.target.id === 'avatar-modal') toggleAvatarModal()"><div class="modal-box"><h3 style="margin:0 0 10px 0; color:var(--primary-color); font-family:'Teko'; font-size:1.8rem; text-transform:uppercase;">Personaje</h3><div class="modal-section"><h4>Estándar</h4><div class="avatar-grid" id="avatar-options-standard"></div></div><div class="modal-section" id="exclusive-section" style="display:none;"><h4 style="color:var(--error);"> <i class="fas fa-lock-open"></i> Exclusivos Heroico</h4><div class="avatar-grid" id="avatar-options-exclusive"></div></div><button class="btn-primary" onclick="saveAvatarChoice()">Guardar</button></div></div>
 
     <header class="main-header">
-        <!-- RELOJ (Derecha) -->
         <div class="season-badge" id="season-badge">
             <i class="fas fa-clock"></i> <span class="timer-display" id="timer-display">--:--</span>
         </div>
         
         <h1>Prof. Miguel</h1>
         
-        <!-- V14.3: Banner Izquierda (GRANDE Y EN MOVIMIENTO) -->
         <div class="season-banner-top">
             <div class="marquee-text">FreeDivisión Temporada <span id="season-num-display">1</span></div>
         </div>
@@ -373,7 +394,6 @@
                      <div style="font-size: 0.9rem; color:#aaa;">Ej. <span id="subLevelCount">1</span>/10</div>
                 </div>
                 
-                <!-- Monedas -->
                 <div class="coin-display-container" title="DiviCoins ganadas">
                     <i class="fas fa-coins coin-icon"></i>
                     <span class="coin-count" id="coinDisplay">0</span>
@@ -401,7 +421,6 @@
                         <div class="ctrl-btn danger" onclick="resetAllUsers()"><i class="fas fa-redo"></i><span>Reiniciar Todo</span></div>
                     </div>
 
-                    <!-- Tabla de Escuadras -->
                     <div class="squad-table-container">
                         <div class="dash-title" style="font-size:1.2rem; border:none; margin-bottom:5px; padding-bottom:0;">Estado Escuadras</div>
                         <table class="squad-admin-table">
@@ -452,18 +471,26 @@
                     <button id="btn-verify" class="btn-primary" onclick="verificarSolucion()">Verificar</button>
                     <div id="msg"></div>
 
-                    <!-- Pase de Batalla Placeholder -->
+                    <!-- PASE DE BATALLA V15 -->
                     <div class="battle-pass-panel">
                         <div class="bp-header">
-                            <span>Pase de Batalla</span>
-                            <span style="color:var(--primary-color)">Nivel 1</span>
+                            <span><i class="fas fa-crown" style="color:var(--bp-gold)"></i> Pase de Batalla</span>
+                            <span style="font-size:0.9rem; color:#aaa;" id="bp-status-text">Bloqueado</span>
                         </div>
-                        <div class="bp-progress-bar">
-                            <div class="bp-progress-fill" style="width: 15%"></div>
-                            <div class="bp-node" style="left: 15%; background:var(--success); border-color:var(--success);"></div>
-                            <div class="bp-node" style="left: 40%;"></div>
-                            <div class="bp-node" style="left: 65%;"></div>
-                            <div class="bp-node" style="left: 90%;"></div>
+                        
+                        <div id="bp-buy-section" style="text-align:center; padding:10px;">
+                            <p style="font-size:0.9rem; color:#aaa; margin:5px 0;">Desbloquea recompensas exclusivas</p>
+                            <button class="bp-buy-btn" onclick="buyBattlePass()"><i class="fas fa-lock-open"></i> Comprar por 500 <i class="fas fa-coins" style="color:black"></i></button>
+                        </div>
+
+                        <div id="bp-progress-section" style="display:none;">
+                            <div class="bp-progress-wrap">
+                                <span style="font-size:0.8rem; color:#aaa;">XP:</span>
+                                <span id="bp-xp-val" class="bp-xp-text">0</span>
+                            </div>
+                            <div class="bp-tiers" id="bp-tiers-container">
+                                <!-- Tiers se generan con JS -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -510,8 +537,19 @@
         const RANKS = [ { name: "Hierro", min: 0, max: 2999, icon: "🪨", css: "rank-iron", avatar: "avatar-iron" }, { name: "Bronce", min: 3000, max: 6999, icon: "🥉", css: "rank-bronze", avatar: "avatar-bronze" }, { name: "Plata", min: 7000, max: 12999, icon: "🥈", css: "rank-silver", avatar: "avatar-silver" }, { name: "Oro", min: 13000, max: 19999, icon: "🥇", css: "rank-gold", avatar: "avatar-gold" }, { name: "Platino", min: 20000, max: 29999, icon: "💠", css: "rank-platinum", avatar: "avatar-platinum" }, { name: "Diamante", min: 30000, max: 49999, icon: "💎", css: "rank-diamond", avatar: "avatar-diamond" }, { name: "Heroico", min: 50000, max: 999999, icon: "👑", css: "rank-heroic", avatar: "avatar-heroic" } ];
         function getRankInfo(score) { let rank = RANKS[0]; for(let i=0; i<RANKS.length; i++) { if(score >= RANKS[i].min) rank = RANKS[i]; } let tier = "I"; let range = rank.max - rank.min; if (score < rank.min + range/3) tier = "III"; else if (score < rank.min + (range/3)*2) tier = "II"; let pct = ((score - rank.min) / range) * 100; if(pct > 100) pct = 100; return { ...rank, tier: tier, pct: pct }; }
 
-        // Monedas
+        // Monedas y BP
         let currentCoins = 0;
+        let hasBP = false;
+        let claimedBPRewards = [];
+
+        // Definición de Recompensas BP
+        const BP_REWARDS = [
+            { level: 1, xp: 0,     icon: "✍️", name: "Fuente Gaming", desc: "Tipografía Free Fire", type: "font" },
+            { level: 2, xp: 500,   icon: "🍅", name: "3 Tomates", desc: "Ataca a rivales (-50 pts)", type: "item", item: "item_tomatoes", qty: 3 },
+            { level: 3, xp: 1500,  icon: "🛡️", name: "Escudo (3 días)", desc: "Protección contra tomates", type: "item", item: "item_shield_until", days: 3 },
+            { level: 4, xp: 3000,  icon: "🍔", name: "Comer en Clase", desc: "Pase para 1 día", type: "item", item: "item_eat_pass" },
+            { level: 5, xp: 5000,  icon: "📝", name: "Sin Tarea", desc: "Pase Excusa", type: "item", item: "item_homework_pass" }
+        ];
 
         // SQUADS
         const SQUADS = {
@@ -549,10 +587,10 @@
 
         async function handleLogin() { const u = document.getElementById('login-username').value.trim(); const p = document.getElementById('login-password').value; const e = document.getElementById('login-error'); if (!u || p.length < 6) { e.textContent = "Datos incompletos."; e.style.display='block'; return; } try { const { data, error } = await _supabase.auth.signInWithPassword({ email: u+"@profemiguel.com", password: p }); if (error) throw error; currentUser = data.user; showApp(); } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; } }
         async function handleRegister() { const u = document.getElementById('login-username').value.trim(); const p = document.getElementById('login-password').value; const e = document.getElementById('login-error'); if (!u || p.length < 6) { e.textContent = "Datos incompletos."; e.style.display='block'; return; } try { const { data, error } = await _supabase.auth.signUp({ email: u+"@profemiguel.com", password: p }); if (error) throw error; alert("Registrado. Entra ahora."); } catch (err) { e.textContent = "Error: " + err.message; e.style.display='block'; } }
-        async function logout() { await _supabase.auth.signOut(); currentUser=null; totalScore=0; currentCoins=0; showLogin(); clearInterval(rankInt); }
+        async function logout() { await _supabase.auth.signOut(); currentUser=null; totalScore=0; currentCoins=0; hasBP=false; showLogin(); clearInterval(rankInt); }
 
         async function loadScore(user) {
-            try { const { data } = await _supabase.from('profiles').select('total_score, avatar_style, current_level, completed_at, is_banned, current_problem, total_time_played, total_errors, squad_id, coins').eq('id', user.id).single(); 
+            try { const { data } = await _supabase.from('profiles').select('*').eq('id', user.id).single(); 
                 if(data && data.is_banned) { alert("Tu cuenta está suspendida temporalmente."); logout(); return; }
                 totalScore = (data && data.total_score) ? data.total_score : 0; 
                 currentAvatarStyle = (data && data.avatar_style) ? data.avatar_style : 'adventurer'; 
@@ -564,7 +602,11 @@
                 totalErrors = (data && data.total_errors) ? data.total_errors : 0;
                 
                 currentCoins = (data && data.coins) ? data.coins : 0;
+                hasBP = (data && data.has_battle_pass) || false;
+                claimedBPRewards = (data && data.claimed_bp_rewards) || [];
+
                 updateCoinDisplay();
+                updateBattlePassUI();
 
                 if(data.squad_id && SQUADS[data.squad_id]) {
                     const squad = SQUADS[data.squad_id];
@@ -574,11 +616,137 @@
                     document.getElementById('user-squad-name').style.color = squad.color;
                 } else { document.getElementById('squad-display').style.display = 'none'; }
 
-            } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1; currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0; totalErrors = 0; currentCoins = 0; }
+            } catch(e) { totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1; currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0; totalErrors = 0; currentCoins = 0; hasBP = false; }
             isAdmin = (user.email.split('@')[0] === ADMIN_USER); document.getElementById('admin-header-btn').classList.toggle('visible', isAdmin); if(hasFinishedGame) document.getElementById('msg').innerHTML = "<span style='color:var(--primary-color);'>¡Ya terminaste!</span>"; currentMainLevel = unlockedLevel; populateLevelSelect(); updateUI(); renderMainAvatar();
         }
         
         function updateCoinDisplay() { document.getElementById('coinDisplay').innerText = currentCoins; }
+
+        // --- BATTLE PASS LOGIC ---
+        function updateBattlePassUI() {
+            const buySec = document.getElementById('bp-buy-section');
+            const progSec = document.getElementById('bp-progress-section');
+            const statusText = document.getElementById('bp-status-text');
+            
+            if(hasBP) {
+                buySec.style.display = 'none';
+                progSec.style.display = 'block';
+                statusText.innerText = "Activo";
+                statusText.style.color = "var(--success)";
+                renderBPTiers();
+            } else {
+                buySec.style.display = 'block';
+                progSec.style.display = 'none';
+                statusText.innerText = "Bloqueado";
+                statusText.style.color = "#aaa";
+            }
+        }
+
+        function renderBPTiers() {
+            document.getElementById('bp-xp-val').innerText = totalScore;
+            const container = document.getElementById('bp-tiers-container');
+            container.innerHTML = '';
+
+            BP_REWARDS.forEach(tier => {
+                const isUnlocked = totalScore >= tier.xp;
+                const isClaimed = claimedBPRewards.includes(tier.level);
+                
+                let nodeClass = "";
+                if(isClaimed) nodeClass = "claimed";
+                else if(isUnlocked) nodeClass = "unlocked";
+
+                const div = document.createElement('div');
+                div.className = 'bp-tier';
+                div.innerHTML = `
+                    <div class="bp-tier-node ${nodeClass}" onclick="openTierModal(${tier.level}, ${isUnlocked}, ${isClaimed})">${isClaimed ? '✔' : tier.icon}</div>
+                    <div class="bp-tier-label">${isClaimed ? 'Reclamado' : (isUnlocked ? '¡Listo!' : tier.xp + ' pts')}</div>
+                    <div class="bp-tier-desc">${tier.name}</div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        let currentViewingTier = null;
+        function openTierModal(level, unlocked, claimed) {
+            if(!unlocked) return alert("¡Aún no alcanzas este nivel!");
+            if(claimed) return alert("Ya reclamaste este premio.");
+            
+            const tier = BP_REWARDS.find(t => t.level === level);
+            if(!tier) return;
+
+            currentViewingTier = tier;
+            document.getElementById('bp-modal-icon').innerText = tier.icon;
+            document.getElementById('bp-modal-title').innerText = tier.name;
+            document.getElementById('bp-modal-desc').innerText = tier.desc;
+            document.getElementById('bp-modal').style.display = 'flex';
+        }
+
+        function closeBPModal() {
+            document.getElementById('bp-modal').style.display = 'none';
+            currentViewingTier = null;
+        }
+
+        async function claimBPItem() {
+            if(!currentViewingTier) return;
+            
+            AudioEngine.playSuccess();
+            
+            // Add item to local state
+            claimedBPRewards.push(currentViewingTier.level);
+            
+            // Update DB
+            const updates = { claimed_bp_rewards: claimedBPRewards };
+            
+            if(currentViewingTier.type === 'item') {
+                if(currentViewingTier.item === 'item_tomatoes') {
+                    updates[currentViewingTier.item] = (await getCurrentItemValue(currentViewingTier.item)) + currentViewingTier.qty;
+                } else if (currentViewingTier.item === 'item_shield_until') {
+                    const expiry = new Date(new Date().getTime() + (currentViewingTier.days * 24 * 60 * 60 * 1000));
+                    updates[currentViewingTier.item] = expiry.toISOString();
+                } else {
+                    updates[currentViewingTier.item] = true;
+                }
+            } else if (currentViewingTier.type === 'font') {
+                updates.unlocked_font = 'freefire';
+            }
+
+            try {
+                await _supabase.from('profiles').update(updates).eq('id', currentUser.id);
+                alert("¡Recompensa reclamada!");
+                closeBPModal();
+                await loadScore(currentUser); // Reload everything
+            } catch(e) {
+                alert("Error al reclamar: " + e.message);
+            }
+        }
+
+        async function getCurrentItemValue(col) {
+            if(!currentUser) return 0;
+            try {
+                const { data } = await _supabase.from('profiles').select(col).eq('id', currentUser.id).single();
+                return data[col] || 0;
+            } catch(e) { return 0; }
+        }
+
+        async function buyBattlePass() {
+            if(currentCoins < 500) return alert("No tienes suficientes DiviCoins. Necesitas 500.");
+            if(hasBP) return alert("Ya tienes el pase.");
+            
+            if(!confirm("¿Comprar Pase de Batalla por 500 DiviCoins?")) return;
+            
+            currentCoins -= 500;
+            hasBP = true;
+            
+            try {
+                await _supabase.from('profiles').update({ coins: currentCoins, has_battle_pass: true }).eq('id', currentUser.id);
+                updateCoinDisplay();
+                updateBattlePassUI();
+                AudioEngine.playSuccess();
+                alert("¡Pase desbloqueado! Reclama tus premios.");
+            } catch(e) {
+                alert("Error al comprar.");
+            }
+        }
 
         function populateLevelSelect() { const sel = document.getElementById('levelSelect'); sel.innerHTML = ''; for(let i=1; i<=TOTAL_LEVELS; i++) { let opt = document.createElement('option'); opt.value = i; opt.innerText = "Nivel " + i; if(i > unlockedLevel) { opt.disabled = true; opt.innerText += " 🔒"; } sel.appendChild(opt); } sel.value = currentMainLevel; }
         function updateUI() { document.getElementById('scoreDisplay').innerText = totalScore; const rI = getRankInfo(totalScore); document.getElementById('userRankName').innerText = rI.icon + " " + rI.name + " " + rI.tier; document.getElementById('userRankName').className = "rank-name " + rI.css; document.getElementById('userRankBar').style.width = rI.pct + "%"; const avatarBox = document.getElementById('main-avatar-box'); avatarBox.className = "avatar-container " + rI.avatar; }
@@ -709,7 +877,7 @@
         }
         async function saveTime() { if(!currentUser) return; try { await _supabase.from('profiles').update({ total_time_played: playTimeCounter, total_errors: totalErrors }).eq('id', currentUser.id); } catch(e) { console.error(e); } }
 
-        // --- ADMIN DASHBOARD LOGIC (FIXED) ---
+        // --- ADMIN DASHBOARD LOGIC ---
         function showAdminDashboard() { document.getElementById('game-layout').style.display = 'none'; document.getElementById('top-bar-panel').style.display = 'none'; document.getElementById('admin-dashboard').style.display = 'flex'; loadDashboardData(); setInterval(loadDashboardData, 5000); }
         function toggleAdminDashboard() { if(document.getElementById('admin-dashboard').style.display === 'flex') { logout(); } else { showAdminDashboard(); } }
         
@@ -722,7 +890,6 @@
                 if(error) throw error; 
                 const now = new Date(); const onlineThreshold = 30000; 
                 
-                // Squad Stats Logic
                 let squadStats = {};
                 Object.keys(SQUADS).forEach(id => squadStats[id] = { count: 0, score: 0 });
                 students.forEach(u => {
@@ -731,7 +898,6 @@
                         squadStats[u.squad_id].score += (u.total_score || 0);
                     }
                 });
-                // Render Table
                 const tbody = document.getElementById('squad-admin-tbody');
                 tbody.innerHTML = Object.entries(squadStats).map(([id, stats]) => {
                     const squad = SQUADS[id];
@@ -743,7 +909,6 @@
                     </tr>`;
                 }).join('');
 
-                // Student Cards
                 grid.innerHTML = students.map(u => { 
                     const isOnline = u.last_seen && (now - new Date(u.last_seen) < onlineThreshold); const isBanned = u.is_banned; const mins = u.total_time_played ? Math.floor(u.total_time_played / 60) : 0; const secs = u.total_time_played ? u.total_time_played % 60 : 0; const timeStr = `${mins}m ${secs}s`; 
                     
@@ -802,7 +967,7 @@
         async function toggleBan(uid, currentStatus) { try { await _supabase.from('profiles').update({ is_banned: !currentStatus }).eq('id', uid); loadDashboardData(); } catch(e) { alert("Error"); } }
         async function cleanInactiveUsers() { if(!confirm("¿Borrar TODAS las cuentas con 0 puntos?")) return; try { await _supabase.from('profiles').delete().eq('total_score', 0).neq('username', ADMIN_USER); alert("Limpieza completada."); loadDashboardData(); } catch(e) { alert("Error: " + e.message); } }
         async function deleteUser(uid, name) { if(!confirm(`¿Borrar la cuenta "${name}" permanentemente?`)) return; try { await _supabase.from('profiles').delete().eq('id', uid); alert(`Usuario ${name} eliminado.`); loadDashboardData(); } catch(e) { alert("Error al borrar: " + e.message); } }
-        async function resetAllUsers() { if(!confirm("¿Reiniciar TODOS los puntos y tiempo?")) return; try { await _supabase.from('profiles').update({ total_score: 0, current_level: 1, completed_at: null, current_problem: 1, total_time_played: 0, total_errors: 0, squad_id: 0, coins: 0 }).neq('id', '00000000-0000-0000-0000-000000000000'); await _supabase.from('game_settings').update({ season_end_time: null, is_paused: false, exam_level: 0 }).eq('id', 1); alert("¡Reiniciado!"); loadDashboardData(); } catch(e) { alert("Error."); } }
+        async function resetAllUsers() { if(!confirm("¿Reiniciar TODOS los puntos y tiempo?")) return; try { await _supabase.from('profiles').update({ total_score: 0, current_level: 1, completed_at: null, current_problem: 1, total_time_played: 0, total_errors: 0, squad_id: 0, coins: 0, has_battle_pass: false, claimed_bp_rewards: {} }).neq('id', '00000000-0000-0000-0000-000000000000'); await _supabase.from('game_settings').update({ season_end_time: null, is_paused: false, exam_level: 0 }).eq('id', 1); alert("¡Reiniciado!"); loadDashboardData(); } catch(e) { alert("Error."); } }
         
         async function assignSquad(userId, squadId) { try { await _supabase.from('profiles').update({ squad_id: squadId }).eq('id', userId); loadDashboardData(); } catch(e) { alert("Error al asignar escuadra"); } }
 
@@ -870,7 +1035,7 @@
             if(coc===rC && res===rR) {
                 totalScore += POINTS; updateUI(); AudioEngine.playSuccess();
                 
-                // PAGO POR ÉXITO
+                // PAGO POR ÉXITO (5 monedas)
                 let earnedCoins = 5;
                 currentCoins += earnedCoins;
                 updateCoinDisplay();
