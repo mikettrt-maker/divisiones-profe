@@ -1,9 +1,10 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V18.0 (Ultimate)</title>
+    <title>Reto de División - V18.5 (Ultimate Fixed)</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -491,22 +492,6 @@
 <!-- SOUND + SHOP FLOATS -->
 <button class="sound-toggle" id="sound-toggle-btn" onclick="toggleAmbientSound()" title="Sonido ambiental"><i class="fas fa-volume-mute"></i></button>
 <button class="shop-btn-float" onclick="openShop()" title="DiviTienda"><i class="fas fa-store"></i></button>
-<button id="chat-toggle-btn" onclick="toggleChatUI()"><i class="fas fa-comments"></i></button>
-
-<!-- CHAT -->
-<div id="chat-battle">
-    <div class="chat-header" onclick="toggleChatUI()"><span><i class="fas fa-bolt"></i> Chat Dirigido</span><i class="fas fa-chevron-down"></i></div>
-    <div class="chat-messages" id="chat-messages"></div>
-    <div class="chat-input-bar">
-        <select id="chat-user-select" class="chat-user-select"><option value="todos">Para: Todos 👥</option></select>
-        <div class="quick-msg-grid">
-            <button class="quick-btn" onclick="sendQuickChat('¡Vas con todo! 🔥')"><i class="fas fa-fire"></i> ¡Vas con todo!</button>
-            <button class="quick-btn" onclick="sendQuickChat('¡Ánimo! 💪')"><i class="fas fa-dumbbell"></i> ¡Ánimo!</button>
-            <button class="quick-btn" onclick="sendQuickChat('¡Genial! ⭐')"><i class="fas fa-star"></i> ¡Genial!</button>
-            <button class="quick-btn" onclick="sendQuickChat('¡Tú puedes! 🚀')"><i class="fas fa-rocket"></i> ¡Tú puedes!</button>
-        </div>
-    </div>
-</div>
 
 <!-- LOGIN -->
 <div id="login-screen" style="display:none;">
@@ -579,7 +564,6 @@
                 <div class="rank-progress"><div class="rank-progress-bar" id="userRankBar" style="width:0%"></div></div>
                 <div class="rank-score-label"><span id="scoreDisplay">0</span> pts</div>
             </div>
-            <button class="error-history-btn" onclick="openErrorHistory()"><i class="fas fa-exclamation-triangle"></i> Errores</button>
             <button onclick="logout()" class="btn-small">Salir</button>
         </div>
     </div>
@@ -779,18 +763,6 @@ function showReviewPanel(dividend,divisor,cociente,residuo) {
     steps.innerHTML=html;
 }
 function hideReviewPanel() { document.getElementById('review-panel').classList.remove('visible'); }
-function openErrorHistory() {
-    document.getElementById('error-history-modal').style.display='flex';
-    const body=document.getElementById('error-history-body');
-    if(!errorHistory.length){body.innerHTML='<p style="color:var(--success);text-align:center;font-size:1.1rem;">🎉 ¡Sin errores!</p>';return;}
-    body.innerHTML=errorHistory.slice().reverse().map(e=>`
-        <div class="error-entry">
-            <div class="error-entry-header"><span class="error-entry-problem">${e.dividend} ÷ ${e.divisor}</span><span class="error-entry-time">${e.ts}</span></div>
-            <div class="error-entry-detail">Tu respuesta → Cociente:<strong style="color:var(--error)">${e.myCoc??'?'}</strong>, Residuo:<strong style="color:var(--error)">${e.myRes??'?'}</strong></div>
-            <div style="color:var(--success);font-weight:700;font-size:.9rem;margin-top:5px;">✅ Correcto → Cociente:${e.rC}, Residuo:${e.rR}</div>
-        </div>`).join('');
-}
-function closeErrorHistory() { document.getElementById('error-history-modal').style.display='none'; }
 
 // ── SQUAD MISSIONS ──
 const SQUAD_MISSIONS=[
@@ -1363,14 +1335,13 @@ async function verificarSolucion(){
     btn.disabled=true;
     btn.style.opacity='0.4';
     btn.innerText="Verificando...";
-    btn.onclick=null; // Remover listener también
 
     const coc=parseInt(document.getElementById('valCociente').value);
     const res=parseInt(document.getElementById('valResiduo').value)||0;
     const rC=Math.floor(currentDividend/currentDivisor);
     const rR=currentDividend%currentDivisor;
 
-    if(coc===rC&&res===rR){
+    if(coc===rC && res===rR){
         // ✅ CORRECTO
         AudioEngine.playSuccess();
         totalScore+=POINTS;
@@ -1378,7 +1349,7 @@ async function verificarSolucion(){
         incrementStreak();
         recordSuccess();
 
-        // Monedas: +5 base — se guardan en saveScore()
+        // Monedas: +5 base
         currentCoins+=5;
         updateCoinDisplay();
 
@@ -1388,38 +1359,39 @@ async function verificarSolucion(){
             currentProblemInLevel++;
         }else{
             if(currentMainLevel<TOTAL_LEVELS){
-                unlockedLevel=currentMainLevel+1;currentMainLevel++;currentProblemInLevel=1;
+                unlockedLevel=currentMainLevel+1;
+                currentMainLevel++;
+                currentProblemInLevel=1;
                 showVictoryScreen();
             }else{
                 hasFinishedGame=true;
                 await _supabase.from('profiles').update({completed_at:new Date().toISOString()}).eq('id',currentUser.id);
                 loadHallOfFame();
                 await saveScore();
-                // No rehabilitar botón — juego terminado
                 return;
             }
         }
         await saveTime();
-        await saveScore(); // Guarda score + coins en DB
+        await saveScore(); 
         if(document.getElementById('victory-screen').style.display==='flex'){
             setTimeout(()=>{hideVictoryScreen();loadProblem();},3000);
         }else{
-            loadProblem(); // loadProblem resetea isVerifying y rehabilita el botón
+            loadProblem(); 
         }
     }else{
-        // ❌ INCORRECTO — NO dar la respuesta
+        // ❌ INCORRECTO
         AudioEngine.playError();
         document.getElementById('msg').innerHTML=`<span style='color:var(--error);font-weight:700;font-size:1.2rem;'>INCORRECTO ❌ — Inténtalo de nuevo</span>`;
         totalErrors++;
         saveTime();
         recordError(currentDividend,currentDivisor,coc,res,rC,rR);
         resetStreak();
-        // Rehabilitar botón solo en caso de error
-        isVerifying=false;
-        btn.disabled=false;
-        btn.style.opacity='1';
-        btn.innerText="Verificar";
-        btn.onclick=verificarSolucion;
+        
+        // --- AQUÍ ESTÁ EL CAMBIO PARA QUE NO SE BLOQUEE ---
+        isVerifying = false;
+        btn.disabled = false;
+        btn.style.opacity = '1';
+        btn.innerText = "Verificar";
     }
 }
 </script>
