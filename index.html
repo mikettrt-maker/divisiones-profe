@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V18.0 (Ultimate)</title>
+    <title>Reto de División - V18.1 (Fix Final)</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -56,7 +56,7 @@
         .squad-name-small { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
 
         /* ── COINS ── */
-        .coin-display-container { display: flex; align-items: center; gap: 5px; background: rgba(255,204,0,.1); padding: 5px 10px; border-radius: 20px; border: 1px solid var(--primary-color); cursor: default; }
+        .coin-display-container { display: flex; align-items: center; gap: 5px; background: rgba(255,204,0,.1); padding: 5px 10px; border-radius: 20px; border: 1px solid var(--primary-color); cursor: pointer; }
         .coin-icon { font-size: 1rem; color: var(--primary-color); }
         .coin-count { font-family: 'Teko'; font-size: 1.2rem; font-weight: 700; color: var(--primary-color); line-height: 1; }
 
@@ -273,7 +273,7 @@
         .bp-prize-info { font-size: .85rem; }
         .bp-prize-user { font-weight: 700; color: var(--primary-color); }
         .bp-prize-name { color: #aaa; font-size: .75rem; }
-        .bp-prize-mark-btn { background: var(--success); color: black; border: none; padding: 4px 10px; border-radius: 3px; font-size: .75rem; font-weight: 700; cursor: pointer; font-family: 'Rajdhani'; }
+        .bp-prize-mark-btn { background: var(--success); color: black; border: none; padding: 4px 10px; border-radius: 3px; font-size: .75rem; font-weight: 700; cursor: pointer; }
 
         /* ── ADMIN DASHBOARD ── */
         #admin-dashboard { width: 100%; display: none; flex-direction: column; gap: 20px; }
@@ -684,7 +684,7 @@
 </div>
 <script>
 // ============================================================
-// SOUND ENGINE (ORIGINAL)
+// SOUND ENGINE
 // ============================================================
 const AudioEngine = {
     ctx: null,
@@ -706,7 +706,6 @@ const AudioEngine = {
     playShop()    { this.playTone(440,80,'square',0.07); setTimeout(()=>this.playTone(550,120,'square',0.07),90); }
 };
 
-// ── AMBIENT SOUND ──
 let ambientOn=false, ambientNodes=[], ambientGain=null;
 function startAmbientSound() {
     AudioEngine.init(); const ctx=AudioEngine.ctx;
@@ -725,7 +724,6 @@ function toggleAmbientSound() {
     else { stopAmbientSound(); btn.classList.remove('on'); btn.innerHTML='<i class="fas fa-volume-mute"></i>'; }
 }
 
-// ── TOAST ──
 function showToast(msg, type='success', duration=4000) {
     const c=document.getElementById('toast-container'), t=document.createElement('div');
     t.className=`toast ${type}`; t.innerHTML=msg; c.appendChild(t);
@@ -822,7 +820,7 @@ async function loadSquadMissions(squadId) {
 }
 
 // ============================================================
-// CONFIG (ORIGINAL)
+// CONFIG
 // ============================================================
 const SUPABASE_URL='https://oskrniownbbzkgnwunzz.supabase.co';
 const SUPABASE_KEY='sb_publishable_RcfluyMTRxDP4chkK91-2Q_UwLdLrqP';
@@ -833,7 +831,6 @@ const ADMIN_USER='profemiguel';
 let currentMainLevel=1,currentProblemInLevel=1,currentDivisor=0,currentDividend=0;
 let totalScore=0,currentUser=null,currentAvatarStyle='adventurer';
 let isGridLocked=true,hasFinishedGame=false;
-// V18: isProcessing ahora es una promesa, no un bool simple
 let isVerifying=false;
 let unlockedLevel=1,isAdmin=false;
 let chatCooldown=false,chatVisible=false;
@@ -895,7 +892,7 @@ const DB={
 };
 
 // ============================================================
-// INIT (ORIGINAL)
+// INIT
 // ============================================================
 document.addEventListener('DOMContentLoaded',async()=>{
     try{const{data:{session}}=await _supabase.auth.getSession();if(session?.user){currentUser=session.user;showApp();}else{showLogin();}}catch(e){showLogin();}
@@ -951,7 +948,6 @@ async function loadScore(user){
         totalErrors     =(data?.total_errors)||0;
         currentCoins    =(data?.coins)||0;
         hasBP           =(data?.has_battle_pass)||false;
-        // V18 FIX: claimed_bp_rewards siempre como array
         const raw=data?.claimed_bp_rewards;
         claimedBPRewards=Array.isArray(raw)?raw:(raw&&typeof raw==='object'?Object.values(raw):[]);
         itemTomatoes    =(data?.item_tomatoes)||0;
@@ -1014,7 +1010,6 @@ function closeBPModal(){document.getElementById('bp-modal').style.display='none'
 async function claimBPItem(){
     if(!currentViewingTier)return;
     AudioEngine.playSuccess();
-    // V18 FIX: always push to array
     if(!Array.isArray(claimedBPRewards))claimedBPRewards=[];
     claimedBPRewards.push(currentViewingTier.level);
     const updates={claimed_bp_rewards:claimedBPRewards};
@@ -1024,13 +1019,11 @@ async function claimBPItem(){
         else{updates[currentViewingTier.item]=true;}
     }else if(currentViewingTier.type==='font'){updates.unlocked_font='freefire';}
     else if(currentViewingTier.type==='real_prize'){
-        // V18: marcar premio real para que admin lo vea
         updates['pending_prize_'+currentViewingTier.level]=true;
     }
     try{await _supabase.from('profiles').update(updates).eq('id',currentUser.id);alert("¡Recompensa reclamada!");closeBPModal();await loadScore(currentUser);}
     catch(e){alert("Error al reclamar: "+e.message);}
 }
-// V18 FIX: buyBattlePass ahora guarda en DB ANTES de actualizar UI
 async function buyBattlePass(){
     if(hasBP)return alert("Ya tienes el pase.");
     if(currentCoins<500)return alert("No tienes suficientes DiviCoins. Necesitas 500.");
@@ -1115,7 +1108,6 @@ function renderAvatarOptions(){
 function selectAvatarStyle(id){const isEx=AVATAR_STYLES_EXCLUSIVE.some(s=>s.id===id);if(isEx&&totalScore<50000){alert("¡Este avatar es exclusivo!");return;}currentAvatarStyle=id;renderAvatarOptions();renderMainAvatar();}
 async function saveAvatarChoice(){AudioEngine.playClick();await _supabase.from('profiles').upsert({id:currentUser.id,avatar_style:currentAvatarStyle});toggleAvatarModal();updateRanking();}
 
-// V18 FIX: saveScore guarda coins también
 async function saveScore(){
     if(!currentUser)return;
     try{await _supabase.from('profiles').upsert({id:currentUser.id,username:currentUser.email.split('@')[0],total_score:totalScore,current_level:unlockedLevel,current_problem:currentProblemInLevel,coins:currentCoins});updateRanking();}
@@ -1206,7 +1198,7 @@ function startStudentHeartbeat(){
 async function saveTime(){if(!currentUser)return;try{await _supabase.from('profiles').update({total_time_played:playTimeCounter,total_errors:totalErrors}).eq('id',currentUser.id);}catch(e){}}
 
 // ============================================================
-// ADMIN (ORIGINAL) + V18: REINICIO CORREGIDO + PREMIOS BP
+// ADMIN
 // ============================================================
 function showAdminDashboard(){document.getElementById('game-layout').style.display='none';document.getElementById('top-bar-panel').style.display='none';document.getElementById('admin-dashboard').style.display='flex';loadDashboardData();setInterval(loadDashboardData,5000);}
 function toggleAdminDashboard(){if(document.getElementById('admin-dashboard').style.display==='flex'){logout();}else{showAdminDashboard();}}
@@ -1222,7 +1214,7 @@ async function loadDashboardData(){
         students.forEach(u=>{if(u.squad_id&&ss[u.squad_id]){ss[u.squad_id].count++;ss[u.squad_id].score+=(u.total_score||0);}});
         document.getElementById('squad-admin-tbody').innerHTML=Object.entries(ss).map(([id,st])=>{const sq=SQUADS[id];return`<tr style="border-bottom:1px solid #222;"><td class="shield-cell"><div>${sq.svg}</div></td><td style="color:${sq.color};font-weight:700;">${sq.name}</td><td>${st.count}</td><td class="points-cell">${st.score}</td></tr>`;}).join('');
         
-        // V18: Premios BP pendientes para el admin
+        // V18: Premios BP pendientes
         const prizesList=document.getElementById('bp-prizes-list');
         const studentsWithPrizes=students.filter(u=>u.pending_prize_4||u.pending_prize_5);
         if(studentsWithPrizes.length){
@@ -1260,166 +1252,171 @@ async function toggleExamMode(){const{data:s}=await _supabase.from('game_setting
 function showSeasonModal(){const h=prompt("Horas de temporada:","0"),m=prompt("Minutos:","0");if(h||m)startSeason(parseInt(h),parseInt(m));}
 async function startSeason(h,m){if(h===0&&m===0)return alert("Ingresa tiempo.");const end=new Date(Date.now()+(h*3600000)+(m*60000));const{data:s}=await _supabase.from('game_settings').select('season_number').single();const ns=(s?.season_number||0)+1;try{await _supabase.from('game_settings').upsert({id:1,season_end_time:end.toISOString(),is_paused:false,exam_level:0,season_number:ns});alert("¡Temporada "+ns+" iniciada!");loadDashboardData();}catch(e){alert("Error al iniciar.");}}
 async function toggleBan(uid,cur){try{await _supabase.from('profiles').update({is_banned:!cur}).eq('id',uid);loadDashboardData();}catch(e){alert("Error");}}
-async function cleanInactiveUsers(){if(!confirm("¿Borrar cuentas con 0 puntos?"))return;try{await _supabase.from('profiles').delete().eq('total_score',0).neq('username',ADMIN_USER);alert("Limpieza completada.");loadDashboardData();}catch(e){alert("Error: "+e.message);}}
+// FIX: Clean Inactive Users (Null and 0)
+async function cleanInactiveUsers(){if(!confirm("¿Borrar cuentas inactivas (0 pts o nuevas)?"))return;try{const{error}=await _supabase.from('profiles').delete().or('total_score.eq.0,total_score.is.null').neq('username',ADMIN_USER);if(error)throw error;alert("Limpieza completada.");loadDashboardData();}catch(e){alert("Error: "+e.message);}}
 async function deleteUser(uid,name){if(!confirm(`¿Borrar "${name}" permanentemente?`))return;try{await _supabase.from('profiles').delete().eq('id',uid);alert(`${name} eliminado.`);loadDashboardData();}catch(e){alert("Error: "+e.message);}}
-// V18 FIX: resetAllUsers usa array vacío para claimed_bp_rewards
 async function resetAllUsers(){
-    if(!confirm("¿Reiniciar TODOS los puntos y tiempo?"))return;
+    if(!confirm("¿Reiniciar TODO?"))return;
     try{
         await _supabase.from('profiles').update({
             total_score:0,current_level:1,completed_at:null,current_problem:1,
             total_time_played:0,total_errors:0,squad_id:0,coins:0,
-            has_battle_pass:false,
-            claimed_bp_rewards:[],  // FIX: array vacío, no objeto
-            item_tomatoes:0,item_shield_until:null,
-            pending_prize_4:false,pending_prize_5:false
-        }).neq('id','00000000-0000-0000-0000-000000000000');
-        await _supabase.from('game_settings').update({season_end_time:null,is_paused:false,exam_level:0}).eq('id',1);
-        alert("¡Reiniciado!");loadDashboardData();
-    }catch(e){alert("Error: "+e.message);}
+            has_battle_pass:false,claimed_bp_rewards:[],item_tomatoes:0,item_shield_until
+                : null, pending_prize_4: false, pending_prize_5: false
+        }).neq('id', '00000000-0000-0000-0000-000000000000');
+        await _supabase.from('game_settings').update({ season_end_time: null, is_paused: false, exam_level: 0 }).eq('id', 1);
+        alert("¡Reiniciado!"); loadDashboardData();
+    } catch(e) { alert("Error: " + e.message); }
 }
-async function assignSquad(uid,sqId){try{await _supabase.from('profiles').update({squad_id:sqId}).eq('id',uid);loadDashboardData();}catch(e){alert("Error al asignar escuadra");}}
+async function assignSquad(uid, sqId) { try { await _supabase.from('profiles').update({ squad_id: sqId }).eq('id', uid); loadDashboardData(); } catch(e) { alert("Error al asignar escuadra"); } }
 
 // ── GLOBAL STATE CHECK ──
-async function checkGlobalState(){
-    if(isAdmin)return true;
-    try{const{data}=await _supabase.from('game_settings').select('*').single();if(data?.is_paused){lockGrid();document.getElementById('msg').innerHTML="<span style='color:var(--error);font-size:1.5rem;'>⏸️ JUEGO PAUSADO POR EL PROFESOR</span>";return false;}if(data?.exam_level>0){if(currentMainLevel!==data.exam_level){currentMainLevel=data.exam_level;unlockedLevel=data.exam_level;loadProblem();alert("Modo Examen: Nivel "+data.exam_level);}}return true;}
-    catch(e){return true;}
+async function checkGlobalState() {
+    if(isAdmin) return true;
+    try {
+        const{data}=await _supabase.from('game_settings').select('*').single();
+        if(data?.is_paused){ lockGrid(); document.getElementById('msg').innerHTML="<span style='color:var(--error);font-size:1.5rem;'>⏸️ JUEGO PAUSADO POR EL PROFESOR</span>"; return false; }
+        if(data?.exam_level>0){ if(currentMainLevel!==data.exam_level){ currentMainLevel=data.exam_level; unlockedLevel=data.exam_level; loadProblem(); alert("Modo Examen: Nivel "+data.exam_level); } }
+        return true;
+    } catch(e) { return true; }
 }
 
 // ── SEASON ──
 let seasonInterval;
-async function initSeason(settings){
+async function initSeason(settings) {
     let data=settings;
-    if(!data){const r=await _supabase.from('game_settings').select('season_end_time,season_number').eq('id',1).single();data=r.data;}
+    if(!data){ const r=await _supabase.from('game_settings').select('season_end_time,season_number').eq('id',1).single(); data=r.data; }
     document.getElementById('season-num-display').innerText=(data?.season_number)||1;
-    if(data?.season_end_time){startCountdown(new Date(data.season_end_time));}else{document.getElementById('timer-display').innerText=isAdmin?"SIN INICIAR":"--:--";document.getElementById('season-badge').classList.add('finished');}
+    if(data?.season_end_time){ startCountdown(new Date(data.season_end_time)); }
+    else{ document.getElementById('timer-display').innerText=isAdmin?"SIN INICIAR":"--:--"; document.getElementById('season-badge').classList.add('finished'); }
 }
-function startCountdown(endDate){
+function startCountdown(endDate) {
     clearInterval(seasonInterval);
     seasonInterval=setInterval(()=>{
         const diff=endDate-new Date();
-        if(diff<=0){clearInterval(seasonInterval);document.getElementById('timer-display').innerText="00:00:00";document.getElementById('season-badge').classList.add('finished');document.getElementById('season-badge').classList.remove('active');if(isAdmin){alert("¡Tiempo terminado!");resetAllUsers();}return;}
+        if(diff<=0){ clearInterval(seasonInterval); document.getElementById('timer-display').innerText="00:00:00"; document.getElementById('season-badge').classList.add('finished'); document.getElementById('season-badge').classList.remove('active'); if(isAdmin){ alert("¡Tiempo terminado!"); resetAllUsers(); } return; }
         const h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
         document.getElementById('timer-display').innerText=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-        document.getElementById('season-badge').classList.add('active');document.getElementById('season-badge').classList.remove('finished');
+        document.getElementById('season-badge').classList.add('active'); document.getElementById('season-badge').classList.remove('finished');
     },1000);
 }
 
 // ============================================================
-// GAME LOGIC (ORIGINAL — SIN MODIFICAR)
+// GAME LOGIC (CORREGIDO PARA BOTÓN STUCK)
 // ============================================================
-function initGame(){loadProblem();populateLevelSelect();}
-function jumpToLevel(l){AudioEngine.playClick();const t=parseInt(l);if(t>unlockedLevel){alert("¡Debes completar el nivel anterior!");document.getElementById('levelSelect').value=currentMainLevel;return;}currentMainLevel=t;currentProblemInLevel=1;loadProblem();}
+function initGame(){ loadProblem(); populateLevelSelect(); }
+function jumpToLevel(l){ AudioEngine.playClick(); const t=parseInt(l); if(t>unlockedLevel){ alert("¡Debes completar el nivel anterior!"); document.getElementById('levelSelect').value=currentMainLevel; return; } currentMainLevel=t; currentProblemInLevel=1; loadProblem(); }
+
 async function loadProblem(){
     if(hasFinishedGame)return;
-    const canPlay=await checkGlobalState();if(!canPlay)return;
-    // V18 FIX: resetear flag de verificación al cargar nuevo problema
+    const canPlay=await checkGlobalState(); if(!canPlay)return;
+    
+    // V18.1 FIX: Restaurar botón explícitamente
     isVerifying=false;
-    const btn=document.getElementById('btn-verify');btn.disabled=false;btn.style.opacity='1';btn.innerText="Verificar";
+    const btn=document.getElementById('btn-verify');
+    btn.disabled=false;
+    btn.style.opacity='1';
+    btn.innerText="Verificar";
+    btn.onclick=verificarSolucion; // Re-adjuntar evento
+    
     document.getElementById('subLevelCount').innerText=currentProblemInLevel;
     document.getElementById('progressBar').style.width=((currentMainLevel-1)/TOTAL_LEVELS)*100+'%';
     populateLevelSelect();
-    const d=DB[currentMainLevel];if(d&&d[currentProblemInLevel-1]){currentDividend=d[currentProblemInLevel-1].d;currentDivisor=d[currentProblemInLevel-1].div;}
+    const d=DB[currentMainLevel]; if(d&&d[currentProblemInLevel-1]){ currentDividend=d[currentProblemInLevel-1].d; currentDivisor=d[currentProblemInLevel-1].div; }
     document.getElementById('difficultyLabel').innerText=getDifficultyLabel(currentMainLevel);
-    createUI();createAntena();resetAll();lockGrid();hideReviewPanel();
+    createUI(); createAntena(); resetAll(); lockGrid(); hideReviewPanel();
     document.getElementById('msg').innerText='';
 }
-function getDifficultyLabel(lvl){if(lvl<=2)return"Divisor: 1 Cifra";if([3,4,5,7,9].includes(lvl))return"Divisor: 2 Cifras";return"Divisor: 3 Cifras";}
-function lockGrid(){isGridLocked=true;document.getElementById('grid-lock-overlay').classList.remove('hidden');disableCocienteInputs(true);document.getElementById('valResiduo').disabled=true;}
-function unlockGrid(){isGridLocked=false;document.getElementById('grid-lock-overlay').classList.add('hidden');disableCocienteInputs(false);document.getElementById('valResiduo').disabled=false;document.getElementById('msg').innerText="¡Antena completa!";document.getElementById('msg').style.color="var(--success)";triggerEpicEffect();}
-function triggerEpicEffect(){AudioEngine.playEpic();const ov=document.getElementById('epic-overlay'),tx=document.getElementById('epic-text'),msgs=["¡BOOYAH!","¡A LA CARGA!","¡MÁXIMO PODER!"];tx.innerText=msgs[Math.floor(Math.random()*msgs.length)];ov.style.display='flex';tx.style.animation='none';void tx.offsetWidth;tx.style.animation='epicPulse .5s ease-out forwards';setTimeout(()=>ov.style.display='none',1500);}
-function showVictoryScreen(){createConfetti();document.getElementById('victory-screen').style.display='flex';AudioEngine.playLevelUp();}
-function hideVictoryScreen(){document.getElementById('victory-screen').style.display='none';document.querySelectorAll('.confetti').forEach(c=>c.remove());}
-function createConfetti(){const sc=document.getElementById('victory-screen'),colors=['#ffcc00','#00e676','#2979ff','#f00','#ff9800'];for(let i=0;i<50;i++){const c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*100+'vw';c.style.top='-10px';c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.animationDuration=(Math.random()*2+2)+'s';sc.appendChild(c);}}
+function getDifficultyLabel(lvl){ if(lvl<=2)return"Divisor: 1 Cifra"; if([3,4,5,7,9].includes(lvl))return"Divisor: 2 Cifras"; return"Divisor: 3 Cifras"; }
+function lockGrid(){ isGridLocked=true; document.getElementById('grid-lock-overlay').classList.remove('hidden'); disableCocienteInputs(true); document.getElementById('valResiduo').disabled=true; }
+function unlockGrid(){ isGridLocked=false; document.getElementById('grid-lock-overlay').classList.add('hidden'); disableCocienteInputs(false); document.getElementById('valResiduo').disabled=false; document.getElementById('msg').innerText="¡Antena completa!"; document.getElementById('msg').style.color="var(--success)"; triggerEpicEffect(); }
+function triggerEpicEffect(){ AudioEngine.playEpic(); const ov=document.getElementById('epic-overlay'),tx=document.getElementById('epic-text'),msgs=["¡BOOYAH!","¡A LA CARGA!","¡MÁXIMO PODER!"]; tx.innerText=msgs[Math.floor(Math.random()*msgs.length)]; ov.style.display='flex'; tx.style.animation='none'; void tx.offsetWidth; tx.style.animation='epicPulse .5s ease-out forwards'; setTimeout(()=>ov.style.display='none',1500); }
+function showVictoryScreen(){ createConfetti(); document.getElementById('victory-screen').style.display='flex'; AudioEngine.playLevelUp(); }
+function hideVictoryScreen(){ document.getElementById('victory-screen').style.display='none'; document.querySelectorAll('.confetti').forEach(c=>c.remove()); }
+function createConfetti(){ const sc=document.getElementById('victory-screen'),colors=['#ffcc00','#00e676','#2979ff','#f00','#ff9800']; for(let i=0;i<50;i++){ const c=document.createElement('div'); c.className='confetti'; c.style.left=Math.random()*100+'vw'; c.style.top='-10px'; c.style.background=colors[Math.floor(Math.random()*colors.length)]; c.style.animationDuration=(Math.random()*2+2)+'s'; sc.appendChild(c); } }
 function createUI(){
     const g=document.getElementById('gridContainer'),dB=document.getElementById('divisorBox'),tR=document.getElementById('topRow');
     g.innerHTML='';dB.innerHTML='';tR.innerHTML='';
-    String(currentDivisor).split('').forEach(n=>{let i=document.createElement('input');i.type='text';i.className='input-div';i.value=n;i.readOnly=true;dB.appendChild(i);});
-    for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){let i=document.createElement('input');i.type='text';i.className='cell';i.maxLength=1;i.id="c-"+r+"-"+c;i.addEventListener('input',e=>{if(!isGridLocked&&e.target.value){let n=(c<cols-1)?"c-"+r+"-"+(c+1):(r<rows-1)?"c-"+(r+1)+"-0":null;if(n)document.getElementById(n).focus();}});g.appendChild(i);}
-    const sN=String(currentDividend);for(let i=0;i<sN.length;i++){let cell=document.getElementById("c-0-"+i);cell.value=sN[i];cell.classList.add('cell-locked');cell.disabled=true;}
+    String(currentDivisor).split('').forEach(n=>{ let i=document.createElement('input'); i.type='text'; i.className='input-div'; i.value=n; i.readOnly=true; dB.appendChild(i); });
+    for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){ let i=document.createElement('input'); i.type='text'; i.className='cell'; i.maxLength=1; i.id="c-"+r+"-"+c; i.addEventListener('input',e=>{ if(!isGridLocked&&e.target.value){ let n=(c<cols-1)?"c-"+r+"-"+(c+1):(r<rows-1)?"c-"+(r+1)+"-0":null; if(n)document.getElementById(n).focus(); }}); g.appendChild(i); }
+    const sN=String(currentDividend); for(let i=0;i<sN.length;i++){ let cell=document.getElementById("c-0-"+i); cell.value=sN[i]; cell.classList.add('cell-locked'); cell.disabled=true; }
     document.getElementById('lineH').style.width=(sN.length*cellSize)+'px';
-    for(let i=0;i<sN.length;i++){let inp=document.createElement('input');inp.type='text';inp.className='input-cociente-galera';inp.maxLength=1;inp.id="top-"+i;inp.addEventListener('input',e=>{syncT();if(e.target.value&&i<sN.length-1)document.getElementById("top-"+(i+1)).focus();});tR.appendChild(inp);}
+    for(let i=0;i<sN.length;i++){ let inp=document.createElement('input'); inp.type='text'; inp.className='input-cociente-galera'; inp.maxLength=1; inp.id="top-"+i; inp.addEventListener('input',e=>{ syncT(); if(e.target.value&&i<sN.length-1)document.getElementById("top-"+(i+1)).focus(); }); tR.appendChild(inp); }
 }
-function disableCocienteInputs(d){document.querySelectorAll('.input-cociente-galera').forEach(i=>i.disabled=d);}
-function syncT(){let v="";document.querySelectorAll('.input-cociente-galera').forEach(x=>v+=x.value);document.getElementById('valCociente').value=v;}
-function createAntena(){const b=document.getElementById('antenaBody');document.getElementById('antenaLabel').innerText=currentDivisor;b.innerHTML='';for(let i=1;i<=10;i++){let r=document.createElement('div');r.className='antena-row locked-row';r.id="row-"+i;r.innerHTML="<span>"+i+" x "+currentDivisor+" =</span><input type='text' inputmode='numeric' pattern='[0-9]*' class='antena-input' id='a"+i+"' disabled>";b.appendChild(r);}currentAntennaIndex=0;enableNextAntennaInput();}
-function enableNextAntennaInput(){if(currentAntennaIndex>=ANTENNA_SEQUENCE.length)return;const cId=ANTENNA_SEQUENCE[currentAntennaIndex],inp=document.getElementById("a"+cId),row=document.getElementById("row-"+cId);if(inp){inp.disabled=false;inp.focus();row.classList.remove('locked-row');inp.oninput=e=>{e.target.value=e.target.value.replace(/[^0-9]/g,'');checkAntennaInput(inp,cId);};}}
-function checkAntennaInput(inp,id){const val=parseInt(inp.value),exp=id*currentDivisor;if(val===exp){AudioEngine.playSuccess();inp.classList.add('status-ok');inp.disabled=true;inp.classList.remove('status-wrong');currentAntennaIndex++;if(currentAntennaIndex<ANTENNA_SEQUENCE.length)enableNextAntennaInput();else unlockGrid();}else{inp.classList.add('status-wrong');setTimeout(()=>inp.classList.remove('status-wrong'),500);}}
-function resetAll(){document.getElementById('valCociente').value='';document.getElementById('valResiduo').value='';document.querySelectorAll('.antena-input').forEach(i=>{i.value='';i.classList.remove('status-ok','status-wrong');});document.querySelectorAll('.input-cociente-galera').forEach(i=>i.value='');document.querySelectorAll('.cell:not(.cell-locked)').forEach(i=>{i.value='';i.disabled=false;});}
+function disableCocienteInputs(d){ document.querySelectorAll('.input-cociente-galera').forEach(i=>i.disabled=d); }
+function syncT(){ let v=""; document.querySelectorAll('.input-cociente-galera').forEach(x=>v+=x.value); document.getElementById('valCociente').value=v; }
+function createAntena(){ const b=document.getElementById('antenaBody'); document.getElementById('antenaLabel').innerText=currentDivisor; b.innerHTML=''; for(let i=1;i<=10;i++){ let r=document.createElement('div'); r.className='antena-row locked-row'; r.id="row-"+i; r.innerHTML="<span>"+i+" x "+currentDivisor+" =</span><input type='text' inputmode='numeric' pattern='[0-9]*' class='antena-input' id='a"+i+"' disabled>"; b.appendChild(r); } currentAntennaIndex=0; enableNextAntennaInput(); }
+function enableNextAntennaInput(){ if(currentAntennaIndex>=ANTENNA_SEQUENCE.length)return; const cId=ANTENNA_SEQUENCE[currentAntennaIndex],inp=document.getElementById("a"+cId),row=document.getElementById("row-"+cId); if(inp){ inp.disabled=false; inp.focus(); row.classList.remove('locked-row'); inp.oninput=e=>{ e.target.value=e.target.value.replace(/[^0-9]/g,''); checkAntennaInput(inp,cId); }; } }
+function checkAntennaInput(inp,id){ const val=parseInt(inp.value),exp=id*currentDivisor; if(val===exp){ AudioEngine.playSuccess(); inp.classList.add('status-ok'); inp.disabled=true; inp.classList.remove('status-wrong'); currentAntennaIndex++; if(currentAntennaIndex<ANTENNA_SEQUENCE.length)enableNextAntennaInput();else unlockGrid(); }else{ inp.classList.add('status-wrong'); setTimeout(()=>inp.classList.remove('status-wrong'),500); } }
+function resetAll(){ document.getElementById('valCociente').value=''; document.getElementById('valResiduo').value=''; document.querySelectorAll('.antena-input').forEach(i=>{ i.value=''; i.classList.remove('status-ok','status-wrong'); }); document.querySelectorAll('.input-cociente-galera').forEach(i=>i.value=''); document.querySelectorAll('.cell:not(.cell-locked)').forEach(i=>{ i.value=''; i.disabled=false; }); }
 
 // ============================================================
-// V18: VERIFICAR — ANTI-SPAM BLINDADO
+// VERIFICAR SOLUCIÓN (V18.1 FIX STUCK BUTTON)
 // ============================================================
 async function verificarSolucion(){
-    // TRIPLE LOCK: isVerifying bloquea completamente mientras se procesa
-    if(isVerifying)return;
-    if(isGridLocked){alert("¡Completa la Antena!");return;}
-    if(!(await checkGlobalState()))return;
+    if(isVerifying) return;
+    if(isGridLocked){ alert("¡Completa la Antena!"); return; }
+    if(!(await checkGlobalState())) return;
 
-    // Bloqueo inmediato e irreversible hasta loadProblem()
+    // Bloquear
     isVerifying=true;
     const btn=document.getElementById('btn-verify');
     btn.disabled=true;
-    btn.style.opacity='0.4';
     btn.innerText="Verificando...";
-    btn.onclick=null; // Remover listener también
+    btn.onclick=null;
 
     const coc=parseInt(document.getElementById('valCociente').value);
     const res=parseInt(document.getElementById('valResiduo').value)||0;
     const rC=Math.floor(currentDividend/currentDivisor);
     const rR=currentDividend%currentDivisor;
 
-    if(coc===rC&&res===rR){
-        // ✅ CORRECTO
+    if(coc===rC && res===rR){
+        // CORRECTO
         AudioEngine.playSuccess();
         totalScore+=POINTS;
         updateUI();
         incrementStreak();
         recordSuccess();
-
-        // Monedas: +5 base — se guardan en saveScore()
         currentCoins+=5;
         updateCoinDisplay();
-
         document.getElementById('msg').innerHTML=`<span style='color:var(--success);font-weight:700;font-size:1.2rem;'>¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
 
         if(currentProblemInLevel<PROBLEMS_PER_LEVEL){
             currentProblemInLevel++;
         }else{
             if(currentMainLevel<TOTAL_LEVELS){
-                unlockedLevel=currentMainLevel+1;currentMainLevel++;currentProblemInLevel=1;
+                unlockedLevel=currentMainLevel+1; currentMainLevel++; currentProblemInLevel=1;
                 showVictoryScreen();
             }else{
                 hasFinishedGame=true;
                 await _supabase.from('profiles').update({completed_at:new Date().toISOString()}).eq('id',currentUser.id);
                 loadHallOfFame();
                 await saveScore();
-                // No rehabilitar botón — juego terminado
-                return;
+                return; // Se queda bloqueado al terminar
             }
         }
         await saveTime();
-        await saveScore(); // Guarda score + coins en DB
+        await saveScore();
+        
         if(document.getElementById('victory-screen').style.display==='flex'){
-            setTimeout(()=>{hideVictoryScreen();loadProblem();},3000);
+            setTimeout(()=>{ hideVictoryScreen(); loadProblem(); },3000);
         }else{
-            loadProblem(); // loadProblem resetea isVerifying y rehabilita el botón
+            loadProblem(); // loadProblem() desbloquea el botón
         }
     }else{
-        // ❌ INCORRECTO — NO dar la respuesta
+        // INCORRECTO
         AudioEngine.playError();
-        document.getElementById('msg').innerHTML=`<span style='color:var(--error);font-weight:700;font-size:1.2rem;'>INCORRECTO ❌ — Inténtalo de nuevo</span>`;
-        totalErrors++;
-        saveTime();
+        document.getElementById('msg').innerHTML=`<span style='color:var(--error);font-weight:700;font-size:1.2rem;'>INCORRECTO ❌ — Revisa</span>`;
+        totalErrors++; saveTime();
         recordError(currentDividend,currentDivisor,coc,res,rC,rR);
         resetStreak();
-        // Rehabilitar botón solo en caso de error
+        
+        // V18.1 FIX: Desbloquear botón tras error
         isVerifying=false;
         btn.disabled=false;
         btn.style.opacity='1';
         btn.innerText="Verificar";
-        btn.onclick=verificarSolucion;
+        btn.onclick=verificarSolucion; // Restaurar clic
     }
 }
 </script>
