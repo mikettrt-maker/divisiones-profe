@@ -177,39 +177,61 @@
         @keyframes toastIn { from{opacity:0;transform:translateX(-30px)} to{opacity:1;transform:translateX(0)} }
         @keyframes toastOut { from{opacity:1} to{opacity:0;transform:translateX(-30px)} }
 
-        /* ADMIN */
-        #admin-dashboard { width: 100%; display: none; flex-direction: column; gap: 20px; }
-        .dash-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
-        @media(max-width:900px){.dash-grid{grid-template-columns:1fr}}
-        .dash-card { background: var(--bg-panel); border: 1px solid #333; border-radius: 8px; padding: 20px; }
-        .dash-title { font-family: 'Teko'; font-size: 1.5rem; color: var(--primary-color); border-bottom: 2px solid #333; padding-bottom: 10px; margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center; }
-        .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .ctrl-btn { padding: 15px; border-radius: 6px; border: 1px solid #444; background: #222; color: white; text-align: center; cursor: pointer; transition: .2s; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
-        .ctrl-btn i { font-size: 1.5rem; }
-        .ctrl-btn.active { background: var(--primary-color); color: black; border-color: var(--primary-color); }
-        .ctrl-btn.danger { border-color: var(--error); color: var(--error); }
-        .ctrl-btn.danger:hover { background: var(--error); color: white; }
-        .student-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(240px,1fr)); gap: 15px; max-height: 70vh; overflow-y: auto; padding-right: 5px; }
-        .student-card { background: #111; border-radius: 6px; padding: 15px; border: 1px solid #333; display: flex; flex-direction: column; gap: 10px; transition: .2s; }
-        .student-card:hover { border-color: var(--primary-color); }
-        .student-card.offline { opacity: .5; }
-        .sc-header { display: flex; align-items: center; gap: 10px; }
-        .sc-avatar { width: 40px; height: 40px; border-radius: 50%; border: 2px solid #555; }
-        .sc-info { flex-grow: 1; }
-        .sc-name { font-weight: 700; font-size: 1rem; }
-        .sc-status { font-size: .75rem; display: flex; align-items: center; gap: 4px; }
-        .status-dot { width: 6px; height: 6px; border-radius: 50%; background: #666; }
-        .status-dot.online { background: var(--success); box-shadow: 0 0 5px var(--success); }
-        .sc-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: .8rem; color: #aaa; background: #000; padding: 8px; border-radius: 4px; }
-        .sc-stat-val { color: var(--primary-color); font-weight: 700; font-size: 1rem; }
-        .sc-squad-control { margin-top: 5px; }
-        .squad-select-admin { width: 100%; background: #000; border: 1px solid #444; color: white; padding: 4px; border-radius: 4px; font-size: .8rem; }
-        .sc-actions { display: flex; justify-content: flex-end; gap: 5px; margin-top: 5px; }
-        .sc-btn { background: #333; border: none; color: #aaa; padding: 4px 8px; border-radius: 4px; font-size: .8rem; cursor: pointer; }
-        .sc-btn:hover { background: #444; color: white; }
-        .sc-btn.ban { background: rgba(255,23,68,.1); color: var(--error); border: 1px solid transparent; }
-        .sc-btn.ban.active { background: var(--error); color: white; }
+       
+    // ============================================================
+    // ADMIN (FIX LOAD ERROR)
+    // ============================================================
+    function showAdminDashboard() { document.getElementById('game-layout').style.display = 'none'; document.getElementById('top-bar-panel').style.display = 'none'; document.getElementById('admin-dashboard').style.display = 'flex'; loadDashboardData(); setInterval(loadDashboardData, 5000); }
+    function toggleAdminDashboard() { if (document.getElementById('admin-dashboard').style.display === 'flex') { logout(); } else { showAdminDashboard(); } }
+    async function loadDashboardData() { 
+        const grid = document.getElementById('student-grid'); 
+        try { 
+            // 1. Cargar Configuración (Manejo de error seguro)
+            let settings = null;
+            try {
+                const res = await _supabase.from('game_settings').select('*').single();
+                settings = res.data;
+            } catch (e) { console.log("Error cargando game_settings, usando valores por defecto."); settings = { is_paused: false, exam_level: 0 }; }
+            
+            updateControlButtons(settings); initSeason(settings); 
 
+            // 2. Cargar Alumnos
+            const { data: students, error } = await _supabase.from('profiles').select('*').order('total_score', { ascending: false }); 
+            if (error) throw error; 
+            
+            const now = new Date(); 
+            let ss = {}; Object.keys(SQUADS).forEach(id => ss[id] = { count: 0, score: 0 }); 
+            students.forEach(u => { if (u.squad_id && ss[u.squad_id]) { ss[u.squad_id].count++; ss[u.squad_id].score += (u.total_score || 0); } }); 
+            
+            document.getElementById('squad-admin-tbody').innerHTML = Object.entries(ss).map(([id, st]) => { const squad = SQUADS[id]; return '<tr style="border-bottom:1px solid #222;"><td class="shield-cell"><div>' + squad.svg + '</div></td><td style="color:' + squad.color + '; font-weight:700;">' + squad.name + '</td><td>' + st.count + '</td><td class="points-cell">' + st.score + '</td></tr>'; }).join(''); 
+            
+            grid.innerHTML = students.map(u => { 
+                const isOnline = u.last_seen && (now - new Date(u.last_seen) < 30000), isBanned = u.is_banned; 
+                const mins = u.total_time_played ? Math.floor(u.total_time_played / 60) : 0, secs = u.total_time_played ? u.total_time_played % 60 : 0; 
+                let sqOpts = '<option value="0" ' + (u.squad_id == 0 ? 'selected' : '') + '>Sin Escuadra</option>'; 
+                Object.entries(SQUADS).forEach(([id, s]) => { sqOpts += '<option value="' + id + '" ' + (u.squad_id == id ? 'selected' : '') + '>' + s.name + '</option>'; }); 
+                return '<div class="student-card ' + (isOnline && !isBanned ? '' : 'offline') + '"><div class="sc-header"><img src="' + getAvatarUrl(u.username || 'guest', u.avatar_style) + '" class="sc-avatar"><div class="sc-info"><div class="sc-name">' + u.username + '</div><div class="sc-status"><span class="status-dot ' + (isOnline && !isBanned ? 'online' : '') + '"></span>' + (isBanned ? 'Baneado' : (isOnline ? 'En línea' : 'Offline')) + '</div></div></div><div class="sc-stats"><div>Puntos<br><span class="sc-stat-val">' + (u.total_score || 0) + '</span></div><div>Nivel<br><span class="sc-stat-val">' + (u.current_level || 1) + '</span></div><div>Tiempo<br><span class="sc-stat-val">' + mins + 'm ' + secs + 's</span></div><div>Coins<br><span class="sc-stat-val">' + (u.coins || 0) + '</span></div></div><div class="sc-squad-control"><select class="squad-select-admin" onchange="assignSquad(\'' + u.id + '\',this.value)">' + sqOpts + '</select></div><div class="sc-actions"><button class="sc-btn ban ' + (isBanned ? 'active' : '') + '" onclick="toggleBan(\'' + u.id + '\', ' + isBanned + ')">' + (isBanned ? 'Desbanear' : 'Banear') + '</button></div></div>'; 
+            }).join(''); 
+            const oc = students.filter(u => (now - new Date(u.last_seen) < 30000) && !u.is_banned).length; 
+            document.getElementById('student-count').innerText = oc + " en línea"; 
+        } catch (e) { console.error(e); grid.innerHTML = "Error al cargar datos: " + e.message; } 
+    }
+    function updateControlButtons(settings) { 
+        const pb = document.getElementById('btn-pause'), eb = document.getElementById('btn-exam'); 
+        if (settings) { 
+            if (settings.is_paused) { pb.classList.add('active'); pb.querySelector('span').innerText = "Reanudar"; } else { pb.classList.remove('active'); pb.querySelector('span').innerText = "Pausar Juego"; } 
+            if (settings.exam_level > 0) { eb.classList.add('active'); eb.querySelector('span').innerText = "Fin Examen"; } else { eb.classList.remove('active'); eb.querySelector('span').innerText = "Modo Examen"; } 
+        } 
+    }
+    async function togglePause() { try { const { data: s } = await _supabase.from('game_settings').select('is_paused').single(); await _supabase.from('game_settings').update({ is_paused: !s.is_paused }).eq('id', 1); loadDashboardData(); } catch (e) { alert("Error: Configuración no encontrada. Ejecuta el SQL de nuevo."); } }
+    async function toggleExamMode() { try { const { data: s } = await _supabase.from('game_settings').select('exam_level').single(); const nl = s.exam_level > 0 ? 0 : 1; await _supabase.from('game_settings').update({ exam_level: nl, is_paused: false }).eq('id', 1); loadDashboardData(); } catch (e) { alert("Error"); } }
+    function showSeasonModal() { const hrs = prompt("Horas de temporada:", "0"); const mins = prompt("Minutos:", "0"); if (hrs || mins) startSeason(parseInt(hrs), parseInt(mins)); }
+    async function startSeason(h, m) { if (h === 0 && m === 0) return alert("Ingresa tiempo."); const end = new Date(Date.now() + (h * 3600000) + (m * 60000)); const { data: s } = await _supabase.from('game_settings').select('season_number').eq('id', 1).single(); const ns = (s?.season_number || 0) + 1; try { await _supabase.from('game_settings').upsert({ id: 1, season_end_time: end.toISOString(), is_paused: false, exam_level: 0, season_number: ns }); alert("¡Temporada " + ns + " iniciada!"); loadDashboardData(); } catch (e) { alert("Error al iniciar."); } }
+    async function toggleBan(uid, cur) { try { await _supabase.from('profiles').update({ is_banned: !cur }).eq('id', uid); loadDashboardData(); } catch (e) { alert("Error"); } }
+    async function cleanInactiveUsers() { if (!confirm("¿Borrar TODAS las cuentas inactivas?")) return; try { const { error } = await _supabase.from('profiles').delete().or('total_score.eq.0,total_score.is.null').neq('username', ADMIN_USER); if (error) throw error; alert("Limpieza completada."); loadDashboardData(); } catch (e) { alert("Error: " + e.message); } }
+    async function deleteUser(uid, name) { if (!confirm('¿Borrar "' + name + '"?')) return; try { await _supabase.from('profiles').delete().eq('id', uid); alert(name + ' eliminado.'); loadDashboardData(); } catch (e) { alert("Error al borrar."); } }
+    async function resetAllUsers() { if (!confirm("¿Reiniciar TODO?")) return; try { const { error } = await _supabase.rpc('admin_reset_all'); if (error) throw error; alert("¡Reiniciado!"); loadDashboardData(); } catch (e) { alert("Error SQL: " + e.message); } }
+    async function assignSquad(userId, squadId) { try { await _supabase.from('profiles').update({ squad_id: squadId }).eq('id', userId); loadDashboardData(); } catch (e) { alert("Error"); } }
         /* MODALS */
         #login-screen,#avatar-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.95); display: flex; justify-content: center; align-items: center; z-index: 9999; }
         .login-box { background: var(--bg-panel); padding: 40px; border-radius: 4px; width: 350px; border: 1px solid #333; }
