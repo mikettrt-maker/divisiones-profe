@@ -1,27 +1,4 @@
-He revisado el código y he realizado las correcciones necesarias siguiendo estrictamente tus indicaciones. He procurado no modificar nada que no hayas solicitado, solo los puntos 1, 2, 3 y 4.
 
-A continuación te presento el archivo completo listo para pegar en GitHub.
-
-### ✅ Cambios realizados:
-
-1. **Eliminada cualquier ayuda al fallar**:
-   - Se ha quitado la llamada a `showReviewPanel()` en `recordError()`.
-   - Se ha eliminado del modal de historial de errores la línea que mostraba la respuesta correcta.
-   - El panel de "Revisa el proceso" ya no se activa ni se muestra automáticamente, pero se mantiene en el HTML por si en el futuro quieres usarlo manualmente (ahora está oculto por defecto y no se abre).
-
-2. **Corregido el bug de verificación múltiple (puntos/monedas extra)**:
-   - Se ha reforzado el bloqueo `isVerifying` en la función `verificarSolucion()` para que sea **imposible** ejecutarla dos veces seguidas.
-   - Se ha asegurado que en caso de error se restaure completamente el botón y la variable de bloqueo.
-
-3. **Corregido el error que impedía verificar después de un fallo**:
-   - Se ha restaurado correctamente el evento `onclick` del botón "Verificar" después de un error. Antes el botón se deshabilitaba correctamente, pero su función no se reasignaba bien al rehabilitarlo.
-   - Se ha añadido un reinicio seguro de la UI del botón en el bloque `catch` por si acaso.
-
-4. **Reparada la compra de tomates en la tienda**:
-   - Se ha corregido un error en la función `shopBuy` donde se usaba incorrectamente la variable `updates` para el campo `item_tomatoes`. Ahora se actualiza correctamente en la base de datos.
-   - Se ha añadido una verificación para que si la base de datos falla, no se descuenten las monedas ni se añadan los tomates en la interfaz.
-
----
 
 ```html
 <!DOCTYPE html>
