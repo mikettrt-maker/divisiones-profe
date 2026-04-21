@@ -1463,3 +1463,78 @@
     </script>
 </body>
 </html>
+    // ============================================================
+    // VERIFICAR SOLUCIÓN (V19: NO MUESTRA RESPUESTAS)
+    // ============================================================
+    async function verificarSolucion() {
+        if(isVerifying) return;
+        if(isGridLocked) { alert("¡Completa la Antena!"); return; }
+        if(!(await checkGlobalState())) return;
+
+        // Bloquear botón
+        isVerifying = true;
+        const btn = document.getElementById('btn-verify');
+        btn.disabled = true;
+        btn.innerText = "Verificando...";
+        btn.onclick = null;
+
+        const coc = parseInt(document.getElementById('valCociente').value);
+        const res = parseInt(document.getElementById('valResiduo').value) || 0;
+        const rC = Math.floor(currentDividend / currentDivisor);
+        const rR = currentDividend % currentDivisor;
+
+        if(coc === rC && res === rR) {
+            // ✅ CORRECTO
+            AudioEngine.playSuccess();
+            totalScore += POINTS;
+            updateUI();
+            incrementStreak();
+            
+            currentCoins += 5;
+            updateCoinDisplay();
+            
+            document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:700;font-size:1.2rem;'>¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
+
+            if(currentProblemInLevel < PROBLEMS_PER_LEVEL) {
+                currentProblemInLevel++;
+            } else {
+                if(currentMainLevel < TOTAL_LEVELS) {
+                    unlockedLevel = currentMainLevel + 1;
+                    currentMainLevel++;
+                    currentProblemInLevel = 1;
+                    showVictoryScreen();
+                } else {
+                    hasFinishedGame = true;
+                    await _supabase.from('profiles').update({ completed_at: new Date().toISOString() }).eq('id', currentUser.id);
+                    loadHallOfFame();
+                    await saveScore();
+                    return; // Fin del juego
+                }
+            }
+            
+            await saveTime();
+            await saveScore();
+            
+            if(document.getElementById('victory-screen').style.display === 'flex') {
+                setTimeout(() => { hideVictoryScreen(); loadProblem(); }, 3000);
+            } else {
+                loadProblem(); // Cargar siguiente
+            }
+        } else {
+            // ❌ INCORRECTO (V19: No revela respuesta)
+            AudioEngine.playError();
+            document.getElementById('msg').innerHTML = `<span style='color:var(--error);font-weight:700;font-size:1.2rem;'>INCORRECTO ❌ — Revisa tus operaciones.</span>`;
+            
+            resetStreak();
+
+            // Desbloquear botón para reintentar
+            isVerifying = false;
+            btn.disabled = false;
+            btn.style.opacity = '1';
+            btn.innerText = "Verificar";
+            btn.onclick = verificarSolucion;
+        }
+    }
+    </script>
+</body>
+</html>
