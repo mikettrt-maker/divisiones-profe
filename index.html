@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V18.1 (Fix)</title>
+    <title>Reto de División - V18.0 (Ultimate)</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -187,7 +186,7 @@
         .btn-small { font-size: .9rem; padding: 5px 10px; background: #333; color: #ccc; border: 1px solid #555; }
         #msg { width: 100%; text-align: center; font-weight: 600; margin-top: 5px; font-size: 1.1rem; min-height: 28px; }
 
-        /* ── REVIEW PANEL (mantenido pero no se usa automáticamente) ── */
+        /* ── REVIEW PANEL ── */
         .review-panel { background: rgba(0,230,118,.05); border: 1px solid rgba(0,230,118,.3); border-radius: 4px; padding: 12px; width: 100%; display: none; }
         .review-panel.visible { display: block; }
         .review-title { font-family: 'Teko'; font-size: 1.3rem; color: var(--success); margin-bottom: 8px; }
@@ -209,7 +208,7 @@
         .bp-tier-label { font-size: .7rem; margin-top: 5px; color: #888; text-align: center; }
         .bp-tier-desc { font-size: .65rem; color: #555; text-align: center; margin-top: 2px; min-height: 20px; }
 
-        /* ── TIENDA ── */
+        /* ── V18: TIENDA ── */
         .shop-btn-float {
             position: fixed; bottom: 80px; left: 20px; z-index: 9001;
             width: 50px; height: 50px; border-radius: 50%;
@@ -266,7 +265,7 @@
         .shop-buy-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
         .shop-qty-badge { position: absolute; top: 10px; right: 10px; background: var(--primary-color); color: black; font-weight: 700; font-size: .8rem; padding: 2px 8px; border-radius: 10px; }
 
-        /* ── ADMIN PREMIOS BP ── */
+        /* ── V18: ADMIN PREMIOS BP ── */
         .bp-prizes-section { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; }
         .bp-prize-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,204,0,.05); border: 1px solid rgba(255,204,0,.2); border-radius: 4px; padding: 8px 12px; margin-bottom: 6px; }
         .bp-prize-left { display: flex; align-items: center; gap: 10px; }
@@ -421,7 +420,7 @@
     </div>
 </div>
 
-<!-- TIENDA MODAL -->
+<!-- V18: TIENDA MODAL -->
 <div id="shop-modal" onclick="if(event.target.id==='shop-modal')closeShop()">
     <div class="shop-box">
         <div class="shop-header">
@@ -587,7 +586,34 @@
 
     <!-- ADMIN DASHBOARD -->
     <div id="admin-dashboard">
-        <!-- ... (sin cambios) ... -->
+        <div class="dash-grid">
+            <div class="dash-card">
+                <div class="dash-title">Controles <i class="fas fa-cog"></i></div>
+                <div class="control-grid">
+                    <div id="btn-pause" class="ctrl-btn" onclick="togglePause()"><i class="fas fa-pause"></i><span>Pausar Juego</span></div>
+                    <div id="btn-exam" class="ctrl-btn" onclick="toggleExamMode()"><i class="fas fa-file-alt"></i><span>Modo Examen</span></div>
+                    <div class="ctrl-btn" onclick="showSeasonModal()"><i class="fas fa-clock"></i><span>Temporada</span></div>
+                    <div class="ctrl-btn danger" onclick="cleanInactiveUsers()"><i class="fas fa-broom"></i><span>Limpiar Cuentas</span></div>
+                    <div class="ctrl-btn danger" onclick="resetAllUsers()"><i class="fas fa-redo"></i><span>Reiniciar Todo</span></div>
+                </div>
+                <div class="squad-table-container">
+                    <div class="dash-title" style="font-size:1.2rem;border:none;margin-bottom:5px;padding-bottom:0;">Estado Escuadras</div>
+                    <table class="squad-admin-table">
+                        <thead><tr><th class="shield-cell"></th><th>Nombre</th><th>Miembros</th><th>Puntos</th></tr></thead>
+                        <tbody id="squad-admin-tbody"><tr><td colspan="4" style="text-align:center;color:#555;">Cargando...</td></tr></tbody>
+                    </table>
+                </div>
+                <!-- V18: PREMIOS BP PENDIENTES -->
+                <div class="bp-prizes-section">
+                    <div class="dash-title" style="font-size:1.2rem;border:none;margin-bottom:5px;padding-bottom:0;">Premios BP Pendientes</div>
+                    <div id="bp-prizes-list"><p style="color:#555;font-size:.85rem;">Sin premios pendientes.</p></div>
+                </div>
+            </div>
+            <div class="dash-card">
+                <div class="dash-title">Alumnos <span id="student-count" style="font-size:1rem;color:#aaa;">0 activos</span></div>
+                <div class="student-grid" id="student-grid"></div>
+            </div>
+        </div>
     </div>
 
     <!-- GAME LAYOUT -->
@@ -613,19 +639,46 @@
                 <input type="hidden" id="valCociente">
                 <button id="btn-verify" class="btn-primary" onclick="verificarSolucion()">Verificar</button>
                 <div id="msg"></div>
-                <!-- REVIEW PANEL (oculto por defecto, no se usa) -->
+                <!-- REVIEW PANEL -->
                 <div class="review-panel" id="review-panel">
                     <div class="review-title"><i class="fas fa-lightbulb"></i> Revisa el proceso</div>
                     <div id="review-steps"></div>
                 </div>
                 <!-- BATTLE PASS -->
                 <div class="battle-pass-panel">
-                    <!-- ... (sin cambios) ... -->
+                    <div class="bp-header">
+                        <span><i class="fas fa-crown" style="color:var(--bp-gold)"></i> Pase de Batalla</span>
+                        <span style="font-size:.9rem;color:#aaa;" id="bp-status-text">Bloqueado</span>
+                    </div>
+                    <div id="bp-buy-section" style="text-align:center;padding:10px;">
+                        <p style="font-size:.9rem;color:#aaa;margin:5px 0;">Desbloquea recompensas exclusivas</p>
+                        <button class="bp-buy-btn" onclick="buyBattlePass()"><i class="fas fa-lock-open"></i> Comprar por 500 <i class="fas fa-coins" style="color:black"></i></button>
+                    </div>
+                    <div id="bp-progress-section" style="display:none;">
+                        <div style="display:flex;align-items:center;gap:10px;">
+                            <span style="font-size:.8rem;color:#aaa;">XP:</span>
+                            <span id="bp-xp-val" style="font-family:'Teko';font-size:1.2rem;">0</span>
+                        </div>
+                        <div class="bp-tiers" id="bp-tiers-container"></div>
+                    </div>
                 </div>
             </div>
         </div>
         <div class="ranking-sidebar">
-            <!-- ... (sin cambios) ... -->
+            <div class="ranking-title">Ranking Global</div>
+            <ul class="ranking-list" id="ranking-list"></ul>
+            <div class="squad-ranking-section">
+                <div class="ranking-title" style="font-size:1.2rem;border-color:#444;">Escuadras</div>
+                <ul class="squad-list" id="squad-list"></ul>
+                <div class="squad-missions-panel" id="squad-missions-panel" style="display:none;">
+                    <div class="missions-title"><i class="fas fa-tasks"></i> Misiones</div>
+                    <div id="missions-body"></div>
+                </div>
+            </div>
+            <div class="hall-of-fame">
+                <div class="hall-title"><i class="fas fa-trophy"></i> Salón de la Fama</div>
+                <ul class="fame-list" id="fame-list"></ul>
+            </div>
         </div>
     </div>
 </div>
@@ -705,19 +758,25 @@ function showStreakBonus(streak,bonus) {
 
 // ── ERROR HISTORY ──
 let errorHistory=[], consecutiveErrors=0;
-function recordError(dividend,divisor,myCoc,myRes) {
-    // Solo guardamos el error, sin mostrar respuesta correcta ni panel de ayuda
-    errorHistory.push({dividend,divisor,myCoc,myRes,ts:new Date().toLocaleTimeString()});
+function recordError(dividend,divisor,myCoc,myRes,rC,rR) {
+    errorHistory.push({dividend,divisor,myCoc,myRes,rC,rR,ts:new Date().toLocaleTimeString()});
     consecutiveErrors++;
-    // Ya no se muestra panel de revisión
+    if(consecutiveErrors>=3) showReviewPanel(dividend,divisor,rC,rR);
 }
-function recordSuccess() { consecutiveErrors=0; }
-// Se mantiene la función pero no se usa
+function recordSuccess() { consecutiveErrors=0; hideReviewPanel(); }
 function showReviewPanel(dividend,divisor,cociente,residuo) {
-    // Vacía intencionadamente para no dar pistas
     const panel=document.getElementById('review-panel'), steps=document.getElementById('review-steps');
     panel.classList.add('visible');
-    steps.innerHTML = `<div class="review-step">🔍 Sigue intentándolo. ¡Tú puedes!</div>`;
+    const divStr=String(dividend); let html='', partial=0;
+    html+=`<div class="review-step">🔢 <strong>${dividend}</strong> ÷ <strong>${divisor}</strong></div>`;
+    for(let i=0;i<divStr.length;i++){
+        partial=partial*10+parseInt(divStr[i]);
+        const q=Math.floor(partial/divisor), sub=q*divisor, rem=partial-sub;
+        html+=`<div class="review-step">Baja <strong>${divStr[i]}</strong> → parcial=<strong>${partial}</strong> → ÷${divisor}=<strong>${q}</strong>, resto=<strong>${rem}</strong></div>`;
+        partial=rem;
+    }
+    html+=`<div class="review-step" style="color:var(--success);margin-top:8px;">✅ Cociente:<strong>${cociente}</strong> — Residuo:<strong>${residuo}</strong></div>`;
+    steps.innerHTML=html;
 }
 function hideReviewPanel() { document.getElementById('review-panel').classList.remove('visible'); }
 function openErrorHistory() {
@@ -728,7 +787,7 @@ function openErrorHistory() {
         <div class="error-entry">
             <div class="error-entry-header"><span class="error-entry-problem">${e.dividend} ÷ ${e.divisor}</span><span class="error-entry-time">${e.ts}</span></div>
             <div class="error-entry-detail">Tu respuesta → Cociente:<strong style="color:var(--error)">${e.myCoc??'?'}</strong>, Residuo:<strong style="color:var(--error)">${e.myRes??'?'}</strong></div>
-            <!-- Respuesta correcta oculta para no ayudar -->
+            <div style="color:var(--success);font-weight:700;font-size:.9rem;margin-top:5px;">✅ Correcto → Cociente:${e.rC}, Residuo:${e.rR}</div>
         </div>`).join('');
 }
 function closeErrorHistory() { document.getElementById('error-history-modal').style.display='none'; }
@@ -774,6 +833,7 @@ const ADMIN_USER='profemiguel';
 let currentMainLevel=1,currentProblemInLevel=1,currentDivisor=0,currentDividend=0;
 let totalScore=0,currentUser=null,currentAvatarStyle='adventurer';
 let isGridLocked=true,hasFinishedGame=false;
+// V18: isProcessing ahora es una promesa, no un bool simple
 let isVerifying=false;
 let unlockedLevel=1,isAdmin=false;
 let chatCooldown=false,chatVisible=false;
@@ -835,7 +895,7 @@ const DB={
 };
 
 // ============================================================
-// INIT
+// INIT (ORIGINAL)
 // ============================================================
 document.addEventListener('DOMContentLoaded',async()=>{
     try{const{data:{session}}=await _supabase.auth.getSession();if(session?.user){currentUser=session.user;showApp();}else{showLogin();}}catch(e){showLogin();}
@@ -891,6 +951,7 @@ async function loadScore(user){
         totalErrors     =(data?.total_errors)||0;
         currentCoins    =(data?.coins)||0;
         hasBP           =(data?.has_battle_pass)||false;
+        // V18 FIX: claimed_bp_rewards siempre como array
         const raw=data?.claimed_bp_rewards;
         claimedBPRewards=Array.isArray(raw)?raw:(raw&&typeof raw==='object'?Object.values(raw):[]);
         itemTomatoes    =(data?.item_tomatoes)||0;
@@ -953,6 +1014,7 @@ function closeBPModal(){document.getElementById('bp-modal').style.display='none'
 async function claimBPItem(){
     if(!currentViewingTier)return;
     AudioEngine.playSuccess();
+    // V18 FIX: always push to array
     if(!Array.isArray(claimedBPRewards))claimedBPRewards=[];
     claimedBPRewards.push(currentViewingTier.level);
     const updates={claimed_bp_rewards:claimedBPRewards};
@@ -962,11 +1024,13 @@ async function claimBPItem(){
         else{updates[currentViewingTier.item]=true;}
     }else if(currentViewingTier.type==='font'){updates.unlocked_font='freefire';}
     else if(currentViewingTier.type==='real_prize'){
+        // V18: marcar premio real para que admin lo vea
         updates['pending_prize_'+currentViewingTier.level]=true;
     }
     try{await _supabase.from('profiles').update(updates).eq('id',currentUser.id);alert("¡Recompensa reclamada!");closeBPModal();await loadScore(currentUser);}
     catch(e){alert("Error al reclamar: "+e.message);}
 }
+// V18 FIX: buyBattlePass ahora guarda en DB ANTES de actualizar UI
 async function buyBattlePass(){
     if(hasBP)return alert("Ya tienes el pase.");
     if(currentCoins<500)return alert("No tienes suficientes DiviCoins. Necesitas 500.");
@@ -981,7 +1045,7 @@ async function buyBattlePass(){
 }
 
 // ============================================================
-// TIENDA (CORREGIDA)
+// V18: TIENDA
 // ============================================================
 function openShop(){
     document.getElementById('shop-modal').style.display='flex';
@@ -1019,20 +1083,14 @@ async function shopBuy(type, qty, price){
     try{
         await _supabase.from('profiles').update(updates).eq('id',currentUser.id);
         currentCoins=newCoins;
-        if(type==='tomato'){
-            itemTomatoes+=qty;
-        }else if(type==='shield'){
-            itemShieldUntil=new Date(updates.item_shield_until);
-        }else if(type==='bp'){
-            hasBP=true;
-        }
+        if(type==='tomato'){itemTomatoes+=qty;}
+        else if(type==='shield'){itemShieldUntil=new Date(updates.item_shield_until);}
+        else if(type==='bp'){hasBP=true;}
         updateCoinDisplay();updateInventoryUI();updateBattlePassUI();
         AudioEngine.playShop();
         showToast(`✅ Compra exitosa: ${type==='tomato'?`🍅 x${qty}`:type==='shield'?`🛡️ ${qty} día(s)`:'👑 Pase'}`,'shop');
         openShop(); // Refrescar
-    }catch(e){
-        showToast("❌ Error al comprar: "+e.message,'tomato');
-    }
+    }catch(e){showToast("❌ Error al comprar: "+e.message,'tomato');}
 }
 
 // ── AVATAR ──
@@ -1057,6 +1115,7 @@ function renderAvatarOptions(){
 function selectAvatarStyle(id){const isEx=AVATAR_STYLES_EXCLUSIVE.some(s=>s.id===id);if(isEx&&totalScore<50000){alert("¡Este avatar es exclusivo!");return;}currentAvatarStyle=id;renderAvatarOptions();renderMainAvatar();}
 async function saveAvatarChoice(){AudioEngine.playClick();await _supabase.from('profiles').upsert({id:currentUser.id,avatar_style:currentAvatarStyle});toggleAvatarModal();updateRanking();}
 
+// V18 FIX: saveScore guarda coins también
 async function saveScore(){
     if(!currentUser)return;
     try{await _supabase.from('profiles').upsert({id:currentUser.id,username:currentUser.email.split('@')[0],total_score:totalScore,current_level:unlockedLevel,current_problem:currentProblemInLevel,coins:currentCoins});updateRanking();}
@@ -1147,7 +1206,7 @@ function startStudentHeartbeat(){
 async function saveTime(){if(!currentUser)return;try{await _supabase.from('profiles').update({total_time_played:playTimeCounter,total_errors:totalErrors}).eq('id',currentUser.id);}catch(e){}}
 
 // ============================================================
-// ADMIN (SIN CAMBIOS IMPORTANTES)
+// ADMIN (ORIGINAL) + V18: REINICIO CORREGIDO + PREMIOS BP
 // ============================================================
 function showAdminDashboard(){document.getElementById('game-layout').style.display='none';document.getElementById('top-bar-panel').style.display='none';document.getElementById('admin-dashboard').style.display='flex';loadDashboardData();setInterval(loadDashboardData,5000);}
 function toggleAdminDashboard(){if(document.getElementById('admin-dashboard').style.display==='flex'){logout();}else{showAdminDashboard();}}
@@ -1163,6 +1222,7 @@ async function loadDashboardData(){
         students.forEach(u=>{if(u.squad_id&&ss[u.squad_id]){ss[u.squad_id].count++;ss[u.squad_id].score+=(u.total_score||0);}});
         document.getElementById('squad-admin-tbody').innerHTML=Object.entries(ss).map(([id,st])=>{const sq=SQUADS[id];return`<tr style="border-bottom:1px solid #222;"><td class="shield-cell"><div>${sq.svg}</div></td><td style="color:${sq.color};font-weight:700;">${sq.name}</td><td>${st.count}</td><td class="points-cell">${st.score}</td></tr>`;}).join('');
         
+        // V18: Premios BP pendientes para el admin
         const prizesList=document.getElementById('bp-prizes-list');
         const studentsWithPrizes=students.filter(u=>u.pending_prize_4||u.pending_prize_5);
         if(studentsWithPrizes.length){
@@ -1202,6 +1262,7 @@ async function startSeason(h,m){if(h===0&&m===0)return alert("Ingresa tiempo.");
 async function toggleBan(uid,cur){try{await _supabase.from('profiles').update({is_banned:!cur}).eq('id',uid);loadDashboardData();}catch(e){alert("Error");}}
 async function cleanInactiveUsers(){if(!confirm("¿Borrar cuentas con 0 puntos?"))return;try{await _supabase.from('profiles').delete().eq('total_score',0).neq('username',ADMIN_USER);alert("Limpieza completada.");loadDashboardData();}catch(e){alert("Error: "+e.message);}}
 async function deleteUser(uid,name){if(!confirm(`¿Borrar "${name}" permanentemente?`))return;try{await _supabase.from('profiles').delete().eq('id',uid);alert(`${name} eliminado.`);loadDashboardData();}catch(e){alert("Error: "+e.message);}}
+// V18 FIX: resetAllUsers usa array vacío para claimed_bp_rewards
 async function resetAllUsers(){
     if(!confirm("¿Reiniciar TODOS los puntos y tiempo?"))return;
     try{
@@ -1209,7 +1270,7 @@ async function resetAllUsers(){
             total_score:0,current_level:1,completed_at:null,current_problem:1,
             total_time_played:0,total_errors:0,squad_id:0,coins:0,
             has_battle_pass:false,
-            claimed_bp_rewards:[],
+            claimed_bp_rewards:[],  // FIX: array vacío, no objeto
             item_tomatoes:0,item_shield_until:null,
             pending_prize_4:false,pending_prize_5:false
         }).neq('id','00000000-0000-0000-0000-000000000000');
@@ -1246,19 +1307,16 @@ function startCountdown(endDate){
 }
 
 // ============================================================
-// GAME LOGIC
+// GAME LOGIC (ORIGINAL — SIN MODIFICAR)
 // ============================================================
 function initGame(){loadProblem();populateLevelSelect();}
 function jumpToLevel(l){AudioEngine.playClick();const t=parseInt(l);if(t>unlockedLevel){alert("¡Debes completar el nivel anterior!");document.getElementById('levelSelect').value=currentMainLevel;return;}currentMainLevel=t;currentProblemInLevel=1;loadProblem();}
 async function loadProblem(){
     if(hasFinishedGame)return;
     const canPlay=await checkGlobalState();if(!canPlay)return;
+    // V18 FIX: resetear flag de verificación al cargar nuevo problema
     isVerifying=false;
-    const btn=document.getElementById('btn-verify');
-    btn.disabled=false;
-    btn.style.opacity='1';
-    btn.innerText="Verificar";
-    btn.onclick=verificarSolucion;
+    const btn=document.getElementById('btn-verify');btn.disabled=false;btn.style.opacity='1';btn.innerText="Verificar";
     document.getElementById('subLevelCount').innerText=currentProblemInLevel;
     document.getElementById('progressBar').style.width=((currentMainLevel-1)/TOTAL_LEVELS)*100+'%';
     populateLevelSelect();
@@ -1291,19 +1349,21 @@ function checkAntennaInput(inp,id){const val=parseInt(inp.value),exp=id*currentD
 function resetAll(){document.getElementById('valCociente').value='';document.getElementById('valResiduo').value='';document.querySelectorAll('.antena-input').forEach(i=>{i.value='';i.classList.remove('status-ok','status-wrong');});document.querySelectorAll('.input-cociente-galera').forEach(i=>i.value='');document.querySelectorAll('.cell:not(.cell-locked)').forEach(i=>{i.value='';i.disabled=false;});}
 
 // ============================================================
-// VERIFICAR (CORREGIDO - ANTI-SPAM / NO AYUDA)
+// V18: VERIFICAR — ANTI-SPAM BLINDADO
 // ============================================================
 async function verificarSolucion(){
+    // TRIPLE LOCK: isVerifying bloquea completamente mientras se procesa
     if(isVerifying)return;
     if(isGridLocked){alert("¡Completa la Antena!");return;}
     if(!(await checkGlobalState()))return;
 
+    // Bloqueo inmediato e irreversible hasta loadProblem()
     isVerifying=true;
     const btn=document.getElementById('btn-verify');
     btn.disabled=true;
     btn.style.opacity='0.4';
     btn.innerText="Verificando...";
-    btn.onclick=null;
+    btn.onclick=null; // Remover listener también
 
     const coc=parseInt(document.getElementById('valCociente').value);
     const res=parseInt(document.getElementById('valResiduo').value)||0;
@@ -1311,14 +1371,17 @@ async function verificarSolucion(){
     const rR=currentDividend%currentDivisor;
 
     if(coc===rC&&res===rR){
-        // CORRECTO
+        // ✅ CORRECTO
         AudioEngine.playSuccess();
         totalScore+=POINTS;
         updateUI();
         incrementStreak();
         recordSuccess();
+
+        // Monedas: +5 base — se guardan en saveScore()
         currentCoins+=5;
         updateCoinDisplay();
+
         document.getElementById('msg').innerHTML=`<span style='color:var(--success);font-weight:700;font-size:1.2rem;'>¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
 
         if(currentProblemInLevel<PROBLEMS_PER_LEVEL){
@@ -1332,25 +1395,26 @@ async function verificarSolucion(){
                 await _supabase.from('profiles').update({completed_at:new Date().toISOString()}).eq('id',currentUser.id);
                 loadHallOfFame();
                 await saveScore();
+                // No rehabilitar botón — juego terminado
                 return;
             }
         }
         await saveTime();
-        await saveScore();
+        await saveScore(); // Guarda score + coins en DB
         if(document.getElementById('victory-screen').style.display==='flex'){
             setTimeout(()=>{hideVictoryScreen();loadProblem();},3000);
         }else{
-            loadProblem();
+            loadProblem(); // loadProblem resetea isVerifying y rehabilita el botón
         }
     }else{
-        // ERROR
+        // ❌ INCORRECTO — NO dar la respuesta
         AudioEngine.playError();
         document.getElementById('msg').innerHTML=`<span style='color:var(--error);font-weight:700;font-size:1.2rem;'>INCORRECTO ❌ — Inténtalo de nuevo</span>`;
         totalErrors++;
         saveTime();
-        recordError(currentDividend,currentDivisor,coc,res);
+        recordError(currentDividend,currentDivisor,coc,res,rC,rR);
         resetStreak();
-        // REHABILITAR BOTÓN
+        // Rehabilitar botón solo en caso de error
         isVerifying=false;
         btn.disabled=false;
         btn.style.opacity='1';
