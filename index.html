@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V18.6 (Tienda Garantizada)</title>
+    <title>Reto de División - V19 Final (Seguro)</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* ============================================================
-           ESTILOS COMPLETOS - TIENDA CON PRECIOS GARANTIZADOS
+           ESTILOS COMPLETOS (V19)
            ============================================================ */
         :root {
             --primary-color: #ffcc00; --primary-light: #ff9800; --text-dark: #e0e0e0;
@@ -189,14 +189,6 @@
         .btn-small { font-size: .9rem; padding: 5px 10px; background: #333; color: #ccc; border: 1px solid #555; }
         #msg { width: 100%; text-align: center; font-weight: 600; margin-top: 5px; font-size: 1.1rem; min-height: 28px; }
 
-        /* ── REVIEW PANEL ── */
-        .review-panel { background: rgba(0,230,118,.05); border: 1px solid rgba(0,230,118,.3); border-radius: 4px; padding: 12px; width: 100%; display: none; }
-        .review-panel.visible { display: block; }
-        .review-title { font-family: 'Teko'; font-size: 1.3rem; color: var(--success); margin-bottom: 8px; }
-        .review-step { font-size: .9rem; color: #ccc; padding: 5px 0; border-bottom: 1px solid #222; }
-        .review-step:last-child { border: none; }
-        .review-step strong { color: var(--primary-color); }
-
         /* ── BATTLE PASS ── */
         .battle-pass-panel { width: 100%; background: #111; border: 1px solid #444; border-radius: 4px; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
         .bp-header { display: flex; justify-content: space-between; font-size: 1rem; color: var(--primary-color); font-weight: 700; text-transform: uppercase; align-items: center; }
@@ -211,84 +203,33 @@
         .bp-tier-label { font-size: .7rem; margin-top: 5px; color: #888; text-align: center; }
         .bp-tier-desc { font-size: .65rem; color: #555; text-align: center; margin-top: 2px; min-height: 20px; }
 
-        /* ── TIENDA (ESTILOS DEFINITIVOS) ── */
-        .shop-btn-float {
-            position: fixed; bottom: 80px; left: 20px; z-index: 9001;
-            width: 60px; height: 60px; border-radius: 50%;
-            background: var(--shop-purple); border: none;
-            color: white; font-size: 1.8rem;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: 0 0 20px var(--shop-purple);
-            transition: .2s; animation: shopPulse 3s infinite;
-        }
+        /* ── TIENDA ── */
+        .shop-btn-float { position: fixed; bottom: 80px; left: 20px; z-index: 9001; width: 50px; height: 50px; border-radius: 50%; background: var(--shop-purple); border: none; color: white; font-size: 1.4rem; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 15px var(--shop-purple); transition: .2s; animation: shopPulse 3s infinite; }
         @keyframes shopPulse { 0%,100%{box-shadow:0 0 15px var(--shop-purple)} 50%{box-shadow:0 0 30px var(--shop-purple), 0 0 60px rgba(124,58,237,.3)} }
         .shop-btn-float:hover { transform: scale(1.1); }
 
-        #shop-modal {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,.96); z-index: 99997;
-            display: none; justify-content: center; align-items: center;
-        }
-        .shop-box {
-            background: #111; border: 2px solid var(--shop-purple);
-            border-top: 6px solid var(--shop-purple);
-            border-radius: 12px; width: 90%; max-width: 650px;
-            max-height: 85vh; overflow: hidden; display: flex; flex-direction: column;
-        }
-        .shop-header {
-            padding: 20px 25px; background: rgba(124,58,237,.15);
-            border-bottom: 2px solid var(--shop-purple);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .shop-title { font-family: 'Teko'; font-size: 2.2rem; color: var(--shop-purple); text-shadow: 0 0 10px var(--shop-purple); }
-        .shop-coins-display { display: flex; align-items: center; gap: 10px; background: rgba(255,215,0,.15); padding: 8px 20px; border-radius: 40px; border: 2px solid gold; }
-        .shop-coins-val { font-family: 'Teko'; font-size: 2rem; color: gold; line-height: 1; }
-        .shop-body { padding: 20px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        .shop-item {
-            background: #1a1a1a; border: 1px solid #444; border-radius: 12px;
-            padding: 20px; text-align: center; position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,.5);
-        }
-        .shop-item.orange { border-top: 5px solid var(--shop-orange); }
-        .shop-item:not(.orange) { border-top: 5px solid var(--shop-purple); }
-        .shop-item-icon { font-size: 3.5rem; margin-bottom: 10px; display: block; }
-        .shop-item-name { font-family: 'Teko'; font-size: 1.6rem; color: white; margin-bottom: 5px; }
-        .shop-item-desc { font-size: .85rem; color: #aaa; margin-bottom: 15px; line-height: 1.3; }
-        /* PRECIO - ESTILOS INLINE ADICIONALES POR SEGURIDAD */
-        .shop-item-price {
-            display: flex; align-items: center; justify-content: center; gap: 10px;
-            font-family: 'Teko', sans-serif; font-size: 2.6rem; font-weight: 800;
-            color: #000 !important; background: #FFD700;
-            padding: 10px 5px; margin: 15px 0; border-radius: 50px;
-            border: 3px solid #FFA500; box-shadow: 0 0 20px gold;
-            text-shadow: none; line-height: 1.2;
-        }
-        .shop-item-price i { color: #000 !important; font-size: 2rem; }
-        .shop-buy-btn {
-            width: 100%; padding: 12px; border-radius: 8px; border: none;
-            font-family: 'Rajdhani'; font-weight: 700; font-size: 1.2rem;
-            text-transform: uppercase; cursor: pointer; transition: .2s;
-            background: var(--shop-purple); color: white; letter-spacing: 1px;
-        }
+        #shop-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.96); z-index: 99997; display: none; justify-content: center; align-items: center; }
+        .shop-box { background: #111; border: 1px solid var(--shop-purple); border-top: 4px solid var(--shop-purple); border-radius: 8px; width: 90%; max-width: 600px; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column; }
+        .shop-header { padding: 20px 25px; background: rgba(124,58,237,.15); border-bottom: 1px solid var(--shop-purple); display: flex; justify-content: space-between; align-items: center; }
+        .shop-title { font-family: 'Teko'; font-size: 2rem; color: var(--shop-purple); text-shadow: 0 0 20px rgba(124,58,237,.5); }
+        .shop-coins-display { display: flex; align-items: center; gap: 8px; background: rgba(255,204,0,.1); padding: 8px 16px; border-radius: 20px; border: 1px solid var(--primary-color); }
+        .shop-coins-val { font-family: 'Teko'; font-size: 1.5rem; color: var(--primary-color); }
+        .shop-body { padding: 20px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .shop-item { background: #1a1a1a; border: 1px solid #333; border-radius: 8px; padding: 20px; text-align: center; transition: .2s; position: relative; overflow: hidden; }
+        .shop-item:hover { border-color: var(--shop-purple); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(124,58,237,.2); }
+        .shop-item::before { content:''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: var(--shop-purple); }
+        .shop-item.orange::before { background: var(--shop-orange); }
+        .shop-item.orange:hover { border-color: var(--shop-orange); box-shadow: 0 8px 25px rgba(234,88,12,.2); }
+        .shop-item-icon { font-size: 3rem; margin-bottom: 10px; display: block; }
+        .shop-item-name { font-family: 'Teko'; font-size: 1.4rem; color: white; margin-bottom: 5px; }
+        .shop-item-desc { font-size: .85rem; color: #888; margin-bottom: 15px; line-height: 1.4; }
+        .shop-item-price { display: flex; align-items: center; justify-content: center; gap: 6px; font-family: 'Teko'; font-size: 1.8rem; color: var(--primary-color); margin-bottom: 12px; background: rgba(0,0,0,.5); padding: 4px 0; border-radius: 20px; }
+        .shop-buy-btn { width: 100%; padding: 10px; border-radius: 4px; border: none; font-family: 'Rajdhani'; font-weight: 700; font-size: 1rem; text-transform: uppercase; cursor: pointer; transition: .2s; background: var(--shop-purple); color: white; }
+        .shop-buy-btn:hover { background: #6d28d9; }
         .shop-buy-btn.orange-btn { background: var(--shop-orange); }
-        .shop-buy-btn:hover { filter: brightness(1.2); transform: scale(1.02); }
-        .shop-buy-btn:disabled { background: #444; color: #888; cursor: not-allowed; opacity: 0.6; }
-        .shop-qty-badge {
-            position: absolute; top: 10px; right: 10px;
-            background: gold; color: black; font-weight: bold;
-            padding: 4px 12px; border-radius: 30px; font-size: 1rem;
-            border: 2px solid #FFA500;
-        }
-
-        /* ── ADMIN PREMIOS BP ── */
-        .bp-prizes-section { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; }
-        .bp-prize-item { display: flex; align-items: center; justify-content: space-between; background: rgba(255,204,0,.05); border: 1px solid rgba(255,204,0,.2); border-radius: 4px; padding: 8px 12px; margin-bottom: 6px; }
-        .bp-prize-left { display: flex; align-items: center; gap: 10px; }
-        .bp-prize-icon { font-size: 1.4rem; }
-        .bp-prize-info { font-size: .85rem; }
-        .bp-prize-user { font-weight: 700; color: var(--primary-color); }
-        .bp-prize-name { color: #aaa; font-size: .75rem; }
-        .bp-prize-mark-btn { background: var(--success); color: black; border: none; padding: 4px 10px; border-radius: 3px; font-size: .75rem; font-weight: 700; cursor: pointer; font-family: 'Rajdhani'; }
+        .shop-buy-btn.orange-btn:hover { background: #c2410c; }
+        .shop-buy-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
+        .shop-qty-badge { position: absolute; top: 10px; right: 10px; background: var(--primary-color); color: black; font-weight: 700; font-size: .8rem; padding: 2px 8px; border-radius: 10px; }
 
         /* ── ADMIN DASHBOARD ── */
         #admin-dashboard { width: 100%; display: none; flex-direction: column; gap: 20px; }
@@ -357,18 +298,6 @@
         .bp-reward-desc { color: #aaa; margin-bottom: 20px; }
         .bp-reward-btn { background: var(--success); color: black; padding: 10px 30px; border: none; border-radius: 4px; font-weight: 700; cursor: pointer; font-size: 1.1rem; }
 
-        /* ── ERROR HISTORY MODAL ── */
-        #error-history-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.95); z-index: 99997; display: none; justify-content: center; align-items: center; }
-        .error-modal-box { background: #111; border: 1px solid var(--error); border-radius: 8px; width: 90%; max-width: 600px; max-height: 80vh; overflow: hidden; display: flex; flex-direction: column; }
-        .error-modal-header { padding: 15px 20px; background: rgba(255,23,68,.1); border-bottom: 1px solid var(--error); display: flex; justify-content: space-between; align-items: center; }
-        .error-modal-title { font-family: 'Teko'; font-size: 1.8rem; color: var(--error); }
-        .error-modal-body { padding: 20px; overflow-y: auto; flex: 1; }
-        .error-entry { background: rgba(255,23,68,.05); border: 1px solid rgba(255,23,68,.2); border-left: 4px solid var(--error); border-radius: 4px; padding: 12px; margin-bottom: 10px; }
-        .error-entry-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
-        .error-entry-problem { font-weight: 700; color: var(--primary-color); }
-        .error-entry-time { font-size: .75rem; color: #666; }
-        .error-entry-detail { font-size: .85rem; color: #aaa; }
-
         /* ── TOAST ── */
         .toast-container { position: fixed; bottom: 90px; left: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
         .toast { background: #1a1a1a; border: 1px solid #444; border-radius: 6px; padding: 10px 16px; font-size: .9rem; color: white; box-shadow: 0 4px 20px rgba(0,0,0,.5); animation: toastIn .3s ease, toastOut .3s ease 3.7s forwards; max-width: 300px; }
@@ -389,38 +318,13 @@
         .epic-text { font-family: 'Teko', sans-serif; font-size: 8rem; color: var(--error); text-transform: uppercase; font-weight: 800; text-shadow: 0 0 20px rgba(255,0,0,.8), 4px 4px 0 #000; opacity: 0; }
         @keyframes epicPulse { 0%{transform:scale(.2) rotate(-10deg);opacity:0} 50%{transform:scale(1.2) rotate(5deg);opacity:1} 100%{transform:scale(1) rotate(0deg);opacity:1} }
 
-        /* ── CHAT ── */
-        #chat-battle { position: fixed; bottom: 80px; right: 20px; width: 320px; z-index: 9000; background: rgba(0,0,0,.98); border: 1px solid #333; border-radius: 8px; display: none; }
-        #chat-battle.visible { display: block; }
-        .chat-header { padding: 8px 15px; background: #111; color: var(--primary-color); font-weight: 700; border-bottom: 1px solid #333; display: flex; justify-content: space-between; cursor: pointer; }
-        .chat-messages { height: 250px; overflow-y: auto; padding: 10px; display: flex; flex-direction: column-reverse; font-size: .95rem; }
-        .chat-msg { margin-bottom: 8px; line-height: 1.4; }
-        .chat-msg .author { color: var(--primary-color); font-weight: 700; }
-        .chat-msg .to-user { color: var(--success); font-weight: 700; }
-        .chat-msg .msg-text { color: white; }
-        .chat-input-bar { display: flex; flex-direction: column; gap: 5px; padding: 10px; border-top: 1px solid #333; background: #111; }
-        .chat-user-select { width: 100%; padding: 8px; background: #000; border: 1px solid #444; color: white; border-radius: 4px; font-family: 'Rajdhani'; font-size: .9rem; }
-        .quick-msg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
-        .quick-btn { background: #222; border: 1px solid #444; color: #ddd; padding: 6px; border-radius: 4px; font-size: .8rem; cursor: pointer; text-align: left; display: flex; align-items: center; gap: 5px; }
-        .quick-btn:hover { background: #333; border-color: var(--primary-color); }
-        .quick-btn i { color: var(--primary-color); }
-        #chat-toggle-btn { position: fixed; bottom: 20px; right: 20px; z-index: 9001; width: 50px; height: 50px; border-radius: 50%; background: var(--primary-color); color: black; font-size: 1.5rem; border: none; box-shadow: 0 0 15px var(--primary-color); display: flex; align-items: center; justify-content: center; cursor: pointer; }
-
-        /* ── ERROR HISTORY BTN ── */
-        .error-history-btn { background: rgba(255,23,68,.1); border: 1px solid var(--error); color: var(--error); padding: 6px 14px; border-radius: 4px; cursor: pointer; font-size: .85rem; font-family: 'Rajdhani'; font-weight: 700; text-transform: uppercase; transition: .2s; }
-        .error-history-btn:hover { background: var(--error); color: white; }
-
         /* ── SOUND TOGGLE ── */
         .sound-toggle { position: fixed; bottom: 140px; left: 20px; z-index: 9001; width: 44px; height: 44px; border-radius: 50%; background: #222; border: 2px solid #555; color: #888; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: .2s; }
         .sound-toggle.on { background: rgba(255,204,0,.15); border-color: var(--primary-color); color: var(--primary-color); }
     </style>
 </head>
 <body>
-
-<!-- TOAST CONTAINER -->
 <div class="toast-container" id="toast-container"></div>
-
-<!-- OVERLAYS -->
 <div id="victory-screen"><div class="victory-title">JUEGO TERMINADO</div></div>
 <div id="epic-overlay"><div class="epic-text" id="epic-text">¡BOOYAH!</div></div>
 
@@ -435,93 +339,61 @@
     </div>
 </div>
 
-<!-- TIENDA MODAL (CORREGIDA Y VISIBLE) -->
+<!-- TIENDA MODAL -->
 <div id="shop-modal" onclick="if(event.target.id==='shop-modal')closeShop()">
     <div class="shop-box">
         <div class="shop-header">
             <span class="shop-title"><i class="fas fa-store"></i> DiviTienda</span>
             <div class="shop-coins-display">
-                <i class="fas fa-coins" style="color:gold;"></i>
+                <i class="fas fa-coins" style="color:var(--primary-color)"></i>
                 <span class="shop-coins-val" id="shop-coins-val">0</span>
-                <span style="font-size:1rem; color:#ccc;">monedas</span>
+                <span style="font-size:.8rem;color:#aaa;">monedas</span>
             </div>
         </div>
         <div class="shop-body">
-            <!-- Tomate x1 -->
             <div class="shop-item orange">
                 <span class="shop-item-icon">🍅</span>
                 <div class="shop-item-name">Tomate</div>
-                <div class="shop-item-desc">Lanza un tomate a un rival y le quitas 50 puntos. ¡Cuidado si tiene escudo!</div>
-                <div class="shop-item-price"><i class="fas fa-coins"></i> 50</div>
+                <div class="shop-item-desc">Lanza un tomate a un rival (-50 pts).</div>
+                <div class="shop-item-price"><i class="fas fa-coins" style="color:var(--primary-color);"></i> 50</div>
                 <div class="shop-qty-badge" id="shop-tom-qty">x0</div>
-                <button class="shop-buy-btn orange-btn" onclick="window.shopBuy('tomato',1,50)">Comprar 1</button>
+                <button class="shop-buy-btn orange-btn" onclick="shopBuy('tomato',1,50)">Comprar 1</button>
             </div>
-            <!-- Tomate x5 -->
             <div class="shop-item orange">
                 <span class="shop-item-icon">🍅🍅🍅</span>
                 <div class="shop-item-name">Pack Tomates x5</div>
-                <div class="shop-item-desc">5 tomates con descuento. ¡Ataca sin parar a tus rivales!</div>
-                <div class="shop-item-price"><i class="fas fa-coins"></i> 200</div>
-                <button class="shop-buy-btn orange-btn" onclick="window.shopBuy('tomato',5,200)">Pack x5</button>
+                <div class="shop-item-desc">5 tomates con descuento.</div>
+                <div class="shop-item-price"><i class="fas fa-coins" style="color:var(--primary-color);"></i> 200</div>
+                <button class="shop-buy-btn orange-btn" onclick="shopBuy('tomato',5,200)">Pack x5</button>
             </div>
-            <!-- Escudo 1 día -->
             <div class="shop-item">
                 <span class="shop-item-icon">🛡️</span>
                 <div class="shop-item-name">Escudo 1 Día</div>
-                <div class="shop-item-desc">Protección contra tomates por 24 horas. El próximo ataque destruirá el escudo.</div>
-                <div class="shop-item-price"><i class="fas fa-coins"></i> 100</div>
-                <button class="shop-buy-btn" onclick="window.shopBuy('shield',1,100)">Comprar</button>
+                <div class="shop-item-desc">Protección 24h.</div>
+                <div class="shop-item-price"><i class="fas fa-coins" style="color:var(--primary-color);"></i> 100</div>
+                <button class="shop-buy-btn" onclick="shopBuy('shield',1,100)">Comprar</button>
             </div>
-            <!-- Escudo 3 días -->
             <div class="shop-item">
                 <span class="shop-item-icon">🛡️✨</span>
                 <div class="shop-item-name">Escudo Pro 3 Días</div>
-                <div class="shop-item-desc">Protección extendida por 3 días. ¡El mejor precio por duración!</div>
-                <div class="shop-item-price"><i class="fas fa-coins"></i> 250</div>
-                <button class="shop-buy-btn" onclick="window.shopBuy('shield',3,250)">Comprar</button>
+                <div class="shop-item-desc">Protección extendida.</div>
+                <div class="shop-item-price"><i class="fas fa-coins" style="color:var(--primary-color);"></i> 250</div>
+                <button class="shop-buy-btn" onclick="shopBuy('shield',3,250)">Comprar</button>
             </div>
-            <!-- Pase de Batalla -->
-            <div class="shop-item" id="shop-bp-item" style="grid-column:span 2;">
+            <div class="shop-item" style="grid-column:span 2;">
                 <span class="shop-item-icon">👑</span>
                 <div class="shop-item-name">Pase de Batalla</div>
-                <div class="shop-item-desc">Desbloquea todas las recompensas del Pase de Batalla: tomates extra, escudos, pases de comer y más.</div>
-                <div class="shop-item-price"><i class="fas fa-coins"></i> 500</div>
-                <button class="shop-buy-btn" id="shop-bp-btn" onclick="window.shopBuy('bp',1,500)" style="max-width:300px;margin:0 auto;display:block;">Comprar Pase</button>
+                <div class="shop-item-desc">Desbloquea recompensas exclusivas.</div>
+                <div class="shop-item-price"><i class="fas fa-coins" style="color:var(--primary-color);"></i> 500</div>
+                <button class="shop-buy-btn" id="shop-bp-btn" onclick="shopBuy('bp',1,500)">Comprar Pase</button>
             </div>
         </div>
     </div>
 </div>
 
-<!-- ERROR HISTORY MODAL -->
-<div id="error-history-modal" onclick="if(event.target.id==='error-history-modal')closeErrorHistory()">
-    <div class="error-modal-box">
-        <div class="error-modal-header">
-            <span class="error-modal-title"><i class="fas fa-exclamation-triangle"></i> Historial de Errores</span>
-            <button onclick="closeErrorHistory()" style="background:#333;color:#aaa;border:1px solid #555;padding:5px 12px;border-radius:4px;cursor:pointer;">Cerrar</button>
-        </div>
-        <div class="error-modal-body" id="error-history-body"></div>
-    </div>
-</div>
-
-<!-- SOUND + SHOP FLOATS -->
+<!-- FLOATS -->
 <button class="sound-toggle" id="sound-toggle-btn" onclick="toggleAmbientSound()" title="Sonido ambiental"><i class="fas fa-volume-mute"></i></button>
 <button class="shop-btn-float" onclick="openShop()" title="DiviTienda"><i class="fas fa-store"></i></button>
-<button id="chat-toggle-btn" onclick="toggleChatUI()"><i class="fas fa-comments"></i></button>
-
-<!-- CHAT -->
-<div id="chat-battle">
-    <div class="chat-header" onclick="toggleChatUI()"><span><i class="fas fa-bolt"></i> Chat Dirigido</span><i class="fas fa-chevron-down"></i></div>
-    <div class="chat-messages" id="chat-messages"></div>
-    <div class="chat-input-bar">
-        <select id="chat-user-select" class="chat-user-select"><option value="todos">Para: Todos 👥</option></select>
-        <div class="quick-msg-grid">
-            <button class="quick-btn" onclick="sendQuickChat('¡Vas con todo! 🔥')"><i class="fas fa-fire"></i> ¡Vas con todo!</button>
-            <button class="quick-btn" onclick="sendQuickChat('¡Ánimo! 💪')"><i class="fas fa-dumbbell"></i> ¡Ánimo!</button>
-            <button class="quick-btn" onclick="sendQuickChat('¡Genial! ⭐')"><i class="fas fa-star"></i> ¡Genial!</button>
-            <button class="quick-btn" onclick="sendQuickChat('¡Tú puedes! 🚀')"><i class="fas fa-rocket"></i> ¡Tú puedes!</button>
-        </div>
-    </div>
-</div>
 
 <!-- LOGIN -->
 <div id="login-screen" style="display:none;">
@@ -576,7 +448,6 @@
                 <div style="font-size:.8rem;color:#888;" id="difficultyLabel">...</div>
                 <div style="font-size:.9rem;color:#aaa;">Ej. <span id="subLevelCount">1</span>/10</div>
             </div>
-            <!-- STREAK -->
             <div class="streak-display" id="streak-display">
                 <span id="streak-icon">⚡</span>
                 <div><div class="streak-count" id="streak-count">0</div><div class="streak-label">Racha</div></div>
@@ -594,12 +465,11 @@
                 <div class="rank-progress"><div class="rank-progress-bar" id="userRankBar" style="width:0%"></div></div>
                 <div class="rank-score-label"><span id="scoreDisplay">0</span> pts</div>
             </div>
-            <button class="error-history-btn" onclick="openErrorHistory()"><i class="fas fa-exclamation-triangle"></i> Errores</button>
             <button onclick="logout()" class="btn-small">Salir</button>
         </div>
     </div>
 
-    <!-- ADMIN DASHBOARD (COMPLETO) -->
+    <!-- ADMIN DASHBOARD -->
     <div id="admin-dashboard">
         <div class="dash-grid">
             <div class="dash-card">
@@ -653,12 +523,6 @@
                 <input type="hidden" id="valCociente">
                 <button id="btn-verify" class="btn-primary" onclick="verificarSolucion()">Verificar</button>
                 <div id="msg"></div>
-                <!-- REVIEW PANEL -->
-                <div class="review-panel" id="review-panel">
-                    <div class="review-title"><i class="fas fa-lightbulb"></i> Revisa el proceso</div>
-                    <div id="review-steps"></div>
-                </div>
-                <!-- BATTLE PASS -->
                 <div class="battle-pass-panel">
                     <div class="bp-header">
                         <span><i class="fas fa-crown" style="color:var(--bp-gold)"></i> Pase de Batalla</span>
@@ -696,9 +560,99 @@
         </div>
     </div>
 </div>
+
 <script>
 // ============================================================
-// SOUND ENGINE (ORIGINAL)
+// CONFIGURACIÓN
+// ============================================================
+const SUPABASE_URL = 'https://oskrniownbbzkgnwunzz.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_RcfluyMTRxDP4chkK91-2Q_UwLdLrqP';
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storage: window.sessionStorage, autoRefreshToken: false, persistSession: true, detectSessionInUrl: false } });
+
+// ============================================================
+// VARIABLES GLOBALES
+// ============================================================
+const TOTAL_LEVELS = 10, PROBLEMS_PER_LEVEL = 10, POINTS = 100;
+const ADMIN_USER = 'profemiguel';
+let currentMainLevel = 1, currentProblemInLevel = 1, currentDivisor = 0, currentDividend = 0;
+let totalScore = 0, currentUser = null, currentAvatarStyle = 'adventurer';
+let isGridLocked = true, hasFinishedGame = false, isVerifying = false;
+let unlockedLevel = 1, isAdmin = false;
+let currentStreak = 0;
+const STREAK_BONUSES = {3:50, 5:100, 10:250, 15:500};
+let currentCoins = 0, hasBP = false, claimedBPRewards = [], itemTomatoes = 0, itemShieldUntil = null;
+let playTimeCounter = 0;
+const ANTENNA_SEQUENCE = [1,10,5,2,4,8,3,6,7,9];
+let currentAntennaIndex = 0;
+const AVATAR_STYLES_STANDARD = [
+    {id:'adventurer',name:'Guerrero'},{id:'bottts',name:'Robot'},{id:'pixel-art',name:'Pixel'},
+    {id:'lorelei',name:'Fantasma'},{id:'big-ears',name:'Alien'},{id:'open-peeps',name:'Dibujo'},
+    {id:'croodles',name:'Boceto'},{id:'identicon',name:'Matrix'}
+];
+const AVATAR_STYLES_EXCLUSIVE = [{id:'micah',name:'Élite'},{id:'personas',name:'Dios'},{id:'thumbs',name:'Leyenda'}];
+const RANKS = [
+    {name:"Hierro",min:0,max:2999,icon:"🪨",css:"rank-iron",avatar:"avatar-iron"},
+    {name:"Bronce",min:3000,max:6999,icon:"🥉",css:"rank-bronze",avatar:"avatar-bronze"},
+    {name:"Plata",min:7000,max:12999,icon:"🥈",css:"rank-silver",avatar:"avatar-silver"},
+    {name:"Oro",min:13000,max:19999,icon:"🥇",css:"rank-gold",avatar:"avatar-gold"},
+    {name:"Platino",min:20000,max:29999,icon:"💠",css:"rank-platinum",avatar:"avatar-platinum"},
+    {name:"Diamante",min:30000,max:49999,icon:"💎",css:"rank-diamond",avatar:"avatar-diamond"},
+    {name:"Heroico",min:50000,max:999999,icon:"👑",css:"rank-heroic",avatar:"avatar-heroic"}
+];
+function getRankInfo(score){
+    let rank = RANKS[0];
+    for(let i=0;i<RANKS.length;i++) if(score>=RANKS[i].min) rank=RANKS[i];
+    let tier="I", range=rank.max-rank.min;
+    if(score<rank.min+range/3) tier="III";
+    else if(score<rank.min+(range/3)*2) tier="II";
+    let pct = Math.min(100,((score-rank.min)/range)*100);
+    return {...rank, tier, pct};
+}
+
+const BP_REWARDS = [
+    {level:1,xp:0,icon:"✍️",name:"Fuente Gaming",desc:"Tipografía Free Fire",type:"font"},
+    {level:2,xp:500,icon:"🍅",name:"3 Tomates",desc:"Ataca a rivales (-50 pts)",type:"item",item:"item_tomatoes",qty:3},
+    {level:3,xp:1500,icon:"🛡️",name:"Escudo (3 días)",desc:"Protección contra tomates",type:"item",item:"item_shield_until",days:3},
+    {level:4,xp:3000,icon:"🍔",name:"Comer en Clase",desc:"Pase para 1 día",type:"real_prize"},
+    {level:5,xp:5000,icon:"📝",name:"Sin Tarea",desc:"Pase Excusa",type:"real_prize"}
+];
+
+const SQUADS = {
+    1:{name:"Los Titanes",color:"#e74c3c",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#2c0404" stroke="#e74c3c" stroke-width="4"/><path d="M30 60L45 75L70 40" stroke="#e74c3c" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>`},
+    2:{name:"Los Inmortales",color:"#9b59b6",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#1a0b2e" stroke="#9b59b6" stroke-width="4"/><circle cx="50" cy="55" r="20" stroke="#9b59b6" stroke-width="4"/><path d="M50 35V25M50 85V75M30 55H20M80 55H70" stroke="#9b59b6" stroke-width="4"/></svg>`},
+    3:{name:"Los Centinelas",color:"#3498db",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#0d1b2a" stroke="#3498db" stroke-width="4"/><path d="M50 25V85M25 50H75" stroke="#3498db" stroke-width="8" stroke-linecap="round"/><circle cx="50" cy="50" r="15" stroke="#3498db" stroke-width="4"/></svg>`},
+    4:{name:"Los Conquistadores",color:"#f39c12",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#2c1f00" stroke="#f39c12" stroke-width="4"/><path d="M50 30L35 60L50 50L65 60L50 30Z" fill="#f39c12"/><path d="M50 50V80" stroke="#f39c12" stroke-width="4"/></svg>`}
+};
+
+const DB = {
+    1:[{d:456,div:4},{d:789,div:3},{d:125,div:5},{d:982,div:7},{d:641,div:2},{d:333,div:9},{d:805,div:6},{d:219,div:8},{d:567,div:4},{d:901,div:3}],
+    2:[{d:1245,div:5},{d:8902,div:2},{d:4567,div:9},{d:3312,div:6},{d:7841,div:4},{d:2009,div:7},{d:6554,div:8},{d:5123,div:3},{d:9876,div:5},{d:4444,div:7}],
+    3:[{d:2460,div:12},{d:3575,div:25},{d:1024,div:32},{d:8940,div:15},{d:4567,div:42},{d:6781,div:54},{d:9120,div:20},{d:5555,div:11},{d:7329,div:63},{d:2891,div:91}],
+    4:[{d:12450,div:10},{d:45672,div:18},{d:98210,div:45},{d:33561,div:27},{d:70894,div:33},{d:21458,div:62},{d:55900,div:75},{d:84321,div:50},{d:19007,div:14},{d:66234,div:89}],
+    5:[{d:123456,div:12},{d:500890,div:25},{d:987654,div:44},{d:345219,div:15},{d:771002,div:68},{d:229481,div:37},{d:605333,div:92},{d:412895,div:53},{d:888210,div:21},{d:101010,div:99}],
+    6:[{d:456123,div:123},{d:789456,div:250},{d:102900,div:315},{d:555888,div:111},{d:901234,div:456},{d:234567,div:678},{d:678901,div:210},{d:321654,div:543},{d:880442,div:999},{d:125000,div:425}],
+    7:[{d:1234567,div:13},{d:8901234,div:26},{d:4567890,div:50},{d:3000456,div:72},{d:7123456,div:85},{d:2987654,div:19},{d:5555555,div:44},{d:6102304,div:91},{d:9876543,div:33},{d:4422110,div:67}],
+    8:[{d:2456789,div:142},{d:5678901,div:350},{d:1010101,div:225},{d:9876543,div:612},{d:4554221,div:789},{d:8123456,div:431},{d:3678945,div:555},{d:7002119,div:204},{d:6345678,div:810},{d:1999999,div:991}],
+    9:[{d:12345678,div:15},{d:50987654,div:22},{d:99112233,div:45},{d:34567890,div:78},{d:76543210,div:12},{d:21098765,div:89},{d:66778899,div:36},{d:45454545,div:54},{d:88000111,div:93},{d:10203040,div:27}],
+    10:[{d:45678912,div:234},{d:89012345,div:567},{d:12345678,div:901},{d:76543210,div:412},{d:33445566,div:777},{d:55667788,div:125},{d:98765432,div:850},{d:20406080,div:315},{d:61234567,div:621},{d:99999999,div:999}]
+};
+
+// ============================================================
+// MISIONES DE ESCUADRA
+// ============================================================
+const SQUAD_MISSIONS = [
+    { id:'m1', name:'50 Aciertos en Escuadra', goal:50, reward:500, unit:'aciertos', icon:'✅', progressKey:'squadCorrect' },
+    { id:'m2', name:'Alcanzar Nivel 8', goal:1, reward:800, unit:'meta', icon:'🏆', progressKey:'squadMaxLevel' },
+    { id:'m3', name:'2000 Monedas acumuladas', goal:2000, reward:600, unit:'monedas', icon:'💰', progressKey:'squadCoins' },
+    { id:'m4', name:'5 Ataques con Tomate', goal:5, reward:300, unit:'ataques', icon:'🍅', progressKey:'squadTomatoAttacks' },
+    { id:'m5', name:'Comprar 3 Escudos', goal:3, reward:400, unit:'escudos', icon:'🛡️', progressKey:'squadShieldBuys' },
+    { id:'m6', name:'Ganar 10,000 puntos totales', goal:10000, reward:1000, unit:'puntos', icon:'🏅', progressKey:'squadTotalScore' }
+];
+let userSquadId = null;
+let squadMissionsCompleted = [];
+
+// ============================================================
+// AUDIO ENGINE
 // ============================================================
 const AudioEngine = {
     ctx: null,
@@ -716,369 +670,109 @@ const AudioEngine = {
     playLevelUp() { [523,659,784,1047].forEach((n,i)=>setTimeout(()=>this.playTone(n,200,'square',0.1),i*150)); },
     playEpic()    { [300,400,600,900,1200].forEach((n,i)=>setTimeout(()=>this.playTone(n,80,'sawtooth',0.3),i*40)); },
     playStreak()  { [600,800,1000,1200].forEach((n,i)=>setTimeout(()=>this.playTone(n,100,'square',0.12),i*80)); },
-    playTomatoAlert() { this.playTone(180,150,'sawtooth',0.2); setTimeout(()=>this.playTone(150,200,'sawtooth',0.2),160); },
     playShop()    { this.playTone(440,80,'square',0.07); setTimeout(()=>this.playTone(550,120,'square',0.07),90); }
 };
 
-// ── AMBIENT SOUND ──
-let ambientOn=false, ambientNodes=[], ambientGain=null;
+let ambientOn = false, ambientNodes = [], ambientGain = null;
 function startAmbientSound() {
-    AudioEngine.init(); const ctx=AudioEngine.ctx;
-    ambientGain=ctx.createGain(); ambientGain.gain.value=0.03; ambientGain.connect(ctx.destination);
-    const o1=ctx.createOscillator(); o1.type='sine'; o1.frequency.value=55; o1.connect(ambientGain); o1.start();
-    const o2=ctx.createOscillator(); o2.type='triangle'; o2.frequency.value=110;
-    const lfo=ctx.createOscillator(), lg=ctx.createGain(); lfo.frequency.value=0.4; lg.gain.value=0.015;
+    AudioEngine.init(); const ctx = AudioEngine.ctx;
+    ambientGain = ctx.createGain(); ambientGain.gain.value = 0.03; ambientGain.connect(ctx.destination);
+    const o1 = ctx.createOscillator(); o1.type = 'sine'; o1.frequency.value = 55; o1.connect(ambientGain); o1.start();
+    const o2 = ctx.createOscillator(); o2.type = 'triangle'; o2.frequency.value = 110;
+    const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = 0.4; lg.gain.value = 0.015;
     lfo.connect(lg); lg.connect(ambientGain.gain); lfo.start(); o2.connect(ambientGain); o2.start();
-    ambientNodes=[o1,o2,lfo];
+    ambientNodes = [o1,o2,lfo];
 }
-function stopAmbientSound() { ambientNodes.forEach(n=>{try{n.stop()}catch(e){}}); ambientNodes=[]; if(ambientGain){ambientGain.disconnect();ambientGain=null;} }
+function stopAmbientSound() { ambientNodes.forEach(n=>{try{n.stop()}catch(e){}}); ambientNodes = []; if(ambientGain){ambientGain.disconnect(); ambientGain = null;} }
 function toggleAmbientSound() {
-    ambientOn=!ambientOn;
-    const btn=document.getElementById('sound-toggle-btn');
-    if(ambientOn){ startAmbientSound(); btn.classList.add('on'); btn.innerHTML='<i class="fas fa-volume-up"></i>'; }
-    else { stopAmbientSound(); btn.classList.remove('on'); btn.innerHTML='<i class="fas fa-volume-mute"></i>'; }
+    ambientOn = !ambientOn;
+    const btn = document.getElementById('sound-toggle-btn');
+    if(ambientOn){ startAmbientSound(); btn.classList.add('on'); btn.innerHTML = '<i class="fas fa-volume-up"></i>'; }
+    else { stopAmbientSound(); btn.classList.remove('on'); btn.innerHTML = '<i class="fas fa-volume-mute"></i>'; }
 }
 
-// ── TOAST ──
 function showToast(msg, type='success', duration=4000) {
-    const c=document.getElementById('toast-container'), t=document.createElement('div');
-    t.className=`toast ${type}`; t.innerHTML=msg; c.appendChild(t);
-    setTimeout(()=>{ if(t.parentNode)t.parentNode.removeChild(t); }, duration);
+    const c = document.getElementById('toast-container');
+    const t = document.createElement('div');
+    t.className = `toast ${type}`;
+    t.innerHTML = msg;
+    c.appendChild(t);
+    setTimeout(() => { if(t.parentNode) t.parentNode.removeChild(t); }, duration);
 }
 
-// ── STREAK ──
-let currentStreak=0;
-const STREAK_BONUSES={3:50,5:100,10:250,15:500};
+// ============================================================
+// FUNCIONES UI
+// ============================================================
+function updateCoinDisplay(){ document.getElementById('coinDisplay').innerText = currentCoins; }
+function updateInventoryUI(){
+    document.getElementById('inv-tom-count').innerText = itemTomatoes;
+    const s = document.getElementById('inv-shield');
+    if(itemShieldUntil && itemShieldUntil > new Date()) {
+        s.classList.add('active');
+        s.title = "Escudo hasta: " + itemShieldUntil.toLocaleString();
+    } else {
+        s.classList.remove('active');
+        s.title = "Sin escudo";
+    }
+}
 function incrementStreak() {
     currentStreak++;
     updateStreakUI();
-    const bonus=STREAK_BONUSES[currentStreak];
-    if(bonus) { currentCoins+=bonus; updateCoinDisplay(); showStreakBonus(currentStreak,bonus); AudioEngine.playStreak(); }
+    const bonus = STREAK_BONUSES[currentStreak];
+    if(bonus) { currentCoins += bonus; updateCoinDisplay(); showStreakBonus(currentStreak, bonus); AudioEngine.playStreak(); }
 }
-function resetStreak() { currentStreak=0; updateStreakUI(); }
+function resetStreak() { currentStreak = 0; updateStreakUI(); }
 function updateStreakUI() {
-    const d=document.getElementById('streak-display'),c=document.getElementById('streak-count'),ic=document.getElementById('streak-icon');
-    c.innerText=currentStreak; d.classList.remove('active','on-fire');
-    if(currentStreak>=5){d.classList.add('on-fire');ic.innerText='🔥';}
-    else if(currentStreak>=2){d.classList.add('active');ic.innerText='⚡';}
-    else{ic.innerText='⚡';}
+    const d = document.getElementById('streak-display'), c = document.getElementById('streak-count'), ic = document.getElementById('streak-icon');
+    c.innerText = currentStreak;
+    d.classList.remove('active','on-fire');
+    if(currentStreak>=5) { d.classList.add('on-fire'); ic.innerText='🔥'; }
+    else if(currentStreak>=2) { d.classList.add('active'); ic.innerText='⚡'; }
+    else { ic.innerText='⚡'; }
 }
-function showStreakBonus(streak,bonus) {
-    const el=document.createElement('div'); el.className='bonus-flash';
-    el.innerText=`🔥 RACHA x${streak}! +${bonus} 💰`; document.body.appendChild(el);
-    setTimeout(()=>{if(el.parentNode)el.parentNode.removeChild(el);},1300);
+function showStreakBonus(streak, bonus) {
+    const el = document.createElement('div'); el.className = 'bonus-flash';
+    el.innerText = `🔥 RACHA x${streak}! +${bonus} 💰`;
+    document.body.appendChild(el);
+    setTimeout(() => { if(el.parentNode) el.parentNode.removeChild(el); }, 1300);
     showToast(`🔥 ¡Racha de ${streak}! Bonus: +${bonus} monedas`,'success');
 }
-
-// ── ERROR HISTORY (SIN AYUDA) ──
-let errorHistory=[], consecutiveErrors=0;
-function recordError(dividend,divisor,myCoc,myRes) {
-    errorHistory.push({dividend,divisor,myCoc,myRes,ts:new Date().toLocaleTimeString()});
-    consecutiveErrors++;
-}
-function recordSuccess() { consecutiveErrors=0; }
-function showReviewPanel(dividend,divisor,cociente,residuo) { }
-function hideReviewPanel() { document.getElementById('review-panel').classList.remove('visible'); }
-function openErrorHistory() {
-    document.getElementById('error-history-modal').style.display='flex';
-    const body=document.getElementById('error-history-body');
-    if(!errorHistory.length){body.innerHTML='<p style="color:var(--success);text-align:center;font-size:1.1rem;">🎉 ¡Sin errores!</p>';return;}
-    body.innerHTML=errorHistory.slice().reverse().map(e=>`
-        <div class="error-entry">
-            <div class="error-entry-header"><span class="error-entry-problem">${e.dividend} ÷ ${e.divisor}</span><span class="error-entry-time">${e.ts}</span></div>
-            <div class="error-entry-detail">Tu respuesta → Cociente:<strong style="color:var(--error)">${e.myCoc??'?'}</strong>, Residuo:<strong style="color:var(--error)">${e.myRes??'?'}</strong></div>
-        </div>`).join('');
-}
-function closeErrorHistory() { document.getElementById('error-history-modal').style.display='none'; }
-
-// ── SQUAD MISSIONS ──
-const SQUAD_MISSIONS=[
-    {id:'m1',name:'20 Correctas en Escuadra',goal:20,reward:200,unit:'aciertos',icon:'✅'},
-    {id:'m2',name:'Llegar al Nivel 5',goal:1,reward:300,unit:'meta',icon:'🏆'},
-    {id:'m3',name:'500 monedas en Escuadra',goal:500,reward:150,unit:'monedas',icon:'💰'}
-];
-let userSquadId=null;
-async function loadSquadMissions(squadId) {
-    if(!squadId){document.getElementById('squad-missions-panel').style.display='none';return;}
-    userSquadId=squadId; document.getElementById('squad-missions-panel').style.display='block';
-    try {
-        const {data}=await _supabase.from('profiles').select('total_score,current_level,coins,squad_id').eq('squad_id',squadId);
-        if(!data)return;
-        const totalCoins=data.reduce((s,u)=>s+(u.coins||0),0);
-        const maxLevel=Math.max(...data.map(u=>u.current_level||1));
-        const approxCorrect=Math.floor(data.reduce((s,u)=>s+(u.total_score||0),0)/100);
-        const progress={m1:approxCorrect,m2:maxLevel>=5?1:0,m3:totalCoins};
-        const body=document.getElementById('missions-body');
-        body.innerHTML=SQUAD_MISSIONS.map(m=>{
-            const p=progress[m.id]||0, pct=Math.min(100,Math.round((p/m.goal)*100)), done=pct>=100;
-            return `<div class="mission-item ${done?'mission-complete':''}">
-                <div class="mission-header"><span class="mission-name">${m.icon} ${m.name}</span><span class="mission-reward">+${m.reward} 💰</span></div>
-                <div class="mission-bar-wrap"><div class="mission-bar" style="width:${pct}%"></div></div>
-                <div class="mission-progress-text">${done?'✅ ¡Completada!':`${Math.min(p,m.goal)}/${m.goal} ${m.unit}`}</div>
-            </div>`;
-        }).join('');
-    }catch(e){console.error(e);}
+function getAvatarUrl(seed, style) { return `https://api.dicebear.com/8.x/${style}/svg?seed=${seed}`; }
+function renderMainAvatar() {
+    if(currentUser) document.getElementById('main-avatar-img').src = getAvatarUrl(currentUser.email.split('@')[0], currentAvatarStyle);
 }
 
 // ============================================================
-// CONFIG (ORIGINAL)
-// ============================================================
-const SUPABASE_URL='https://oskrniownbbzkgnwunzz.supabase.co';
-const SUPABASE_KEY='sb_publishable_RcfluyMTRxDP4chkK91-2Q_UwLdLrqP';
-const _supabase=supabase.createClient(SUPABASE_URL,SUPABASE_KEY,{auth:{storage:window.sessionStorage,autoRefreshToken:false,persistSession:true,detectSessionInUrl:false}});
-
-const TOTAL_LEVELS=10,PROBLEMS_PER_LEVEL=10,cols=9,rows=15,cellSize=32,POINTS=100;
-const ADMIN_USER='profemiguel';
-let currentMainLevel=1,currentProblemInLevel=1,currentDivisor=0,currentDividend=0;
-let totalScore=0,currentUser=null,currentAvatarStyle='adventurer';
-let isGridLocked=true,hasFinishedGame=false;
-let isVerifying=false;
-let unlockedLevel=1,isAdmin=false;
-let chatCooldown=false,chatVisible=false;
-const ANTENNA_SEQUENCE=[1,10,5,2,4,8,3,6,7,9];
-let currentAntennaIndex=0;
-const AVATAR_STYLES_STANDARD=[
-    {id:'adventurer',name:'Guerrero'},{id:'bottts',name:'Robot'},{id:'pixel-art',name:'Pixel'},
-    {id:'lorelei',name:'Fantasma'},{id:'big-ears',name:'Alien'},{id:'open-peeps',name:'Dibujo'},
-    {id:'croodles',name:'Boceto'},{id:'identicon',name:'Matrix'}
-];
-const AVATAR_STYLES_EXCLUSIVE=[{id:'micah',name:'Élite'},{id:'personas',name:'Dios'},{id:'thumbs',name:'Leyenda'}];
-const RANKS=[
-    {name:"Hierro",  min:0,    max:2999,  icon:"🪨",css:"rank-iron",    avatar:"avatar-iron"},
-    {name:"Bronce",  min:3000, max:6999,  icon:"🥉",css:"rank-bronze",  avatar:"avatar-bronze"},
-    {name:"Plata",   min:7000, max:12999, icon:"🥈",css:"rank-silver",  avatar:"avatar-silver"},
-    {name:"Oro",     min:13000,max:19999, icon:"🥇",css:"rank-gold",    avatar:"avatar-gold"},
-    {name:"Platino", min:20000,max:29999, icon:"💠",css:"rank-platinum",avatar:"avatar-platinum"},
-    {name:"Diamante",min:30000,max:49999, icon:"💎",css:"rank-diamond", avatar:"avatar-diamond"},
-    {name:"Heroico", min:50000,max:999999,icon:"👑",css:"rank-heroic",  avatar:"avatar-heroic"}
-];
-function getRankInfo(score){
-    let rank=RANKS[0];
-    for(let i=0;i<RANKS.length;i++){if(score>=RANKS[i].min)rank=RANKS[i];}
-    let tier="I",range=rank.max-rank.min;
-    if(score<rank.min+range/3)tier="III"; else if(score<rank.min+(range/3)*2)tier="II";
-    let pct=Math.min(100,((score-rank.min)/range)*100);
-    return {...rank,tier,pct};
-}
-
-let currentCoins=0,hasBP=false,claimedBPRewards=[],itemTomatoes=0,itemShieldUntil=null;
-let playTimeCounter=0,totalErrors=0;
-
-const BP_REWARDS=[
-    {level:1,xp:0,    icon:"✍️",name:"Fuente Gaming",    desc:"Tipografía Free Fire",        type:"font"},
-    {level:2,xp:500,  icon:"🍅",name:"3 Tomates",        desc:"Ataca a rivales (-50 pts)",    type:"item",item:"item_tomatoes",qty:3},
-    {level:3,xp:1500, icon:"🛡️",name:"Escudo (3 días)",  desc:"Protección contra tomates",    type:"item",item:"item_shield_until",days:3},
-    {level:4,xp:3000, icon:"🍔",name:"Comer en Clase",   desc:"Pase para 1 día",              type:"real_prize"},
-    {level:5,xp:5000, icon:"📝",name:"Sin Tarea",        desc:"Pase Excusa",                  type:"real_prize"}
-];
-
-const SQUADS={
-    1:{name:"Los Titanes",    color:"#e74c3c",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#2c0404" stroke="#e74c3c" stroke-width="4"/><path d="M30 60L45 75L70 40" stroke="#e74c3c" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>`},
-    2:{name:"Los Inmortales", color:"#9b59b6",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#1a0b2e" stroke="#9b59b6" stroke-width="4"/><circle cx="50" cy="55" r="20" stroke="#9b59b6" stroke-width="4"/><path d="M50 35V25M50 85V75M30 55H20M80 55H70" stroke="#9b59b6" stroke-width="4"/></svg>`},
-    3:{name:"Los Centinelas", color:"#3498db",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#0d1b2a" stroke="#3498db" stroke-width="4"/><path d="M50 25V85M25 50H75" stroke="#3498db" stroke-width="8" stroke-linecap="round"/><circle cx="50" cy="50" r="15" stroke="#3498db" stroke-width="4"/></svg>`},
-    4:{name:"Los Conquistadores",color:"#f39c12",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#2c1f00" stroke="#f39c12" stroke-width="4"/><path d="M50 30L35 60L50 50L65 60L50 30Z" fill="#f39c12"/><path d="M50 50V80" stroke="#f39c12" stroke-width="4"/></svg>`}
-};
-
-const DB={
-    1:[{d:456,div:4},{d:789,div:3},{d:125,div:5},{d:982,div:7},{d:641,div:2},{d:333,div:9},{d:805,div:6},{d:219,div:8},{d:567,div:4},{d:901,div:3}],
-    2:[{d:1245,div:5},{d:8902,div:2},{d:4567,div:9},{d:3312,div:6},{d:7841,div:4},{d:2009,div:7},{d:6554,div:8},{d:5123,div:3},{d:9876,div:5},{d:4444,div:7}],
-    3:[{d:2460,div:12},{d:3575,div:25},{d:1024,div:32},{d:8940,div:15},{d:4567,div:42},{d:6781,div:54},{d:9120,div:20},{d:5555,div:11},{d:7329,div:63},{d:2891,div:91}],
-    4:[{d:12450,div:10},{d:45672,div:18},{d:98210,div:45},{d:33561,div:27},{d:70894,div:33},{d:21458,div:62},{d:55900,div:75},{d:84321,div:50},{d:19007,div:14},{d:66234,div:89}],
-    5:[{d:123456,div:12},{d:500890,div:25},{d:987654,div:44},{d:345219,div:15},{d:771002,div:68},{d:229481,div:37},{d:605333,div:92},{d:412895,div:53},{d:888210,div:21},{d:101010,div:99}],
-    6:[{d:456123,div:123},{d:789456,div:250},{d:102900,div:315},{d:555888,div:111},{d:901234,div:456},{d:234567,div:678},{d:678901,div:210},{d:321654,div:543},{d:880442,div:999},{d:125000,div:425}],
-    7:[{d:1234567,div:13},{d:8901234,div:26},{d:4567890,div:50},{d:3000456,div:72},{d:7123456,div:85},{d:2987654,div:19},{d:5555555,div:44},{d:6102304,div:91},{d:9876543,div:33},{d:4422110,div:67}],
-    8:[{d:2456789,div:142},{d:5678901,div:350},{d:1010101,div:225},{d:9876543,div:612},{d:4554221,div:789},{d:8123456,div:431},{d:3678945,div:555},{d:7002119,div:204},{d:6345678,div:810},{d:1999999,div:991}],
-    9:[{d:12345678,div:15},{d:50987654,div:22},{d:99112233,div:45},{d:34567890,div:78},{d:76543210,div:12},{d:21098765,div:89},{d:66778899,div:36},{d:45454545,div:54},{d:88000111,div:93},{d:10203040,div:27}],
-    10:[{d:45678912,div:234},{d:89012345,div:567},{d:12345678,div:901},{d:76543210,div:412},{d:33445566,div:777},{d:55667788,div:125},{d:98765432,div:850},{d:20406080,div:315},{d:61234567,div:621},{d:99999999,div:999}]
-};
-
-// ============================================================
-// INIT (ORIGINAL)
-// ============================================================
-document.addEventListener('DOMContentLoaded',async()=>{
-    try{const{data:{session}}=await _supabase.auth.getSession();if(session?.user){currentUser=session.user;showApp();}else{showLogin();}}catch(e){showLogin();}
-});
-
-let typingTimer;
-function showLogin(){
-    document.getElementById('login-screen').style.display='flex';
-    document.querySelector('.app-container').style.display='none';
-    const inp=document.getElementById('login-username'),img=document.getElementById('login-avatar-img');
-    const ni=inp.cloneNode(true); inp.parentNode.replaceChild(ni,inp);
-    document.getElementById('login-username').addEventListener('input',e=>{
-        clearTimeout(typingTimer);
-        if(!e.target.value.trim()){img.src="https://api.dicebear.com/8.x/identicon/svg?seed=Shadow";return;}
-        typingTimer=setTimeout(()=>{img.src=`https://api.dicebear.com/8.x/adventurer/svg?seed=${e.target.value.trim()}`;},500);
-    });
-}
-async function showApp(){
-    document.getElementById('login-screen').style.display='none';
-    document.querySelector('.app-container').style.display='flex';
-    if(currentUser){try{await loadScore(currentUser);}catch(e){console.error(e);}}
-    if(isAdmin){showAdminDashboard();}else{initGame();startRanking();initChat();loadHallOfFame();initSeason();startStudentHeartbeat();}
-}
-async function handleLogin(){
-    const u=document.getElementById('login-username').value.trim(),p=document.getElementById('login-password').value,e=document.getElementById('login-error');
-    if(!u||p.length<6){e.textContent="Datos incompletos.";e.style.display='block';return;}
-    try{const{data,error}=await _supabase.auth.signInWithPassword({email:u+"@profemiguel.com",password:p});if(error)throw error;currentUser=data.user;showApp();}
-    catch(err){e.textContent="Error: "+err.message;e.style.display='block';}
-}
-async function handleRegister(){
-    const u=document.getElementById('login-username').value.trim(),p=document.getElementById('login-password').value,e=document.getElementById('login-error');
-    if(!u||p.length<6){e.textContent="Datos incompletos.";e.style.display='block';return;}
-    try{const{data,error}=await _supabase.auth.signUp({email:u+"@profemiguel.com",password:p});if(error)throw error;alert("Registrado. Entra ahora.");}
-    catch(err){e.textContent="Error: "+err.message;e.style.display='block';}
-}
-async function logout(){
-    await _supabase.auth.signOut();
-    currentUser=null;totalScore=0;currentCoins=0;hasBP=false;itemTomatoes=0;currentStreak=0;errorHistory=[];
-    showLogin();clearInterval(rankInt);
-}
-
-async function loadScore(user){
-    try{
-        const{data}=await _supabase.from('profiles').select('*').eq('id',user.id).single();
-        if(data?.is_banned){alert("Tu cuenta está suspendida temporalmente.");logout();return;}
-        totalScore      =(data?.total_score)||0;
-        currentAvatarStyle=(data?.avatar_style)||'adventurer';
-        unlockedLevel   =(data?.current_level)||1;
-        currentProblemInLevel=(data?.current_problem)||1;
-        if(currentProblemInLevel>10)currentProblemInLevel=1;
-        hasFinishedGame =(data?.completed_at)||false;
-        playTimeCounter =(data?.total_time_played)||0;
-        totalErrors     =(data?.total_errors)||0;
-        currentCoins    =(data?.coins)||0;
-        hasBP           =(data?.has_battle_pass)||false;
-        const raw=data?.claimed_bp_rewards;
-        claimedBPRewards=Array.isArray(raw)?raw:(raw&&typeof raw==='object'?Object.values(raw):[]);
-        itemTomatoes    =(data?.item_tomatoes)||0;
-        itemShieldUntil =(data?.item_shield_until)?new Date(data.item_shield_until):null;
-        updateCoinDisplay();updateInventoryUI();updateBattlePassUI();updateStreakUI();
-        if(data?.squad_id&&SQUADS[data.squad_id]){
-            const sq=SQUADS[data.squad_id];
-            document.getElementById('squad-display').style.display='flex';
-            document.getElementById('user-squad-shield').innerHTML=sq.svg;
-            document.getElementById('user-squad-name').innerText=sq.name;
-            document.getElementById('user-squad-name').style.color=sq.color;
-            userSquadId=data.squad_id;
-            loadSquadMissions(data.squad_id);
-        }else{document.getElementById('squad-display').style.display='none';userSquadId=null;}
-    }catch(e){totalScore=0;currentAvatarStyle='adventurer';unlockedLevel=1;currentProblemInLevel=1;hasFinishedGame=false;playTimeCounter=0;totalErrors=0;currentCoins=0;hasBP=false;itemTomatoes=0;}
-    isAdmin=(user.email.split('@')[0]===ADMIN_USER);
-    document.getElementById('admin-header-btn').classList.toggle('visible',isAdmin);
-    if(hasFinishedGame)document.getElementById('msg').innerHTML="<span style='color:var(--primary-color);'>¡Ya terminaste!</span>";
-    currentMainLevel=unlockedLevel;
-    populateLevelSelect();updateUI();renderMainAvatar();
-    console.log('✅ Perfil cargado. Monedas:', currentCoins, 'Tomates:', itemTomatoes);
-}
-
-function updateCoinDisplay(){document.getElementById('coinDisplay').innerText=currentCoins;}
-function updateInventoryUI(){
-    document.getElementById('inv-tom-count').innerText=itemTomatoes;
-    const s=document.getElementById('inv-shield');
-    if(itemShieldUntil&&itemShieldUntil>new Date()){s.classList.add('active');s.title="Escudo hasta: "+itemShieldUntil.toLocaleString();}
-    else{s.classList.remove('active');s.title="Sin escudo";}
-}
-
-// ── BATTLE PASS ──
-function updateBattlePassUI(){
-    const bs=document.getElementById('bp-buy-section'),ps=document.getElementById('bp-progress-section'),st=document.getElementById('bp-status-text');
-    if(hasBP){bs.style.display='none';ps.style.display='block';st.innerText="Activo";st.style.color="var(--success)";renderBPTiers();}
-    else{bs.style.display='block';ps.style.display='none';st.innerText="Bloqueado";st.style.color="#aaa";}
-}
-function renderBPTiers(){
-    document.getElementById('bp-xp-val').innerText=totalScore;
-    const c=document.getElementById('bp-tiers-container');c.innerHTML='';
-    BP_REWARDS.forEach(tier=>{
-        const isU=totalScore>=tier.xp,isC=claimedBPRewards.includes(tier.level);
-        let nc=isC?'claimed':(isU?'unlocked':'');
-        const d=document.createElement('div');d.className='bp-tier';
-        d.innerHTML=`<div class="bp-tier-node ${nc}" onclick="openTierModal(${tier.level},${isU},${isC})">${isC?'✔':tier.icon}</div><div class="bp-tier-label">${isC?'OK':(isU?'¡Listo!':tier.xp+' pts')}</div><div class="bp-tier-desc">${tier.name}</div>`;
-        c.appendChild(d);
-    });
-}
-let currentViewingTier=null;
-function openTierModal(level,unlocked,claimed){
-    if(!unlocked)return alert("¡Aún no alcanzas este nivel!");
-    if(claimed)return alert("Ya reclamaste este premio.");
-    const tier=BP_REWARDS.find(t=>t.level===level);if(!tier)return;
-    currentViewingTier=tier;
-    document.getElementById('bp-modal-icon').innerText=tier.icon;
-    document.getElementById('bp-modal-title').innerText=tier.name;
-    document.getElementById('bp-modal-desc').innerText=tier.desc;
-    document.getElementById('bp-modal').style.display='flex';
-}
-function closeBPModal(){document.getElementById('bp-modal').style.display='none';currentViewingTier=null;}
-async function claimBPItem(){
-    if(!currentViewingTier)return;
-    AudioEngine.playSuccess();
-    if(!Array.isArray(claimedBPRewards))claimedBPRewards=[];
-    claimedBPRewards.push(currentViewingTier.level);
-    const updates={claimed_bp_rewards:claimedBPRewards};
-    if(currentViewingTier.type==='item'){
-        if(currentViewingTier.item==='item_tomatoes'){itemTomatoes+=currentViewingTier.qty;updates[currentViewingTier.item]=itemTomatoes;}
-        else if(currentViewingTier.item==='item_shield_until'){const ex=new Date(Date.now()+(currentViewingTier.days*86400000));updates[currentViewingTier.item]=ex.toISOString();}
-        else{updates[currentViewingTier.item]=true;}
-    }else if(currentViewingTier.type==='font'){updates.unlocked_font='freefire';}
-    else if(currentViewingTier.type==='real_prize'){
-        updates['pending_prize_'+currentViewingTier.level]=true;
-    }
-    try{await _supabase.from('profiles').update(updates).eq('id',currentUser.id);alert("¡Recompensa reclamada!");closeBPModal();await loadScore(currentUser);}
-    catch(e){alert("Error al reclamar: "+e.message);}
-}
-async function buyBattlePass(){
-    if(hasBP)return alert("Ya tienes el pase.");
-    if(currentCoins<500)return alert("No tienes suficientes DiviCoins. Necesitas 500.");
-    if(!confirm("¿Comprar Pase de Batalla por 500 DiviCoins?"))return;
-    try{
-        const newCoins=currentCoins-500;
-        await _supabase.from('profiles').update({coins:newCoins,has_battle_pass:true}).eq('id',currentUser.id);
-        currentCoins=newCoins;hasBP=true;
-        updateCoinDisplay();updateBattlePassUI();AudioEngine.playSuccess();
-        showToast("👑 ¡Pase de Batalla desbloqueado! Reclama tus premios.",'success',5000);
-    }catch(e){alert("Error al comprar: "+e.message);}
-}
-
-// ============================================================
-// TIENDA (100% FUNCIONAL)
+// TIENDA
 // ============================================================
 function openShop(){
-    console.log('%c🛒 Abriendo tienda...', 'color: cyan; font-size: 16px');
-    console.log('Monedas actuales:', currentCoins);
     document.getElementById('shop-modal').style.display='flex';
     document.getElementById('shop-coins-val').innerText = currentCoins;
     document.getElementById('shop-tom-qty').innerText = 'x' + itemTomatoes;
     const bpBtn = document.getElementById('shop-bp-btn');
-    if(hasBP) {
-        bpBtn.disabled = true;
-        bpBtn.innerText = "Ya tienes el pase";
-    } else {
-        bpBtn.disabled = false;
-        bpBtn.innerText = "Comprar Pase";
-    }
+    if(hasBP) { bpBtn.disabled = true; bpBtn.innerText = "Ya tienes el pase"; }
+    else { bpBtn.disabled = false; bpBtn.innerText = "Comprar Pase"; }
 }
 function closeShop(){ document.getElementById('shop-modal').style.display='none'; }
 
 window.shopBuy = async function(type, qty, price) {
-    console.log(`🛍️ Comprando ${type} x${qty} por ${price}. Monedas: ${currentCoins}`);
-    if(currentCoins < price) {
-        alert(`❌ No tienes suficientes monedas. Necesitas ${price}.`);
-        return;
-    }
+    if(currentCoins < price) return showToast(`❌ No tienes suficientes monedas. Necesitas ${price}.`,'tomato');
     let confirmMsg = '';
-    if(type === 'tomato') confirmMsg = `¿Comprar ${qty} tomate(s) por ${price} monedas?`;
-    else if(type === 'shield') confirmMsg = `¿Comprar Escudo por ${qty} día(s) por ${price} monedas?`;
-    else if(type === 'bp') confirmMsg = `¿Comprar Pase de Batalla por ${price} monedas?`;
+    if(type==='tomato') confirmMsg = `¿Comprar ${qty} tomate(s) por ${price} monedas?`;
+    else if(type==='shield') confirmMsg = `¿Comprar Escudo por ${qty} día(s) por ${price} monedas?`;
+    else if(type==='bp') confirmMsg = `¿Comprar Pase de Batalla por ${price} monedas?`;
     if(!confirm(confirmMsg)) return;
 
     const newCoins = currentCoins - price;
     const updates = { coins: newCoins };
-    if(type === 'tomato') updates.item_tomatoes = itemTomatoes + qty;
-    else if(type === 'shield') {
+    if(type==='tomato') {
+        updates.item_tomatoes = itemTomatoes + qty;
+    } else if(type==='shield') {
         const base = (itemShieldUntil && itemShieldUntil > new Date()) ? itemShieldUntil : new Date();
-        updates.item_shield_until = new Date(base.getTime() + (qty * 86400000)).toISOString();
-    } else if(type === 'bp') {
-        if(hasBP) { alert("Ya tienes el pase."); return; }
+        const ex = new Date(base.getTime() + (qty*86400000));
+        updates.item_shield_until = ex.toISOString();
+    } else if(type==='bp') {
+        if(hasBP) return alert("Ya tienes el pase.");
         updates.has_battle_pass = true;
     }
 
@@ -1086,340 +780,735 @@ window.shopBuy = async function(type, qty, price) {
         const { error } = await _supabase.from('profiles').update(updates).eq('id', currentUser.id);
         if(error) throw error;
         currentCoins = newCoins;
-        if(type === 'tomato') itemTomatoes += qty;
-        else if(type === 'shield') itemShieldUntil = new Date(updates.item_shield_until);
-        else if(type === 'bp') hasBP = true;
-        updateCoinDisplay();
-        updateInventoryUI();
-        if(hasBP) updateBattlePassUI();
+        if(type==='tomato') itemTomatoes += qty;
+        else if(type==='shield') itemShieldUntil = new Date(updates.item_shield_until);
+        else if(type==='bp') hasBP = true;
+        updateCoinDisplay(); updateInventoryUI(); updateBattlePassUI();
         AudioEngine.playShop();
-        alert(`✅ ¡Compra exitosa! Ahora tienes ${currentCoins} monedas.`);
-        openShop(); // Refrescar
+        showToast(`✅ Compra exitosa: ${type==='tomato'?`🍅 x${qty}`:type==='shield'?`🛡️ ${qty} día(s)`:'👑 Pase'}`,'shop');
+        if(type==='shield') incrementSquadMissionProgress('squadShieldBuys', qty);
+        openShop();
     } catch(e) {
-        console.error('Error en compra:', e);
-        alert('❌ Error al comprar. Revisa consola.');
+        showToast("❌ Error al comprar: "+e.message,'tomato');
     }
 };
 
-// ── AVATAR ──
-function populateLevelSelect(){const s=document.getElementById('levelSelect');s.innerHTML='';for(let i=1;i<=TOTAL_LEVELS;i++){let o=document.createElement('option');o.value=i;o.innerText="Nivel "+i;if(i>unlockedLevel){o.disabled=true;o.innerText+=" 🔒";}s.appendChild(o);}s.value=currentMainLevel;}
-function updateUI(){document.getElementById('scoreDisplay').innerText=totalScore;const rI=getRankInfo(totalScore);document.getElementById('userRankName').innerText=rI.icon+" "+rI.name+" "+rI.tier;document.getElementById('userRankName').className="rank-name "+rI.css;document.getElementById('userRankBar').style.width=rI.pct+"%";document.getElementById('main-avatar-box').className="avatar-container "+rI.avatar;}
-function getAvatarUrl(seed,style){return`https://api.dicebear.com/8.x/${style}/svg?seed=${seed}`;}
-function renderMainAvatar(){document.getElementById('main-avatar-img').src=getAvatarUrl(currentUser.email.split('@')[0],currentAvatarStyle);}
-function toggleAvatarModal(){const m=document.getElementById('avatar-modal');if(m.style.display==='none'){m.style.display='flex';renderAvatarOptions();}else{m.style.display='none';}}
-function renderAvatarOptions(){
-    const gs=document.getElementById('avatar-options-standard'),ge=document.getElementById('avatar-options-exclusive'),es=document.getElementById('exclusive-section');
-    gs.innerHTML='';ge.innerHTML='';
-    const seed=currentUser.email.split('@')[0],isH=totalScore>=50000;
-    AVATAR_STYLES_STANDARD.forEach(st=>{let d=document.createElement('div');d.className='avatar-option'+(currentAvatarStyle===st.id?' selected':'');d.onclick=()=>selectAvatarStyle(st.id);d.innerHTML=`<img src="${getAvatarUrl(seed,st.id)}"><span style="font-size:.7rem;font-weight:600;display:block;">${st.name}</span>`;gs.appendChild(d);});
-    es.style.display='block';
-    AVATAR_STYLES_EXCLUSIVE.forEach(st=>{
-        let d=document.createElement('div');
-        if(isH){d.className='avatar-option'+(currentAvatarStyle===st.id?' selected':'');d.onclick=()=>selectAvatarStyle(st.id);d.innerHTML=`<img src="${getAvatarUrl(seed,st.id)}"><span style="font-size:.7rem;font-weight:600;display:block;">${st.name}</span>`;}
-        else{d.className='avatar-option avatar-locked';d.innerHTML=`<img src="${getAvatarUrl('demo',st.id)}"><div class="lock-icon"><i class="fas fa-lock"></i></div><span style="font-size:.7rem;font-weight:600;display:block;">${st.name}</span>`;}
-        ge.appendChild(d);
+// ============================================================
+// BATTLE PASS
+// ============================================================
+function updateBattlePassUI(){
+    const bs = document.getElementById('bp-buy-section'), ps = document.getElementById('bp-progress-section'), st = document.getElementById('bp-status-text');
+    if(hasBP) { bs.style.display='none'; ps.style.display='block'; st.innerText="Activo"; st.style.color="var(--success)"; renderBPTiers(); }
+    else { bs.style.display='block'; ps.style.display='none'; st.innerText="Bloqueado"; st.style.color="#aaa"; }
+}
+function renderBPTiers(){
+    document.getElementById('bp-xp-val').innerText = totalScore;
+    const c = document.getElementById('bp-tiers-container'); c.innerHTML = '';
+    BP_REWARDS.forEach(tier => {
+        const isU = totalScore >= tier.xp, isC = claimedBPRewards.includes(tier.level);
+        let nc = isC ? 'claimed' : (isU ? 'unlocked' : '');
+        const d = document.createElement('div'); d.className = 'bp-tier';
+        d.innerHTML = `<div class="bp-tier-node ${nc}" onclick="openTierModal(${tier.level},${isU},${isC})">${isC?'✔':tier.icon}</div><div class="bp-tier-label">${isC?'OK':(isU?'¡Listo!':tier.xp+' pts')}</div><div class="bp-tier-desc">${tier.name}</div>`;
+        c.appendChild(d);
     });
 }
-function selectAvatarStyle(id){const isEx=AVATAR_STYLES_EXCLUSIVE.some(s=>s.id===id);if(isEx&&totalScore<50000){alert("¡Este avatar es exclusivo!");return;}currentAvatarStyle=id;renderAvatarOptions();renderMainAvatar();}
-async function saveAvatarChoice(){AudioEngine.playClick();await _supabase.from('profiles').upsert({id:currentUser.id,avatar_style:currentAvatarStyle});toggleAvatarModal();updateRanking();}
-
-async function saveScore(){
-    if(!currentUser)return;
-    try{await _supabase.from('profiles').upsert({id:currentUser.id,username:currentUser.email.split('@')[0],total_score:totalScore,current_level:unlockedLevel,current_problem:currentProblemInLevel,coins:currentCoins});updateRanking();}
-    catch(e){console.error(e);}
+let currentViewingTier = null;
+function openTierModal(level, unlocked, claimed){
+    if(!unlocked) return alert("¡Aún no alcanzas este nivel!");
+    if(claimed) return alert("Ya reclamaste este premio.");
+    const tier = BP_REWARDS.find(t=>t.level===level); if(!tier) return;
+    currentViewingTier = tier;
+    document.getElementById('bp-modal-icon').innerText = tier.icon;
+    document.getElementById('bp-modal-title').innerText = tier.name;
+    document.getElementById('bp-modal-desc').innerText = tier.desc;
+    document.getElementById('bp-modal').style.display = 'flex';
+}
+function closeBPModal(){ document.getElementById('bp-modal').style.display='none'; currentViewingTier = null; }
+async function claimBPItem(){
+    if(!currentViewingTier) return;
+    AudioEngine.playSuccess();
+    if(!Array.isArray(claimedBPRewards)) claimedBPRewards = [];
+    claimedBPRewards.push(currentViewingTier.level);
+    const updates = { claimed_bp_rewards: claimedBPRewards };
+    if(currentViewingTier.type==='item'){
+        if(currentViewingTier.item==='item_tomatoes'){ itemTomatoes += currentViewingTier.qty; updates[currentViewingTier.item] = itemTomatoes; }
+        else if(currentViewingTier.item==='item_shield_until'){ const ex = new Date(Date.now()+(currentViewingTier.days*86400000)); updates[currentViewingTier.item] = ex.toISOString(); }
+        else { updates[currentViewingTier.item] = true; }
+    } else if(currentViewingTier.type==='font') { updates.unlocked_font = 'freefire'; }
+    else if(currentViewingTier.type==='real_prize') { updates['pending_prize_'+currentViewingTier.level] = true; }
+    try {
+        await _supabase.from('profiles').update(updates).eq('id', currentUser.id);
+        alert("¡Recompensa reclamada!");
+        closeBPModal();
+        await loadScore(currentUser);
+    } catch(e) { alert("Error al reclamar: "+e.message); }
+}
+async function buyBattlePass(){
+    if(hasBP) return alert("Ya tienes el pase.");
+    if(currentCoins<500) return alert("No tienes suficientes DiviCoins. Necesitas 500.");
+    if(!confirm("¿Comprar Pase de Batalla por 500 DiviCoins?")) return;
+    try {
+        const newCoins = currentCoins - 500;
+        await _supabase.from('profiles').update({coins:newCoins, has_battle_pass:true}).eq('id', currentUser.id);
+        currentCoins = newCoins; hasBP = true;
+        updateCoinDisplay(); updateBattlePassUI(); AudioEngine.playSuccess();
+        showToast("👑 ¡Pase de Batalla desbloqueado! Reclama tus premios.",'success',5000);
+    } catch(e) { alert("Error al comprar: "+e.message); }
 }
 
-// ── RANKING ──
+// ============================================================
+// MISIONES DE ESCUADRA
+// ============================================================
+async function loadSquadMissions(squadId) {
+    if(!squadId) { document.getElementById('squad-missions-panel').style.display='none'; return; }
+    userSquadId = squadId;
+    document.getElementById('squad-missions-panel').style.display = 'block';
+    const { data: members } = await _supabase.from('profiles').select('total_score,current_level,coins,squad_mission_progress,claimed_squad_missions').eq('squad_id', squadId);
+    if(!members) return;
+    let savedProgress = {};
+    let claimed = [];
+    try {
+        savedProgress = members[0]?.squad_mission_progress || {};
+        claimed = members[0]?.claimed_squad_missions || [];
+    } catch(e) {}
+    squadMissionsCompleted = claimed;
+    const totalCoins = members.reduce((s,u)=>s+(u.coins||0),0);
+    const maxLevel = Math.max(...members.map(u=>u.current_level||1));
+    const totalScoreSum = members.reduce((s,u)=>s+(u.total_score||0),0);
+    const approxCorrect = Math.floor(totalScoreSum / 100);
+    const currentProgress = {
+        squadCorrect: approxCorrect,
+        squadMaxLevel: maxLevel >= 8 ? 1 : 0,
+        squadCoins: totalCoins,
+        squadTomatoAttacks: savedProgress.squadTomatoAttacks || 0,
+        squadShieldBuys: savedProgress.squadShieldBuys || 0,
+        squadTotalScore: totalScoreSum
+    };
+    const body = document.getElementById('missions-body');
+    body.innerHTML = SQUAD_MISSIONS.map(m => {
+        const prog = currentProgress[m.progressKey] || 0;
+        const pct = Math.min(100, Math.round((prog / m.goal) * 100));
+        const done = pct >= 100;
+        const alreadyClaimed = claimed.includes(m.id);
+        return `<div class="mission-item ${done?'mission-complete':''}">
+            <div class="mission-header"><span class="mission-name">${m.icon} ${m.name}</span><span class="mission-reward">+${m.reward} 💰</span></div>
+            <div class="mission-bar-wrap"><div class="mission-bar" style="width:${pct}%"></div></div>
+            <div class="mission-progress-text">
+                ${done ? (alreadyClaimed ? '✅ Reclamada' : `<button onclick="claimSquadMission('${m.id}')" style="background:gold;color:black;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;">Reclamar ${m.reward}💰</button>`) 
+                       : `${Math.min(prog, m.goal)}/${m.goal} ${m.unit}`}
+            </div>
+        </div>`;
+    }).join('');
+    await _supabase.from('profiles').update({ squad_mission_progress: currentProgress }).eq('squad_id', squadId);
+}
+async function claimSquadMission(missionId) {
+    const mission = SQUAD_MISSIONS.find(m=>m.id===missionId);
+    if(!mission) return;
+    if(squadMissionsCompleted.includes(missionId)) return alert("Ya reclamada");
+    const { data: members } = await _supabase.from('profiles').select('id,coins,squad_mission_progress').eq('squad_id', userSquadId);
+    const saved = members[0]?.squad_mission_progress || {};
+    const prog = saved[mission.progressKey] || 0;
+    if(prog < mission.goal) return alert("Aún no se ha completado");
+    for(let m of members) {
+        const newCoins = (m.coins||0) + mission.reward;
+        await _supabase.from('profiles').update({coins:newCoins}).eq('id', m.id);
+    }
+    squadMissionsCompleted.push(missionId);
+    await _supabase.from('profiles').update({ claimed_squad_missions: squadMissionsCompleted }).eq('squad_id', userSquadId);
+    if(currentUser) await loadScore(currentUser);
+    loadSquadMissions(userSquadId);
+    showToast(`🎉 ¡Misión de escuadra completada! +${mission.reward} monedas para todos`, 'success');
+}
+async function incrementSquadMissionProgress(key, amount=1) {
+    if(!userSquadId) return;
+    const { data } = await _supabase.from('profiles').select('squad_mission_progress').eq('squad_id', userSquadId).limit(1);
+    const current = data?.[0]?.squad_mission_progress || {};
+    current[key] = (current[key]||0) + amount;
+    await _supabase.from('profiles').update({ squad_mission_progress: current }).eq('squad_id', userSquadId);
+    loadSquadMissions(userSquadId);
+}
+
+// ============================================================
+// ATAQUE CON TOMATE
+// ============================================================
+async function attackUser(targetId, targetName) {
+    if(itemTomatoes <= 0) return alert("No tienes tomates. ¡Ve a la tienda!");
+    if(!confirm(`¿Gastar 1 tomate para atacar a ${targetName}?`)) return;
+    itemTomatoes--;
+    updateInventoryUI();
+    try {
+        const { data: victim, error } = await _supabase.from('profiles').select('total_score,item_shield_until,squad_id').eq('id', targetId).single();
+        if(error || !victim) throw new Error("Usuario no encontrado");
+        let updates = {};
+        let msg = '';
+        const hasShield = victim.item_shield_until && new Date(victim.item_shield_until) > new Date();
+        if(hasShield) {
+            updates.item_shield_until = null;
+            msg = `🛡️ ¡${targetName} tenía ESCUDO! El ataque falló.`;
+        } else {
+            const newScore = Math.max(0, (victim.total_score||0) - 50);
+            updates.total_score = newScore;
+            msg = `🍅 ¡Atacaste a ${targetName}! Perdió 50 puntos.`;
+        }
+        await _supabase.from('profiles').update(updates).eq('id', targetId);
+        await _supabase.from('profiles').update({item_tomatoes: itemTomatoes}).eq('id', currentUser.id);
+        if(userSquadId && victim.squad_id === userSquadId) {
+            await incrementSquadMissionProgress('squadTomatoAttacks', 1);
+        }
+        showToast(msg, 'tomato');
+        updateRanking();
+    } catch(e) {
+        alert("Error al atacar: " + e.message);
+        itemTomatoes++; updateInventoryUI();
+    }
+}
+
+// ============================================================
+// RANKING Y ADMIN
+// ============================================================
 let rankInt;
-function startRanking(){updateRanking();rankInt=setInterval(updateRanking,5000);}
+function startRanking(){ updateRanking(); rankInt = setInterval(updateRanking, 5000); }
 async function updateRanking(){
-    const list=document.getElementById('ranking-list');
-    try{
-        const{data,error}=await _supabase.from('profiles').select('id,username,total_score,avatar_style,completed_at,is_banned,squad_id').order('total_score',{ascending:false});
-        if(error)throw error;if(!data||!data.length){list.innerHTML='<li style="text-align:center;padding:10px;color:#666;">No hay datos.</li>';return;}
-        const active=data.filter(u=>!u.completed_at&&!u.is_banned);
-        updateChatUserList(active);
-        list.innerHTML=active.map((u,i)=>{
-            const s=u.total_score||0,rI=getRankInfo(s),isMe=(currentUser&&u.username===currentUser.email.split('@')[0]);
-            let rc="ranking-item "+rI.css,dn=u.username||'Yo';
-            if(i===0){rc+=" rank-1";dn+=u.username+" 👑";}else if(i<10)rc+=" elite";
-            if(isMe)rc+=" me";
-            const avUrl=getAvatarUrl(u.username||'guest',u.avatar_style||'adventurer');
-            const sq=u.squad_id&&SQUADS[u.squad_id]?`<div style="width:16px;height:18px;">${SQUADS[u.squad_id].svg}</div>`:'';
-            const atk=(!isMe&&itemTomatoes>0)?`<button class="attack-btn" onclick="attackUser('${u.id}','${u.username}')">🍅</button>`:'';
-            return`<li class="${rc}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${dn}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span></div>${sq}</div><span class="rank-score">${s}</span>${atk}</li>`;
+    const list = document.getElementById('ranking-list');
+    try {
+        const { data, error } = await _supabase.from('profiles').select('id,username,total_score,avatar_style,completed_at,is_banned,squad_id').order('total_score',{ascending:false});
+        if(error) throw error;
+        if(!data||!data.length){ list.innerHTML='<li style="text-align:center;padding:10px;color:#666;">No hay datos.</li>'; return; }
+        const active = data.filter(u=>!u.completed_at&&!u.is_banned);
+        list.innerHTML = active.map((u,i)=>{
+            const s = u.total_score||0, rI = getRankInfo(s), isMe = (currentUser&&u.username===currentUser.email.split('@')[0]);
+            let rc = "ranking-item "+rI.css, dn = u.username||'Yo';
+            if(i===0){ rc+=" rank-1"; dn+=" 👑"; } else if(i<10) rc+=" elite";
+            if(isMe) rc+=" me";
+            const avUrl = getAvatarUrl(u.username||'guest', u.avatar_style||'adventurer');
+            const sq = u.squad_id&&SQUADS[u.squad_id] ? `<div style="width:16px;height:18px;">${SQUADS[u.squad_id].svg}</div>` : '';
+            const atk = (!isMe && itemTomatoes>0) ? `<button class="attack-btn" onclick="attackUser('${u.id}','${u.username}')">🍅</button>` : '';
+            return `<li class="${rc}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${dn}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span></div>${sq}</div><span class="rank-score">${s}</span>${atk}</li>`;
         }).join('');
         updateSquadRanking(data);
-        if(userSquadId)loadSquadMissions(userSquadId);
-    }catch(err){list.innerHTML='<li style="text-align:center;padding:10px;color:red;">Error.</li>';}
+        if(userSquadId) loadSquadMissions(userSquadId);
+    } catch(err){ list.innerHTML='<li style="text-align:center;padding:10px;color:red;">Error.</li>'; }
 }
 function updateSquadRanking(all){
-    const list=document.getElementById('squad-list'),ss={};
+    const list = document.getElementById('squad-list'), ss = {};
     Object.keys(SQUADS).forEach(id=>ss[id]=0);
-    all.forEach(u=>{if(u.squad_id&&SQUADS[u.squad_id]&&!u.completed_at&&!u.is_banned)ss[u.squad_id]+=(u.total_score||0);});
-    list.innerHTML=Object.entries(ss).sort((a,b)=>b[1]-a[1]).map(([id,sc])=>{
-        const sq=SQUADS[id];
-        return`<li class="squad-rank-item" style="border-left-color:${sq.color}"><div class="squad-rank-left"><div class="squad-shield-small">${sq.svg}</div><span style="font-weight:700;color:${sq.color}">${sq.name}</span></div><span class="squad-score">${sc} pts</span></li>`;
+    all.forEach(u=>{ if(u.squad_id&&SQUADS[u.squad_id]&&!u.completed_at&&!u.is_banned) ss[u.squad_id] += (u.total_score||0); });
+    list.innerHTML = Object.entries(ss).sort((a,b)=>b[1]-a[1]).map(([id,sc])=>{
+        const sq = SQUADS[id];
+        return `<li class="squad-rank-item" style="border-left-color:${sq.color}"><div class="squad-rank-left"><div class="squad-shield-small">${sq.svg}</div><span style="font-weight:700;color:${sq.color}">${sq.name}</span></div><span class="squad-score">${sc} pts</span></li>`;
     }).join('');
 }
 async function loadHallOfFame(){
-    const list=document.getElementById('fame-list');
-    try{const{data,error}=await _supabase.from('profiles').select('username,completed_at').not('completed_at','is',null).order('completed_at',{ascending:true}).limit(5);if(error)throw error;if(!data||!data.length){list.innerHTML='<li style="text-align:center;color:#555;font-size:.8rem;padding:10px;">Nadie ha terminado aún</li>';return;}list.innerHTML=data.map(u=>{const d=new Date(u.completed_at);return`<li class="fame-item"><i class="fas fa-medal" style="color:var(--primary-color)"></i><span>${u.username}</span><span class="fame-time">${d.toLocaleDateString()} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></li>`;}).join('');}catch(e){console.error(e);}
+    const list = document.getElementById('fame-list');
+    try {
+        const { data, error } = await _supabase.from('profiles').select('username,completed_at').not('completed_at','is',null).order('completed_at',{ascending:true}).limit(5);
+        if(error) throw error;
+        if(!data||!data.length){ list.innerHTML='<li style="text-align:center;color:#555;font-size:.8rem;padding:10px;">Nadie ha terminado aún</li>'; return; }
+        list.innerHTML = data.map(u=>{ const d = new Date(u.completed_at); return `<li class="fame-item"><i class="fas fa-medal" style="color:var(--primary-color)"></i><span>${u.username}</span><span class="fame-time">${d.toLocaleDateString()} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></li>`; }).join('');
+    } catch(e) { console.error(e); }
 }
-
-// ── ATAQUE ──
-async function attackUser(targetId,targetName){
-    if(itemTomatoes<=0)return alert("No tienes tomates. ¡Ve a la tienda!");
-    if(!confirm(`¿Gastar 1 tomate para atacar a ${targetName}?`))return;
-    itemTomatoes--;updateInventoryUI();
-    try{
-        const{data:victim}=await _supabase.from('profiles').select('total_score,item_shield_until').eq('id',targetId).single();
-        if(!victim)return alert("Usuario no encontrado.");
-        let updates={},msg='';
-        const hasShield=victim.item_shield_until?new Date(victim.item_shield_until)>new Date():false;
-        if(hasShield){updates.item_shield_until=null;msg=`🛡️ ¡${targetName} tenía ESCUDO! El ataque falló.`;}
-        else{updates.total_score=Math.max(0,victim.total_score-50);msg=`🍅 ¡Atacaste a ${targetName}! Perdió 50 puntos.`;}
-        await _supabase.from('profiles').update(updates).eq('id',targetId);
-        await _supabase.from('profiles').update({item_tomatoes:itemTomatoes}).eq('id',currentUser.id);
-        await _supabase.from('chat_messages').insert({user_id:'00000000-0000-0000-0000-000000000000',username:'SISTEMA',recipient_username:targetName,message_text:msg});
-        showToast(msg,'tomato');updateRanking();
-    }catch(e){alert("Error al atacar: "+e.message);itemTomatoes++;updateInventoryUI();}
-}
-
-// ── CHAT ──
-function initChat(){
-    const ch=_supabase.channel('public:chat_messages');
-    ch.on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages'},payload=>{
-        addChatMessage(payload.new);
-        const my=currentUser?currentUser.email.split('@')[0]:'';
-        if(payload.new.recipient_username===my&&payload.new.username==='SISTEMA'){
-            AudioEngine.playTomatoAlert();
-            showToast('🍅 ¡Te atacaron! '+payload.new.message_text,'tomato',5000);
-        }
-    }).subscribe();
-    loadInitialChat();
-}
-async function loadInitialChat(){try{const{data}=await _supabase.from('chat_messages').select('*').order('created_at',{ascending:false}).limit(20);const c=document.getElementById('chat-messages');c.innerHTML='';if(data)data.reverse().forEach(m=>addChatMessage(m));}catch(e){}}
-function addChatMessage(msg){const c=document.getElementById('chat-messages'),d=document.createElement('div');d.className='chat-msg';d.innerHTML=`<span class="author">${msg.username}</span> <span style="color:#888">a</span> <span class="to-user">@${msg.recipient_username||'Todos'}</span>: <span class="msg-text">${msg.message_text||msg.emoji}</span>`;c.prepend(d);while(c.children.length>20)c.removeChild(c.lastChild);}
-function updateChatUserList(users){const s=document.getElementById('chat-user-select'),cv=s.value;s.innerHTML='<option value="todos">Para: Todos 👥</option>';users.forEach(u=>{if(u.username!==currentUser.email.split('@')[0]){const o=document.createElement('option');o.value=u.username;o.innerText=u.username;s.appendChild(o);}});if(s.querySelector(`option[value="${cv}"]`))s.value=cv;}
-async function sendQuickChat(text){if(chatCooldown||!currentUser)return;chatCooldown=true;setTimeout(()=>chatCooldown=false,2000);AudioEngine.playClick();const r=document.getElementById('chat-user-select').value;try{await _supabase.from('chat_messages').insert({user_id:currentUser.id,username:currentUser.email.split('@')[0],recipient_username:r,message_text:text,emoji:text});}catch(e){}}
-function toggleChatUI(){chatVisible=!chatVisible;document.getElementById('chat-battle').classList.toggle('visible',chatVisible);}
-
-// ── HEARTBEAT ──
-function startStudentHeartbeat(){
-    setInterval(async()=>{if(currentUser&&!isAdmin)await _supabase.from('profiles').update({last_seen:new Date().toISOString()}).eq('id',currentUser.id);},15000);
-    setInterval(()=>{if(!isGridLocked&&!hasFinishedGame){playTimeCounter++;if(playTimeCounter%60===0)saveTime();}},1000);
-}
-async function saveTime(){if(!currentUser)return;try{await _supabase.from('profiles').update({total_time_played:playTimeCounter,total_errors:totalErrors}).eq('id',currentUser.id);}catch(e){}}
 
 // ============================================================
-// ADMIN (COMPLETO Y SIN CAMBIOS)
+// ADMIN FUNCIONES
 // ============================================================
-function showAdminDashboard(){document.getElementById('game-layout').style.display='none';document.getElementById('top-bar-panel').style.display='none';document.getElementById('admin-dashboard').style.display='flex';loadDashboardData();setInterval(loadDashboardData,5000);}
-function toggleAdminDashboard(){if(document.getElementById('admin-dashboard').style.display==='flex'){logout();}else{showAdminDashboard();}}
+function showAdminDashboard(){
+    document.getElementById('game-layout').style.display = 'none';
+    document.getElementById('top-bar-panel').style.display = 'none';
+    document.getElementById('admin-dashboard').style.display = 'flex';
+    loadDashboardData(); setInterval(loadDashboardData, 5000);
+}
+function toggleAdminDashboard(){
+    if(document.getElementById('admin-dashboard').style.display === 'flex'){ logout(); }
+    else { showAdminDashboard(); }
+}
 async function loadDashboardData(){
-    const grid=document.getElementById('student-grid');
-    try{
-        const{data:settings}=await _supabase.from('game_settings').select('*').single();
-        updateControlButtons(settings);initSeason(settings);
-        const{data:students,error}=await _supabase.from('profiles').select('*').order('total_score',{ascending:false});
-        if(error)throw error;
-        const now=new Date();
-        let ss={};Object.keys(SQUADS).forEach(id=>ss[id]={count:0,score:0});
-        students.forEach(u=>{if(u.squad_id&&ss[u.squad_id]){ss[u.squad_id].count++;ss[u.squad_id].score+=(u.total_score||0);}});
-        document.getElementById('squad-admin-tbody').innerHTML=Object.entries(ss).map(([id,st])=>{const sq=SQUADS[id];return`<tr style="border-bottom:1px solid #222;"><td class="shield-cell"><div>${sq.svg}</div></td><td style="color:${sq.color};font-weight:700;">${sq.name}</td><td>${st.count}</td><td class="points-cell">${st.score}</td></tr>`;}).join('');
-        
-        const prizesList=document.getElementById('bp-prizes-list');
-        const studentsWithPrizes=students.filter(u=>u.pending_prize_4||u.pending_prize_5);
+    const grid = document.getElementById('student-grid');
+    try {
+        const { data: settings } = await _supabase.from('game_settings').select('*').single();
+        updateControlButtons(settings); initSeason(settings);
+        const { data: students, error } = await _supabase.from('profiles').select('*').order('total_score',{ascending:false});
+        if(error) throw error;
+        const now = new Date();
+        let ss = {}; Object.keys(SQUADS).forEach(id => ss[id] = {count:0, score:0});
+        students.forEach(u => { if(u.squad_id && ss[u.squad_id]){ ss[u.squad_id].count++; ss[u.squad_id].score += (u.total_score||0); } });
+        document.getElementById('squad-admin-tbody').innerHTML = Object.entries(ss).map(([id,st]) => {
+            const sq = SQUADS[id];
+            return `<tr><td class="shield-cell"><div>${sq.svg}</div></td><td style="color:${sq.color};">${sq.name}</td><td>${st.count}</td><td class="points-cell">${st.score}</td></tr>`;
+        }).join('');
+        const prizesList = document.getElementById('bp-prizes-list');
+        const studentsWithPrizes = students.filter(u => u.pending_prize_4 || u.pending_prize_5);
         if(studentsWithPrizes.length){
-            prizesList.innerHTML=studentsWithPrizes.flatMap(u=>{
-                let items=[];
-                if(u.pending_prize_4)items.push(`<div class="bp-prize-item"><div class="bp-prize-left"><span class="bp-prize-icon">🍔</span><div class="bp-prize-info"><div class="bp-prize-user">${u.username}</div><div class="bp-prize-name">Comer en Clase</div></div></div><button class="bp-prize-mark-btn" onclick="markPrizeDelivered('${u.id}',4)">Entregado</button></div>`);
-                if(u.pending_prize_5)items.push(`<div class="bp-prize-item"><div class="bp-prize-left"><span class="bp-prize-icon">📝</span><div class="bp-prize-info"><div class="bp-prize-user">${u.username}</div><div class="bp-prize-name">Sin Tarea</div></div></div><button class="bp-prize-mark-btn" onclick="markPrizeDelivered('${u.id}',5)">Entregado</button></div>`);
+            prizesList.innerHTML = studentsWithPrizes.flatMap(u => {
+                let items = [];
+                if(u.pending_prize_4) items.push(`<div class="bp-prize-item"><div class="bp-prize-left"><span class="bp-prize-icon">🍔</span><div class="bp-prize-info"><div class="bp-prize-user">${u.username}</div><div class="bp-prize-name">Comer en Clase</div></div></div><button class="bp-prize-mark-btn" onclick="markPrizeDelivered('${u.id}',4)">Entregado</button></div>`);
+                if(u.pending_prize_5) items.push(`<div class="bp-prize-item"><div class="bp-prize-left"><span class="bp-prize-icon">📝</span><div class="bp-prize-info"><div class="bp-prize-user">${u.username}</div><div class="bp-prize-name">Sin Tarea</div></div></div><button class="bp-prize-mark-btn" onclick="markPrizeDelivered('${u.id}',5)">Entregado</button></div>`);
                 return items;
             }).join('');
-        }else{prizesList.innerHTML='<p style="color:#555;font-size:.85rem;">Sin premios pendientes.</p>';}
-
-        grid.innerHTML=students.map(u=>{
-            const isOnline=u.last_seen&&(now-new Date(u.last_seen)<30000),isBanned=u.is_banned;
-            const mins=u.total_time_played?Math.floor(u.total_time_played/60):0,secs=u.total_time_played?u.total_time_played%60:0;
-            let sqOpts=`<option value="0" ${u.squad_id==0?'selected':''}>Sin Escuadra</option>`;
-            Object.entries(SQUADS).forEach(([id,s])=>{sqOpts+=`<option value="${id}" ${u.squad_id==id?'selected':''}>${s.name}</option>`;});
-            return`<div class="student-card ${isOnline&&!isBanned?'':'offline'}"><div class="sc-header"><img src="${getAvatarUrl(u.username||'guest',u.avatar_style)}" class="sc-avatar"><div class="sc-info"><div class="sc-name">${u.username}</div><div class="sc-status"><span class="status-dot ${isOnline&&!isBanned?'online':''}"></span>${isBanned?'Baneado':(isOnline?'En línea':'Offline')}</div></div></div><div class="sc-stats"><div>Puntos<br><span class="sc-stat-val">${u.total_score||0}</span></div><div>Nivel<br><span class="sc-stat-val">${u.current_level||1}</span></div><div>Tiempo<br><span class="sc-stat-val">${mins}m ${secs}s</span></div><div>Errores<br><span class="sc-stat-val">${u.total_errors||0}</span></div></div><div class="sc-squad-control"><select class="squad-select-admin" onchange="assignSquad('${u.id}',this.value)">${sqOpts}</select></div><div class="sc-actions"><button class="sc-btn ban ${isBanned?'active':''}" onclick="toggleBan('${u.id}',${isBanned})">${isBanned?'Desbanear':'Banear'}</button><button class="sc-btn delete" onclick="deleteUser('${u.id}','${u.username}')">Borrar</button></div></div>`;
+        } else { prizesList.innerHTML = '<p style="color:#555;">Sin premios pendientes.</p>'; }
+        grid.innerHTML = students.map(u => {
+            const isOnline = u.last_seen && (now - new Date(u.last_seen) < 30000), isBanned = u.is_banned;
+            const mins = u.total_time_played ? Math.floor(u.total_time_played/60) : 0;
+            const secs = u.total_time_played ? u.total_time_played%60 : 0;
+            let sqOpts = `<option value="0" ${u.squad_id==0?'selected':''}>Sin Escuadra</option>`;
+            Object.entries(SQUADS).forEach(([id,s]) => { sqOpts += `<option value="${id}" ${u.squad_id==id?'selected':''}>${s.name}</option>`; });
+            return `<div class="student-card ${isOnline&&!isBanned?'':'offline'}">
+                <div class="sc-header"><img src="${getAvatarUrl(u.username||'guest',u.avatar_style)}" class="sc-avatar"><div class="sc-info"><div class="sc-name">${u.username}</div><div class="sc-status"><span class="status-dot ${isOnline&&!isBanned?'online':''}"></span>${isBanned?'Baneado':(isOnline?'En línea':'Offline')}</div></div></div>
+                <div class="sc-stats"><div>Puntos<br><span class="sc-stat-val">${u.total_score||0}</span></div><div>Nivel<br><span class="sc-stat-val">${u.current_level||1}</span></div><div>Tiempo<br><span class="sc-stat-val">${mins}m ${secs}s</span></div><div>Errores<br><span class="sc-stat-val">0</span></div></div>
+                <div class="sc-squad-control"><select class="squad-select-admin" onchange="assignSquad('${u.id}',this.value)">${sqOpts}</select></div>
+                <div class="sc-actions"><button class="sc-btn ban ${isBanned?'active':''}" onclick="toggleBan('${u.id}',${isBanned})">${isBanned?'Desbanear':'Banear'}</button><button class="sc-btn delete" onclick="deleteUser('${u.id}','${u.username}')">Borrar</button></div>
+            </div>`;
         }).join('');
-        const oc=students.filter(u=>(now-new Date(u.last_seen)<30000)&&!u.is_banned).length;
-        document.getElementById('student-count').innerText=oc+" en línea";
-    }catch(e){console.error(e);grid.innerHTML="Error al cargar datos";}
+        document.getElementById('student-count').innerText = students.filter(u => (now - new Date(u.last_seen) < 30000) && !u.is_banned).length + " en línea";
+    } catch(e){ grid.innerHTML = "Error al cargar datos"; }
 }
-async function markPrizeDelivered(uid,prizeLevel){
-    try{await _supabase.from('profiles').update({[`pending_prize_${prizeLevel}`]:false}).eq('id',uid);loadDashboardData();}catch(e){alert("Error");}
+async function markPrizeDelivered(uid, prizeLevel){
+    try { await _supabase.from('profiles').update({[`pending_prize_${prizeLevel}`]:false}).eq('id',uid); loadDashboardData(); } catch(e){ alert("Error"); }
 }
 function updateControlButtons(settings){
-    const pb=document.getElementById('btn-pause'),eb=document.getElementById('btn-exam');
+    const pb = document.getElementById('btn-pause'), eb = document.getElementById('btn-exam');
     if(settings){
-        if(settings.is_paused){pb.classList.add('active');pb.querySelector('span').innerText="Reanudar";}else{pb.classList.remove('active');pb.querySelector('span').innerText="Pausar Juego";}
-        if(settings.exam_level>0){eb.classList.add('active');eb.querySelector('span').innerText="Fin Examen";}else{eb.classList.remove('active');eb.querySelector('span').innerText="Modo Examen";}
+        if(settings.is_paused){ pb.classList.add('active'); pb.querySelector('span').innerText = "Reanudar"; }
+        else { pb.classList.remove('active'); pb.querySelector('span').innerText = "Pausar Juego"; }
+        if(settings.exam_level > 0){ eb.classList.add('active'); eb.querySelector('span').innerText = "Fin Examen"; }
+        else { eb.classList.remove('active'); eb.querySelector('span').innerText = "Modo Examen"; }
     }
 }
-async function togglePause(){const{data:s}=await _supabase.from('game_settings').select('is_paused').single();await _supabase.from('game_settings').update({is_paused:!s.is_paused}).eq('id',1);loadDashboardData();}
-async function toggleExamMode(){const{data:s}=await _supabase.from('game_settings').select('exam_level').single();const nl=s.exam_level>0?0:1;await _supabase.from('game_settings').update({exam_level:nl,is_paused:false}).eq('id',1);loadDashboardData();}
-function showSeasonModal(){const h=prompt("Horas de temporada:","0"),m=prompt("Minutos:","0");if(h||m)startSeason(parseInt(h),parseInt(m));}
-async function startSeason(h,m){if(h===0&&m===0)return alert("Ingresa tiempo.");const end=new Date(Date.now()+(h*3600000)+(m*60000));const{data:s}=await _supabase.from('game_settings').select('season_number').single();const ns=(s?.season_number||0)+1;try{await _supabase.from('game_settings').upsert({id:1,season_end_time:end.toISOString(),is_paused:false,exam_level:0,season_number:ns});alert("¡Temporada "+ns+" iniciada!");loadDashboardData();}catch(e){alert("Error al iniciar.");}}
-async function toggleBan(uid,cur){try{await _supabase.from('profiles').update({is_banned:!cur}).eq('id',uid);loadDashboardData();}catch(e){alert("Error");}}
-async function cleanInactiveUsers(){if(!confirm("¿Borrar cuentas con 0 puntos?"))return;try{await _supabase.from('profiles').delete().eq('total_score',0).neq('username',ADMIN_USER);alert("Limpieza completada.");loadDashboardData();}catch(e){alert("Error: "+e.message);}}
-async function deleteUser(uid,name){if(!confirm(`¿Borrar "${name}" permanentemente?`))return;try{await _supabase.from('profiles').delete().eq('id',uid);alert(`${name} eliminado.`);loadDashboardData();}catch(e){alert("Error: "+e.message);}}
+async function togglePause(){
+    const { data: s } = await _supabase.from('game_settings').select('is_paused').single();
+    await _supabase.from('game_settings').update({is_paused: !s.is_paused}).eq('id',1);
+    loadDashboardData();
+}
+async function toggleExamMode(){
+    const { data: s } = await _supabase.from('game_settings').select('exam_level').single();
+    const nl = s.exam_level > 0 ? 0 : 1;
+    await _supabase.from('game_settings').update({exam_level: nl, is_paused: false}).eq('id',1);
+    loadDashboardData();
+}
+function showSeasonModal(){ const h = prompt("Horas:","0"), m = prompt("Minutos:","0"); if(h||m) startSeason(parseInt(h),parseInt(m)); }
+async function startSeason(h,m){
+    if(h===0 && m===0) return alert("Ingresa tiempo.");
+    const end = new Date(Date.now() + h*3600000 + m*60000);
+    const { data: s } = await _supabase.from('game_settings').select('season_number').single();
+    const ns = (s?.season_number||0) + 1;
+    try {
+        await _supabase.from('game_settings').upsert({id:1, season_end_time: end.toISOString(), is_paused: false, exam_level: 0, season_number: ns});
+        alert("¡Temporada "+ns+" iniciada!"); loadDashboardData();
+    } catch(e){ alert("Error"); }
+}
+async function toggleBan(uid, cur){ try { await _supabase.from('profiles').update({is_banned: !cur}).eq('id',uid); loadDashboardData(); } catch(e){ alert("Error"); } }
+async function cleanInactiveUsers(){
+    if(!confirm("¿Borrar cuentas con 0 puntos?")) return;
+    try { await _supabase.from('profiles').delete().eq('total_score',0).neq('username',ADMIN_USER); alert("Limpieza completada."); loadDashboardData(); }
+    catch(e){ alert("Error: "+e.message); }
+}
+async function deleteUser(uid, name){
+    if(!confirm(`¿Borrar "${name}" permanentemente?`)) return;
+    try { await _supabase.from('profiles').delete().eq('id',uid); alert(`${name} eliminado.`); loadDashboardData(); }
+    catch(e){ alert("Error: "+e.message); }
+}
 async function resetAllUsers(){
-    if(!confirm("¿Reiniciar TODOS los puntos y tiempo?"))return;
-    try{
+    if(!confirm("¿Reiniciar TODOS los puntos y tiempo?")) return;
+    try {
         await _supabase.from('profiles').update({
-            total_score:0,current_level:1,completed_at:null,current_problem:1,
-            total_time_played:0,total_errors:0,squad_id:0,coins:0,
-            has_battle_pass:false,
-            claimed_bp_rewards:[],
-            item_tomatoes:0,item_shield_until:null,
-            pending_prize_4:false,pending_prize_5:false
+            total_score:0, current_level:1, completed_at:null, current_problem:1,
+            total_time_played:0, total_errors:0, squad_id:0, coins:0,
+            has_battle_pass:false, claimed_bp_rewards:[], item_tomatoes:0, item_shield_until:null,
+            pending_prize_4:false, pending_prize_5:false
         }).neq('id','00000000-0000-0000-0000-000000000000');
-        await _supabase.from('game_settings').update({season_end_time:null,is_paused:false,exam_level:0}).eq('id',1);
-        alert("¡Reiniciado!");loadDashboardData();
-    }catch(e){alert("Error: "+e.message);}
+        await _supabase.from('game_settings').update({season_end_time:null, is_paused:false, exam_level:0}).eq('id',1);
+        alert("¡Reiniciado!"); loadDashboardData();
+    } catch(e){ alert("Error: "+e.message); }
 }
-async function assignSquad(uid,sqId){try{await _supabase.from('profiles').update({squad_id:sqId}).eq('id',uid);loadDashboardData();}catch(e){alert("Error al asignar escuadra");}}
+async function assignSquad(uid, sqId){ try { await _supabase.from('profiles').update({squad_id: sqId}).eq('id',uid); loadDashboardData(); } catch(e){ alert("Error"); } }
 
-// ── GLOBAL STATE CHECK ──
-async function checkGlobalState(){
-    if(isAdmin)return true;
-    try{const{data}=await _supabase.from('game_settings').select('*').single();if(data?.is_paused){lockGrid();document.getElementById('msg').innerHTML="<span style='color:var(--error);font-size:1.5rem;'>⏸️ JUEGO PAUSADO POR EL PROFESOR</span>";return false;}if(data?.exam_level>0){if(currentMainLevel!==data.exam_level){currentMainLevel=data.exam_level;unlockedLevel=data.exam_level;loadProblem();alert("Modo Examen: Nivel "+data.exam_level);}}return true;}
-    catch(e){return true;}
+// ============================================================
+// LOGIN Y CARGA DE PERFIL
+// ============================================================
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        const { data: { session } } = await _supabase.auth.getSession();
+        if (session?.user) { currentUser = session.user; showApp(); }
+        else { showLogin(); }
+    } catch(e) { showLogin(); }
+});
+
+let typingTimer;
+function showLogin(){
+    document.getElementById('login-screen').style.display='flex';
+    document.querySelector('.app-container').style.display='none';
+    const inp = document.getElementById('login-username'), img = document.getElementById('login-avatar-img');
+    const ni = inp.cloneNode(true); inp.parentNode.replaceChild(ni, inp);
+    document.getElementById('login-username').addEventListener('input', e => {
+        clearTimeout(typingTimer);
+        if(!e.target.value.trim()){ img.src="https://api.dicebear.com/8.x/identicon/svg?seed=Shadow"; return; }
+        typingTimer = setTimeout(() => { img.src = `https://api.dicebear.com/8.x/adventurer/svg?seed=${e.target.value.trim()}`; }, 500);
+    });
+}
+async function showApp(){
+    document.getElementById('login-screen').style.display='none';
+    document.querySelector('.app-container').style.display='flex';
+    if(currentUser){ try{ await loadScore(currentUser); } catch(e){ console.error(e); } }
+    if(isAdmin){ showAdminDashboard(); } else { initGame(); startRanking(); loadHallOfFame(); initSeason(); startStudentHeartbeat(); }
+}
+async function handleLogin(){
+    const u = document.getElementById('login-username').value.trim();
+    const p = document.getElementById('login-password').value;
+    const e = document.getElementById('login-error');
+    if(!u || p.length < 6){ e.textContent = "Datos incompletos."; e.style.display='block'; return; }
+    try {
+        const { data, error } = await _supabase.auth.signInWithPassword({ email: u+"@profemiguel.com", password: p });
+        if(error) throw error;
+        currentUser = data.user;
+        showApp();
+    } catch(err){ e.textContent = "Error: "+err.message; e.style.display='block'; }
+}
+async function handleRegister(){
+    const u = document.getElementById('login-username').value.trim();
+    const p = document.getElementById('login-password').value;
+    const e = document.getElementById('login-error');
+    if(!u || p.length < 6){ e.textContent = "Datos incompletos."; e.style.display='block'; return; }
+    try {
+        const { data, error } = await _supabase.auth.signUp({ email: u+"@profemiguel.com", password: p });
+        if(error) throw error;
+        alert("Registrado. Entra ahora.");
+    } catch(err){ e.textContent = "Error: "+err.message; e.style.display='block'; }
+}
+async function logout(){
+    await _supabase.auth.signOut();
+    currentUser = null; totalScore = 0; currentCoins = 0; hasBP = false; itemTomatoes = 0; currentStreak = 0;
+    showLogin(); clearInterval(rankInt);
 }
 
-// ── SEASON ──
-let seasonInterval;
-async function initSeason(settings){
-    let data=settings;
-    if(!data){const r=await _supabase.from('game_settings').select('season_end_time,season_number').eq('id',1).single();data=r.data;}
-    document.getElementById('season-num-display').innerText=(data?.season_number)||1;
-    if(data?.season_end_time){startCountdown(new Date(data.season_end_time));}else{document.getElementById('timer-display').innerText=isAdmin?"SIN INICIAR":"--:--";document.getElementById('season-badge').classList.add('finished');}
-}
-function startCountdown(endDate){
-    clearInterval(seasonInterval);
-    seasonInterval=setInterval(()=>{
-        const diff=endDate-new Date();
-        if(diff<=0){clearInterval(seasonInterval);document.getElementById('timer-display').innerText="00:00:00";document.getElementById('season-badge').classList.add('finished');document.getElementById('season-badge').classList.remove('active');if(isAdmin){alert("¡Tiempo terminado!");resetAllUsers();}return;}
-        const h=Math.floor(diff/3600000),m=Math.floor((diff%3600000)/60000),s=Math.floor((diff%60000)/1000);
-        document.getElementById('timer-display').innerText=`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-        document.getElementById('season-badge').classList.add('active');document.getElementById('season-badge').classList.remove('finished');
-    },1000);
+async function loadScore(user){
+    try {
+        const { data } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
+        if(data?.is_banned){ alert("Tu cuenta está suspendida temporalmente."); logout(); return; }
+        totalScore = data?.total_score || 0;
+        currentAvatarStyle = data?.avatar_style || 'adventurer';
+        unlockedLevel = data?.current_level || 1;
+        currentProblemInLevel = data?.current_problem || 1;
+        if(currentProblemInLevel > 10) currentProblemInLevel = 1;
+        hasFinishedGame = data?.completed_at || false;
+        playTimeCounter = data?.total_time_played || 0;
+        currentCoins = data?.coins || 0;
+        hasBP = data?.has_battle_pass || false;
+        const raw = data?.claimed_bp_rewards;
+        claimedBPRewards = Array.isArray(raw) ? raw : (raw && typeof raw === 'object' ? Object.values(raw) : []);
+        itemTomatoes = data?.item_tomatoes || 0;
+        itemShieldUntil = data?.item_shield_until ? new Date(data.item_shield_until) : null;
+        updateCoinDisplay(); updateInventoryUI(); updateBattlePassUI(); updateStreakUI();
+        if(data?.squad_id && SQUADS[data.squad_id]){
+            const sq = SQUADS[data.squad_id];
+            document.getElementById('squad-display').style.display = 'flex';
+            document.getElementById('user-squad-shield').innerHTML = sq.svg;
+            document.getElementById('user-squad-name').innerText = sq.name;
+            document.getElementById('user-squad-name').style.color = sq.color;
+            userSquadId = data.squad_id;
+            loadSquadMissions(data.squad_id);
+        } else { document.getElementById('squad-display').style.display = 'none'; userSquadId = null; }
+    } catch(e){ totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1; currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0; currentCoins = 0; hasBP = false; itemTomatoes = 0; }
+    isAdmin = (user.email.split('@')[0] === ADMIN_USER);
+    document.getElementById('admin-header-btn').classList.toggle('visible', isAdmin);
+    if(hasFinishedGame) document.getElementById('msg').innerHTML = "<span style='color:var(--primary-color);'>¡Ya terminaste!</span>";
+    currentMainLevel = unlockedLevel;
+    populateLevelSelect(); updateUI(); renderMainAvatar();
 }
 
 // ============================================================
-// GAME LOGIC (ORIGINAL)
+// INICIALIZACIÓN DEL JUEGO
 // ============================================================
-function initGame(){loadProblem();populateLevelSelect();}
-function jumpToLevel(l){AudioEngine.playClick();const t=parseInt(l);if(t>unlockedLevel){alert("¡Debes completar el nivel anterior!");document.getElementById('levelSelect').value=currentMainLevel;return;}currentMainLevel=t;currentProblemInLevel=1;loadProblem();}
+function initGame(){ loadProblem(); populateLevelSelect(); }
+function jumpToLevel(l){
+    AudioEngine.playClick();
+    const t = parseInt(l);
+    if(t > unlockedLevel){ alert("¡Debes completar el nivel anterior!"); document.getElementById('levelSelect').value = currentMainLevel; return; }
+    currentMainLevel = t; currentProblemInLevel = 1; loadProblem();
+}
 async function loadProblem(){
-    if(hasFinishedGame)return;
-    const canPlay=await checkGlobalState();if(!canPlay)return;
-    isVerifying=false;
-    const btn=document.getElementById('btn-verify');
-    btn.disabled=false;
-    btn.style.opacity='1';
-    btn.innerText="Verificar";
-    btn.onclick=verificarSolucion;
-    document.getElementById('subLevelCount').innerText=currentProblemInLevel;
-    document.getElementById('progressBar').style.width=((currentMainLevel-1)/TOTAL_LEVELS)*100+'%';
+    if(hasFinishedGame) return;
+    const canPlay = await checkGlobalState(); if(!canPlay) return;
+    isVerifying = false;
+    const btn = document.getElementById('btn-verify');
+    btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "Verificar"; btn.onclick = verificarSolucion;
+    document.getElementById('subLevelCount').innerText = currentProblemInLevel;
+    document.getElementById('progressBar').style.width = ((currentMainLevel-1)/TOTAL_LEVELS)*100 + '%';
     populateLevelSelect();
-    const d=DB[currentMainLevel];if(d&&d[currentProblemInLevel-1]){currentDividend=d[currentProblemInLevel-1].d;currentDivisor=d[currentProblemInLevel-1].div;}
-    document.getElementById('difficultyLabel').innerText=getDifficultyLabel(currentMainLevel);
-    createUI();createAntena();resetAll();lockGrid();hideReviewPanel();
-    document.getElementById('msg').innerText='';
+    const d = DB[currentMainLevel];
+    if(d && d[currentProblemInLevel-1]){ currentDividend = d[currentProblemInLevel-1].d; currentDivisor = d[currentProblemInLevel-1].div; }
+    document.getElementById('difficultyLabel').innerText = getDifficultyLabel(currentMainLevel);
+    createUI(); createAntena(); resetAll(); lockGrid();
+    document.getElementById('msg').innerText = '';
 }
-function getDifficultyLabel(lvl){if(lvl<=2)return"Divisor: 1 Cifra";if([3,4,5,7,9].includes(lvl))return"Divisor: 2 Cifras";return"Divisor: 3 Cifras";}
-function lockGrid(){isGridLocked=true;document.getElementById('grid-lock-overlay').classList.remove('hidden');disableCocienteInputs(true);document.getElementById('valResiduo').disabled=true;}
-function unlockGrid(){isGridLocked=false;document.getElementById('grid-lock-overlay').classList.add('hidden');disableCocienteInputs(false);document.getElementById('valResiduo').disabled=false;document.getElementById('msg').innerText="¡Antena completa!";document.getElementById('msg').style.color="var(--success)";triggerEpicEffect();}
-function triggerEpicEffect(){AudioEngine.playEpic();const ov=document.getElementById('epic-overlay'),tx=document.getElementById('epic-text'),msgs=["¡BOOYAH!","¡A LA CARGA!","¡MÁXIMO PODER!"];tx.innerText=msgs[Math.floor(Math.random()*msgs.length)];ov.style.display='flex';tx.style.animation='none';void tx.offsetWidth;tx.style.animation='epicPulse .5s ease-out forwards';setTimeout(()=>ov.style.display='none',1500);}
-function showVictoryScreen(){createConfetti();document.getElementById('victory-screen').style.display='flex';AudioEngine.playLevelUp();}
-function hideVictoryScreen(){document.getElementById('victory-screen').style.display='none';document.querySelectorAll('.confetti').forEach(c=>c.remove());}
-function createConfetti(){const sc=document.getElementById('victory-screen'),colors=['#ffcc00','#00e676','#2979ff','#f00','#ff9800'];for(let i=0;i<50;i++){const c=document.createElement('div');c.className='confetti';c.style.left=Math.random()*100+'vw';c.style.top='-10px';c.style.background=colors[Math.floor(Math.random()*colors.length)];c.style.animationDuration=(Math.random()*2+2)+'s';sc.appendChild(c);}}
-function createUI(){
-    const g=document.getElementById('gridContainer'),dB=document.getElementById('divisorBox'),tR=document.getElementById('topRow');
-    g.innerHTML='';dB.innerHTML='';tR.innerHTML='';
-    String(currentDivisor).split('').forEach(n=>{let i=document.createElement('input');i.type='text';i.className='input-div';i.value=n;i.readOnly=true;dB.appendChild(i);});
-    for(let r=0;r<rows;r++)for(let c=0;c<cols;c++){let i=document.createElement('input');i.type='text';i.className='cell';i.maxLength=1;i.id="c-"+r+"-"+c;i.addEventListener('input',e=>{if(!isGridLocked&&e.target.value){let n=(c<cols-1)?"c-"+r+"-"+(c+1):(r<rows-1)?"c-"+(r+1)+"-0":null;if(n)document.getElementById(n).focus();}});g.appendChild(i);}
-    const sN=String(currentDividend);for(let i=0;i<sN.length;i++){let cell=document.getElementById("c-0-"+i);cell.value=sN[i];cell.classList.add('cell-locked');cell.disabled=true;}
-    document.getElementById('lineH').style.width=(sN.length*cellSize)+'px';
-    for(let i=0;i<sN.length;i++){let inp=document.createElement('input');inp.type='text';inp.className='input-cociente-galera';inp.maxLength=1;inp.id="top-"+i;inp.addEventListener('input',e=>{syncT();if(e.target.value&&i<sN.length-1)document.getElementById("top-"+(i+1)).focus();});tR.appendChild(inp);}
+function getDifficultyLabel(lvl){ if(lvl<=2) return "Divisor: 1 Cifra"; if([3,4,5,7,9].includes(lvl)) return "Divisor: 2 Cifras"; return "Divisor: 3 Cifras"; }
+function lockGrid(){ isGridLocked = true; document.getElementById('grid-lock-overlay').classList.remove('hidden'); disableCocienteInputs(true); document.getElementById('valResiduo').disabled = true; }
+function unlockGrid(){ isGridLocked = false; document.getElementById('grid-lock-overlay').classList.add('hidden'); disableCocienteInputs(false); document.getElementById('valResiduo').disabled = false; document.getElementById('msg').innerText = "¡Antena completa!"; document.getElementById('msg').style.color = "var(--success)"; triggerEpicEffect(); }
+function triggerEpicEffect(){
+    AudioEngine.playEpic();
+    const ov = document.getElementById('epic-overlay'), tx = document.getElementById('epic-text');
+    const msgs = ["¡BOOYAH!","¡A LA CARGA!","¡MÁXIMO PODER!"];
+    tx.innerText = msgs[Math.floor(Math.random()*msgs.length)];
+    ov.style.display = 'flex'; tx.style.animation = 'none'; void tx.offsetWidth;
+    tx.style.animation = 'epicPulse .5s ease-out forwards';
+    setTimeout(() => ov.style.display = 'none', 1500);
 }
-function disableCocienteInputs(d){document.querySelectorAll('.input-cociente-galera').forEach(i=>i.disabled=d);}
-function syncT(){let v="";document.querySelectorAll('.input-cociente-galera').forEach(x=>v+=x.value);document.getElementById('valCociente').value=v;}
-function createAntena(){const b=document.getElementById('antenaBody');document.getElementById('antenaLabel').innerText=currentDivisor;b.innerHTML='';for(let i=1;i<=10;i++){let r=document.createElement('div');r.className='antena-row locked-row';r.id="row-"+i;r.innerHTML="<span>"+i+" x "+currentDivisor+" =</span><input type='text' inputmode='numeric' pattern='[0-9]*' class='antena-input' id='a"+i+"' disabled>";b.appendChild(r);}currentAntennaIndex=0;enableNextAntennaInput();}
-function enableNextAntennaInput(){if(currentAntennaIndex>=ANTENNA_SEQUENCE.length)return;const cId=ANTENNA_SEQUENCE[currentAntennaIndex],inp=document.getElementById("a"+cId),row=document.getElementById("row-"+cId);if(inp){inp.disabled=false;inp.focus();row.classList.remove('locked-row');inp.oninput=e=>{e.target.value=e.target.value.replace(/[^0-9]/g,'');checkAntennaInput(inp,cId);};}}
-function checkAntennaInput(inp,id){const val=parseInt(inp.value),exp=id*currentDivisor;if(val===exp){AudioEngine.playSuccess();inp.classList.add('status-ok');inp.disabled=true;inp.classList.remove('status-wrong');currentAntennaIndex++;if(currentAntennaIndex<ANTENNA_SEQUENCE.length)enableNextAntennaInput();else unlockGrid();}else{inp.classList.add('status-wrong');setTimeout(()=>inp.classList.remove('status-wrong'),500);}}
-function resetAll(){document.getElementById('valCociente').value='';document.getElementById('valResiduo').value='';document.querySelectorAll('.antena-input').forEach(i=>{i.value='';i.classList.remove('status-ok','status-wrong');});document.querySelectorAll('.input-cociente-galera').forEach(i=>i.value='');document.querySelectorAll('.cell:not(.cell-locked)').forEach(i=>{i.value='';i.disabled=false;});}
+function showVictoryScreen(){ createConfetti(); document.getElementById('victory-screen').style.display = 'flex'; AudioEngine.playLevelUp(); }
+function hideVictoryScreen(){ document.getElementById('victory-screen').style.display = 'none'; document.querySelectorAll('.confetti').forEach(c=>c.remove()); }
+function createConfetti(){
+    const sc = document.getElementById('victory-screen'), colors = ['#ffcc00','#00e676','#2979ff','#f00','#ff9800'];
+    for(let i=0;i<50;i++){
+        const c = document.createElement('div'); c.className = 'confetti';
+        c.style.left = Math.random()*100 + 'vw'; c.style.top = '-10px';
+        c.style.background = colors[Math.floor(Math.random()*colors.length)];
+        c.style.animationDuration = (Math.random()*2+2) + 's';
+        sc.appendChild(c);
+    }
+}
 
 // ============================================================
-// VERIFICAR (ANTI-SPAM / NO AYUDA)
+// CREACIÓN DE UI (ANTENA Y GALERA)
+// ============================================================
+function createUI(){
+    const g = document.getElementById('gridContainer'), dB = document.getElementById('divisorBox'), tR = document.getElementById('topRow');
+    g.innerHTML = ''; dB.innerHTML = ''; tR.innerHTML = '';
+    String(currentDivisor).split('').forEach(n => {
+        let i = document.createElement('input'); i.type = 'text'; i.className = 'input-div'; i.value = n; i.readOnly = true;
+        dB.appendChild(i);
+    });
+    for(let r=0; r<15; r++) for(let c=0; c<9; c++){
+        let i = document.createElement('input'); i.type = 'text'; i.className = 'cell'; i.maxLength = 1; i.id = "c-"+r+"-"+c;
+        i.addEventListener('input', e => {
+            if(!isGridLocked && e.target.value){
+                let n = (c<8) ? "c-"+r+"-"+(c+1) : (r<14) ? "c-"+(r+1)+"-0" : null;
+                if(n) document.getElementById(n).focus();
+            }
+        });
+        g.appendChild(i);
+    }
+    const sN = String(currentDividend);
+    for(let i=0; i<sN.length; i++){
+        let cell = document.getElementById("c-0-"+i);
+        cell.value = sN[i]; cell.classList.add('cell-locked'); cell.disabled = true;
+    }
+    document.getElementById('lineH').style.width = (sN.length*32) + 'px';
+    for(let i=0; i<sN.length; i++){
+        let inp = document.createElement('input'); inp.type = 'text'; inp.className = 'input-cociente-galera'; inp.maxLength = 1; inp.id = "top-"+i;
+        inp.addEventListener('input', e => {
+            syncT();
+            if(e.target.value && i<sN.length-1) document.getElementById("top-"+(i+1)).focus();
+        });
+        tR.appendChild(inp);
+    }
+}
+function disableCocienteInputs(d){ document.querySelectorAll('.input-cociente-galera').forEach(i => i.disabled = d); }
+function syncT(){ let v = ""; document.querySelectorAll('.input-cociente-galera').forEach(x => v += x.value); document.getElementById('valCociente').value = v; }
+function createAntena(){
+    const b = document.getElementById('antenaBody');
+    document.getElementById('antenaLabel').innerText = currentDivisor;
+    b.innerHTML = '';
+    for(let i=1; i<=10; i++){
+        let r = document.createElement('div'); r.className = 'antena-row locked-row'; r.id = "row-"+i;
+        r.innerHTML = "<span>"+i+" x "+currentDivisor+" =</span><input type='text' inputmode='numeric' pattern='[0-9]*' class='antena-input' id='a"+i+"' disabled>";
+        b.appendChild(r);
+    }
+    currentAntennaIndex = 0; enableNextAntennaInput();
+}
+function enableNextAntennaInput(){
+    if(currentAntennaIndex >= ANTENNA_SEQUENCE.length) return;
+    const cId = ANTENNA_SEQUENCE[currentAntennaIndex];
+    const inp = document.getElementById("a"+cId), row = document.getElementById("row-"+cId);
+    if(inp){
+        inp.disabled = false; inp.focus(); row.classList.remove('locked-row');
+        inp.oninput = e => { e.target.value = e.target.value.replace(/[^0-9]/g,''); checkAntennaInput(inp, cId); };
+    }
+}
+function checkAntennaInput(inp, id){
+    const val = parseInt(inp.value), exp = id * currentDivisor;
+    if(val === exp){
+        AudioEngine.playSuccess(); inp.classList.add('status-ok'); inp.disabled = true; inp.classList.remove('status-wrong');
+        currentAntennaIndex++;
+        if(currentAntennaIndex < ANTENNA_SEQUENCE.length) enableNextAntennaInput(); else unlockGrid();
+    } else {
+        inp.classList.add('status-wrong'); setTimeout(() => inp.classList.remove('status-wrong'), 500);
+    }
+}
+function resetAll(){
+    document.getElementById('valCociente').value = '';
+    document.getElementById('valResiduo').value = '';
+    document.querySelectorAll('.antena-input').forEach(i => { i.value = ''; i.classList.remove('status-ok','status-wrong'); });
+    document.querySelectorAll('.input-cociente-galera').forEach(i => i.value = '');
+    document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value = ''; i.disabled = false; });
+}
+
+// ============================================================
+// VERIFICACIÓN DE SOLUCIÓN
 // ============================================================
 async function verificarSolucion(){
-    if(isVerifying)return;
-    if(isGridLocked){alert("¡Completa la Antena!");return;}
-    if(!(await checkGlobalState()))return;
+    if(isVerifying) return;
+    if(isGridLocked){ alert("¡Completa la Antena!"); return; }
+    if(!(await checkGlobalState())) return;
 
-    isVerifying=true;
-    const btn=document.getElementById('btn-verify');
-    btn.disabled=true;
-    btn.style.opacity='0.4';
-    btn.innerText="Verificando...";
-    btn.onclick=null;
+    isVerifying = true;
+    const btn = document.getElementById('btn-verify');
+    btn.disabled = true; btn.style.opacity = '0.4'; btn.innerText = "Verificando..."; btn.onclick = null;
 
-    const coc=parseInt(document.getElementById('valCociente').value);
-    const res=parseInt(document.getElementById('valResiduo').value)||0;
-    const rC=Math.floor(currentDividend/currentDivisor);
-    const rR=currentDividend%currentDivisor;
+    const coc = parseInt(document.getElementById('valCociente').value);
+    const res = parseInt(document.getElementById('valResiduo').value) || 0;
+    const rC = Math.floor(currentDividend / currentDivisor);
+    const rR = currentDividend % currentDivisor;
 
-    if(coc===rC&&res===rR){
+    if(coc === rC && res === rR){
         AudioEngine.playSuccess();
-        totalScore+=POINTS;
-        updateUI();
-        incrementStreak();
-        recordSuccess();
-        currentCoins+=5;
-        updateCoinDisplay();
-        document.getElementById('msg').innerHTML=`<span style='color:var(--success);font-weight:700;font-size:1.2rem;'>¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
-
-        if(currentProblemInLevel<PROBLEMS_PER_LEVEL){
+        totalScore += POINTS; updateUI(); incrementStreak();
+        currentCoins += 5; updateCoinDisplay();
+        document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:700;font-size:1.2rem;'>¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
+        await incrementSquadMissionProgress('squadCorrect', 1);
+        await incrementSquadMissionProgress('squadTotalScore', POINTS);
+        if(currentProblemInLevel < PROBLEMS_PER_LEVEL){
             currentProblemInLevel++;
-        }else{
-            if(currentMainLevel<TOTAL_LEVELS){
-                unlockedLevel=currentMainLevel+1;currentMainLevel++;currentProblemInLevel=1;
+        } else {
+            if(currentMainLevel < TOTAL_LEVELS){
+                unlockedLevel = currentMainLevel+1; currentMainLevel++; currentProblemInLevel = 1;
                 showVictoryScreen();
-            }else{
-                hasFinishedGame=true;
-                await _supabase.from('profiles').update({completed_at:new Date().toISOString()}).eq('id',currentUser.id);
+            } else {
+                hasFinishedGame = true;
+                await _supabase.from('profiles').update({completed_at: new Date().toISOString()}).eq('id', currentUser.id);
                 loadHallOfFame();
                 await saveScore();
                 return;
             }
         }
-        await saveTime();
-        await saveScore();
-        if(document.getElementById('victory-screen').style.display==='flex'){
-            setTimeout(()=>{hideVictoryScreen();loadProblem();},3000);
-        }else{
-            loadProblem();
-        }
-    }else{
+        await saveTime(); await saveScore();
+        if(document.getElementById('victory-screen').style.display === 'flex'){
+            setTimeout(() => { hideVictoryScreen(); loadProblem(); }, 3000);
+        } else { loadProblem(); }
+    } else {
         AudioEngine.playError();
-        document.getElementById('msg').innerHTML=`<span style='color:var(--error);font-weight:700;font-size:1.2rem;'>INCORRECTO ❌ — Inténtalo de nuevo</span>`;
-        totalErrors++;
-        saveTime();
-        recordError(currentDividend,currentDivisor,coc,res);
+        document.getElementById('msg').innerHTML = `<span style='color:var(--error);font-weight:700;font-size:1.2rem;'>INCORRECTO ❌ — Inténtalo de nuevo</span>`;
         resetStreak();
-        isVerifying=false;
-        btn.disabled=false;
-        btn.style.opacity='1';
-        btn.innerText="Verificar";
-        btn.onclick=verificarSolucion;
+        isVerifying = false;
+        btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "Verificar"; btn.onclick = verificarSolucion;
     }
+}
+
+async function checkGlobalState(){
+    if(isAdmin) return true;
+    try {
+        const { data } = await _supabase.from('game_settings').select('*').single();
+        if(data?.is_paused){ lockGrid(); document.getElementById('msg').innerHTML = "<span style='color:var(--error);font-size:1.5rem;'>⏸️ JUEGO PAUSADO POR EL PROFESOR</span>"; return false; }
+        if(data?.exam_level > 0){
+            if(currentMainLevel !== data.exam_level){ currentMainLevel = data.exam_level; unlockedLevel = data.exam_level; loadProblem(); alert("Modo Examen: Nivel "+data.exam_level); }
+        }
+        return true;
+    } catch(e){ return true; }
+}
+
+// ============================================================
+// SEASON Y HEARTBEAT
+// ============================================================
+let seasonInterval;
+async function initSeason(settings){
+    let data = settings;
+    if(!data){ const r = await _supabase.from('game_settings').select('season_end_time,season_number').eq('id',1).single(); data = r.data; }
+    document.getElementById('season-num-display').innerText = data?.season_number || 1;
+    if(data?.season_end_time){ startCountdown(new Date(data.season_end_time)); }
+    else { document.getElementById('timer-display').innerText = isAdmin ? "SIN INICIAR" : "--:--"; document.getElementById('season-badge').classList.add('finished'); }
+}
+function startCountdown(endDate){
+    clearInterval(seasonInterval);
+    seasonInterval = setInterval(() => {
+        const diff = endDate - new Date();
+        if(diff <= 0){
+            clearInterval(seasonInterval);
+            document.getElementById('timer-display').innerText = "00:00:00";
+            document.getElementById('season-badge').classList.add('finished');
+            document.getElementById('season-badge').classList.remove('active');
+            if(isAdmin){ alert("¡Tiempo terminado!"); resetAllUsers(); }
+            return;
+        }
+        const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
+        document.getElementById('timer-display').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        document.getElementById('season-badge').classList.add('active');
+        document.getElementById('season-badge').classList.remove('finished');
+    }, 1000);
+}
+function startStudentHeartbeat(){
+    setInterval(async () => { if(currentUser && !isAdmin) await _supabase.from('profiles').update({last_seen: new Date().toISOString()}).eq('id', currentUser.id); }, 15000);
+    setInterval(() => { if(!isGridLocked && !hasFinishedGame){ playTimeCounter++; if(playTimeCounter%60 === 0) saveTime(); } }, 1000);
+}
+async function saveTime(){
+    if(!currentUser) return;
+    try { await _supabase.from('profiles').update({total_time_played: playTimeCounter}).eq('id', currentUser.id); } catch(e){}
+}
+
+// ============================================================
+// UTILIDADES UI Y AVATAR
+// ============================================================
+function populateLevelSelect(){
+    const s = document.getElementById('levelSelect'); s.innerHTML = '';
+    for(let i=1; i<=TOTAL_LEVELS; i++){
+        let o = document.createElement('option'); o.value = i; o.innerText = "Nivel "+i;
+        if(i > unlockedLevel){ o.disabled = true; o.innerText += " 🔒"; }
+        s.appendChild(o);
+    }
+    s.value = currentMainLevel;
+}
+function updateUI(){
+    document.getElementById('scoreDisplay').innerText = totalScore;
+    const rI = getRankInfo(totalScore);
+    document.getElementById('userRankName').innerText = rI.icon + " " + rI.name + " " + rI.tier;
+    document.getElementById('userRankName').className = "rank-name " + rI.css;
+    document.getElementById('userRankBar').style.width = rI.pct + "%";
+    document.getElementById('main-avatar-box').className = "avatar-container " + rI.avatar;
+}
+function toggleAvatarModal(){
+    const m = document.getElementById('avatar-modal');
+    if(m.style.display === 'none'){ m.style.display = 'flex'; renderAvatarOptions(); }
+    else { m.style.display = 'none'; }
+}
+function renderAvatarOptions(){
+    const gs = document.getElementById('avatar-options-standard'), ge = document.getElementById('avatar-options-exclusive'), es = document.getElementById('exclusive-section');
+    gs.innerHTML = ''; ge.innerHTML = '';
+    const seed = currentUser.email.split('@')[0], isH = totalScore >= 50000;
+    AVATAR_STYLES_STANDARD.forEach(st => {
+        let d = document.createElement('div'); d.className = 'avatar-option' + (currentAvatarStyle===st.id?' selected':'');
+        d.onclick = () => selectAvatarStyle(st.id);
+        d.innerHTML = `<img src="${getAvatarUrl(seed,st.id)}"><span style="font-size:.7rem;font-weight:600;display:block;">${st.name}</span>`;
+        gs.appendChild(d);
+    });
+    es.style.display = 'block';
+    AVATAR_STYLES_EXCLUSIVE.forEach(st => {
+        let d = document.createElement('div');
+        if(isH){
+            d.className = 'avatar-option' + (currentAvatarStyle===st.id?' selected':'');
+            d.onclick = () => selectAvatarStyle(st.id);
+            d.innerHTML = `<img src="${getAvatarUrl(seed,st.id)}"><span style="font-size:.7rem;font-weight:600;display:block;">${st.name}</span>`;
+        } else {
+            d.className = 'avatar-option avatar-locked';
+            d.innerHTML = `<img src="${getAvatarUrl('demo',st.id)}"><div class="lock-icon"><i class="fas fa-lock"></i></div><span style="font-size:.7rem;font-weight:600;display:block;">${st.name}</span>`;
+        }
+        ge.appendChild(d);
+    });
+}
+function selectAvatarStyle(id){
+    const isEx = AVATAR_STYLES_EXCLUSIVE.some(s => s.id === id);
+    if(isEx && totalScore < 50000){ alert("¡Este avatar es exclusivo!"); return; }
+    currentAvatarStyle = id; renderAvatarOptions(); renderMainAvatar();
+}
+async function saveAvatarChoice(){
+    AudioEngine.playClick();
+    await _supabase.from('profiles').upsert({id: currentUser.id, avatar_style: currentAvatarStyle});
+    toggleAvatarModal(); updateRanking();
+}
+async function saveScore(){
+    if(!currentUser) return;
+    try {
+        await _supabase.from('profiles').upsert({
+            id: currentUser.id, username: currentUser.email.split('@')[0],
+            total_score: totalScore, current_level: unlockedLevel,
+            current_problem: currentProblemInLevel, coins: currentCoins
+        });
+        updateRanking();
+    } catch(e){ console.error(e); }
 }
 </script>
 </body>
