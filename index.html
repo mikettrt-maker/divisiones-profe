@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V18.2 (Tienda Fix)</title>
+    <title>Reto de División - V18.3 (Tienda 100% Funcional)</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* ============================================================
-           ESTILOS ORIGINALES (SIN MODIFICACIONES EXCEPTO TIENDA)
+           ESTILOS ORIGINALES (SOLO MODIFICADO .shop-item-price)
            ============================================================ */
         :root {
             --primary-color: #ffcc00; --primary-light: #ff9800; --text-dark: #e0e0e0;
@@ -211,7 +211,7 @@
         .bp-tier-label { font-size: .7rem; margin-top: 5px; color: #888; text-align: center; }
         .bp-tier-desc { font-size: .65rem; color: #555; text-align: center; margin-top: 2px; min-height: 20px; }
 
-        /* ── TIENDA (MEJORADA VISUALMENTE) ── */
+        /* ── TIENDA (PRECIOS VISIBLES Y GARANTIZADOS) ── */
         .shop-btn-float {
             position: fixed; bottom: 80px; left: 20px; z-index: 9001;
             width: 50px; height: 50px; border-radius: 50%;
@@ -255,14 +255,31 @@
         .shop-item-icon { font-size: 3rem; margin-bottom: 10px; display: block; }
         .shop-item-name { font-family: 'Teko'; font-size: 1.4rem; color: white; margin-bottom: 5px; }
         .shop-item-desc { font-size: .85rem; color: #888; margin-bottom: 15px; line-height: 1.4; }
+        /* PRECIO MEJORADO: AMARILLO BRILLANTE SOBRE FONDO OSCURO */
         .shop-item-price {
-            display: flex; align-items: center; justify-content: center; gap: 6px;
-            font-family: 'Teko'; font-size: 1.8rem; color: var(--primary-color);
-            margin-bottom: 12px; background: rgba(0,0,0,.5); padding: 4px 0; border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: 'Teko', sans-serif;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #FFD700 !important;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px 5px;
+            margin: 10px 0;
+            border-radius: 30px;
+            border: 1px solid #FFD700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+            text-shadow: 2px 2px 0 #000;
+        }
+        .shop-item-price i {
+            color: #FFD700 !important;
+            font-size: 1.8rem;
         }
         .shop-buy-btn {
-            width: 100%; padding: 10px; border-radius: 4px; border: none;
-            font-family: 'Rajdhani'; font-weight: 700; font-size: 1rem;
+            width: 100%; padding: 12px; border-radius: 4px; border: none;
+            font-family: 'Rajdhani'; font-weight: 700; font-size: 1.1rem;
             text-transform: uppercase; cursor: pointer; transition: .2s;
             background: var(--shop-purple); color: white;
         }
@@ -427,7 +444,7 @@
     </div>
 </div>
 
-<!-- TIENDA MODAL (CORREGIDA) -->
+<!-- TIENDA MODAL (PRECIOS VISIBLES) -->
 <div id="shop-modal" onclick="if(event.target.id==='shop-modal')closeShop()">
     <div class="shop-box">
         <div class="shop-header">
@@ -444,7 +461,7 @@
                 <span class="shop-item-icon">🍅</span>
                 <div class="shop-item-name">Tomate</div>
                 <div class="shop-item-desc">Lanza un tomate a un rival y le quitas 50 puntos. ¡Cuidado si tiene escudo!</div>
-                <div class="shop-item-price"><i class="fas fa-coins" style="color:var(--primary-color);"></i> 50</div>
+                <div class="shop-item-price"><i class="fas fa-coins"></i> 50</div>
                 <div class="shop-qty-badge" id="shop-tom-qty">x0</div>
                 <button class="shop-buy-btn orange-btn" onclick="shopBuy('tomato',1,50)">Comprar 1</button>
             </div>
@@ -453,7 +470,7 @@
                 <span class="shop-item-icon">🍅🍅🍅</span>
                 <div class="shop-item-name">Pack Tomates x5</div>
                 <div class="shop-item-desc">5 tomates con descuento. ¡Ataca sin parar a tus rivales!</div>
-                <div class="shop-item-price"><i class="fas fa-coins" style="color:var(--primary-color);"></i> 200</div>
+                <div class="shop-item-price"><i class="fas fa-coins"></i> 200</div>
                 <button class="shop-buy-btn orange-btn" onclick="shopBuy('tomato',5,200)">Pack x5</button>
             </div>
             <!-- Escudo 1 día -->
@@ -461,7 +478,7 @@
                 <span class="shop-item-icon">🛡️</span>
                 <div class="shop-item-name">Escudo 1 Día</div>
                 <div class="shop-item-desc">Protección contra tomates por 24 horas. El próximo ataque destruirá el escudo.</div>
-                <div class="shop-item-price"><i class="fas fa-coins" style="color:var(--primary-color);"></i> 100</div>
+                <div class="shop-item-price"><i class="fas fa-coins"></i> 100</div>
                 <button class="shop-buy-btn" onclick="shopBuy('shield',1,100)">Comprar</button>
             </div>
             <!-- Escudo 3 días -->
@@ -469,7 +486,7 @@
                 <span class="shop-item-icon">🛡️✨</span>
                 <div class="shop-item-name">Escudo Pro 3 Días</div>
                 <div class="shop-item-desc">Protección extendida por 3 días. ¡El mejor precio por duración!</div>
-                <div class="shop-item-price"><i class="fas fa-coins" style="color:var(--primary-color);"></i> 250</div>
+                <div class="shop-item-price"><i class="fas fa-coins"></i> 250</div>
                 <button class="shop-buy-btn" onclick="shopBuy('shield',3,250)">Comprar</button>
             </div>
             <!-- Pase de Batalla -->
@@ -477,7 +494,7 @@
                 <span class="shop-item-icon">👑</span>
                 <div class="shop-item-name">Pase de Batalla</div>
                 <div class="shop-item-desc">Desbloquea todas las recompensas del Pase de Batalla: tomates extra, escudos, pases de comer y más.</div>
-                <div class="shop-item-price"><i class="fas fa-coins" style="color:var(--primary-color);"></i> 500</div>
+                <div class="shop-item-price"><i class="fas fa-coins"></i> 500</div>
                 <button class="shop-buy-btn" id="shop-bp-btn" onclick="shopBuy('bp',1,500)" style="max-width:300px;margin:0 auto;display:block;">Comprar Pase</button>
             </div>
         </div>
@@ -1031,9 +1048,10 @@ async function buyBattlePass(){
 }
 
 // ============================================================
-// TIENDA (CORREGIDA Y FUNCIONAL)
+// TIENDA (100% FUNCIONAL)
 // ============================================================
 function openShop(){
+    console.log('Abriendo tienda. Monedas actuales:', currentCoins);
     document.getElementById('shop-modal').style.display='flex';
     document.getElementById('shop-coins-val').innerText=currentCoins;
     document.getElementById('shop-tom-qty').innerText='x'+itemTomatoes;
@@ -1043,8 +1061,12 @@ function openShop(){
 }
 function closeShop(){document.getElementById('shop-modal').style.display='none';}
 
-async function shopBuy(type, qty, price){
-    if(currentCoins<price)return showToast(`❌ No tienes suficientes monedas. Necesitas ${price}.`,'tomato');
+window.shopBuy = async function(type, qty, price) {
+    console.log(`Intentando comprar ${type} x${qty} por ${price} monedas. Monedas actuales: ${currentCoins}`);
+    if(currentCoins<price) {
+        showToast(`❌ No tienes suficientes monedas. Necesitas ${price}.`,'tomato');
+        return;
+    }
     let confirm_msg='';
     if(type==='tomato')confirm_msg=`¿Comprar ${qty} tomate(s) por ${price} monedas?`;
     else if(type==='shield')confirm_msg=`¿Comprar Escudo por ${qty} día(s) por ${price} monedas?`;
@@ -1067,7 +1089,8 @@ async function shopBuy(type, qty, price){
     }
 
     try{
-        await _supabase.from('profiles').update(updates).eq('id',currentUser.id);
+        const { error } = await _supabase.from('profiles').update(updates).eq('id',currentUser.id);
+        if(error) throw error;
         currentCoins=newCoins;
         if(type==='tomato'){
             itemTomatoes+=qty;
@@ -1081,11 +1104,12 @@ async function shopBuy(type, qty, price){
         updateBattlePassUI();
         AudioEngine.playShop();
         showToast(`✅ Compra exitosa: ${type==='tomato'?`🍅 x${qty}`:type==='shield'?`🛡️ ${qty} día(s)`:'👑 Pase'}`,'shop');
-        openShop(); // Refresca la tienda con nuevos valores
+        openShop(); // Refrescar tienda
     }catch(e){
+        console.error('Error en compra:', e);
         showToast("❌ Error al comprar: "+e.message,'tomato');
     }
-}
+};
 
 // ── AVATAR ──
 function populateLevelSelect(){const s=document.getElementById('levelSelect');s.innerHTML='';for(let i=1;i<=TOTAL_LEVELS;i++){let o=document.createElement('option');o.value=i;o.innerText="Nivel "+i;if(i>unlockedLevel){o.disabled=true;o.innerText+=" 🔒";}s.appendChild(o);}s.value=currentMainLevel;}
