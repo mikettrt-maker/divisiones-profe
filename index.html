@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V18.3 (Tienda 100% Funcional)</title>
+    <title>Reto de División - V18.6 (Tienda Garantizada)</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* ============================================================
-           ESTILOS ORIGINALES (SOLO MODIFICADO .shop-item-price)
+           ESTILOS COMPLETOS - TIENDA CON PRECIOS GARANTIZADOS
            ============================================================ */
         :root {
             --primary-color: #ffcc00; --primary-light: #ff9800; --text-dark: #e0e0e0;
@@ -211,14 +211,14 @@
         .bp-tier-label { font-size: .7rem; margin-top: 5px; color: #888; text-align: center; }
         .bp-tier-desc { font-size: .65rem; color: #555; text-align: center; margin-top: 2px; min-height: 20px; }
 
-        /* ── TIENDA (PRECIOS VISIBLES Y GARANTIZADOS) ── */
+        /* ── TIENDA (ESTILOS DEFINITIVOS) ── */
         .shop-btn-float {
             position: fixed; bottom: 80px; left: 20px; z-index: 9001;
-            width: 50px; height: 50px; border-radius: 50%;
+            width: 60px; height: 60px; border-radius: 50%;
             background: var(--shop-purple); border: none;
-            color: white; font-size: 1.4rem;
+            color: white; font-size: 1.8rem;
             display: flex; align-items: center; justify-content: center;
-            cursor: pointer; box-shadow: 0 0 15px var(--shop-purple);
+            cursor: pointer; box-shadow: 0 0 20px var(--shop-purple);
             transition: .2s; animation: shopPulse 3s infinite;
         }
         @keyframes shopPulse { 0%,100%{box-shadow:0 0 15px var(--shop-purple)} 50%{box-shadow:0 0 30px var(--shop-purple), 0 0 60px rgba(124,58,237,.3)} }
@@ -230,64 +230,55 @@
             display: none; justify-content: center; align-items: center;
         }
         .shop-box {
-            background: #111; border: 1px solid var(--shop-purple);
-            border-top: 4px solid var(--shop-purple);
-            border-radius: 8px; width: 90%; max-width: 600px;
+            background: #111; border: 2px solid var(--shop-purple);
+            border-top: 6px solid var(--shop-purple);
+            border-radius: 12px; width: 90%; max-width: 650px;
             max-height: 85vh; overflow: hidden; display: flex; flex-direction: column;
         }
         .shop-header {
             padding: 20px 25px; background: rgba(124,58,237,.15);
-            border-bottom: 1px solid var(--shop-purple);
+            border-bottom: 2px solid var(--shop-purple);
             display: flex; justify-content: space-between; align-items: center;
         }
-        .shop-title { font-family: 'Teko'; font-size: 2rem; color: var(--shop-purple); text-shadow: 0 0 20px rgba(124,58,237,.5); }
-        .shop-coins-display { display: flex; align-items: center; gap: 8px; background: rgba(255,204,0,.1); padding: 8px 16px; border-radius: 20px; border: 1px solid var(--primary-color); }
-        .shop-coins-val { font-family: 'Teko'; font-size: 1.5rem; color: var(--primary-color); }
-        .shop-body { padding: 20px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+        .shop-title { font-family: 'Teko'; font-size: 2.2rem; color: var(--shop-purple); text-shadow: 0 0 10px var(--shop-purple); }
+        .shop-coins-display { display: flex; align-items: center; gap: 10px; background: rgba(255,215,0,.15); padding: 8px 20px; border-radius: 40px; border: 2px solid gold; }
+        .shop-coins-val { font-family: 'Teko'; font-size: 2rem; color: gold; line-height: 1; }
+        .shop-body { padding: 20px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
         .shop-item {
-            background: #1a1a1a; border: 1px solid #333; border-radius: 8px;
-            padding: 20px; text-align: center; transition: .2s; position: relative; overflow: hidden;
+            background: #1a1a1a; border: 1px solid #444; border-radius: 12px;
+            padding: 20px; text-align: center; position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,.5);
         }
-        .shop-item:hover { border-color: var(--shop-purple); transform: translateY(-2px); box-shadow: 0 8px 25px rgba(124,58,237,.2); }
-        .shop-item::before { content:''; position: absolute; top: 0; left: 0; width: 100%; height: 3px; background: var(--shop-purple); }
-        .shop-item.orange::before { background: var(--shop-orange); }
-        .shop-item.orange:hover { border-color: var(--shop-orange); box-shadow: 0 8px 25px rgba(234,88,12,.2); }
-        .shop-item-icon { font-size: 3rem; margin-bottom: 10px; display: block; }
-        .shop-item-name { font-family: 'Teko'; font-size: 1.4rem; color: white; margin-bottom: 5px; }
-        .shop-item-desc { font-size: .85rem; color: #888; margin-bottom: 15px; line-height: 1.4; }
-        /* PRECIO MEJORADO: AMARILLO BRILLANTE SOBRE FONDO OSCURO */
+        .shop-item.orange { border-top: 5px solid var(--shop-orange); }
+        .shop-item:not(.orange) { border-top: 5px solid var(--shop-purple); }
+        .shop-item-icon { font-size: 3.5rem; margin-bottom: 10px; display: block; }
+        .shop-item-name { font-family: 'Teko'; font-size: 1.6rem; color: white; margin-bottom: 5px; }
+        .shop-item-desc { font-size: .85rem; color: #aaa; margin-bottom: 15px; line-height: 1.3; }
+        /* PRECIO - ESTILOS INLINE ADICIONALES POR SEGURIDAD */
         .shop-item-price {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            font-family: 'Teko', sans-serif;
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: #FFD700 !important;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 8px 5px;
-            margin: 10px 0;
-            border-radius: 30px;
-            border: 1px solid #FFD700;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-            text-shadow: 2px 2px 0 #000;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+            font-family: 'Teko', sans-serif; font-size: 2.6rem; font-weight: 800;
+            color: #000 !important; background: #FFD700;
+            padding: 10px 5px; margin: 15px 0; border-radius: 50px;
+            border: 3px solid #FFA500; box-shadow: 0 0 20px gold;
+            text-shadow: none; line-height: 1.2;
         }
-        .shop-item-price i {
-            color: #FFD700 !important;
-            font-size: 1.8rem;
-        }
+        .shop-item-price i { color: #000 !important; font-size: 2rem; }
         .shop-buy-btn {
-            width: 100%; padding: 12px; border-radius: 4px; border: none;
-            font-family: 'Rajdhani'; font-weight: 700; font-size: 1.1rem;
+            width: 100%; padding: 12px; border-radius: 8px; border: none;
+            font-family: 'Rajdhani'; font-weight: 700; font-size: 1.2rem;
             text-transform: uppercase; cursor: pointer; transition: .2s;
-            background: var(--shop-purple); color: white;
+            background: var(--shop-purple); color: white; letter-spacing: 1px;
         }
-        .shop-buy-btn:hover { background: #6d28d9; }
         .shop-buy-btn.orange-btn { background: var(--shop-orange); }
-        .shop-buy-btn.orange-btn:hover { background: #c2410c; }
-        .shop-buy-btn:disabled { background: #333; color: #666; cursor: not-allowed; }
-        .shop-qty-badge { position: absolute; top: 10px; right: 10px; background: var(--primary-color); color: black; font-weight: 700; font-size: .8rem; padding: 2px 8px; border-radius: 10px; }
+        .shop-buy-btn:hover { filter: brightness(1.2); transform: scale(1.02); }
+        .shop-buy-btn:disabled { background: #444; color: #888; cursor: not-allowed; opacity: 0.6; }
+        .shop-qty-badge {
+            position: absolute; top: 10px; right: 10px;
+            background: gold; color: black; font-weight: bold;
+            padding: 4px 12px; border-radius: 30px; font-size: 1rem;
+            border: 2px solid #FFA500;
+        }
 
         /* ── ADMIN PREMIOS BP ── */
         .bp-prizes-section { margin-top: 20px; border-top: 1px solid #333; padding-top: 15px; }
@@ -444,15 +435,15 @@
     </div>
 </div>
 
-<!-- TIENDA MODAL (PRECIOS VISIBLES) -->
+<!-- TIENDA MODAL (CORREGIDA Y VISIBLE) -->
 <div id="shop-modal" onclick="if(event.target.id==='shop-modal')closeShop()">
     <div class="shop-box">
         <div class="shop-header">
             <span class="shop-title"><i class="fas fa-store"></i> DiviTienda</span>
             <div class="shop-coins-display">
-                <i class="fas fa-coins" style="color:var(--primary-color)"></i>
+                <i class="fas fa-coins" style="color:gold;"></i>
                 <span class="shop-coins-val" id="shop-coins-val">0</span>
-                <span style="font-size:.8rem;color:#aaa;">monedas</span>
+                <span style="font-size:1rem; color:#ccc;">monedas</span>
             </div>
         </div>
         <div class="shop-body">
@@ -463,7 +454,7 @@
                 <div class="shop-item-desc">Lanza un tomate a un rival y le quitas 50 puntos. ¡Cuidado si tiene escudo!</div>
                 <div class="shop-item-price"><i class="fas fa-coins"></i> 50</div>
                 <div class="shop-qty-badge" id="shop-tom-qty">x0</div>
-                <button class="shop-buy-btn orange-btn" onclick="shopBuy('tomato',1,50)">Comprar 1</button>
+                <button class="shop-buy-btn orange-btn" onclick="window.shopBuy('tomato',1,50)">Comprar 1</button>
             </div>
             <!-- Tomate x5 -->
             <div class="shop-item orange">
@@ -471,7 +462,7 @@
                 <div class="shop-item-name">Pack Tomates x5</div>
                 <div class="shop-item-desc">5 tomates con descuento. ¡Ataca sin parar a tus rivales!</div>
                 <div class="shop-item-price"><i class="fas fa-coins"></i> 200</div>
-                <button class="shop-buy-btn orange-btn" onclick="shopBuy('tomato',5,200)">Pack x5</button>
+                <button class="shop-buy-btn orange-btn" onclick="window.shopBuy('tomato',5,200)">Pack x5</button>
             </div>
             <!-- Escudo 1 día -->
             <div class="shop-item">
@@ -479,7 +470,7 @@
                 <div class="shop-item-name">Escudo 1 Día</div>
                 <div class="shop-item-desc">Protección contra tomates por 24 horas. El próximo ataque destruirá el escudo.</div>
                 <div class="shop-item-price"><i class="fas fa-coins"></i> 100</div>
-                <button class="shop-buy-btn" onclick="shopBuy('shield',1,100)">Comprar</button>
+                <button class="shop-buy-btn" onclick="window.shopBuy('shield',1,100)">Comprar</button>
             </div>
             <!-- Escudo 3 días -->
             <div class="shop-item">
@@ -487,7 +478,7 @@
                 <div class="shop-item-name">Escudo Pro 3 Días</div>
                 <div class="shop-item-desc">Protección extendida por 3 días. ¡El mejor precio por duración!</div>
                 <div class="shop-item-price"><i class="fas fa-coins"></i> 250</div>
-                <button class="shop-buy-btn" onclick="shopBuy('shield',3,250)">Comprar</button>
+                <button class="shop-buy-btn" onclick="window.shopBuy('shield',3,250)">Comprar</button>
             </div>
             <!-- Pase de Batalla -->
             <div class="shop-item" id="shop-bp-item" style="grid-column:span 2;">
@@ -495,7 +486,7 @@
                 <div class="shop-item-name">Pase de Batalla</div>
                 <div class="shop-item-desc">Desbloquea todas las recompensas del Pase de Batalla: tomates extra, escudos, pases de comer y más.</div>
                 <div class="shop-item-price"><i class="fas fa-coins"></i> 500</div>
-                <button class="shop-buy-btn" id="shop-bp-btn" onclick="shopBuy('bp',1,500)" style="max-width:300px;margin:0 auto;display:block;">Comprar Pase</button>
+                <button class="shop-buy-btn" id="shop-bp-btn" onclick="window.shopBuy('bp',1,500)" style="max-width:300px;margin:0 auto;display:block;">Comprar Pase</button>
             </div>
         </div>
     </div>
@@ -978,6 +969,7 @@ async function loadScore(user){
     if(hasFinishedGame)document.getElementById('msg').innerHTML="<span style='color:var(--primary-color);'>¡Ya terminaste!</span>";
     currentMainLevel=unlockedLevel;
     populateLevelSelect();updateUI();renderMainAvatar();
+    console.log('✅ Perfil cargado. Monedas:', currentCoins, 'Tomates:', itemTomatoes);
 }
 
 function updateCoinDisplay(){document.getElementById('coinDisplay').innerText=currentCoins;}
@@ -1051,63 +1043,61 @@ async function buyBattlePass(){
 // TIENDA (100% FUNCIONAL)
 // ============================================================
 function openShop(){
-    console.log('Abriendo tienda. Monedas actuales:', currentCoins);
+    console.log('%c🛒 Abriendo tienda...', 'color: cyan; font-size: 16px');
+    console.log('Monedas actuales:', currentCoins);
     document.getElementById('shop-modal').style.display='flex';
-    document.getElementById('shop-coins-val').innerText=currentCoins;
-    document.getElementById('shop-tom-qty').innerText='x'+itemTomatoes;
-    const bpBtn=document.getElementById('shop-bp-btn');
-    if(hasBP){bpBtn.disabled=true;bpBtn.innerText="Ya tienes el pase";}
-    else{bpBtn.disabled=false;bpBtn.innerText="Comprar Pase";}
+    document.getElementById('shop-coins-val').innerText = currentCoins;
+    document.getElementById('shop-tom-qty').innerText = 'x' + itemTomatoes;
+    const bpBtn = document.getElementById('shop-bp-btn');
+    if(hasBP) {
+        bpBtn.disabled = true;
+        bpBtn.innerText = "Ya tienes el pase";
+    } else {
+        bpBtn.disabled = false;
+        bpBtn.innerText = "Comprar Pase";
+    }
 }
-function closeShop(){document.getElementById('shop-modal').style.display='none';}
+function closeShop(){ document.getElementById('shop-modal').style.display='none'; }
 
 window.shopBuy = async function(type, qty, price) {
-    console.log(`Intentando comprar ${type} x${qty} por ${price} monedas. Monedas actuales: ${currentCoins}`);
-    if(currentCoins<price) {
-        showToast(`❌ No tienes suficientes monedas. Necesitas ${price}.`,'tomato');
+    console.log(`🛍️ Comprando ${type} x${qty} por ${price}. Monedas: ${currentCoins}`);
+    if(currentCoins < price) {
+        alert(`❌ No tienes suficientes monedas. Necesitas ${price}.`);
         return;
     }
-    let confirm_msg='';
-    if(type==='tomato')confirm_msg=`¿Comprar ${qty} tomate(s) por ${price} monedas?`;
-    else if(type==='shield')confirm_msg=`¿Comprar Escudo por ${qty} día(s) por ${price} monedas?`;
-    else if(type==='bp')confirm_msg=`¿Comprar Pase de Batalla por ${price} monedas?`;
-    if(!confirm(confirm_msg))return;
+    let confirmMsg = '';
+    if(type === 'tomato') confirmMsg = `¿Comprar ${qty} tomate(s) por ${price} monedas?`;
+    else if(type === 'shield') confirmMsg = `¿Comprar Escudo por ${qty} día(s) por ${price} monedas?`;
+    else if(type === 'bp') confirmMsg = `¿Comprar Pase de Batalla por ${price} monedas?`;
+    if(!confirm(confirmMsg)) return;
 
-    const newCoins=currentCoins-price;
-    const updates={coins:newCoins};
-
-    if(type==='tomato'){
-        const newTom=itemTomatoes+qty;
-        updates.item_tomatoes=newTom;
-    }else if(type==='shield'){
-        const base=(itemShieldUntil&&itemShieldUntil>new Date())?itemShieldUntil:new Date();
-        const ex=new Date(base.getTime()+(qty*86400000));
-        updates.item_shield_until=ex.toISOString();
-    }else if(type==='bp'){
-        if(hasBP)return alert("Ya tienes el pase.");
-        updates.has_battle_pass=true;
+    const newCoins = currentCoins - price;
+    const updates = { coins: newCoins };
+    if(type === 'tomato') updates.item_tomatoes = itemTomatoes + qty;
+    else if(type === 'shield') {
+        const base = (itemShieldUntil && itemShieldUntil > new Date()) ? itemShieldUntil : new Date();
+        updates.item_shield_until = new Date(base.getTime() + (qty * 86400000)).toISOString();
+    } else if(type === 'bp') {
+        if(hasBP) { alert("Ya tienes el pase."); return; }
+        updates.has_battle_pass = true;
     }
 
-    try{
-        const { error } = await _supabase.from('profiles').update(updates).eq('id',currentUser.id);
+    try {
+        const { error } = await _supabase.from('profiles').update(updates).eq('id', currentUser.id);
         if(error) throw error;
-        currentCoins=newCoins;
-        if(type==='tomato'){
-            itemTomatoes+=qty;
-        }else if(type==='shield'){
-            itemShieldUntil=new Date(updates.item_shield_until);
-        }else if(type==='bp'){
-            hasBP=true;
-        }
+        currentCoins = newCoins;
+        if(type === 'tomato') itemTomatoes += qty;
+        else if(type === 'shield') itemShieldUntil = new Date(updates.item_shield_until);
+        else if(type === 'bp') hasBP = true;
         updateCoinDisplay();
         updateInventoryUI();
-        updateBattlePassUI();
+        if(hasBP) updateBattlePassUI();
         AudioEngine.playShop();
-        showToast(`✅ Compra exitosa: ${type==='tomato'?`🍅 x${qty}`:type==='shield'?`🛡️ ${qty} día(s)`:'👑 Pase'}`,'shop');
-        openShop(); // Refrescar tienda
-    }catch(e){
+        alert(`✅ ¡Compra exitosa! Ahora tienes ${currentCoins} monedas.`);
+        openShop(); // Refrescar
+    } catch(e) {
         console.error('Error en compra:', e);
-        showToast("❌ Error al comprar: "+e.message,'tomato');
+        alert('❌ Error al comprar. Revisa consola.');
     }
 };
 
@@ -1434,3 +1424,4 @@ async function verificarSolucion(){
 </script>
 </body>
 </html>
+
