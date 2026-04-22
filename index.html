@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V21 (Ataque Corregido)</title>
+    <title>Reto de División - V22 (Limpio y Ataque OK)</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* ============================================================
-           ESTILOS COMPLETOS - SIN CHAT, SIN ERRORES, TIENDA VISIBLE
+           ESTILOS COMPLETOS - SIN TEXTOS BASURA, TIENDA VISIBLE
            ============================================================ */
         :root {
             --primary-color: #ffcc00; --primary-light: #ff9800; --text-dark: #e0e0e0;
@@ -45,18 +45,9 @@
         .avatar-squad-wrapper { display: flex; flex-direction: column; align-items: center; gap: 5px; }
         .avatar-container { width: 60px; height: 60px; border-radius: 50%; overflow: hidden; border: 2px solid var(--primary-color); background: #000; position: relative; box-shadow: 0 0 10px var(--primary-color); flex-shrink: 0; cursor: pointer; }
         .avatar-img { width: 100%; height: 100%; object-fit: cover; background: black; }
-        .avatar-iron   { border-color: var(--rank-iron);     box-shadow: 0 0 5px  var(--rank-iron); }
-        .avatar-bronze { border-color: var(--rank-bronze);   box-shadow: 0 0 8px  var(--rank-bronze); }
-        .avatar-silver { border-color: var(--rank-silver);   box-shadow: 0 0 8px  var(--rank-silver); }
-        .avatar-gold   { border-color: var(--rank-gold);     box-shadow: 0 0 15px var(--rank-gold); background: rgba(251,191,36,.1); }
-        .avatar-platinum{ border-color: var(--rank-platinum);box-shadow: 0 0 15px var(--rank-platinum); }
-        .avatar-diamond { border-color: var(--rank-diamond); box-shadow: 0 0 15px var(--rank-diamond); background: rgba(124,77,255,.1); }
-        .avatar-heroic  { border-color: var(--rank-heroic);  box-shadow: 0 0 20px var(--rank-heroic); background: rgba(255,23,68,.1); animation: heroPulse 2s infinite; }
-        @keyframes heroPulse { 0%{box-shadow:0 0 0 0 rgba(255,23,68,.7)} 70%{box-shadow:0 0 0 15px rgba(255,23,68,0)} 100%{box-shadow:0 0 0 0 rgba(255,23,68,0)} }
         .user-info-panel { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .squad-display { display: flex; flex-direction: column; align-items: center; }
         .squad-shield { width: 35px; height: 40px; }
-        .squad-name-small { font-size: .65rem; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; margin-top: 2px; }
 
         /* ── COINS ── */
         .coin-display-container { display: flex; align-items: center; gap: 5px; background: rgba(255,204,0,.1); padding: 5px 10px; border-radius: 20px; border: 1px solid var(--primary-color); cursor: default; }
@@ -81,10 +72,6 @@
         .streak-display.on-fire { border-color: #ff6600; background: rgba(255,100,0,.15); box-shadow: 0 0 18px rgba(255,100,0,.5); animation: firePulse 1s infinite alternate; }
         @keyframes firePulse { from{box-shadow:0 0 10px rgba(255,100,0,.4)} to{box-shadow:0 0 25px rgba(255,100,0,.9)} }
         .streak-count { font-family: 'Teko'; font-size: 1.5rem; color: var(--primary-color); line-height: 1; font-weight: 700; }
-        .streak-label { font-size: .7rem; color: #888; text-transform: uppercase; }
-
-        .bonus-flash { position: fixed; top: 50%; left: 50%; transform: translate(-50%,-50%); font-family: 'Teko', sans-serif; font-size: 5rem; color: var(--primary-color); text-shadow: 0 0 30px var(--primary-color), 4px 4px 0 #000; z-index: 99995; pointer-events: none; animation: bonusAnim 1.2s forwards; }
-        @keyframes bonusAnim { 0%{opacity:0;transform:translate(-50%,-50%) scale(.3)} 30%{opacity:1;transform:translate(-50%,-60%) scale(1.2)} 70%{opacity:1;transform:translate(-50%,-65%) scale(1)} 100%{opacity:0;transform:translate(-50%,-80%) scale(.8)} }
 
         .progress-bar-container { flex-grow: 1; margin: 0 20px; height: 12px; background: #333; border-radius: 0; overflow: hidden; min-width: 100px; }
         .progress-bar-fill { height: 100%; background: var(--success); width: 0%; transition: width .3s; box-shadow: 0 0 10px var(--success); }
@@ -98,18 +85,8 @@
         .ranking-item { display: flex; justify-content: space-between; align-items: center; padding: 10px; margin-bottom: 8px; background: rgba(255,255,255,.03); border-left: 4px solid #333; transition: all .3s; position: relative; overflow: hidden; }
         .ranking-item.elite { background: linear-gradient(90deg,rgba(255,215,0,.1),transparent); border-left: 4px solid var(--rank-gold); }
         .ranking-item.rank-1 { border: 2px solid #ffd700; background: linear-gradient(90deg,rgba(255,215,0,.2),rgba(255,215,0,.05)); box-shadow: 0 0 15px rgba(255,215,0,.3); animation: champGlow 2s infinite alternate; }
-        .ranking-item.rank-1 .rank-name-list { color: #ffd700; font-size: 1.2rem; text-shadow: 0 0 10px rgba(255,215,0,.5); }
-        .ranking-item.rank-1 .list-avatar { border-color: #ffd700; box-shadow: 0 0 15px #ffd700; transform: scale(1.1); }
-        @keyframes champGlow { 0%{border-color:#ffd700;box-shadow:0 0 10px rgba(255,215,0,.2)} 100%{border-color:#fff;box-shadow:0 0 20px rgba(255,215,0,.6)} }
         .rank-row { display: flex; align-items: center; gap: 10px; flex-grow: 1; }
         .list-avatar { width: 30px; height: 30px; border-radius: 50%; border: 2px solid #333; flex-shrink: 0; transition: transform .2s; }
-        .rank-iron   { color: var(--rank-iron);     border-color: var(--rank-iron); }
-        .rank-bronze { color: var(--rank-bronze);   border-color: var(--rank-bronze); }
-        .rank-silver { color: var(--rank-silver);   border-color: var(--rank-silver); }
-        .rank-gold   { color: var(--rank-gold);     border-color: var(--rank-gold); }
-        .rank-platinum{color: var(--rank-platinum); border-color: var(--rank-platinum); }
-        .rank-diamond { color: var(--rank-diamond); border-color: var(--rank-diamond); }
-        .rank-heroic  { color: var(--rank-heroic);  border-color: var(--rank-heroic); }
         .rank-pos { font-weight: 700; color: #666; width: 20px; font-size: 1rem; }
         .rank-info { flex-grow: 1; display: flex; flex-direction: column; }
         .rank-name-list { font-weight: 600; font-size: .9rem; }
@@ -136,13 +113,9 @@
         .mission-bar-wrap { height: 6px; background: #333; border-radius: 3px; overflow: hidden; }
         .mission-bar { height: 100%; background: #9b59b6; border-radius: 3px; transition: width .5s; }
         .mission-progress-text { font-size: .75rem; color: #888; margin-top: 4px; }
-        .mission-complete { border-color: var(--success); background: rgba(0,230,118,.08); }
-        .mission-complete .mission-name { color: var(--success); }
-        .mission-complete .mission-bar { background: var(--success); }
 
         /* ── HALL OF FAME ── */
         .hall-of-fame { margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; position: relative; }
-        .hall-of-fame::before { content:""; position: absolute; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg,transparent,var(--error),transparent); }
         .hall-title { font-family: 'Teko'; font-size: 1.8rem; color: var(--error); text-align: center; margin-bottom: 15px; text-shadow: 0 0 10px rgba(255,23,68,.5); }
         .fame-list { list-style: none; padding: 0; margin: 0; max-height: 150px; overflow-y: auto; }
         .fame-item { display: flex; align-items: center; gap: 10px; padding: 8px; border-bottom: 1px solid rgba(255,255,255,.1); font-size: .9rem; }
@@ -290,6 +263,10 @@
         #epic-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99990; display: none; justify-content: center; align-items: center; pointer-events: none; }
         .epic-text { font-family: 'Teko', sans-serif; font-size: 8rem; color: var(--error); text-transform: uppercase; font-weight: 800; text-shadow: 0 0 20px rgba(255,0,0,.8), 4px 4px 0 #000; opacity: 0; }
         @keyframes epicPulse { 0%{transform:scale(.2) rotate(-10deg);opacity:0} 50%{transform:scale(1.2) rotate(5deg);opacity:1} 100%{transform:scale(1) rotate(0deg);opacity:1} }
+
+        /* ── SOUND TOGGLE ── */
+        .sound-toggle { position: fixed; bottom: 140px; left: 20px; z-index: 9001; width: 44px; height: 44px; border-radius: 50%; background: #222; border: 2px solid #555; color: #888; font-size: 1.2rem; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: .2s; }
+        .sound-toggle.on { background: rgba(255,204,0,.15); border-color: var(--primary-color); color: var(--primary-color); }
     </style>
 </head>
 <body>
@@ -898,41 +875,61 @@ async function incrementSquadMissionProgress(key, amount=1) {
 }
 
 // ============================================================
-// ATAQUE CON TOMATE (CORREGIDO)
+// ATAQUE CON TOMATE (CORREGIDO Y FORZADO)
 // ============================================================
 async function attackUser(targetId, targetName) {
     if(itemTomatoes <= 0) return alert("No tienes tomates. ¡Ve a la tienda!");
     if(!confirm(`¿Gastar 1 tomate para atacar a ${targetName}?`)) return;
+    
     itemTomatoes--;
     updateInventoryUI();
+    
     try {
-        const { data: victim, error } = await _supabase.from('profiles').select('total_score,item_shield_until,squad_id').eq('id', targetId).single();
+        // Obtener datos de la víctima
+        const { data: victim, error } = await _supabase.from('profiles')
+            .select('total_score, item_shield_until, squad_id')
+            .eq('id', targetId)
+            .single();
         if(error || !victim) throw new Error("Usuario no encontrado");
+        
         let updates = {};
         let msg = '';
         const hasShield = victim.item_shield_until && new Date(victim.item_shield_until) > new Date();
+        
         if(hasShield) {
             updates.item_shield_until = null;
             msg = `🛡️ ¡${targetName} tenía ESCUDO! El ataque falló.`;
         } else {
-            const newScore = Math.max(0, (victim.total_score||0) - 50);
+            const newScore = Math.max(0, (victim.total_score || 0) - 50);
             updates.total_score = newScore;
             msg = `🍅 ¡Atacaste a ${targetName}! Perdió 50 puntos.`;
         }
-        // Actualizar la víctima
-        await _supabase.from('profiles').update(updates).eq('id', targetId);
-        // Actualizar los tomates del atacante
-        await _supabase.from('profiles').update({item_tomatoes: itemTomatoes}).eq('id', currentUser.id);
+        
+        // Actualizar víctima
+        const { error: updateError } = await _supabase.from('profiles')
+            .update(updates)
+            .eq('id', targetId);
+        if(updateError) throw updateError;
+        
+        // Actualizar tomates del atacante
+        await _supabase.from('profiles').update({ item_tomatoes: itemTomatoes }).eq('id', currentUser.id);
+        
         // Registrar para misión de escuadra
         if(userSquadId && victim.squad_id === userSquadId) {
             await incrementSquadMissionProgress('squadTomatoAttacks', 1);
         }
+        
         showToast(msg, 'tomato');
-        // FORZAR actualización del ranking inmediatamente
+        console.log(`Ataque realizado: ${msg}`);
+        
+        // FORZAR actualización del ranking inmediatamente después de que Supabase confirme
         await updateRanking();
+        
     } catch(e) {
+        console.error('Error en ataque:', e);
         alert("Error al atacar: " + e.message);
-        itemTomatoes++; updateInventoryUI();
+        itemTomatoes++; // Devolver tomate si falló
+        updateInventoryUI();
     }
 }
 
@@ -944,7 +941,9 @@ function startRanking(){ updateRanking(); rankInt = setInterval(updateRanking, 5
 async function updateRanking(){
     const list = document.getElementById('ranking-list');
     try {
-        const { data, error } = await _supabase.from('profiles').select('id,username,total_score,avatar_style,completed_at,is_banned,squad_id').order('total_score',{ascending:false});
+        const { data, error } = await _supabase.from('profiles')
+            .select('id,username,total_score,avatar_style,completed_at,is_banned,squad_id')
+            .order('total_score',{ascending:false});
         if(error) throw error;
         if(!data||!data.length){ list.innerHTML='<li style="text-align:center;padding:10px;color:#666;">No hay datos.</li>'; return; }
         const active = data.filter(u=>!u.completed_at&&!u.is_banned);
