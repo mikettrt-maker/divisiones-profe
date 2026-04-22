@@ -816,7 +816,7 @@ async function saveUserDataToSupabase() {
     };
     
     const { error } = await supabase
-        .from('profiles')
+        .from('users')
         .update(updates)
         .eq('id', currentUser.id);
         
@@ -829,7 +829,7 @@ async function saveUserDataToSupabase() {
 // Cargar datos del usuario desde Supabase
 async function loadUserData(userId) {
     const { data, error } = await supabase
-        .from('profiles')
+        .from('users')
         .select('*')
         .eq('id', userId)
         .single();
