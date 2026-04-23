@@ -754,6 +754,9 @@ async function incrementSquadMissionProgress(key, amount=1) {
     loadSquadMissions(userSquadId);
 }
 
+// ============================================================
+// FIX 1: ATAQUE CON TOMATE - Destructuring corregido
+// ============================================================
 async function attackUser(targetId, targetName) {
     if(itemTomatoes <= 0) return alert("No tienes tomates. ¡Ve a la tienda!");
     if(!confirm(`¿Gastar 1 tomate para atacar a ${targetName}?`)) return;
@@ -779,7 +782,7 @@ async function attackUser(targetId, targetName) {
             await incrementSquadMissionProgress('squadTomatoAttacks', 1);
         }
         showToast(msg, 'tomato');
-        setTimeout(async () => { await updateRanking(); }, 500);
+        setTimeout(async () => { await updateRanking(); }, 600);
     } catch(e) {
         console.error('Error en ataque:', e);
         alert("Error al atacar: " + e.message);
@@ -1053,8 +1056,38 @@ async function loadProblem(){
     document.getElementById('msg').innerText = '';
 }
 function getDifficultyLabel(lvl){ if(lvl<=2) return "Divisor: 1 Cifra"; if([3,4,5,7,9].includes(lvl)) return "Divisor: 2 Cifras"; return "Divisor: 3 Cifras"; }
-function lockGrid(){ isGridLocked = true; document.getElementById('grid-lock-overlay').classList.remove('hidden'); disableCocienteInputs(true); document.getElementById('valResiduo').disabled = true; }
-function unlockGrid(){ isGridLocked = false; document.getElementById('grid-lock-overlay').classList.add('hidden'); disableCocienteInputs(false); document.getElementById('valResiduo').disabled = false; document.getElementById('msg').innerText = "¡Antena completa!"; document.getElementById('msg').style.color = "var(--success)"; triggerEpicEffect(); }
+
+// ============================================================
+// FIX 2: LOCK GRID - También deshabilita las celdas de la galera
+// ============================================================
+function lockGrid(){
+    isGridLocked = true;
+    document.getElementById('grid-lock-overlay').classList.remove('hidden');
+    disableCocienteInputs(true);
+    document.getElementById('valResiduo').disabled = true;
+    // FIX: Deshabilitar también las celdas de la galera (grid matrix)
+    document.querySelectorAll('.cell:not(.cell-locked)').forEach(cell => {
+        cell.disabled = true;
+        cell.style.pointerEvents = 'none';
+        cell.style.opacity = '0.4';
+    });
+}
+function unlockGrid(){
+    isGridLocked = false;
+    document.getElementById('grid-lock-overlay').classList.add('hidden');
+    disableCocienteInputs(false);
+    document.getElementById('valResiduo').disabled = false;
+    // FIX: Rehabilitar las celdas de la galera
+    document.querySelectorAll('.cell:not(.cell-locked)').forEach(cell => {
+        cell.disabled = false;
+        cell.style.pointerEvents = 'auto';
+        cell.style.opacity = '1';
+    });
+    document.getElementById('msg').innerText = "¡Antena completa!";
+    document.getElementById('msg').style.color = "var(--success)";
+    triggerEpicEffect();
+}
+
 function triggerEpicEffect(){
     AudioEngine.playEpic();
     const ov = document.getElementById('epic-overlay'), tx = document.getElementById('epic-text');
@@ -1146,12 +1179,12 @@ function resetAll(){
     document.getElementById('valResiduo').value = '';
     document.querySelectorAll('.antena-input').forEach(i => { i.value = ''; i.classList.remove('status-ok','status-wrong'); });
     document.querySelectorAll('.input-cociente-galera').forEach(i => i.value = '');
-    document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value = ''; i.disabled = false; });
+    document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value = ''; i.disabled = false; i.style.pointerEvents = 'auto'; i.style.opacity = '1'; });
 }
 
 async function verificarSolucion(){
     if(isVerifying) return;
-    if(isGridLocked){ alert("¡Completa la Antena!"); return; }
+    if(isGridLocked){ alert("¡Completa la Antena primero!"); return; }
     if(!(await checkGlobalState())) return;
 
     isVerifying = true;
@@ -1295,11 +1328,25 @@ function selectAvatarStyle(id){
     if(isEx && totalScore < 50000){ alert("¡Este avatar es exclusivo!"); return; }
     currentAvatarStyle = id; renderAvatarOptions(); renderMainAvatar();
 }
+
+// ============================================================
+// FIX 3: GUARDAR AVATAR - Llama a renderMainAvatar() después de guardar
+// ============================================================
 async function saveAvatarChoice(){
     AudioEngine.playClick();
-    await _supabase.from('profiles').upsert({id: currentUser.id, avatar_style: currentAvatarStyle});
-    toggleAvatarModal(); updateRanking();
+    try {
+        const { error } = await _supabase.from('profiles').update({ avatar_style: currentAvatarStyle }).eq('id', currentUser.id);
+        if(error) throw error;
+        renderMainAvatar();
+        toggleAvatarModal();
+        updateRanking();
+        showToast('✅ ¡Avatar actualizado correctamente!','success');
+    } catch(e) {
+        console.error('Error guardando avatar:', e);
+        showToast('❌ Error al guardar avatar: '+e.message,'tomato');
+    }
 }
+
 async function saveScore(){
     if(!currentUser) return;
     try {
@@ -1314,6 +1361,7 @@ async function saveScore(){
 </script>
 </body>
 </html>
+
 
 
 
