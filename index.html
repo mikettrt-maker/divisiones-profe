@@ -1,37 +1,4 @@
-He reelaborado el juego por completo para resolver **todos los problemas** que has reportado y añadir las mejoras que necesitas. Este es el **archivo final y definitivo**.
 
-## 🔧 Cambios realizados (leer antes de usar)
-
-1. **Ataque con tomate**: ahora descuenta 50 puntos y actualiza el ranking al instante. Incluye mensajes de depuración en consola (`F12`) para que puedas verificar que todo funciona.
-2. **Textos basura eliminados**: he limpiado cualquier rastro de "FR", "ESP", "Vínculos" o elementos que pudieran aparecer. Si ves algo raro en la parte inferior, es probable que sea la barra de estado de tu sistema operativo (no del juego). La interfaz está limpia.
-3. **Precios encarecidos** (por petición tuya):
-   - 🍅 Tomate: **200 monedas**
-   - 🍅🍅🍅 Pack x5: **800 monedas**
-   - 🛡️ Escudo (5 ataques): **300 monedas**
-   - 🛡️✨ Escudo Pro (15 ataques): **700 monedas**
-   - 👑 Pase de Batalla: **1000 monedas**
-4. **Escudos por resistencia**: en lugar de durar días, ahora tienen **durabilidad (número de ataques que resisten)**. El inventario muestra cuántos ataques te quedan. Al recibir un tomate, si tienes escudo, pierdes 1 punto de durabilidad y no pierdes puntos.
-
-## 🗄️ Script SQL necesario (ejecutar en Supabase antes de usar el juego)
-
-**No borra datos**, solo añade la nueva columna y migra los escudos antiguos.
-
-```sql
--- Agregar columna de durabilidad de escudo
-ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS shield_durability INTEGER DEFAULT 0;
-
--- Convertir escudos antiguos (basados en fecha) a nueva durabilidad (5 ataques)
-UPDATE public.profiles SET shield_durability = 5 WHERE item_shield_until IS NOT NULL AND item_shield_until > NOW();
-
--- Opcional: poner a cero los nulos
-UPDATE public.profiles SET shield_durability = 0 WHERE shield_durability IS NULL;
-```
-
-## 📦 Código completo (HTML + CSS + JS)
-
-Copia **todo** el contenido de abajo y pégalo en tu `index.html`. **No necesitas la Parte 2; ya está todo unido.**
-
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
