@@ -801,7 +801,7 @@ async function loadSquadMissions(squadId) {
     if(!squadId) { document.getElementById('squad-missions-panel').style.display='none'; return; }
     userSquadId = squadId;
     document.getElementById('squad-missions-panel').style.display = 'block';
-    const {  members } = await _supabase.from('profiles').select('total_score,current_level,coins,squad_mission_progress,claimed_squad_missions').eq('squad_id', squadId);
+    const { data: members } = await _supabase.from('profiles').select('total_score,current_level,coins,squad_mission_progress,claimed_squad_missions').eq('squad_id', squadId);
     if(!members) return;
     let savedProgress = {};
     let claimed = [];
@@ -843,7 +843,7 @@ async function claimSquadMission(missionId) {
     const mission = SQUAD_MISSIONS.find(m=>m.id===missionId);
     if(!mission) return;
     if(squadMissionsCompleted.includes(missionId)) return alert("Ya reclamada");
-    const {  members } = await _supabase.from('profiles').select('id,coins,squad_mission_progress').eq('squad_id', userSquadId);
+    const { data: members } = await _supabase.from('profiles').select('id,coins,squad_mission_progress').eq('squad_id', userSquadId);
     const saved = members[0]?.squad_mission_progress || {};
     const prog = saved[mission.progressKey] || 0;
     if(prog < mission.goal) return alert("Aún no se ha completado");
@@ -867,7 +867,7 @@ async function incrementSquadMissionProgress(key, amount=1) {
 }
 
 // ============================================================
-// ATAQUE CON TOMATE (CORREGIDO - Refresca ranking correctamente)
+// ATAQUE CON TOMATE (CORREGIDO CON ESCUDO DE DURABILIDAD)
 // ============================================================
 async function attackUser(targetId, targetName) {
     if(itemTomatoes <= 0) return alert("No tienes tomates. ¡Ve a la tienda!");
@@ -877,7 +877,7 @@ async function attackUser(targetId, targetName) {
     updateInventoryUI();
     
     try {
-        const {  victim, error } = await _supabase.from('profiles')
+        const { data: victim, error } = await _supabase.from('profiles')
             .select('total_score, shield_durability, squad_id')
             .eq('id', targetId)
             .single();
@@ -905,11 +905,7 @@ async function attackUser(targetId, targetName) {
         
         showToast(msg, 'tomato');
         console.log(`Ataque realizado: ${msg}`);
-        
-        // FIX: Esperar 500ms para que Supabase propague el cambio, luego forzar refresh
-        setTimeout(async () => {
-            await updateRanking();
-        }, 500);
+        await updateRanking();
         
     } catch(e) {
         console.error('Error en ataque:', e);
@@ -920,24 +916,20 @@ async function attackUser(targetId, targetName) {
 }
 
 // ============================================================
-// RANKING Y ADMIN (CORREGIDO - Query directa a Supabase)
+// RANKING Y ADMIN (sin cambios)
 // ============================================================
 let rankInt;
 function startRanking(){ updateRanking(); rankInt = setInterval(updateRanking, 5000); }
 async function updateRanking(){
     const list = document.getElementById('ranking-list');
     try {
-        // FIX: Filtrar completados y baneados directamente en la query de Supabase
         const { data, error } = await _supabase.from('profiles')
             .select('id,username,total_score,avatar_style,completed_at,is_banned,squad_id')
-            .is('completed_at', null)
-            .eq('is_banned', false)
             .order('total_score',{ascending:false});
         if(error) throw error;
         if(!data||!data.length){ list.innerHTML='<li style="text-align:center;padding:10px;color:#666;">No hay datos.</li>'; return; }
-        
-        // FIX: Usar data directamente (ya viene filtrado)
-        list.innerHTML = data.map((u,i)=>{
+        const active = data.filter(u=>!u.completed_at&&!u.is_banned);
+        list.innerHTML = active.map((u,i)=>{
             const s = u.total_score||0, rI = getRankInfo(s), isMe = (currentUser&&u.username===currentUser.email.split('@')[0]);
             let rc = "ranking-item "+rI.css, dn = u.username||'Yo';
             if(i===0){ rc+=" rank-1"; dn+=" 👑"; } else if(i<10) rc+=" elite";
@@ -954,7 +946,7 @@ async function updateRanking(){
 function updateSquadRanking(all){
     const list = document.getElementById('squad-list'), ss = {};
     Object.keys(SQUADS).forEach(id=>ss[id]=0);
-    all.forEach(u=>{ if(u.squad_id&&SQUADS[u.squad_id]) ss[u.squad_id] += (u.total_score||0); });
+    all.forEach(u=>{ if(u.squad_id&&SQUADS[u.squad_id]&&!u.completed_at&&!u.is_banned) ss[u.squad_id] += (u.total_score||0); });
     list.innerHTML = Object.entries(ss).sort((a,b)=>b[1]-a[1]).map(([id,sc])=>{
         const sq = SQUADS[id];
         return `<li class="squad-rank-item" style="border-left-color:${sq.color}"><div class="squad-rank-left"><div class="squad-shield-small">${sq.svg}</div><span style="font-weight:700;color:${sq.color}">${sq.name}</span></div><span class="squad-score">${sc} pts</span></li>`;
@@ -986,9 +978,9 @@ function toggleAdminDashboard(){
 async function loadDashboardData(){
     const grid = document.getElementById('student-grid');
     try {
-        const {  settings } = await _supabase.from('game_settings').select('*').single();
+        const { data: settings } = await _supabase.from('game_settings').select('*').single();
         updateControlButtons(settings); initSeason(settings);
-        const {  students, error } = await _supabase.from('profiles').select('*').order('total_score',{ascending:false});
+        const { data: students, error } = await _supabase.from('profiles').select('*').order('total_score',{ascending:false});
         if(error) throw error;
         const now = new Date();
         let ss = {}; Object.keys(SQUADS).forEach(id => ss[id] = {count:0, score:0});
@@ -1036,12 +1028,12 @@ function updateControlButtons(settings){
     }
 }
 async function togglePause(){
-    const {  s } = await _supabase.from('game_settings').select('is_paused').single();
+    const { data: s } = await _supabase.from('game_settings').select('is_paused').single();
     await _supabase.from('game_settings').update({is_paused: !s.is_paused}).eq('id',1);
     loadDashboardData();
 }
 async function toggleExamMode(){
-    const {  s } = await _supabase.from('game_settings').select('exam_level').single();
+    const { data: s } = await _supabase.from('game_settings').select('exam_level').single();
     const nl = s.exam_level > 0 ? 0 : 1;
     await _supabase.from('game_settings').update({exam_level: nl, is_paused: false}).eq('id',1);
     loadDashboardData();
@@ -1088,7 +1080,7 @@ async function assignSquad(uid, sqId){ try { await _supabase.from('profiles').up
 // ============================================================
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        const {  { session } } = await _supabase.auth.getSession();
+        const { data: { session } } = await _supabase.auth.getSession();
         if (session?.user) { currentUser = session.user; showApp(); }
         else { showLogin(); }
     } catch(e) { showLogin(); }
@@ -1475,5 +1467,6 @@ async function saveScore(){
 </script>
 </body>
 </html>
+
 
 
