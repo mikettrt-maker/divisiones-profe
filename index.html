@@ -212,6 +212,13 @@
         #epic-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99990; display: none; justify-content: center; align-items: center; pointer-events: none; }
         .epic-text { font-family: 'Teko', sans-serif; font-size: 8rem; color: var(--error); text-transform: uppercase; font-weight: 800; text-shadow: 0 0 20px rgba(255,0,0,.8), 4px 4px 0 #000; opacity: 0; }
         @keyframes epicPulse { 0%{transform:scale(.2) rotate(-10deg);opacity:0} 50%{transform:scale(1.2) rotate(5deg);opacity:1} 100%{transform:scale(1) rotate(0deg);opacity:1} }
+
+        /* 🛡️ NUEVO: Barra de escudo en ranking */
+        .shield-bar-container { display: flex; align-items: center; gap: 4px; margin-top: 3px; }
+        .shield-icon { font-size: 0.7rem; }
+        .shield-bar-bg { width: 60px; height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
+        .shield-bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+        .shield-text { font-size: 0.65rem; color: #888; margin-left: 2px; }
     </style>
 </head>
 <body>
@@ -754,29 +761,32 @@ async function incrementSquadMissionProgress(key, amount=1) {
     loadSquadMissions(userSquadId);
 }
 
-// ============================================================
-// FIX 1: ATAQUE CON TOMATE - Destructuring corregido
-// ============================================================
+// 🍅 FIX 1: Tomates ahora sí restan puntos (con manejo de errores y reembolso)
 async function attackUser(targetId, targetName) {
     if(itemTomatoes <= 0) return alert("No tienes tomates. ¡Ve a la tienda!");
     if(!confirm(`¿Gastar 1 tomate para atacar a ${targetName}?`)) return;
     itemTomatoes--;
     updateInventoryUI();
     try {
-        const { data: victim, error } = await _supabase.from('profiles')
+        const { data: victim, error: fetchError } = await _supabase.from('profiles')
             .select('total_score, shield_durability, squad_id').eq('id', targetId).single();
-        if(error || !victim) throw new Error("Usuario no encontrado");
+        if(fetchError || !victim) throw new Error("Usuario no encontrado");
+
         let updates = {}; let msg = '';
         const victimShield = victim.shield_durability || 0;
+
         if(victimShield > 0) {
             updates.shield_durability = victimShield - 1;
-            msg = `🛡️ ¡${targetName} tenía ESCUDO! Resistió el ataque. (Escudos restantes: ${victimShield - 1})`;
+            msg = `🛡️ ¡${targetName} tenía ESCUDO! Resistió el ataque. (Restante: ${victimShield - 1})`;
         } else {
             const newScore = Math.max(0, (victim.total_score || 0) - 50);
             updates.total_score = newScore;
             msg = `🍅 ¡Atacaste a ${targetName}! Perdió 50 puntos.`;
         }
-        await _supabase.from('profiles').update(updates).eq('id', targetId);
+
+        const { error: updateError } = await _supabase.from('profiles').update(updates).eq('id', targetId);
+        if(updateError) throw updateError;
+
         await _supabase.from('profiles').update({ item_tomatoes: itemTomatoes }).eq('id', currentUser.id);
         if(userSquadId && victim.squad_id === userSquadId) {
             await incrementSquadMissionProgress('squadTomatoAttacks', 1);
@@ -785,18 +795,20 @@ async function attackUser(targetId, targetName) {
         setTimeout(async () => { await updateRanking(); }, 600);
     } catch(e) {
         console.error('Error en ataque:', e);
-        alert("Error al atacar: " + e.message);
+        showToast("❌ Error al atacar: "+e.message, 'tomato');
         itemTomatoes++; updateInventoryUI();
     }
 }
 
 let rankInt;
 function startRanking(){ updateRanking(); rankInt = setInterval(updateRanking, 5000); }
+
+// 🛡️ FIX 2: Ranking con barra de escudo dinámica
 async function updateRanking(){
     const list = document.getElementById('ranking-list');
     try {
         const { data, error } = await _supabase.from('profiles')
-            .select('id,username,total_score,avatar_style,completed_at,is_banned,squad_id')
+            .select('id,username,total_score,avatar_style,completed_at,is_banned,squad_id,shield_durability')
             .is('completed_at', null).eq('is_banned', false)
             .order('total_score',{ascending:false});
         if(error) throw error;
@@ -809,7 +821,19 @@ async function updateRanking(){
             const avUrl = getAvatarUrl(u.username||'guest', u.avatar_style||'adventurer');
             const sq = u.squad_id&&SQUADS[u.squad_id] ? `<div style="width:16px;height:18px;">${SQUADS[u.squad_id].svg}</div>` : '';
             const atk = (!isMe && itemTomatoes>0) ? `<button class="attack-btn" onclick="attackUser('${u.id}','${u.username}')">🍅</button>` : '';
-            return `<li class="${rc}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${dn}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span></div>${sq}</div><span class="rank-score">${s}</span>${atk}</li>`;
+
+            let shieldHTML = '';
+            const sh = u.shield_durability || 0;
+            if(sh > 0) {
+                const maxSh = 15;
+                const pct = Math.min(100, (sh / maxSh) * 100);
+                let barColor = '#00e676';
+                if(pct <= 30) barColor = '#ff1744';
+                else if(pct <= 60) barColor = '#ffcc00';
+                shieldHTML = `<div class="shield-bar-container"><span class="shield-icon">🛡️</span><div class="shield-bar-bg"><div class="shield-bar-fill" style="width:${pct}%;background:${barColor};"></div></div><span class="shield-text">${sh}/${maxSh}</span></div>`;
+            }
+
+            return `<li class="${rc}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${dn}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span>${shieldHTML}</div>${sq}</div><span class="rank-score">${s}</span>${atk}</li>`;
         }).join('');
         updateSquadRanking(data);
         if(userSquadId) loadSquadMissions(userSquadId);
@@ -1056,20 +1080,13 @@ async function loadProblem(){
     document.getElementById('msg').innerText = '';
 }
 function getDifficultyLabel(lvl){ if(lvl<=2) return "Divisor: 1 Cifra"; if([3,4,5,7,9].includes(lvl)) return "Divisor: 2 Cifras"; return "Divisor: 3 Cifras"; }
-
-// ============================================================
-// FIX 2: LOCK GRID - También deshabilita las celdas de la galera
-// ============================================================
 function lockGrid(){
     isGridLocked = true;
     document.getElementById('grid-lock-overlay').classList.remove('hidden');
     disableCocienteInputs(true);
     document.getElementById('valResiduo').disabled = true;
-    // FIX: Deshabilitar también las celdas de la galera (grid matrix)
     document.querySelectorAll('.cell:not(.cell-locked)').forEach(cell => {
-        cell.disabled = true;
-        cell.style.pointerEvents = 'none';
-        cell.style.opacity = '0.4';
+        cell.disabled = true; cell.style.pointerEvents = 'none'; cell.style.opacity = '0.4';
     });
 }
 function unlockGrid(){
@@ -1077,17 +1094,13 @@ function unlockGrid(){
     document.getElementById('grid-lock-overlay').classList.add('hidden');
     disableCocienteInputs(false);
     document.getElementById('valResiduo').disabled = false;
-    // FIX: Rehabilitar las celdas de la galera
     document.querySelectorAll('.cell:not(.cell-locked)').forEach(cell => {
-        cell.disabled = false;
-        cell.style.pointerEvents = 'auto';
-        cell.style.opacity = '1';
+        cell.disabled = false; cell.style.pointerEvents = 'auto'; cell.style.opacity = '1';
     });
     document.getElementById('msg').innerText = "¡Antena completa!";
     document.getElementById('msg').style.color = "var(--success)";
     triggerEpicEffect();
 }
-
 function triggerEpicEffect(){
     AudioEngine.playEpic();
     const ov = document.getElementById('epic-overlay'), tx = document.getElementById('epic-text');
@@ -1182,6 +1195,7 @@ function resetAll(){
     document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value = ''; i.disabled = false; i.style.pointerEvents = 'auto'; i.style.opacity = '1'; });
 }
 
+// 👑 FIX 3: Pase de Batalla se actualiza en tiempo real al ganar puntos
 async function verificarSolucion(){
     if(isVerifying) return;
     if(isGridLocked){ alert("¡Completa la Antena primero!"); return; }
@@ -1201,6 +1215,10 @@ async function verificarSolucion(){
         totalScore += POINTS; updateUI(); incrementStreak();
         currentCoins += 5; updateCoinDisplay();
         document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:700;font-size:1.2rem;'>¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
+        
+        // 👑 Actualizar BP en tiempo real
+        if(hasBP) updateBattlePassUI();
+        
         await incrementSquadMissionProgress('squadCorrect', 1);
         await incrementSquadMissionProgress('squadTotalScore', POINTS);
         if(currentProblemInLevel < PROBLEMS_PER_LEVEL){
@@ -1328,10 +1346,6 @@ function selectAvatarStyle(id){
     if(isEx && totalScore < 50000){ alert("¡Este avatar es exclusivo!"); return; }
     currentAvatarStyle = id; renderAvatarOptions(); renderMainAvatar();
 }
-
-// ============================================================
-// FIX 3: GUARDAR AVATAR - Llama a renderMainAvatar() después de guardar
-// ============================================================
 async function saveAvatarChoice(){
     AudioEngine.playClick();
     try {
