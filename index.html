@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División</title>
+    <title>Reto de División - V23 (Escudos y Precios Nuevos)</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* ============================================================
-           ESTILOS ORIGINALES (SIN ELEMENTOS EXTRAÑOS)
+           ESTILOS COMPLETOS - V23 (LIMPIO, TIENDA VISIBLE, ESCUDOS)
            ============================================================ */
         :root {
             --primary-color: #ffcc00; --primary-light: #ff9800; --text-dark: #e0e0e0;
@@ -176,7 +176,7 @@
         .bp-tier-label { font-size: .7rem; margin-top: 5px; color: #888; text-align: center; }
         .bp-tier-desc { font-size: .65rem; color: #555; text-align: center; margin-top: 2px; min-height: 20px; }
 
-        /* ── TIENDA (PRECIOS NUEVOS Y ESCUDOS POR DURABILIDAD) ── */
+        /* ── TIENDA (PRECIOS NUEVOS) ── */
         .shop-btn-float { position: fixed; bottom: 80px; left: 20px; z-index: 9001; width: 60px; height: 60px; border-radius: 50%; background: var(--shop-purple); border: none; color: white; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 20px var(--shop-purple); transition: .2s; }
         .shop-btn-float:hover { transform: scale(1.1); }
 
@@ -270,17 +270,6 @@
 <div id="victory-screen"><div class="victory-title">JUEGO TERMINADO</div></div>
 <div id="epic-overlay"><div class="epic-text" id="epic-text">¡BOOYAH!</div></div>
 
-<!-- BP MODAL -->
-<div id="bp-modal" class="bp-modal" onclick="if(event.target.id==='bp-modal')closeBPModal()">
-    <div class="bp-modal-content">
-        <div class="bp-reward-icon" id="bp-modal-icon">🎁</div>
-        <div class="bp-reward-title" id="bp-modal-title">Recompensa</div>
-        <div class="bp-reward-desc" id="bp-modal-desc">Premio.</div>
-        <button class="bp-reward-btn" onclick="claimBPItem()">¡Reclamar!</button>
-        <button style="margin-top:10px;background:none;border:1px solid #555;color:#888;padding:8px 20px;cursor:pointer;" onclick="closeBPModal()">Cerrar</button>
-    </div>
-</div>
-
 <!-- TIENDA MODAL (PRECIOS NUEVOS) -->
 <div id="shop-modal" onclick="if(event.target.id==='shop-modal')closeShop()">
     <div class="shop-box">
@@ -333,7 +322,6 @@
     </div>
 </div>
 
-<button class="sound-toggle" id="sound-toggle-btn" onclick="toggleAmbientSound()" title="Sonido ambiental"><i class="fas fa-volume-mute"></i></button>
 <button class="shop-btn-float" onclick="openShop()" title="DiviTienda"><i class="fas fa-store"></i></button>
 
 <!-- LOGIN -->
@@ -626,8 +614,10 @@ function stopAmbientSound() { ambientNodes.forEach(n=>{try{n.stop()}catch(e){}})
 function toggleAmbientSound() {
     ambientOn = !ambientOn;
     const btn = document.getElementById('sound-toggle-btn');
-    if(ambientOn){ startAmbientSound(); btn.classList.add('on'); btn.innerHTML = '<i class="fas fa-volume-up"></i>'; }
-    else { stopAmbientSound(); btn.classList.remove('on'); btn.innerHTML = '<i class="fas fa-volume-mute"></i>'; }
+    if(btn) {
+        if(ambientOn){ startAmbientSound(); btn.classList.add('on'); btn.innerHTML = '<i class="fas fa-volume-up"></i>'; }
+        else { stopAmbientSound(); btn.classList.remove('on'); btn.innerHTML = '<i class="fas fa-volume-mute"></i>'; }
+    }
 }
 
 function showToast(msg, type='success', duration=4000) {
@@ -686,6 +676,7 @@ function renderMainAvatar() {
 // TIENDA (PRECIOS NUEVOS Y ESCUDOS POR DURABILIDAD)
 // ============================================================
 function openShop(){
+    console.log('Abriendo tienda. Monedas:', currentCoins, 'Tomates:', itemTomatoes, 'Durabilidad escudo:', shieldDurability);
     document.getElementById('shop-modal').style.display='flex';
     document.getElementById('shop-coins-val').innerText = currentCoins;
     document.getElementById('shop-tom-qty').innerText = 'x' + itemTomatoes;
@@ -696,6 +687,7 @@ function openShop(){
 function closeShop(){ document.getElementById('shop-modal').style.display='none'; }
 
 window.shopBuy = async function(type, qty, price) {
+    console.log(`Comprando ${type} x${qty} por ${price}. Monedas: ${currentCoins}`);
     if(currentCoins < price) return showToast(`❌ No tienes suficientes monedas. Necesitas ${price}.`,'tomato');
     let confirmMsg = '';
     if(type==='tomato') confirmMsg = `¿Comprar ${qty} tomate(s) por ${price} monedas?`;
@@ -727,6 +719,7 @@ window.shopBuy = async function(type, qty, price) {
         if(type==='shield') incrementSquadMissionProgress('squadShieldBuys', 1);
         openShop();
     } catch(e) {
+        console.error('Error en compra:', e);
         showToast("❌ Error al comprar: "+e.message,'tomato');
     }
 };
@@ -756,12 +749,19 @@ function openTierModal(level, unlocked, claimed){
     if(claimed) return alert("Ya reclamaste este premio.");
     const tier = BP_REWARDS.find(t=>t.level===level); if(!tier) return;
     currentViewingTier = tier;
-    document.getElementById('bp-modal-icon').innerText = tier.icon;
-    document.getElementById('bp-modal-title').innerText = tier.name;
-    document.getElementById('bp-modal-desc').innerText = tier.desc;
-    document.getElementById('bp-modal').style.display = 'flex';
+    const modal = document.getElementById('bp-modal');
+    if(modal) {
+        document.getElementById('bp-modal-icon').innerText = tier.icon;
+        document.getElementById('bp-modal-title').innerText = tier.name;
+        document.getElementById('bp-modal-desc').innerText = tier.desc;
+        modal.style.display = 'flex';
+    }
 }
-function closeBPModal(){ document.getElementById('bp-modal').style.display='none'; currentViewingTier = null; }
+function closeBPModal(){ 
+    const modal = document.getElementById('bp-modal');
+    if(modal) modal.style.display='none'; 
+    currentViewingTier = null; 
+}
 async function claimBPItem(){
     if(!currentViewingTier) return;
     AudioEngine.playSuccess();
@@ -904,9 +904,11 @@ async function attackUser(targetId, targetName) {
         }
         
         showToast(msg, 'tomato');
+        console.log(`Ataque realizado: ${msg}`);
         await updateRanking();
         
     } catch(e) {
+        console.error('Error en ataque:', e);
         alert("Error al atacar: " + e.message);
         itemTomatoes++;
         updateInventoryUI();
@@ -914,7 +916,7 @@ async function attackUser(targetId, targetName) {
 }
 
 // ============================================================
-// RANKING Y ADMIN
+// RANKING Y ADMIN (sin cambios)
 // ============================================================
 let rankInt;
 function startRanking(){ updateRanking(); rankInt = setInterval(updateRanking, 5000); }
@@ -961,7 +963,7 @@ async function loadHallOfFame(){
 }
 
 // ============================================================
-// ADMIN FUNCIONES
+// ADMIN FUNCIONES (sin cambios)
 // ============================================================
 function showAdminDashboard(){
     document.getElementById('game-layout').style.display = 'none';
@@ -1074,7 +1076,7 @@ async function resetAllUsers(){
 async function assignSquad(uid, sqId){ try { await _supabase.from('profiles').update({squad_id: sqId}).eq('id',uid); loadDashboardData(); } catch(e){ alert("Error"); } }
 
 // ============================================================
-// LOGIN Y CARGA DE PERFIL
+// LOGIN Y CARGA DE PERFIL (actualizado con shield_durability)
 // ============================================================
 document.addEventListener('DOMContentLoaded', async () => {
     try {
@@ -1167,7 +1169,7 @@ async function loadScore(user){
 }
 
 // ============================================================
-// INICIALIZACIÓN DEL JUEGO
+// INICIALIZACIÓN DEL JUEGO (sin cambios)
 // ============================================================
 function initGame(){ loadProblem(); populateLevelSelect(); }
 function jumpToLevel(l){
@@ -1465,5 +1467,4 @@ async function saveScore(){
 </script>
 </body>
 </html>
-```
 
