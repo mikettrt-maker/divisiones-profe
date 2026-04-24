@@ -1,3 +1,7 @@
+
+
+
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -261,7 +265,7 @@
                 <button class="shop-buy-btn orange-btn" onclick="window.shopBuy('tomato',1,200)">Comprar 1</button>
             </div>
             <div class="shop-item orange">
-                <span class="shop-item-icon">🍅🍅🍅</span>
+                <span class="shop-item-icon">🍅🍅</span>
                 <div class="shop-item-name">Pack Tomates x5</div>
                 <div class="shop-item-desc">5 tomates con descuento.</div>
                 <div class="shop-item-price"><i class="fas fa-coins"></i> 800</div>
@@ -463,7 +467,7 @@
     </div>
 </div>
 
-<!-- MODALES (dentro del body, antes de cerrar) -->
+<!-- MODALES DENTRO DEL BODY -->
 <div id="gift-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.92); z-index:99999; justify-content:center; align-items:center;">
     <div class="modal-box" style="width:380px; border-top:4px solid var(--shop-purple);">
         <h3 style="margin:0 0 15px 0; color:var(--primary-color); font-family:'Teko'; font-size:1.8rem; text-transform:uppercase;">🎁 Regalar DiviCoins</h3>
@@ -650,7 +654,6 @@ function incrementStreak() {
     currentStreak++; updateStreakUI();
     const bonus = STREAK_BONUSES[currentStreak];
     if(bonus) { currentCoins += bonus; updateCoinDisplay(); showStreakBonus(currentStreak, bonus); AudioEngine.playStreak(); }
-    // 🔥 Rastreo para misión de racha x15
     if(currentStreak === 15 && userSquadId) {
         incrementSquadMissionProgress('squadStreak15', 1);
     }
@@ -780,7 +783,7 @@ async function loadSquadMissions(squadId) {
     userSquadId = squadId;
     document.getElementById('squad-missions-panel').style.display = 'block';
     
-    // 1. Cargar misiones dinámicas activas
+    // ✅ FIX: Desestructuración correcta con data:
     const { data: dynamicMissions } = await _supabase.from('squad_missions_config').select('*').eq('is_active', true);
     let missionsToRender = [];
     
@@ -790,11 +793,9 @@ async function loadSquadMissions(squadId) {
             unit: 'progreso', progressKey: m.progress_key, isDynamic: true, claimedBy: m.claimed_by_squads || []
         }));
     } else {
-        // Fallback seguro: si no hay misiones en BD, usa las 6 originales
         missionsToRender = SQUAD_MISSIONS.map(m => ({...m, isDynamic: false, claimedBy: []}));
     }
 
-    // 2. Calcular progreso actual de la escuadra
     const { data: members } = await _supabase.from('profiles').select('total_score,current_level,coins,squad_mission_progress,claimed_squad_missions').eq('squad_id', squadId);
     if(!members) return;
     let savedProgress = {}; let claimedStatic = [];
@@ -811,7 +812,6 @@ async function loadSquadMissions(squadId) {
         squadStreak15: savedProgress.squadStreak15 || 0
     };
 
-    // 3. Renderizar misiones
     const body = document.getElementById('missions-body');
     body.innerHTML = missionsToRender.map(m => {
         let prog = currentProgress[m.progressKey] || 0;
@@ -840,7 +840,6 @@ async function claimSquadMission(missionId, isDynamic, rewardAmount) {
     const { data: members } = await _supabase.from('profiles').select('id,coins').eq('squad_id', userSquadId);
     if(!members || members.length === 0) return alert("Error al cargar escuadra.");
 
-    // ✅ FIX: Comparación correcta para booleano/string
     if(isDynamic === 'true' || isDynamic === true) {
         const { data: mission } = await _supabase.from('squad_missions_config').select('claimed_by_squads').eq('id', missionId).single();
         if(!mission) return;
@@ -874,7 +873,6 @@ async function incrementSquadMissionProgress(key, amount=1) {
     loadSquadMissions(userSquadId);
 }
 
-// 🍅 FIX 1: Tomates ahora sí restan puntos (con manejo de errores y reembolso)
 async function attackUser(targetId, targetName) {
     if(itemTomatoes <= 0) return alert("No tienes tomates. ¡Ve a la tienda!");
     if(!confirm(`¿Gastar 1 tomate para atacar a ${targetName}?`)) return;
@@ -916,7 +914,6 @@ async function attackUser(targetId, targetName) {
 let rankInt;
 function startRanking(){ updateRanking(); rankInt = setInterval(updateRanking, 5000); }
 
-// 🛡️ FIX 2: Ranking con barra de escudo dinámica
 async function updateRanking(){
     const list = document.getElementById('ranking-list');
     try {
@@ -1082,7 +1079,6 @@ async function resetAllUsers(){
 }
 async function assignSquad(uid, sqId){ try { await _supabase.from('profiles').update({squad_id: sqId}).eq('id',uid); loadDashboardData(); } catch(e){ alert("Error"); } }
 
-// 🎯 ADMIN: Gestor de Misiones Dinámicas
 async function loadAdminMissions() {
     const container = document.getElementById('admin-missions-list');
     if(!container) return;
@@ -1373,7 +1369,6 @@ function resetAll(){
     document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value = ''; i.disabled = false; i.style.pointerEvents = 'auto'; i.style.opacity = '1'; });
 }
 
-// 👑 FIX 3: Pase de Batalla se actualiza en tiempo real al ganar puntos
 async function verificarSolucion(){
     if(isVerifying) return;
     if(isGridLocked){ alert("¡Completa la Antena primero!"); return; }
@@ -1394,7 +1389,6 @@ async function verificarSolucion(){
         currentCoins += 5; updateCoinDisplay();
         document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:700;font-size:1.2rem;'>¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
         
-        // 👑 Actualizar BP en tiempo real
         if(hasBP) updateBattlePassUI();
         
         await incrementSquadMissionProgress('squadCorrect', 1);
@@ -1469,7 +1463,6 @@ function startStudentHeartbeat(){
     setInterval(async () => { if(currentUser && !isAdmin) await _supabase.from('profiles').update({last_seen: new Date().toISOString()}).eq('id', currentUser.id); }, 15000);
     setInterval(() => { if(!isGridLocked && !hasFinishedGame){ playTimeCounter++; if(playTimeCounter%60 === 0) saveTime(); } }, 1000);
     
-    // 🎁 Checker de regalos del profesor
     setInterval(async () => {
         if(!currentUser || isAdmin) return;
         const { data } = await _supabase.from('profiles').select('pending_gift_coins').eq('id', currentUser.id).single();
@@ -1496,7 +1489,6 @@ function startStudentHeartbeat(){
     }, 4000);
 }
 
-// 🎁 Funciones Admin para regalar
 function openGiftModal() {
     document.getElementById('gift-modal').style.display = 'flex';
     document.getElementById('gift-amount-display').innerText = 'Selecciona una cantidad';
@@ -1512,25 +1504,31 @@ function selectGiftAmount(amt) {
     selectedGiftAmount = amt;
     document.getElementById('gift-amount-display').innerText = `Cantidad seleccionada: ${amt} 💰`;
 }
+
+// ✅ FIX: Sintaxis directa de Supabase v2 sin variables encadenadas
 async function executeGift() {
     if(selectedGiftAmount <= 0) return alert('Selecciona una cantidad primero.');
     const recipient = document.getElementById('gift-recipient').value;
     const targetName = recipient === 'all' ? 'todos los alumnos' : document.getElementById('gift-recipient').selectedOptions[0].text;
     if(!confirm(`¿Regalar ${selectedGiftAmount} DiviCoins a ${targetName}?`)) return;
     try {
-        // ✅ FIX: Filtros ANTES del update para Supabase
-        let query = _supabase.from('profiles');
         if(recipient === 'all') {
-            query = query.eq('is_banned', false).neq('username', ADMIN_USER).update({ pending_gift_coins: selectedGiftAmount });
+            const { error } = await _supabase.from('profiles')
+                .eq('is_banned', false)
+                .neq('username', ADMIN_USER)
+                .update({ pending_gift_coins: selectedGiftAmount });
+            if(error) throw error;
         } else {
-            query = query.eq('id', recipient).update({ pending_gift_coins: selectedGiftAmount });
+            const { error } = await _supabase.from('profiles')
+                .eq('id', recipient)
+                .update({ pending_gift_coins: selectedGiftAmount });
+            if(error) throw error;
         }
-        const { error } = await query;
-        if(error) throw error;
         showToast(`🎁 ¡Regalo de ${selectedGiftAmount} DiviCoins enviado!`, 'success');
         closeGiftModal();
     } catch(e) { alert('Error al enviar regalo: ' + e.message); }
 }
+
 async function saveTime(){
     if(!currentUser) return;
     try { await _supabase.from('profiles').update({total_time_played: playTimeCounter}).eq('id', currentUser.id); } catch(e){}
@@ -1616,8 +1614,4 @@ async function saveScore(){
 </script>
 </body>
 </html>
-
-
-
-
 
