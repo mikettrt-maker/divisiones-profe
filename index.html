@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* ... (TUS ESTILOS ORIGINALES SE MANTIENEN IGUALES) ... */
         :root {
             --primary-color: #ffcc00; --primary-light: #ff9800; --text-dark: #e0e0e0;
             --bg-dark: #0f0f0f; --bg-panel: #1a1a1a; --success: #00e676; --error: #ff1744;
@@ -463,7 +464,6 @@
     </div>
 </div>
 
-<!-- MODALES -->
 <div id="gift-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.92); z-index:99999; justify-content:center; align-items:center;">
     <div class="modal-box" style="width:380px; border-top:4px solid var(--shop-purple);">
         <h3 style="margin:0 0 15px 0; color:var(--primary-color); font-family:'Teko'; font-size:1.8rem; text-transform:uppercase;">🎁 Regalar DiviCoins</h3>
@@ -783,7 +783,7 @@ async function loadSquadMissions(squadId) {
     userSquadId = squadId;
     document.getElementById('squad-missions-panel').style.display = 'block';
     
-    const { data: dynamicMissions } = await _supabase.from('squad_missions_config').select('*').eq('is_active', true);
+    const {  dynamicMissions } = await _supabase.from('squad_missions_config').select('*').eq('is_active', true);
     let missionsToRender = [];
     
     if(dynamicMissions && dynamicMissions.length > 0) {
@@ -795,7 +795,7 @@ async function loadSquadMissions(squadId) {
         missionsToRender = SQUAD_MISSIONS.map(m => ({...m, isDynamic: false, claimedBy: []}));
     }
 
-    const { data: members } = await _supabase.from('profiles').select('total_score,current_level,coins,squad_mission_progress,claimed_squad_missions').eq('squad_id', squadId);
+    const {  members } = await _supabase.from('profiles').select('total_score,current_level,coins,squad_mission_progress,claimed_squad_missions').eq('squad_id', squadId);
     if(!members) return;
     let savedProgress = {}; let claimedStatic = [];
     try { savedProgress = members[0]?.squad_mission_progress || {}; claimedStatic = members[0]?.claimed_squad_missions || []; } catch(e) {}
@@ -836,17 +836,17 @@ async function loadSquadMissions(squadId) {
 
 async function claimSquadMission(missionId, isDynamic, rewardAmount) {
     if(!userSquadId) return;
-    const { data: members } = await _supabase.from('profiles').select('id,coins').eq('squad_id', userSquadId);
+    const {  members } = await _supabase.from('profiles').select('id,coins').eq('squad_id', userSquadId);
     if(!members || members.length === 0) return alert("Error al cargar escuadra.");
 
     if(isDynamic === 'true' || isDynamic === true) {
-        const { data: mission } = await _supabase.from('squad_missions_config').select('claimed_by_squads').eq('id', missionId).single();
+        const {  mission } = await _supabase.from('squad_missions_config').select('claimed_by_squads').eq('id', missionId).single();
         if(!mission) return;
         if(mission.claimed_by_squads && mission.claimed_by_squads.includes(userSquadId)) return alert("Ya reclamada por tu escuadra.");
         const newClaimed = [...(mission.claimed_by_squads || []), userSquadId];
         await _supabase.from('squad_missions_config').update({claimed_by_squads: newClaimed}).eq('id', missionId);
     } else {
-        const { data: prof } = await _supabase.from('profiles').select('claimed_squad_missions').eq('squad_id', userSquadId).limit(1).single();
+        const {  prof } = await _supabase.from('profiles').select('claimed_squad_missions').eq('squad_id', userSquadId).limit(1).single();
         const claimed = prof?.claimed_squad_missions || [];
         if(claimed.includes(missionId)) return alert("Ya reclamada.");
         claimed.push(missionId);
@@ -878,7 +878,7 @@ async function attackUser(targetId, targetName) {
     itemTomatoes--;
     updateInventoryUI();
     try {
-        const { data: victim, error: fetchError } = await _supabase.from('profiles')
+        const {  victim, error: fetchError } = await _supabase.from('profiles')
             .select('total_score, shield_durability, squad_id').eq('id', targetId).single();
         if(fetchError || !victim) throw new Error("Usuario no encontrado");
 
@@ -982,7 +982,7 @@ async function loadDashboardData(){
     try {
         const { data: settings } = await _supabase.from('game_settings').select('*').single();
         updateControlButtons(settings); initSeason(settings);
-        const { data: students, error } = await _supabase.from('profiles').select('*').order('total_score',{ascending:false});
+        const {  students, error } = await _supabase.from('profiles').select('*').order('total_score',{ascending:false});
         if(error) throw error;
         const now = new Date();
         let ss = {}; Object.keys(SQUADS).forEach(id => ss[id] = {count:0, score:0});
@@ -1036,7 +1036,7 @@ async function togglePause(){
     loadDashboardData();
 }
 async function toggleExamMode(){
-    const { data: s } = await _supabase.from('game_settings').select('exam_level').single();
+    const {  s } = await _supabase.from('game_settings').select('exam_level').single();
     const nl = s.exam_level > 0 ? 0 : 1;
     await _supabase.from('game_settings').update({exam_level: nl, is_paused: false}).eq('id',1);
     loadDashboardData();
@@ -1045,7 +1045,7 @@ function showSeasonModal(){ const h = prompt("Horas:","0"), m = prompt("Minutos:
 async function startSeason(h,m){
     if(h===0 && m===0) return alert("Ingresa tiempo.");
     const end = new Date(Date.now() + h*3600000 + m*60000);
-    const { data: s } = await _supabase.from('game_settings').select('season_number').single();
+    const {  s } = await _supabase.from('game_settings').select('season_number').single();
     const ns = (s?.season_number||0) + 1;
     try {
         await _supabase.from('game_settings').upsert({id:1, season_end_time: end.toISOString(), is_paused: false, exam_level: 0, season_number: ns});
@@ -1082,7 +1082,7 @@ async function loadAdminMissions() {
     const container = document.getElementById('admin-missions-list');
     if(!container) return;
     try {
-        const { data: missions } = await _supabase.from('squad_missions_config').select('*').order('created_at', {ascending:false});
+        const {  missions } = await _supabase.from('squad_missions_config').select('*').order('created_at', {ascending:false});
         if(!missions || missions.length === 0) { container.innerHTML = '<p style="color:#555;font-size:.85rem;">No hay misiones creadas. Usa "+ Nueva Misión".</p>'; return; }
         container.innerHTML = missions.map(m => `
             <div class="mission-admin-row ${m.is_active?'active':''}">
@@ -1108,24 +1108,47 @@ function openMissionModal(editId=null) {
     }
 }
 function closeMissionModal() { document.getElementById('mission-modal').style.display = 'none'; }
+
+// ✅ FUNCIÓN PARA GUARDAR MISIÓN CON ALERTAS DE DEPURACIÓN
 async function saveMission() {
     const id = document.getElementById('mission-edit-id').value;
+    const name = document.getElementById('mission-name').value.trim();
+    const icon = document.getElementById('mission-icon').value.trim() || '🎯';
+    const desc = document.getElementById('mission-desc').value.trim();
+    const goal = parseInt(document.getElementById('mission-goal').value);
+    const reward = parseInt(document.getElementById('mission-reward').value);
+    const key = document.getElementById('mission-progress-key').value;
+
+    if(!name || !goal || !reward) return alert('Por favor completa Nombre, Meta y Recompensa.');
+
     const payload = {
-        name: document.getElementById('mission-name').value.trim(),
-        icon: document.getElementById('mission-icon').value.trim() || '🎯',
-        description: document.getElementById('mission-desc').value.trim(),
-        goal: parseInt(document.getElementById('mission-goal').value) || 0,
-        reward_coins: parseInt(document.getElementById('mission-reward').value) || 0,
-        progress_key: document.getElementById('mission-progress-key').value
+        name: name,
+        icon: icon,
+        description: desc,
+        goal: goal,
+        reward_coins: reward,
+        progress_key: key,
+        is_active: false // Por defecto inactiva hasta que el profe la active
     };
-    if(!payload.name || payload.goal <= 0 || payload.reward_coins <= 0) return alert('Completa todos los campos correctamente.');
+
     try {
-        if(id) { await _supabase.from('squad_missions_config').update(payload).eq('id', id); }
-        else { await _supabase.from('squad_missions_config').insert(payload); }
-        closeMissionModal(); loadAdminMissions();
+        console.log("Intentando guardar misión:", payload);
+        
+        if(id) {
+            await _supabase.from('squad_missions_config').update(payload).eq('id', id);
+        } else {
+            await _supabase.from('squad_missions_config').insert(payload);
+        }
+        
+        closeMissionModal(); 
+        loadAdminMissions();
         showToast('✅ Misión guardada correctamente','success');
-    } catch(e) { alert('Error al guardar: '+e.message); }
+    } catch(e) { 
+        console.error("Error al guardar:", e);
+        alert('Error al guardar: ' + e.message); 
+    }
 }
+
 async function toggleMission(id, newState) {
     try { await _supabase.from('squad_missions_config').update({is_active: newState}).eq('id', id); loadAdminMissions(); }
     catch(e) { alert('Error: '+e.message); }
@@ -1143,7 +1166,7 @@ async function deleteMission(id) {
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        const { data: { session } } = await _supabase.auth.getSession();
+        const {  { session } } = await _supabase.auth.getSession();
         if (session?.user) { currentUser = session.user; showApp(); }
         else { showLogin(); }
     } catch(e) { showLogin(); }
@@ -1504,14 +1527,15 @@ function selectGiftAmount(amt) {
     document.getElementById('gift-amount-display').innerText = `Cantidad seleccionada: ${amt} 💰`;
 }
 
-// ✅ FIX: Sintaxis de Supabase v2 corregida y simplificada
+// ✅ FIX: Sintaxis de Supabase v2 corregida y simplificada para regalos
 async function executeGift() {
     if(selectedGiftAmount <= 0) return alert('Selecciona una cantidad primero.');
     const recipient = document.getElementById('gift-recipient').value;
     const targetName = recipient === 'all' ? 'todos los alumnos' : document.getElementById('gift-recipient').selectedOptions[0].text;
     if(!confirm(`¿Regalar ${selectedGiftAmount} DiviCoins a ${targetName}?`)) return;
+    
     try {
-        // Construimos la consulta en una variable para mayor seguridad
+        // Construimos la consulta en una variable para mayor seguridad y claridad
         let query = _supabase.from('profiles');
         
         if (recipient === 'all') {
@@ -1525,7 +1549,10 @@ async function executeGift() {
         
         showToast(`🎁 ¡Regalo de ${selectedGiftAmount} DiviCoins enviado!`, 'success');
         closeGiftModal();
-    } catch(e) { alert('Error al enviar regalo: ' + e.message); }
+    } catch(e) { 
+        console.error("Error detallado:", e);
+        alert('Error al enviar regalo: ' + e.message); 
+    }
 }
 
 async function saveTime(){
