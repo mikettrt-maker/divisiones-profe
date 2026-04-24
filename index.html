@@ -1,7 +1,3 @@
-
-
-
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -467,7 +463,7 @@
     </div>
 </div>
 
-<!-- MODALES DENTRO DEL BODY -->
+<!-- MODALES -->
 <div id="gift-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.92); z-index:99999; justify-content:center; align-items:center;">
     <div class="modal-box" style="width:380px; border-top:4px solid var(--shop-purple);">
         <h3 style="margin:0 0 15px 0; color:var(--primary-color); font-family:'Teko'; font-size:1.8rem; text-transform:uppercase;">🎁 Regalar DiviCoins</h3>
@@ -779,11 +775,14 @@ async function buyBattlePass(){
 }
 
 async function loadSquadMissions(squadId) {
-    if(!squadId) { document.getElementById('squad-missions-panel').style.display='none'; return; }
+    if(!squadId) { 
+        console.log("Misiones no cargadas: El usuario no tiene escuadra.");
+        document.getElementById('squad-missions-panel').style.display='none'; 
+        return; 
+    }
     userSquadId = squadId;
     document.getElementById('squad-missions-panel').style.display = 'block';
     
-    // ✅ FIX: Desestructuración correcta con data:
     const { data: dynamicMissions } = await _supabase.from('squad_missions_config').select('*').eq('is_active', true);
     let missionsToRender = [];
     
@@ -1505,25 +1504,25 @@ function selectGiftAmount(amt) {
     document.getElementById('gift-amount-display').innerText = `Cantidad seleccionada: ${amt} 💰`;
 }
 
-// ✅ FIX: Sintaxis directa de Supabase v2 sin variables encadenadas
+// ✅ FIX: Sintaxis de Supabase v2 corregida y simplificada
 async function executeGift() {
     if(selectedGiftAmount <= 0) return alert('Selecciona una cantidad primero.');
     const recipient = document.getElementById('gift-recipient').value;
     const targetName = recipient === 'all' ? 'todos los alumnos' : document.getElementById('gift-recipient').selectedOptions[0].text;
     if(!confirm(`¿Regalar ${selectedGiftAmount} DiviCoins a ${targetName}?`)) return;
     try {
-        if(recipient === 'all') {
-            const { error } = await _supabase.from('profiles')
-                .eq('is_banned', false)
-                .neq('username', ADMIN_USER)
-                .update({ pending_gift_coins: selectedGiftAmount });
-            if(error) throw error;
+        // Construimos la consulta en una variable para mayor seguridad
+        let query = _supabase.from('profiles');
+        
+        if (recipient === 'all') {
+            query = query.eq('is_banned', false).neq('username', ADMIN_USER);
         } else {
-            const { error } = await _supabase.from('profiles')
-                .eq('id', recipient)
-                .update({ pending_gift_coins: selectedGiftAmount });
-            if(error) throw error;
+            query = query.eq('id', recipient);
         }
+        
+        const { error } = await query.update({ pending_gift_coins: selectedGiftAmount });
+        if (error) throw error;
+        
         showToast(`🎁 ¡Regalo de ${selectedGiftAmount} DiviCoins enviado!`, 'success');
         closeGiftModal();
     } catch(e) { alert('Error al enviar regalo: ' + e.message); }
