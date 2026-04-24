@@ -212,6 +212,9 @@
         #epic-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99990; display: none; justify-content: center; align-items: center; pointer-events: none; }
         .epic-text { font-family: 'Teko', sans-serif; font-size: 8rem; color: var(--error); text-transform: uppercase; font-weight: 800; text-shadow: 0 0 20px rgba(255,0,0,.8), 4px 4px 0 #000; opacity: 0; }
         @keyframes epicPulse { 0%{transform:scale(.2) rotate(-10deg);opacity:0} 50%{transform:scale(1.2) rotate(5deg);opacity:1} 100%{transform:scale(1) rotate(0deg);opacity:1} }
+        .gift-icon { transition: transform 0.3s; }
+.gift-icon.blinking { animation: giftPulse 0.5s infinite alternate; display: inline-block !important; }
+@keyframes giftPulse { 0%{transform:scale(1); opacity:0.6;} 100%{transform:scale(1.35); opacity:1; text-shadow: 0 0 12px #ff4081, 0 0 20px gold;} }
 
         /* 🛡️ NUEVO: Barra de escudo en ranking */
         .shield-bar-container { display: flex; align-items: center; gap: 4px; margin-top: 3px; }
@@ -336,6 +339,10 @@
                 <i class="fas fa-coins coin-icon"></i>
                 <span class="coin-count" id="coinDisplay">0</span>
             </div>
+            <div style="position:relative; margin-left:8px;">
+    <i class="fas fa-gift" id="gift-icon" style="font-size:1.3rem; color:#ff4081; display:none; cursor:default;"></i>
+    <span id="gift-badge" style="position:absolute; top:-6px; right:-8px; background:gold; color:black; font-size:0.6rem; font-weight:800; padding:2px 5px; border-radius:10px; display:none; box-shadow:0 0 8px gold;"></span>
+</div>
             <div class="inventory-quick">
                 <div class="inv-item" id="inv-tomatoes" title="Tomates"><span>🍅</span><span id="inv-tom-count">0</span></div>
                 <div class="inv-item" id="inv-shield" title="Escudo"><span>🛡️</span><span id="inv-shield-count">0</span></div>
@@ -359,6 +366,7 @@
                     <div class="ctrl-btn" onclick="showSeasonModal()"><i class="fas fa-clock"></i><span>Temporada</span></div>
                     <div class="ctrl-btn danger" onclick="cleanInactiveUsers()"><i class="fas fa-broom"></i><span>Limpiar Cuentas</span></div>
                     <div class="ctrl-btn danger" onclick="resetAllUsers()"><i class="fas fa-redo"></i><span>Reiniciar Todo</span></div>
+                    <div class="ctrl-btn" onclick="openGiftModal()" style="border-color:var(--shop-purple); color:var(--shop-purple);"><i class="fas fa-gift"></i><span>Regalar Monedas</span></div>
                 </div>
                 <div class="squad-table-container">
                     <div class="dash-title" style="font-size:1.2rem;border:none;margin-bottom:5px;padding-bottom:0;">Estado Escuadras</div>
@@ -1286,9 +1294,71 @@ function startCountdown(endDate){
         document.getElementById('season-badge').classList.remove('finished');
     }, 1000);
 }
+let selectedGiftAmount = 0;
 function startStudentHeartbeat(){
     setInterval(async () => { if(currentUser && !isAdmin) await _supabase.from('profiles').update({last_seen: new Date().toISOString()}).eq('id', currentUser.id); }, 15000);
     setInterval(() => { if(!isGridLocked && !hasFinishedGame){ playTimeCounter++; if(playTimeCounter%60 === 0) saveTime(); } }, 1000);
+    
+    // 🎁 Checker de regalos del profesor
+    setInterval(async () => {
+        if(!currentUser || isAdmin) return;
+        const { data } = await _supabase.from('profiles').select('pending_gift_coins').eq('id', currentUser.id).single();
+        if(data && data.pending_gift_coins > 0) {
+            const amount = data.pending_gift_coins;
+            currentCoins += amount;
+            updateCoinDisplay();
+            await _supabase.from('profiles').update({ pending_gift_coins: 0 }).eq('id', currentUser.id);
+            
+            const icon = document.getElementById('gift-icon');
+            const badge = document.getElementById('gift-badge');
+            icon.style.display = 'inline-block';
+            icon.classList.add('blinking');
+            badge.style.display = 'block';
+            badge.innerText = `+${amount}`;
+            showToast(`🎁 ¡El profesor te regaló ${amount} DiviCoins!`, 'success', 5000);
+            AudioEngine.playSuccess();
+            
+            setTimeout(() => {
+                icon.classList.remove('blinking');
+                setTimeout(() => { icon.style.display = 'none'; badge.style.display = 'none'; }, 2500);
+            }, 4000);
+        }
+    }, 4000);
+}
+
+// 🎁 Funciones Admin para regalar
+function openGiftModal() {
+    document.getElementById('gift-modal').style.display = 'flex';
+    document.getElementById('gift-amount-display').innerText = 'Selecciona una cantidad';
+    selectedGiftAmount = 0;
+    const sel = document.getElementById('gift-recipient');
+    sel.innerHTML = '<option value="all">👥 Todos los alumnos</option>';
+    _supabase.from('profiles').select('id,username').eq('is_banned', false).is('completed_at', null).order('username').then(({data}) => {
+        if(data) data.forEach(u => { sel.innerHTML += `<option value="${u.id}">👤 ${u.username}</option>`; });
+    });
+}
+function closeGiftModal() { document.getElementById('gift-modal').style.display = 'none'; }
+function selectGiftAmount(amt) {
+    selectedGiftAmount = amt;
+    document.getElementById('gift-amount-display').innerText = `Cantidad seleccionada: ${amt} 💰`;
+}
+async function executeGift() {
+    if(selectedGiftAmount <= 0) return alert('Selecciona una cantidad primero.');
+    const recipient = document.getElementById('gift-recipient').value;
+    const targetName = recipient === 'all' ? 'todos los alumnos' : document.getElementById('gift-recipient').selectedOptions[0].text;
+    if(!confirm(`¿Regalar ${selectedGiftAmount} DiviCoins a ${targetName}?`)) return;
+    try {
+        let query = _supabase.from('profiles');
+        if(recipient === 'all') {
+            query = query.update({ pending_gift_coins: selectedGiftAmount }).eq('is_banned', false).neq('username', ADMIN_USER);
+        } else {
+            query = query.update({ pending_gift_coins: selectedGiftAmount }).eq('id', recipient);
+        }
+        const { error } = await query;
+        if(error) throw error;
+        showToast(`🎁 ¡Regalo de ${selectedGiftAmount} DiviCoins enviado!`, 'success');
+        closeGiftModal();
+    } catch(e) { alert('Error al enviar regalo: ' + e.message); }
 }
 async function saveTime(){
     if(!currentUser) return;
@@ -1373,6 +1443,22 @@ async function saveScore(){
     } catch(e){ console.error(e); }
 }
 </script>
+    <div id="gift-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.92); z-index:99999; justify-content:center; align-items:center;">
+    <div class="modal-box" style="width:380px; border-top:4px solid var(--shop-purple);">
+        <h3 style="margin:0 0 15px 0; color:var(--primary-color); font-family:'Teko'; font-size:1.8rem; text-transform:uppercase;">🎁 Regalar DiviCoins</h3>
+        <select id="gift-recipient" class="login-input" style="margin-bottom:15px; font-size:0.95rem;">
+            <option value="all">👥 Todos los alumnos</option>
+        </select>
+        <div style="display:flex; gap:10px; justify-content:center; margin-bottom:15px;">
+            <button class="btn-small" onclick="selectGiftAmount(100)" style="flex:1; background:#1a1a1a; color:gold; border:1px solid gold; font-size:1rem;">100 💰</button>
+            <button class="btn-small" onclick="selectGiftAmount(500)" style="flex:1; background:#1a1a1a; color:gold; border:1px solid gold; font-size:1rem;">500 💰</button>
+            <button class="btn-small" onclick="selectGiftAmount(1000)" style="flex:1; background:#1a1a1a; color:gold; border:1px solid gold; font-size:1rem;">1000 💰</button>
+        </div>
+        <div id="gift-amount-display" style="text-align:center; font-size:1rem; color:#aaa; margin-bottom:15px;">Selecciona una cantidad</div>
+        <button class="btn-primary" onclick="executeGift()" style="width:100%; background:linear-gradient(45deg,var(--shop-purple),#9333ea);">🎁 Enviar Regalo</button>
+        <button class="btn-small" onclick="closeGiftModal()" style="width:100%; margin-top:10px; background:#222; color:#888;">Cancelar</button>
+    </div>
+</div>
 </body>
 </html>
 
