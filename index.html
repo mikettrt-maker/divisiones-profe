@@ -213,24 +213,22 @@
         .epic-text { font-family: 'Teko', sans-serif; font-size: 8rem; color: var(--error); text-transform: uppercase; font-weight: 800; text-shadow: 0 0 20px rgba(255,0,0,.8), 4px 4px 0 #000; opacity: 0; }
         @keyframes epicPulse { 0%{transform:scale(.2) rotate(-10deg);opacity:0} 50%{transform:scale(1.2) rotate(5deg);opacity:1} 100%{transform:scale(1) rotate(0deg);opacity:1} }
         .gift-icon { transition: transform 0.3s; }
-.gift-icon.blinking { animation: giftPulse 0.5s infinite alternate; display: inline-block !important; }
-@keyframes giftPulse { 0%{transform:scale(1); opacity:0.6;} 100%{transform:scale(1.35); opacity:1; text-shadow: 0 0 12px #ff4081, 0 0 20px gold;} }
-
+        .gift-icon.blinking { animation: giftPulse 0.5s infinite alternate; display: inline-block !important; }
+        @keyframes giftPulse { 0%{transform:scale(1); opacity:0.6;} 100%{transform:scale(1.35); opacity:1; text-shadow: 0 0 12px #ff4081, 0 0 20px gold;} }
         .mission-admin-row { display:flex; align-items:center; justify-content:space-between; background:#111; padding:10px; border-radius:6px; margin-bottom:8px; border-left:3px solid #444; }
-.mission-admin-row.active { border-left-color:var(--success); }
-.mission-admin-info { flex:1; margin-right:10px; }
-.mission-admin-name { font-weight:700; font-size:.95rem; }
-.mission-admin-meta { font-size:.75rem; color:#888; }
-.mission-admin-actions { display:flex; gap:6px; align-items:center; }
-.mission-toggle { width:36px; height:20px; background:#444; border-radius:10px; position:relative; cursor:pointer; transition:.3s; }
-.mission-toggle.on { background:var(--success); }
-.mission-toggle::after { content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; background:white; border-radius:50%; transition:.3s; }
-.mission-toggle.on::after { left:18px; }
-.mission-admin-btn { background:#222; border:1px solid #444; color:#aaa; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:.75rem; }
-.mission-admin-btn:hover { background:#333; color:white; }
-.mission-admin-btn.reset { border-color:var(--primary-color); color:var(--primary-color); }
-.mission-admin-btn.delete { border-color:var(--error); color:var(--error); }
-        /* 🛡️ NUEVO: Barra de escudo en ranking */
+        .mission-admin-row.active { border-left-color:var(--success); }
+        .mission-admin-info { flex:1; margin-right:10px; }
+        .mission-admin-name { font-weight:700; font-size:.95rem; }
+        .mission-admin-meta { font-size:.75rem; color:#888; }
+        .mission-admin-actions { display:flex; gap:6px; align-items:center; }
+        .mission-toggle { width:36px; height:20px; background:#444; border-radius:10px; position:relative; cursor:pointer; transition:.3s; }
+        .mission-toggle.on { background:var(--success); }
+        .mission-toggle::after { content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; background:white; border-radius:50%; transition:.3s; }
+        .mission-toggle.on::after { left:18px; }
+        .mission-admin-btn { background:#222; border:1px solid #444; color:#aaa; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:.75rem; }
+        .mission-admin-btn:hover { background:#333; color:white; }
+        .mission-admin-btn.reset { border-color:var(--primary-color); color:var(--primary-color); }
+        .mission-admin-btn.delete { border-color:var(--error); color:var(--error); }
         .shield-bar-container { display: flex; align-items: center; gap: 4px; margin-top: 3px; }
         .shield-icon { font-size: 0.7rem; }
         .shield-bar-bg { width: 60px; height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
@@ -354,9 +352,9 @@
                 <span class="coin-count" id="coinDisplay">0</span>
             </div>
             <div style="position:relative; margin-left:8px;">
-    <i class="fas fa-gift" id="gift-icon" style="font-size:1.3rem; color:#ff4081; display:none; cursor:default;"></i>
-    <span id="gift-badge" style="position:absolute; top:-6px; right:-8px; background:gold; color:black; font-size:0.6rem; font-weight:800; padding:2px 5px; border-radius:10px; display:none; box-shadow:0 0 8px gold;"></span>
-</div>
+                <i class="fas fa-gift" id="gift-icon" style="font-size:1.3rem; color:#ff4081; display:none; cursor:default;"></i>
+                <span id="gift-badge" style="position:absolute; top:-6px; right:-8px; background:gold; color:black; font-size:0.6rem; font-weight:800; padding:2px 5px; border-radius:10px; display:none; box-shadow:0 0 8px gold;"></span>
+            </div>
             <div class="inventory-quick">
                 <div class="inv-item" id="inv-tomatoes" title="Tomates"><span>🍅</span><span id="inv-tom-count">0</span></div>
                 <div class="inv-item" id="inv-shield" title="Escudo"><span>🛡️</span><span id="inv-shield-count">0</span></div>
@@ -389,7 +387,7 @@
                         <tbody id="squad-admin-tbody"><tr><td colspan="4" style="text-align:center;color:#555;">Cargando...</td></tr></tbody>
                     </table>
                 </div>
-                                <div class="squad-missions-admin-section" style="margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:15px;">
+                <div class="squad-missions-admin-section" style="margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:15px;">
                     <div class="dash-title" style="font-size:1.2rem;border:none;margin-bottom:10px;padding-bottom:0;">🎯 Misiones de Escuadra <button class="btn-small" onclick="openMissionModal()" style="margin-left:auto; background:var(--shop-purple); color:white; border:none;">+ Nueva Misión</button></div>
                     <div id="admin-missions-list" style="max-height:250px; overflow-y:auto;"><p style="color:#555;font-size:.85rem;">Cargando misiones...</p></div>
                 </div>
@@ -462,6 +460,52 @@
                 <ul class="fame-list" id="fame-list"></ul>
             </div>
         </div>
+    </div>
+</div>
+
+<!-- MODALES (dentro del body, antes de cerrar) -->
+<div id="gift-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.92); z-index:99999; justify-content:center; align-items:center;">
+    <div class="modal-box" style="width:380px; border-top:4px solid var(--shop-purple);">
+        <h3 style="margin:0 0 15px 0; color:var(--primary-color); font-family:'Teko'; font-size:1.8rem; text-transform:uppercase;">🎁 Regalar DiviCoins</h3>
+        <select id="gift-recipient" class="login-input" style="margin-bottom:15px; font-size:0.95rem;">
+            <option value="all">👥 Todos los alumnos</option>
+        </select>
+        <div style="display:flex; gap:10px; justify-content:center; margin-bottom:15px;">
+            <button class="btn-small" onclick="selectGiftAmount(100)" style="flex:1; background:#1a1a1a; color:gold; border:1px solid gold; font-size:1rem;">100 💰</button>
+            <button class="btn-small" onclick="selectGiftAmount(500)" style="flex:1; background:#1a1a1a; color:gold; border:1px solid gold; font-size:1rem;">500 💰</button>
+            <button class="btn-small" onclick="selectGiftAmount(1000)" style="flex:1; background:#1a1a1a; color:gold; border:1px solid gold; font-size:1rem;">1000 💰</button>
+        </div>
+        <div id="gift-amount-display" style="text-align:center; font-size:1rem; color:#aaa; margin-bottom:15px;">Selecciona una cantidad</div>
+        <button class="btn-primary" onclick="executeGift()" style="width:100%; background:linear-gradient(45deg,var(--shop-purple),#9333ea);">🎁 Enviar Regalo</button>
+        <button class="btn-small" onclick="closeGiftModal()" style="width:100%; margin-top:10px; background:#222; color:#888;">Cancelar</button>
+    </div>
+</div>
+
+<div id="mission-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.92); z-index:99999; justify-content:center; align-items:center;">
+    <div class="modal-box" style="width:420px; border-top:4px solid var(--shop-purple); text-align:left;">
+        <h3 style="margin:0 0 15px 0; color:var(--primary-color); font-family:'Teko'; font-size:1.8rem; text-transform:uppercase; text-align:center;">🎯 Configurar Misión</h3>
+        <input type="hidden" id="mission-edit-id">
+        <label style="color:#aaa; font-size:.85rem;">Nombre</label>
+        <input type="text" id="mission-name" class="login-input" placeholder="Ej: Muralla de Titanes">
+        <label style="color:#aaa; font-size:.85rem; margin-top:8px; display:block;">Icono (Emoji)</label>
+        <input type="text" id="mission-icon" class="login-input" placeholder="🛡️" maxlength="2">
+        <label style="color:#aaa; font-size:.85rem; margin-top:8px; display:block;">Descripción</label>
+        <input type="text" id="mission-desc" class="login-input" placeholder="Ej: Compra 15 escudos en equipo">
+        <div style="display:flex; gap:10px; margin-top:8px;">
+            <div style="flex:1;"><label style="color:#aaa; font-size:.85rem;">Meta</label><input type="number" id="mission-goal" class="login-input" placeholder="400"></div>
+            <div style="flex:1;"><label style="color:#aaa; font-size:.85rem;">Recompensa 💰</label><input type="number" id="mission-reward" class="login-input" placeholder="1200"></div>
+        </div>
+        <label style="color:#aaa; font-size:.85rem; margin-top:8px; display:block;">Tipo de Progreso</label>
+        <select id="mission-progress-key" class="login-input">
+            <option value="squadCorrect">✅ Aciertos en escuadra</option>
+            <option value="squadTotalScore">🏅 Puntos totales escuadra</option>
+            <option value="squadTomatoAttacks">🍅 Tomates lanzados</option>
+            <option value="squadShieldBuys">🛡️ Escudos comprados</option>
+            <option value="squadMaxLevel">📈 Nivel máximo alcanzado</option>
+            <option value="squadStreak15">🔥 Racha x15 (todos los miembros)</option>
+        </select>
+        <button class="btn-primary" onclick="saveMission()" style="width:100%; margin-top:15px; background:linear-gradient(45deg,var(--shop-purple),#9333ea);">💾 Guardar Misión</button>
+        <button class="btn-small" onclick="closeMissionModal()" style="width:100%; margin-top:8px; background:#222; color:#888;">Cancelar</button>
     </div>
 </div>
 
@@ -782,7 +826,7 @@ async function loadSquadMissions(squadId) {
             <div class="mission-header"><span class="mission-name">${m.icon} ${m.name}</span><span class="mission-reward">+${m.reward} 💰</span></div>
             <div class="mission-bar-wrap"><div class="mission-bar" style="width:${pct}%"></div></div>
             <div class="mission-progress-text">
-                ${done ? (alreadyClaimed ? '✅ Reclamada' : `<button onclick="claimSquadMission('${m.id}', ${m.isDynamic}, ${m.reward})" style="background:gold;color:black;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;">Reclamar ${m.reward}💰</button>`) 
+                ${done ? (alreadyClaimed ? '✅ Reclamada' : `<button onclick="claimSquadMission('${m.id}', '${m.isDynamic}', ${m.reward})" style="background:gold;color:black;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;">Reclamar ${m.reward}💰</button>`) 
                        : `${Math.min(prog, goal)}/${goal} ${m.unit}`}
             </div>
         </div>`;
@@ -796,7 +840,8 @@ async function claimSquadMission(missionId, isDynamic, rewardAmount) {
     const { data: members } = await _supabase.from('profiles').select('id,coins').eq('squad_id', userSquadId);
     if(!members || members.length === 0) return alert("Error al cargar escuadra.");
 
-    if(isDynamic) {
+    // ✅ FIX: Comparación correcta para booleano/string
+    if(isDynamic === 'true' || isDynamic === true) {
         const { data: mission } = await _supabase.from('squad_missions_config').select('claimed_by_squads').eq('id', missionId).single();
         if(!mission) return;
         if(mission.claimed_by_squads && mission.claimed_by_squads.includes(userSquadId)) return alert("Ya reclamada por tu escuadra.");
@@ -973,7 +1018,7 @@ async function loadDashboardData(){
                 <div class="sc-actions"><button class="sc-btn ban ${isBanned?'active':''}" onclick="toggleBan('${u.id}',${isBanned})">${isBanned?'Desbanear':'Banear'}</button><button class="sc-btn delete" onclick="deleteUser('${u.id}','${u.username}')">Borrar</button></div>
             </div>`;
         }).join('');
-         loadAdminMissions();
+        loadAdminMissions();
         document.getElementById('student-count').innerText = students.filter(u => (now - new Date(u.last_seen) < 30000) && !u.is_banned).length + " en línea";
     } catch(e){ grid.innerHTML = "Error al cargar datos"; }
 }
@@ -1036,7 +1081,8 @@ async function resetAllUsers(){
     } catch(e){ alert("Error: "+e.message); }
 }
 async function assignSquad(uid, sqId){ try { await _supabase.from('profiles').update({squad_id: sqId}).eq('id',uid); loadDashboardData(); } catch(e){ alert("Error"); } }
-    // 🎯 ADMIN: Gestor de Misiones Dinámicas
+
+// 🎯 ADMIN: Gestor de Misiones Dinámicas
 async function loadAdminMissions() {
     const container = document.getElementById('admin-missions-list');
     if(!container) return;
@@ -1472,11 +1518,12 @@ async function executeGift() {
     const targetName = recipient === 'all' ? 'todos los alumnos' : document.getElementById('gift-recipient').selectedOptions[0].text;
     if(!confirm(`¿Regalar ${selectedGiftAmount} DiviCoins a ${targetName}?`)) return;
     try {
+        // ✅ FIX: Filtros ANTES del update para Supabase
         let query = _supabase.from('profiles');
         if(recipient === 'all') {
-            query = query.update({ pending_gift_coins: selectedGiftAmount }).eq('is_banned', false).neq('username', ADMIN_USER);
+            query = query.eq('is_banned', false).neq('username', ADMIN_USER).update({ pending_gift_coins: selectedGiftAmount });
         } else {
-            query = query.update({ pending_gift_coins: selectedGiftAmount }).eq('id', recipient);
+            query = query.eq('id', recipient).update({ pending_gift_coins: selectedGiftAmount });
         }
         const { error } = await query;
         if(error) throw error;
@@ -1567,49 +1614,6 @@ async function saveScore(){
     } catch(e){ console.error(e); }
 }
 </script>
-    <div id="gift-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.92); z-index:99999; justify-content:center; align-items:center;">
-    <div class="modal-box" style="width:380px; border-top:4px solid var(--shop-purple);">
-        <h3 style="margin:0 0 15px 0; color:var(--primary-color); font-family:'Teko'; font-size:1.8rem; text-transform:uppercase;">🎁 Regalar DiviCoins</h3>
-        <select id="gift-recipient" class="login-input" style="margin-bottom:15px; font-size:0.95rem;">
-            <option value="all">👥 Todos los alumnos</option>
-        </select>
-        <div style="display:flex; gap:10px; justify-content:center; margin-bottom:15px;">
-            <button class="btn-small" onclick="selectGiftAmount(100)" style="flex:1; background:#1a1a1a; color:gold; border:1px solid gold; font-size:1rem;">100 💰</button>
-            <button class="btn-small" onclick="selectGiftAmount(500)" style="flex:1; background:#1a1a1a; color:gold; border:1px solid gold; font-size:1rem;">500 💰</button>
-            <button class="btn-small" onclick="selectGiftAmount(1000)" style="flex:1; background:#1a1a1a; color:gold; border:1px solid gold; font-size:1rem;">1000 💰</button>
-        </div>
-        <div id="gift-amount-display" style="text-align:center; font-size:1rem; color:#aaa; margin-bottom:15px;">Selecciona una cantidad</div>
-        <button class="btn-primary" onclick="executeGift()" style="width:100%; background:linear-gradient(45deg,var(--shop-purple),#9333ea);">🎁 Enviar Regalo</button>
-        <button class="btn-small" onclick="closeGiftModal()" style="width:100%; margin-top:10px; background:#222; color:#888;">Cancelar</button>
-    </div>
-</div>
-    <div id="mission-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.92); z-index:99999; justify-content:center; align-items:center;">
-    <div class="modal-box" style="width:420px; border-top:4px solid var(--shop-purple); text-align:left;">
-        <h3 style="margin:0 0 15px 0; color:var(--primary-color); font-family:'Teko'; font-size:1.8rem; text-transform:uppercase; text-align:center;">🎯 Configurar Misión</h3>
-        <input type="hidden" id="mission-edit-id">
-        <label style="color:#aaa; font-size:.85rem;">Nombre</label>
-        <input type="text" id="mission-name" class="login-input" placeholder="Ej: Muralla de Titanes">
-        <label style="color:#aaa; font-size:.85rem; margin-top:8px; display:block;">Icono (Emoji)</label>
-        <input type="text" id="mission-icon" class="login-input" placeholder="🛡️" maxlength="2">
-        <label style="color:#aaa; font-size:.85rem; margin-top:8px; display:block;">Descripción</label>
-        <input type="text" id="mission-desc" class="login-input" placeholder="Ej: Compra 15 escudos en equipo">
-        <div style="display:flex; gap:10px; margin-top:8px;">
-            <div style="flex:1;"><label style="color:#aaa; font-size:.85rem;">Meta</label><input type="number" id="mission-goal" class="login-input" placeholder="400"></div>
-            <div style="flex:1;"><label style="color:#aaa; font-size:.85rem;">Recompensa 💰</label><input type="number" id="mission-reward" class="login-input" placeholder="1200"></div>
-        </div>
-        <label style="color:#aaa; font-size:.85rem; margin-top:8px; display:block;">Tipo de Progreso</label>
-        <select id="mission-progress-key" class="login-input">
-            <option value="squadCorrect">✅ Aciertos en escuadra</option>
-            <option value="squadTotalScore">🏅 Puntos totales escuadra</option>
-            <option value="squadTomatoAttacks">🍅 Tomates lanzados</option>
-            <option value="squadShieldBuys">🛡️ Escudos comprados</option>
-            <option value="squadMaxLevel">📈 Nivel máximo alcanzado</option>
-            <option value="squadStreak15">🔥 Racha x15 (todos los miembros)</option>
-        </select>
-        <button class="btn-primary" onclick="saveMission()" style="width:100%; margin-top:15px; background:linear-gradient(45deg,var(--shop-purple),#9333ea);">💾 Guardar Misión</button>
-        <button class="btn-small" onclick="closeMissionModal()" style="width:100%; margin-top:8px; background:#222; color:#888;">Cancelar</button>
-    </div>
-</div>
 </body>
 </html>
 
