@@ -1517,33 +1517,31 @@ async function executeGift() {
     const recipient = document.getElementById('gift-recipient').value;
     const targetName = recipient === 'all' ? 'todos los alumnos' : document.getElementById('gift-recipient').selectedOptions[0].text;
     if(!confirm(`¿Regalar ${selectedGiftAmount} DiviCoins a ${targetName}?`)) return;
+    
     try {
-        // ✅ FIX: Filtros ANTES del update para Supabase
-        let query = _supabase.from('profiles');
-        if(recipient === 'all') {
-            query = query.eq('is_banned', false).neq('username', ADMIN_USER).update({ pending_gift_coins: selectedGiftAmount });
+        if (recipient === 'all') {
+            // Para todos los alumnos
+            const { error } = await _supabase
+                .from('profiles')
+                .eq('is_banned', false)
+                .neq('username', ADMIN_USER)
+                .update({ pending_gift_coins: selectedGiftAmount });
+            if (error) throw error;
         } else {
-            query = query.eq('id', recipient).update({ pending_gift_coins: selectedGiftAmount });
+            // Para un alumno específico
+            const { error } = await _supabase
+                .from('profiles')
+                .eq('id', recipient)
+                .update({ pending_gift_coins: selectedGiftAmount });
+            if (error) throw error;
         }
-        const { error } = await query;
-        if(error) throw error;
+        
         showToast(`🎁 ¡Regalo de ${selectedGiftAmount} DiviCoins enviado!`, 'success');
         closeGiftModal();
-    } catch(e) { alert('Error al enviar regalo: ' + e.message); }
-}
-async function saveTime(){
-    if(!currentUser) return;
-    try { await _supabase.from('profiles').update({total_time_played: playTimeCounter}).eq('id', currentUser.id); } catch(e){}
-}
-
-function populateLevelSelect(){
-    const s = document.getElementById('levelSelect'); s.innerHTML = '';
-    for(let i=1; i<=TOTAL_LEVELS; i++){
-        let o = document.createElement('option'); o.value = i; o.innerText = "Nivel "+i;
-        if(i > unlockedLevel){ o.disabled = true; o.innerText += " 🔒"; }
-        s.appendChild(o);
+    } catch(e) { 
+        console.error("Error detallado:", e);
+        alert('Error al enviar regalo: ' + e.message); 
     }
-    s.value = currentMainLevel;
 }
 function updateUI(){
     document.getElementById('scoreDisplay').innerText = totalScore;
