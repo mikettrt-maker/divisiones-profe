@@ -212,8 +212,23 @@
         #epic-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99990; display: none; justify-content: center; align-items: center; pointer-events: none; }
         .epic-text { font-family: 'Teko', sans-serif; font-size: 8rem; color: var(--error); text-transform: uppercase; font-weight: 800; text-shadow: 0 0 20px rgba(255,0,0,.8), 4px 4px 0 #000; opacity: 0; }
         @keyframes epicPulse { 0%{transform:scale(.2) rotate(-10deg);opacity:0} 50%{transform:scale(1.2) rotate(5deg);opacity:1} 100%{transform:scale(1) rotate(0deg);opacity:1} }
-
-        /* 🛡️ NUEVO: Barra de escudo en ranking */
+        .gift-icon { transition: transform 0.3s; }
+        .gift-icon.blinking { animation: giftPulse 0.5s infinite alternate; display: inline-block !important; }
+        @keyframes giftPulse { 0%{transform:scale(1); opacity:0.6;} 100%{transform:scale(1.35); opacity:1; text-shadow: 0 0 12px #ff4081, 0 0 20px gold;} }
+        .mission-admin-row { display:flex; align-items:center; justify-content:space-between; background:#111; padding:10px; border-radius:6px; margin-bottom:8px; border-left:3px solid #444; }
+        .mission-admin-row.active { border-left-color:var(--success); }
+        .mission-admin-info { flex:1; margin-right:10px; }
+        .mission-admin-name { font-weight:700; font-size:.95rem; }
+        .mission-admin-meta { font-size:.75rem; color:#888; }
+        .mission-admin-actions { display:flex; gap:6px; align-items:center; }
+        .mission-toggle { width:36px; height:20px; background:#444; border-radius:10px; position:relative; cursor:pointer; transition:.3s; }
+        .mission-toggle.on { background:var(--success); }
+        .mission-toggle::after { content:''; position:absolute; top:2px; left:2px; width:16px; height:16px; background:white; border-radius:50%; transition:.3s; }
+        .mission-toggle.on::after { left:18px; }
+        .mission-admin-btn { background:#222; border:1px solid #444; color:#aaa; padding:4px 8px; border-radius:4px; cursor:pointer; font-size:.75rem; }
+        .mission-admin-btn:hover { background:#333; color:white; }
+        .mission-admin-btn.reset { border-color:var(--primary-color); color:var(--primary-color); }
+        .mission-admin-btn.delete { border-color:var(--error); color:var(--error); }
         .shield-bar-container { display: flex; align-items: center; gap: 4px; margin-top: 3px; }
         .shield-icon { font-size: 0.7rem; }
         .shield-bar-bg { width: 60px; height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
@@ -246,7 +261,7 @@
                 <button class="shop-buy-btn orange-btn" onclick="window.shopBuy('tomato',1,200)">Comprar 1</button>
             </div>
             <div class="shop-item orange">
-                <span class="shop-item-icon">🍅🍅🍅</span>
+                <span class="shop-item-icon">🍅🍅</span>
                 <div class="shop-item-name">Pack Tomates x5</div>
                 <div class="shop-item-desc">5 tomates con descuento.</div>
                 <div class="shop-item-price"><i class="fas fa-coins"></i> 800</div>
@@ -336,6 +351,10 @@
                 <i class="fas fa-coins coin-icon"></i>
                 <span class="coin-count" id="coinDisplay">0</span>
             </div>
+            <div style="position:relative; margin-left:8px;">
+                <i class="fas fa-gift" id="gift-icon" style="font-size:1.3rem; color:#ff4081; display:none; cursor:default;"></i>
+                <span id="gift-badge" style="position:absolute; top:-6px; right:-8px; background:gold; color:black; font-size:0.6rem; font-weight:800; padding:2px 5px; border-radius:10px; display:none; box-shadow:0 0 8px gold;"></span>
+            </div>
             <div class="inventory-quick">
                 <div class="inv-item" id="inv-tomatoes" title="Tomates"><span>🍅</span><span id="inv-tom-count">0</span></div>
                 <div class="inv-item" id="inv-shield" title="Escudo"><span>🛡️</span><span id="inv-shield-count">0</span></div>
@@ -359,6 +378,7 @@
                     <div class="ctrl-btn" onclick="showSeasonModal()"><i class="fas fa-clock"></i><span>Temporada</span></div>
                     <div class="ctrl-btn danger" onclick="cleanInactiveUsers()"><i class="fas fa-broom"></i><span>Limpiar Cuentas</span></div>
                     <div class="ctrl-btn danger" onclick="resetAllUsers()"><i class="fas fa-redo"></i><span>Reiniciar Todo</span></div>
+                    <div class="ctrl-btn" onclick="openGiftModal()" style="border-color:var(--shop-purple); color:var(--shop-purple);"><i class="fas fa-gift"></i><span>Regalar Monedas</span></div>
                 </div>
                 <div class="squad-table-container">
                     <div class="dash-title" style="font-size:1.2rem;border:none;margin-bottom:5px;padding-bottom:0;">Estado Escuadras</div>
@@ -366,6 +386,10 @@
                         <thead><tr><th class="shield-cell"></th><th>Nombre</th><th>Miembros</th><th>Puntos</th></tr></thead>
                         <tbody id="squad-admin-tbody"><tr><td colspan="4" style="text-align:center;color:#555;">Cargando...</td></tr></tbody>
                     </table>
+                </div>
+                <div class="squad-missions-admin-section" style="margin-bottom:20px; border-bottom:1px solid #333; padding-bottom:15px;">
+                    <div class="dash-title" style="font-size:1.2rem;border:none;margin-bottom:10px;padding-bottom:0;">🎯 Misiones de Escuadra <button class="btn-small" onclick="openMissionModal()" style="margin-left:auto; background:var(--shop-purple); color:white; border:none;">+ Nueva Misión</button></div>
+                    <div id="admin-missions-list" style="max-height:250px; overflow-y:auto;"><p style="color:#555;font-size:.85rem;">Cargando misiones...</p></div>
                 </div>
                 <div class="bp-prizes-section">
                     <div class="dash-title" style="font-size:1.2rem;border:none;margin-bottom:5px;padding-bottom:0;">Premios BP Pendientes</div>
@@ -436,6 +460,51 @@
                 <ul class="fame-list" id="fame-list"></ul>
             </div>
         </div>
+    </div>
+</div>
+
+<div id="gift-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.92); z-index:99999; justify-content:center; align-items:center;">
+    <div class="modal-box" style="width:380px; border-top:4px solid var(--shop-purple);">
+        <h3 style="margin:0 0 15px 0; color:var(--primary-color); font-family:'Teko'; font-size:1.8rem; text-transform:uppercase;">🎁 Regalar DiviCoins</h3>
+        <select id="gift-recipient" class="login-input" style="margin-bottom:15px; font-size:0.95rem;">
+            <option value="all">👥 Todos los alumnos</option>
+        </select>
+        <div style="display:flex; gap:10px; justify-content:center; margin-bottom:15px;">
+            <button class="btn-small" onclick="selectGiftAmount(100)" style="flex:1; background:#1a1a1a; color:gold; border:1px solid gold; font-size:1rem;">100 💰</button>
+            <button class="btn-small" onclick="selectGiftAmount(500)" style="flex:1; background:#1a1a1a; color:gold; border:1px solid gold; font-size:1rem;">500 💰</button>
+            <button class="btn-small" onclick="selectGiftAmount(1000)" style="flex:1; background:#1a1a1a; color:gold; border:1px solid gold; font-size:1rem;">1000 💰</button>
+        </div>
+        <div id="gift-amount-display" style="text-align:center; font-size:1rem; color:#aaa; margin-bottom:15px;">Selecciona una cantidad</div>
+        <button class="btn-primary" onclick="executeGift()" style="width:100%; background:linear-gradient(45deg,var(--shop-purple),#9333ea);">🎁 Enviar Regalo</button>
+        <button class="btn-small" onclick="closeGiftModal()" style="width:100%; margin-top:10px; background:#222; color:#888;">Cancelar</button>
+    </div>
+</div>
+
+<div id="mission-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.92); z-index:99999; justify-content:center; align-items:center;">
+    <div class="modal-box" style="width:420px; border-top:4px solid var(--shop-purple); text-align:left;">
+        <h3 style="margin:0 0 15px 0; color:var(--primary-color); font-family:'Teko'; font-size:1.8rem; text-transform:uppercase; text-align:center;">🎯 Configurar Misión</h3>
+        <input type="hidden" id="mission-edit-id">
+        <label style="color:#aaa; font-size:.85rem;">Nombre</label>
+        <input type="text" id="mission-name" class="login-input" placeholder="Ej: Muralla de Titanes">
+        <label style="color:#aaa; font-size:.85rem; margin-top:8px; display:block;">Icono (Emoji)</label>
+        <input type="text" id="mission-icon" class="login-input" placeholder="🛡️" maxlength="2">
+        <label style="color:#aaa; font-size:.85rem; margin-top:8px; display:block;">Descripción</label>
+        <input type="text" id="mission-desc" class="login-input" placeholder="Ej: Compra 15 escudos en equipo">
+        <div style="display:flex; gap:10px; margin-top:8px;">
+            <div style="flex:1;"><label style="color:#aaa; font-size:.85rem;">Meta</label><input type="number" id="mission-goal" class="login-input" placeholder="400"></div>
+            <div style="flex:1;"><label style="color:#aaa; font-size:.85rem;">Recompensa 💰</label><input type="number" id="mission-reward" class="login-input" placeholder="1200"></div>
+        </div>
+        <label style="color:#aaa; font-size:.85rem; margin-top:8px; display:block;">Tipo de Progreso</label>
+        <select id="mission-progress-key" class="login-input">
+            <option value="squadCorrect">✅ Aciertos en escuadra</option>
+            <option value="squadTotalScore">🏅 Puntos totales escuadra</option>
+            <option value="squadTomatoAttacks">🍅 Tomates lanzados</option>
+            <option value="squadShieldBuys">🛡️ Escudos comprados</option>
+            <option value="squadMaxLevel">📈 Nivel máximo alcanzado</option>
+            <option value="squadStreak15">🔥 Racha x15 (todos los miembros)</option>
+        </select>
+        <button class="btn-primary" onclick="saveMission()" style="width:100%; margin-top:15px; background:linear-gradient(45deg,var(--shop-purple),#9333ea);">💾 Guardar Misión</button>
+        <button class="btn-small" onclick="closeMissionModal()" style="width:100%; margin-top:8px; background:#222; color:#888;">Cancelar</button>
     </div>
 </div>
 
@@ -580,6 +649,9 @@ function incrementStreak() {
     currentStreak++; updateStreakUI();
     const bonus = STREAK_BONUSES[currentStreak];
     if(bonus) { currentCoins += bonus; updateCoinDisplay(); showStreakBonus(currentStreak, bonus); AudioEngine.playStreak(); }
+    if(currentStreak === 15 && userSquadId) {
+        incrementSquadMissionProgress('squadStreak15', 1);
+    }
 }
 function resetStreak() { currentStreak = 0; updateStreakUI(); }
 function updateStreakUI() {
@@ -701,15 +773,35 @@ async function buyBattlePass(){
     } catch(e) { alert("Error al comprar: "+e.message); }
 }
 
+// ✅ FIX: Desestructuración correcta de Supabase (const {  data })
 async function loadSquadMissions(squadId) {
-    if(!squadId) { document.getElementById('squad-missions-panel').style.display='none'; return; }
+    if(!squadId) { 
+        console.log("Misiones no cargadas: El usuario no tiene escuadra.");
+        document.getElementById('squad-missions-panel').style.display='none'; 
+        return; 
+    }
     userSquadId = squadId;
     document.getElementById('squad-missions-panel').style.display = 'block';
-    const { data: members } = await _supabase.from('profiles').select('total_score,current_level,coins,squad_mission_progress,claimed_squad_missions').eq('squad_id', squadId);
+    
+    // CORREGIDO: const {  dynamicMissions }
+    const {  dynamicMissions } = await _supabase.from('squad_missions_config').select('*').eq('is_active', true);
+    let missionsToRender = [];
+    
+    if(dynamicMissions && dynamicMissions.length > 0) {
+        missionsToRender = dynamicMissions.map(m => ({
+            id: m.id, name: m.name, icon: m.icon, goal: m.goal, reward: m.reward_coins,
+            unit: 'progreso', progressKey: m.progress_key, isDynamic: true, claimedBy: m.claimed_by_squads || []
+        }));
+    } else {
+        missionsToRender = SQUAD_MISSIONS.map(m => ({...m, isDynamic: false, claimedBy: []}));
+    }
+
+    // CORREGIDO: const {  members }
+    const {  members } = await _supabase.from('profiles').select('total_score,current_level,coins,squad_mission_progress,claimed_squad_missions').eq('squad_id', squadId);
     if(!members) return;
-    let savedProgress = {}; let claimed = [];
-    try { savedProgress = members[0]?.squad_mission_progress || {}; claimed = members[0]?.claimed_squad_missions || []; } catch(e) {}
-    squadMissionsCompleted = claimed;
+    let savedProgress = {}; let claimedStatic = [];
+    try { savedProgress = members[0]?.squad_mission_progress || {}; claimedStatic = members[0]?.claimed_squad_missions || []; } catch(e) {}
+    
     const totalCoins = members.reduce((s,u)=>s+(u.coins||0),0);
     const maxLevel = Math.max(...members.map(u=>u.current_level||1));
     const totalScoreSum = members.reduce((s,u)=>s+(u.total_score||0),0);
@@ -717,41 +809,65 @@ async function loadSquadMissions(squadId) {
     const currentProgress = {
         squadCorrect: approxCorrect, squadMaxLevel: maxLevel >= 8 ? 1 : 0, squadCoins: totalCoins,
         squadTomatoAttacks: savedProgress.squadTomatoAttacks || 0,
-        squadShieldBuys: savedProgress.squadShieldBuys || 0, squadTotalScore: totalScoreSum
+        squadShieldBuys: savedProgress.squadShieldBuys || 0, squadTotalScore: totalScoreSum,
+        squadStreak15: savedProgress.squadStreak15 || 0
     };
+
     const body = document.getElementById('missions-body');
-    body.innerHTML = SQUAD_MISSIONS.map(m => {
-        const prog = currentProgress[m.progressKey] || 0;
-        const pct = Math.min(100, Math.round((prog / m.goal) * 100));
-        const done = pct >= 100; const alreadyClaimed = claimed.includes(m.id);
+    body.innerHTML = missionsToRender.map(m => {
+        let prog = currentProgress[m.progressKey] || 0;
+        let goal = m.goal;
+        if(m.progressKey === 'squadStreak15') goal = members.length;
+        
+        const pct = Math.min(100, Math.round((prog / goal) * 100));
+        const done = pct >= 100;
+        const alreadyClaimed = m.isDynamic ? (m.claimedBy && m.claimedBy.includes(squadId)) : claimedStatic.includes(m.id);
+        
         return `<div class="mission-item ${done?'mission-complete':''}">
             <div class="mission-header"><span class="mission-name">${m.icon} ${m.name}</span><span class="mission-reward">+${m.reward} 💰</span></div>
             <div class="mission-bar-wrap"><div class="mission-bar" style="width:${pct}%"></div></div>
             <div class="mission-progress-text">
-                ${done ? (alreadyClaimed ? '✅ Reclamada' : `<button onclick="claimSquadMission('${m.id}')" style="background:gold;color:black;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;">Reclamar ${m.reward}💰</button>`) : `${Math.min(prog, m.goal)}/${m.goal} ${m.unit}`}
+                ${done ? (alreadyClaimed ? '✅ Reclamada' : `<button onclick="claimSquadMission('${m.id}', '${m.isDynamic}', ${m.reward})" style="background:gold;color:black;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;">Reclamar ${m.reward}💰</button>`) 
+                       : `${Math.min(prog, goal)}/${goal} ${m.unit}`}
             </div>
         </div>`;
     }).join('');
+    
     await _supabase.from('profiles').update({ squad_mission_progress: currentProgress }).eq('squad_id', squadId);
 }
-async function claimSquadMission(missionId) {
-    const mission = SQUAD_MISSIONS.find(m=>m.id===missionId);
-    if(!mission) return;
-    if(squadMissionsCompleted.includes(missionId)) return alert("Ya reclamada");
-    const { data: members } = await _supabase.from('profiles').select('id,coins,squad_mission_progress').eq('squad_id', userSquadId);
-    const saved = members[0]?.squad_mission_progress || {};
-    const prog = saved[mission.progressKey] || 0;
-    if(prog < mission.goal) return alert("Aún no se ha completado");
-    for(let m of members) {
-        const newCoins = (m.coins||0) + mission.reward;
-        await _supabase.from('profiles').update({coins:newCoins}).eq('id', m.id);
+
+async function claimSquadMission(missionId, isDynamic, rewardAmount) {
+    if(!userSquadId) return;
+    // CORREGIDO: const {  members }
+    const {  members } = await _supabase.from('profiles').select('id,coins').eq('squad_id', userSquadId);
+    if(!members || members.length === 0) return alert("Error al cargar escuadra.");
+
+    if(isDynamic === 'true' || isDynamic === true) {
+        // CORREGIDO: const {  mission }
+        const {  mission } = await _supabase.from('squad_missions_config').select('claimed_by_squads').eq('id', missionId).single();
+        if(!mission) return;
+        if(mission.claimed_by_squads && mission.claimed_by_squads.includes(userSquadId)) return alert("Ya reclamada por tu escuadra.");
+        const newClaimed = [...(mission.claimed_by_squads || []), userSquadId];
+        await _supabase.from('squad_missions_config').update({claimed_by_squads: newClaimed}).eq('id', missionId);
+    } else {
+        // CORREGIDO: const {  prof }
+        const {  prof } = await _supabase.from('profiles').select('claimed_squad_missions').eq('squad_id', userSquadId).limit(1).single();
+        const claimed = prof?.claimed_squad_missions || [];
+        if(claimed.includes(missionId)) return alert("Ya reclamada.");
+        claimed.push(missionId);
+        await _supabase.from('profiles').update({claimed_squad_missions: claimed}).eq('squad_id', userSquadId);
     }
-    squadMissionsCompleted.push(missionId);
-    await _supabase.from('profiles').update({ claimed_squad_missions: squadMissionsCompleted }).eq('squad_id', userSquadId);
+
+    for(let m of members) {
+        const newCoins = (m.coins||0) + rewardAmount;
+        await _supabase.from('profiles').update({coins: newCoins}).eq('id', m.id);
+    }
+    
     if(currentUser) await loadScore(currentUser);
     loadSquadMissions(userSquadId);
-    showToast(`🎉 ¡Misión de escuadra completada! +${mission.reward} monedas para todos`, 'success');
+    showToast(`🎉 ¡Misión completada! +${rewardAmount} monedas para toda la escuadra.`, 'success', 5000);
 }
+
 async function incrementSquadMissionProgress(key, amount=1) {
     if(!userSquadId) return;
     const { data } = await _supabase.from('profiles').select('squad_mission_progress').eq('squad_id', userSquadId).limit(1);
@@ -761,14 +877,13 @@ async function incrementSquadMissionProgress(key, amount=1) {
     loadSquadMissions(userSquadId);
 }
 
-// 🍅 FIX 1: Tomates ahora sí restan puntos (con manejo de errores y reembolso)
 async function attackUser(targetId, targetName) {
     if(itemTomatoes <= 0) return alert("No tienes tomates. ¡Ve a la tienda!");
     if(!confirm(`¿Gastar 1 tomate para atacar a ${targetName}?`)) return;
     itemTomatoes--;
     updateInventoryUI();
     try {
-        const { data: victim, error: fetchError } = await _supabase.from('profiles')
+        const {  victim, error: fetchError } = await _supabase.from('profiles')
             .select('total_score, shield_durability, squad_id').eq('id', targetId).single();
         if(fetchError || !victim) throw new Error("Usuario no encontrado");
 
@@ -803,7 +918,7 @@ async function attackUser(targetId, targetName) {
 let rankInt;
 function startRanking(){ updateRanking(); rankInt = setInterval(updateRanking, 5000); }
 
-// 🛡️ FIX 2: Ranking con barra de escudo dinámica
+// ✅ FIX: Desestructuración correcta en updateRanking
 async function updateRanking(){
     const list = document.getElementById('ranking-list');
     try {
@@ -868,12 +983,15 @@ function toggleAdminDashboard(){
     if(document.getElementById('admin-dashboard').style.display === 'flex'){ logout(); }
     else { showAdminDashboard(); }
 }
+
+// ✅ FIX: Desestructuración correcta en loadDashboardData
 async function loadDashboardData(){
     const grid = document.getElementById('student-grid');
     try {
-        const { data: settings } = await _supabase.from('game_settings').select('*').single();
+        const {  settings } = await _supabase.from('game_settings').select('*').single();
         updateControlButtons(settings); initSeason(settings);
-        const { data: students, error } = await _supabase.from('profiles').select('*').order('total_score',{ascending:false});
+        // CORREGIDO: const {  students, error }
+        const {  students, error } = await _supabase.from('profiles').select('*').order('total_score',{ascending:false});
         if(error) throw error;
         const now = new Date();
         let ss = {}; Object.keys(SQUADS).forEach(id => ss[id] = {count:0, score:0});
@@ -905,6 +1023,7 @@ async function loadDashboardData(){
                 <div class="sc-actions"><button class="sc-btn ban ${isBanned?'active':''}" onclick="toggleBan('${u.id}',${isBanned})">${isBanned?'Desbanear':'Banear'}</button><button class="sc-btn delete" onclick="deleteUser('${u.id}','${u.username}')">Borrar</button></div>
             </div>`;
         }).join('');
+        loadAdminMissions();
         document.getElementById('student-count').innerText = students.filter(u => (now - new Date(u.last_seen) < 30000) && !u.is_banned).length + " en línea";
     } catch(e){ grid.innerHTML = "Error al cargar datos"; }
 }
@@ -935,7 +1054,7 @@ function showSeasonModal(){ const h = prompt("Horas:","0"), m = prompt("Minutos:
 async function startSeason(h,m){
     if(h===0 && m===0) return alert("Ingresa tiempo.");
     const end = new Date(Date.now() + h*3600000 + m*60000);
-    const { data: s } = await _supabase.from('game_settings').select('season_number').single();
+    const {  s } = await _supabase.from('game_settings').select('season_number').single();
     const ns = (s?.season_number||0) + 1;
     try {
         await _supabase.from('game_settings').upsert({id:1, season_end_time: end.toISOString(), is_paused: false, exam_level: 0, season_number: ns});
@@ -967,6 +1086,93 @@ async function resetAllUsers(){
     } catch(e){ alert("Error: "+e.message); }
 }
 async function assignSquad(uid, sqId){ try { await _supabase.from('profiles').update({squad_id: sqId}).eq('id',uid); loadDashboardData(); } catch(e){ alert("Error"); } }
+
+// ✅ FIX: Desestructuración correcta en loadAdminMissions
+async function loadAdminMissions() {
+    const container = document.getElementById('admin-missions-list');
+    if(!container) return;
+    try {
+        // CORREGIDO: const {  missions }
+        const {  missions } = await _supabase.from('squad_missions_config').select('*').order('created_at', {ascending:false});
+        if(!missions || missions.length === 0) { container.innerHTML = '<p style="color:#555;font-size:.85rem;">No hay misiones creadas. Usa "+ Nueva Misión".</p>'; return; }
+        container.innerHTML = missions.map(m => `
+            <div class="mission-admin-row ${m.is_active?'active':''}">
+                <div class="mission-admin-info">
+                    <div class="mission-admin-name">${m.icon} ${m.name}</div>
+                    <div class="mission-admin-meta">Meta: ${m.goal} | Recompensa: ${m.reward_coins}💰 | Clave: ${m.progress_key}</div>
+                </div>
+                <div class="mission-admin-actions">
+                    <div class="mission-toggle ${m.is_active?'on':''}" onclick="toggleMission('${m.id}', ${!m.is_active})" title="${m.is_active?'Desactivar':'Activar'}"></div>
+                    <button class="mission-admin-btn reset" onclick="resetMission('${m.id}')" title="Reiniciar reclamos">🔄</button>
+                    <button class="mission-admin-btn delete" onclick="deleteMission('${m.id}')" title="Eliminar">🗑️</button>
+                </div>
+            </div>
+        `).join('');
+    } catch(e) { container.innerHTML = '<p style="color:var(--error);">Error al cargar misiones.</p>'; }
+}
+function openMissionModal(editId=null) {
+    document.getElementById('mission-modal').style.display = 'flex';
+    document.getElementById('mission-edit-id').value = editId || '';
+    if(!editId) {
+        ['mission-name','mission-icon','mission-desc','mission-goal','mission-reward'].forEach(id => document.getElementById(id).value = '');
+        document.getElementById('mission-progress-key').value = 'squadCorrect';
+    }
+}
+function closeMissionModal() { document.getElementById('mission-modal').style.display = 'none'; }
+
+async function saveMission() {
+    const id = document.getElementById('mission-edit-id').value;
+    const name = document.getElementById('mission-name').value.trim();
+    const icon = document.getElementById('mission-icon').value.trim() || '🎯';
+    const desc = document.getElementById('mission-desc').value.trim();
+    const goal = parseInt(document.getElementById('mission-goal').value);
+    const reward = parseInt(document.getElementById('mission-reward').value);
+    const key = document.getElementById('mission-progress-key').value;
+
+    if(!name || !goal || !reward) return alert('Por favor completa Nombre, Meta y Recompensa.');
+
+    const payload = {
+        name: name,
+        icon: icon,
+        description: desc,
+        goal: goal,
+        reward_coins: reward,
+        progress_key: key,
+        is_active: false
+    };
+
+    try {
+        console.log("Intentando guardar misión:", payload);
+        
+        if(id) {
+            await _supabase.from('squad_missions_config').update(payload).eq('id', id);
+        } else {
+            await _supabase.from('squad_missions_config').insert(payload);
+        }
+        
+        closeMissionModal(); 
+        loadAdminMissions();
+        showToast('✅ Misión guardada correctamente','success');
+    } catch(e) { 
+        console.error("Error al guardar:", e);
+        alert('Error al guardar: ' + e.message); 
+    }
+}
+
+async function toggleMission(id, newState) {
+    try { await _supabase.from('squad_missions_config').update({is_active: newState}).eq('id', id); loadAdminMissions(); }
+    catch(e) { alert('Error: '+e.message); }
+}
+async function resetMission(id) {
+    if(!confirm('¿Reiniciar reclamos de esta misión? Las escuadras podrán volver a completarla.')) return;
+    try { await _supabase.from('squad_missions_config').update({claimed_by_squads: []}).eq('id', id); loadAdminMissions(); showToast('🔄 Misión reiniciada','success'); }
+    catch(e) { alert('Error: '+e.message); }
+}
+async function deleteMission(id) {
+    if(!confirm('¿Eliminar esta misión permanentemente?')) return;
+    try { await _supabase.from('squad_missions_config').delete().eq('id', id); loadAdminMissions(); showToast('🗑️ Misión eliminada','tomato'); }
+    catch(e) { alert('Error: '+e.message); }
+}
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
@@ -1195,7 +1401,6 @@ function resetAll(){
     document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value = ''; i.disabled = false; i.style.pointerEvents = 'auto'; i.style.opacity = '1'; });
 }
 
-// 👑 FIX 3: Pase de Batalla se actualiza en tiempo real al ganar puntos
 async function verificarSolucion(){
     if(isVerifying) return;
     if(isGridLocked){ alert("¡Completa la Antena primero!"); return; }
@@ -1216,7 +1421,6 @@ async function verificarSolucion(){
         currentCoins += 5; updateCoinDisplay();
         document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:700;font-size:1.2rem;'>¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
         
-        // 👑 Actualizar BP en tiempo real
         if(hasBP) updateBattlePassUI();
         
         await incrementSquadMissionProgress('squadCorrect', 1);
@@ -1286,10 +1490,81 @@ function startCountdown(endDate){
         document.getElementById('season-badge').classList.remove('finished');
     }, 1000);
 }
+let selectedGiftAmount = 0;
 function startStudentHeartbeat(){
     setInterval(async () => { if(currentUser && !isAdmin) await _supabase.from('profiles').update({last_seen: new Date().toISOString()}).eq('id', currentUser.id); }, 15000);
     setInterval(() => { if(!isGridLocked && !hasFinishedGame){ playTimeCounter++; if(playTimeCounter%60 === 0) saveTime(); } }, 1000);
+    
+    setInterval(async () => {
+        if(!currentUser || isAdmin) return;
+        const { data } = await _supabase.from('profiles').select('pending_gift_coins').eq('id', currentUser.id).single();
+        if(data && data.pending_gift_coins > 0) {
+            const amount = data.pending_gift_coins;
+            currentCoins += amount;
+            updateCoinDisplay();
+            await _supabase.from('profiles').update({ pending_gift_coins: 0 }).eq('id', currentUser.id);
+            
+            const icon = document.getElementById('gift-icon');
+            const badge = document.getElementById('gift-badge');
+            icon.style.display = 'inline-block';
+            icon.classList.add('blinking');
+            badge.style.display = 'block';
+            badge.innerText = `+${amount}`;
+            showToast(`🎁 ¡El profesor te regaló ${amount} DiviCoins!`, 'success', 5000);
+            AudioEngine.playSuccess();
+            
+            setTimeout(() => {
+                icon.classList.remove('blinking');
+                setTimeout(() => { icon.style.display = 'none'; badge.style.display = 'none'; }, 2500);
+            }, 4000);
+        }
+    }, 4000);
 }
+
+function openGiftModal() {
+    document.getElementById('gift-modal').style.display = 'flex';
+    document.getElementById('gift-amount-display').innerText = 'Selecciona una cantidad';
+    selectedGiftAmount = 0;
+    const sel = document.getElementById('gift-recipient');
+    sel.innerHTML = '<option value="all">👥 Todos los alumnos</option>';
+    _supabase.from('profiles').select('id,username').eq('is_banned', false).is('completed_at', null).order('username').then(({data}) => {
+        if(data) data.forEach(u => { sel.innerHTML += `<option value="${u.id}">👤 ${u.username}</option>`; });
+    });
+}
+function closeGiftModal() { document.getElementById('gift-modal').style.display = 'none'; }
+function selectGiftAmount(amt) {
+    selectedGiftAmount = amt;
+    document.getElementById('gift-amount-display').innerText = `Cantidad seleccionada: ${amt} 💰`;
+}
+
+// ✅ FIX: Sintaxis de Supabase v2 corregida y simplificada para regalos
+async function executeGift() {
+    if(selectedGiftAmount <= 0) return alert('Selecciona una cantidad primero.');
+    const recipient = document.getElementById('gift-recipient').value;
+    const targetName = recipient === 'all' ? 'todos los alumnos' : document.getElementById('gift-recipient').selectedOptions[0].text;
+    if(!confirm(`¿Regalar ${selectedGiftAmount} DiviCoins a ${targetName}?`)) return;
+    
+    try {
+        // Construimos la consulta en una variable para mayor seguridad y claridad
+        let query = _supabase.from('profiles');
+        
+        if (recipient === 'all') {
+            query = query.eq('is_banned', false).neq('username', ADMIN_USER);
+        } else {
+            query = query.eq('id', recipient);
+        }
+        
+        const { error } = await query.update({ pending_gift_coins: selectedGiftAmount });
+        if (error) throw error;
+        
+        showToast(`🎁 ¡Regalo de ${selectedGiftAmount} DiviCoins enviado!`, 'success');
+        closeGiftModal();
+    } catch(e) { 
+        console.error("Error detallado:", e);
+        alert('Error al enviar regalo: ' + e.message); 
+    }
+}
+
 async function saveTime(){
     if(!currentUser) return;
     try { await _supabase.from('profiles').update({total_time_played: playTimeCounter}).eq('id', currentUser.id); } catch(e){}
