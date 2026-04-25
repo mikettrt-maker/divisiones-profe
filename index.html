@@ -261,7 +261,7 @@
                 <button class="shop-buy-btn orange-btn" onclick="window.shopBuy('tomato',1,200)">Comprar 1</button>
             </div>
             <div class="shop-item orange">
-                <span class="shop-item-icon">🍅🍅🍅</span>
+                <span class="shop-item-icon">🍅</span>
                 <div class="shop-item-name">Pack Tomates x5</div>
                 <div class="shop-item-desc">5 tomates con descuento.</div>
                 <div class="shop-item-price"><i class="fas fa-coins"></i> 800</div>
@@ -463,7 +463,6 @@
     </div>
 </div>
 
-<!-- MODALES (dentro del body, antes de cerrar) -->
 <div id="gift-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.92); z-index:99999; justify-content:center; align-items:center;">
     <div class="modal-box" style="width:380px; border-top:4px solid var(--shop-purple);">
         <h3 style="margin:0 0 15px 0; color:var(--primary-color); font-family:'Teko'; font-size:1.8rem; text-transform:uppercase;">🎁 Regalar DiviCoins</h3>
@@ -650,7 +649,6 @@ function incrementStreak() {
     currentStreak++; updateStreakUI();
     const bonus = STREAK_BONUSES[currentStreak];
     if(bonus) { currentCoins += bonus; updateCoinDisplay(); showStreakBonus(currentStreak, bonus); AudioEngine.playStreak(); }
-    // 🔥 Rastreo para misión de racha x15
     if(currentStreak === 15 && userSquadId) {
         incrementSquadMissionProgress('squadStreak15', 1);
     }
@@ -776,11 +774,13 @@ async function buyBattlePass(){
 }
 
 async function loadSquadMissions(squadId) {
-    if(!squadId) { document.getElementById('squad-missions-panel').style.display='none'; return; }
+    if(!squadId) { 
+        document.getElementById('squad-missions-panel').style.display='none'; 
+        return; 
+    }
     userSquadId = squadId;
     document.getElementById('squad-missions-panel').style.display = 'block';
     
-    // 1. Cargar misiones dinámicas activas
     const { data: dynamicMissions } = await _supabase.from('squad_missions_config').select('*').eq('is_active', true);
     let missionsToRender = [];
     
@@ -790,11 +790,9 @@ async function loadSquadMissions(squadId) {
             unit: 'progreso', progressKey: m.progress_key, isDynamic: true, claimedBy: m.claimed_by_squads || []
         }));
     } else {
-        // Fallback seguro: si no hay misiones en BD, usa las 6 originales
         missionsToRender = SQUAD_MISSIONS.map(m => ({...m, isDynamic: false, claimedBy: []}));
     }
 
-    // 2. Calcular progreso actual de la escuadra
     const { data: members } = await _supabase.from('profiles').select('total_score,current_level,coins,squad_mission_progress,claimed_squad_missions').eq('squad_id', squadId);
     if(!members) return;
     let savedProgress = {}; let claimedStatic = [];
@@ -811,7 +809,6 @@ async function loadSquadMissions(squadId) {
         squadStreak15: savedProgress.squadStreak15 || 0
     };
 
-    // 3. Renderizar misiones
     const body = document.getElementById('missions-body');
     body.innerHTML = missionsToRender.map(m => {
         let prog = currentProgress[m.progressKey] || 0;
@@ -840,7 +837,6 @@ async function claimSquadMission(missionId, isDynamic, rewardAmount) {
     const { data: members } = await _supabase.from('profiles').select('id,coins').eq('squad_id', userSquadId);
     if(!members || members.length === 0) return alert("Error al cargar escuadra.");
 
-    // ✅ FIX: Comparación correcta para booleano/string
     if(isDynamic === 'true' || isDynamic === true) {
         const { data: mission } = await _supabase.from('squad_missions_config').select('claimed_by_squads').eq('id', missionId).single();
         if(!mission) return;
@@ -874,7 +870,6 @@ async function incrementSquadMissionProgress(key, amount=1) {
     loadSquadMissions(userSquadId);
 }
 
-// 🍅 FIX 1: Tomates ahora sí restan puntos (con manejo de errores y reembolso)
 async function attackUser(targetId, targetName) {
     if(itemTomatoes <= 0) return alert("No tienes tomates. ¡Ve a la tienda!");
     if(!confirm(`¿Gastar 1 tomate para atacar a ${targetName}?`)) return;
@@ -916,7 +911,6 @@ async function attackUser(targetId, targetName) {
 let rankInt;
 function startRanking(){ updateRanking(); rankInt = setInterval(updateRanking, 5000); }
 
-// 🛡️ FIX 2: Ranking con barra de escudo dinámica
 async function updateRanking(){
     const list = document.getElementById('ranking-list');
     try {
@@ -981,6 +975,7 @@ function toggleAdminDashboard(){
     if(document.getElementById('admin-dashboard').style.display === 'flex'){ logout(); }
     else { showAdminDashboard(); }
 }
+
 async function loadDashboardData(){
     const grid = document.getElementById('student-grid');
     try {
@@ -1082,7 +1077,6 @@ async function resetAllUsers(){
 }
 async function assignSquad(uid, sqId){ try { await _supabase.from('profiles').update({squad_id: sqId}).eq('id',uid); loadDashboardData(); } catch(e){ alert("Error"); } }
 
-// 🎯 ADMIN: Gestor de Misiones Dinámicas
 async function loadAdminMissions() {
     const container = document.getElementById('admin-missions-list');
     if(!container) return;
@@ -1113,24 +1107,44 @@ function openMissionModal(editId=null) {
     }
 }
 function closeMissionModal() { document.getElementById('mission-modal').style.display = 'none'; }
+
 async function saveMission() {
     const id = document.getElementById('mission-edit-id').value;
+    const name = document.getElementById('mission-name').value.trim();
+    const icon = document.getElementById('mission-icon').value.trim() || '🎯';
+    const desc = document.getElementById('mission-desc').value.trim();
+    const goal = parseInt(document.getElementById('mission-goal').value);
+    const reward = parseInt(document.getElementById('mission-reward').value);
+    const key = document.getElementById('mission-progress-key').value;
+
+    if(!name || !goal || !reward) return alert('Por favor completa Nombre, Meta y Recompensa.');
+
     const payload = {
-        name: document.getElementById('mission-name').value.trim(),
-        icon: document.getElementById('mission-icon').value.trim() || '🎯',
-        description: document.getElementById('mission-desc').value.trim(),
-        goal: parseInt(document.getElementById('mission-goal').value) || 0,
-        reward_coins: parseInt(document.getElementById('mission-reward').value) || 0,
-        progress_key: document.getElementById('mission-progress-key').value
+        name: name,
+        icon: icon,
+        description: desc,
+        goal: goal,
+        reward_coins: reward,
+        progress_key: key,
+        is_active: false
     };
-    if(!payload.name || payload.goal <= 0 || payload.reward_coins <= 0) return alert('Completa todos los campos correctamente.');
+
     try {
-        if(id) { await _supabase.from('squad_missions_config').update(payload).eq('id', id); }
-        else { await _supabase.from('squad_missions_config').insert(payload); }
-        closeMissionModal(); loadAdminMissions();
+        if(id) {
+            await _supabase.from('squad_missions_config').update(payload).eq('id', id);
+        } else {
+            await _supabase.from('squad_missions_config').insert(payload);
+        }
+        
+        closeMissionModal(); 
+        loadAdminMissions();
         showToast('✅ Misión guardada correctamente','success');
-    } catch(e) { alert('Error al guardar: '+e.message); }
+    } catch(e) { 
+        console.error("Error al guardar:", e);
+        alert('Error al guardar: ' + e.message); 
+    }
 }
+
 async function toggleMission(id, newState) {
     try { await _supabase.from('squad_missions_config').update({is_active: newState}).eq('id', id); loadAdminMissions(); }
     catch(e) { alert('Error: '+e.message); }
@@ -1369,11 +1383,10 @@ function resetAll(){
     document.getElementById('valCociente').value = '';
     document.getElementById('valResiduo').value = '';
     document.querySelectorAll('.antena-input').forEach(i => { i.value = ''; i.classList.remove('status-ok','status-wrong'); });
-    document.querySelectorAll('.input-cociente-galera').forEach(i => i.value = '');
+    document.querySelectorAll('.input-cociente-galera').forEach(i => i.value = '';
     document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value = ''; i.disabled = false; i.style.pointerEvents = 'auto'; i.style.opacity = '1'; });
 }
 
-// 👑 FIX 3: Pase de Batalla se actualiza en tiempo real al ganar puntos
 async function verificarSolucion(){
     if(isVerifying) return;
     if(isGridLocked){ alert("¡Completa la Antena primero!"); return; }
@@ -1394,7 +1407,6 @@ async function verificarSolucion(){
         currentCoins += 5; updateCoinDisplay();
         document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:700;font-size:1.2rem;'>¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
         
-        // 👑 Actualizar BP en tiempo real
         if(hasBP) updateBattlePassUI();
         
         await incrementSquadMissionProgress('squadCorrect', 1);
@@ -1469,7 +1481,6 @@ function startStudentHeartbeat(){
     setInterval(async () => { if(currentUser && !isAdmin) await _supabase.from('profiles').update({last_seen: new Date().toISOString()}).eq('id', currentUser.id); }, 15000);
     setInterval(() => { if(!isGridLocked && !hasFinishedGame){ playTimeCounter++; if(playTimeCounter%60 === 0) saveTime(); } }, 1000);
     
-    // 🎁 Checker de regalos del profesor
     setInterval(async () => {
         if(!currentUser || isAdmin) return;
         const { data } = await _supabase.from('profiles').select('pending_gift_coins').eq('id', currentUser.id).single();
@@ -1496,7 +1507,6 @@ function startStudentHeartbeat(){
     }, 4000);
 }
 
-// 🎁 Funciones Admin para regalar
 function openGiftModal() {
     document.getElementById('gift-modal').style.display = 'flex';
     document.getElementById('gift-amount-display').innerText = 'Selecciona una cantidad';
@@ -1512,6 +1522,7 @@ function selectGiftAmount(amt) {
     selectedGiftAmount = amt;
     document.getElementById('gift-amount-display').innerText = `Cantidad seleccionada: ${amt} 💰`;
 }
+
 async function executeGift() {
     if(selectedGiftAmount <= 0) return alert('Selecciona una cantidad primero.');
     const recipient = document.getElementById('gift-recipient').value;
@@ -1520,19 +1531,17 @@ async function executeGift() {
     
     try {
         if (recipient === 'all') {
-            // Para todos los alumnos
             const { error } = await _supabase
                 .from('profiles')
+                .update({ pending_gift_coins: selectedGiftAmount })
                 .eq('is_banned', false)
-                .neq('username', ADMIN_USER)
-                .update({ pending_gift_coins: selectedGiftAmount });
+                .neq('username', ADMIN_USER);
             if (error) throw error;
         } else {
-            // Para un alumno específico
             const { error } = await _supabase
                 .from('profiles')
-                .eq('id', recipient)
-                .update({ pending_gift_coins: selectedGiftAmount });
+                .update({ pending_gift_coins: selectedGiftAmount })
+                .eq('id', recipient);
             if (error) throw error;
         }
         
@@ -1542,6 +1551,21 @@ async function executeGift() {
         console.error("Error detallado:", e);
         alert('Error al enviar regalo: ' + e.message); 
     }
+}
+
+async function saveTime(){
+    if(!currentUser) return;
+    try { await _supabase.from('profiles').update({total_time_played: playTimeCounter}).eq('id', currentUser.id); } catch(e){}
+}
+
+function populateLevelSelect(){
+    const s = document.getElementById('levelSelect'); s.innerHTML = '';
+    for(let i=1; i<=TOTAL_LEVELS; i++){
+        let o = document.createElement('option'); o.value = i; o.innerText = "Nivel "+i;
+        if(i > unlockedLevel){ o.disabled = true; o.innerText += " 🔒"; }
+        s.appendChild(o);
+    }
+    s.value = currentMainLevel;
 }
 function updateUI(){
     document.getElementById('scoreDisplay').innerText = totalScore;
@@ -1614,7 +1638,3 @@ async function saveScore(){
 </script>
 </body>
 </html>
-
-
-
-
