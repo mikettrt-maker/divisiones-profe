@@ -720,8 +720,10 @@ async function attackUser(targetId, targetName, weaponType) {
     updateInventoryUI();
     
     try {
-        const {  victim, error: fetchError } = await _supabase.from('profiles')
+        // CORRECCIÓN: Sintaxis correcta de desestructuración
+        const { data: victim, error: fetchError } = await _supabase.from('profiles')
             .select('total_score, shield_durability, squad_id').eq('id', targetId).single();
+        
         if(fetchError || !victim) throw new Error("Usuario no encontrado");
 
         let updates = {}; let msg = '';
@@ -840,7 +842,7 @@ async function loadActiveMissions(allData){
     if(!userSquadId) { document.getElementById('squad-missions-panel').style.display='none'; return; }
     document.getElementById('squad-missions-panel').style.display = 'block';
     
-    // Cargar misiones activas desde BD
+    // CORRECCIÓN: Sintaxis correcta
     const { data: missions } = await _supabase.from('squad_missions').select('*').eq('is_active', true);
     if(!missions || missions.length === 0) {
         document.getElementById('missions-body').innerHTML = '<p style="text-align:center;color:#666;">No hay misiones activas.</p>';
@@ -898,6 +900,7 @@ async function deleteMission(id) {
 
 async function loadAdminMissions() {
     const container = document.getElementById('admin-mission-list');
+    // CORRECCIÓN: Sintaxis correcta
     const { data: missions } = await _supabase.from('squad_missions').select('*').order('created_at', {ascending: false});
     
     if(!missions || missions.length === 0) {
@@ -942,7 +945,8 @@ function toggleAdminDashboard(){
 async function loadDashboardData(){
     const grid = document.getElementById('student-grid');
     try {
-        const {  settings } = await _supabase.from('game_settings').select('*').single();
+        // CORRECCIÓN: Sintaxis correcta
+        const { data: settings } = await _supabase.from('game_settings').select('*').single();
         updateControlButtons(settings); initSeason(settings);
         const { data: students, error } = await _supabase.from('profiles').select('*').order('total_score',{ascending:false});
         if(error) throw error;
@@ -993,11 +997,13 @@ function updateControlButtons(settings){
     }
 }
 async function togglePause(){
+    // CORRECCIÓN: Sintaxis correcta
     const { data: s } = await _supabase.from('game_settings').select('is_paused').single();
     await _supabase.from('game_settings').update({is_paused: !s.is_paused}).eq('id',1);
     loadDashboardData();
 }
 async function toggleExamMode(){
+    // CORRECCIÓN: Sintaxis correcta
     const { data: s } = await _supabase.from('game_settings').select('exam_level').single();
     const nl = s.exam_level > 0 ? 0 : 1;
     await _supabase.from('game_settings').update({exam_level: nl, is_paused: false}).eq('id',1);
@@ -1007,7 +1013,8 @@ function showSeasonModal(){ const h = prompt("Horas:","0"), m = prompt("Minutos:
 async function startSeason(h,m){
     if(h===0 && m===0) return alert("Ingresa tiempo.");
     const end = new Date(Date.now() + h*3600000 + m*60000);
-    const {  s } = await _supabase.from('game_settings').select('season_number').single();
+    // CORRECCIÓN: Sintaxis correcta
+    const { data: s } = await _supabase.from('game_settings').select('season_number').single();
     const ns = (s?.season_number||0) + 1;
     try {
         await _supabase.from('game_settings').upsert({id:1, season_end_time: end.toISOString(), is_paused: false, exam_level: 0, season_number: ns});
@@ -1043,7 +1050,7 @@ async function assignSquad(uid, sqId){ try { await _supabase.from('profiles').up
 
 document.addEventListener('DOMContentLoaded', async () => {
     try {
-        const {  { session } } = await _supabase.auth.getSession();
+        const { data: { session } } = await _supabase.auth.getSession();
         if (session?.user) { currentUser = session.user; showApp(); }
         else { showLogin(); }
     } catch(e) { showLogin(); }
