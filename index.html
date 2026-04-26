@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V23 (Escudos y Precios Nuevos)</title>
+    <title>Reto de División - V24 (Nuevas Armas)</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -42,8 +42,9 @@
         .coin-display-container { display: flex; align-items: center; gap: 5px; background: rgba(255,204,0,.1); padding: 5px 10px; border-radius: 20px; border: 1px solid var(--primary-color); cursor: default; }
         .coin-icon { font-size: 1rem; color: var(--primary-color); }
         .coin-count { font-family: 'Teko'; font-size: 1.2rem; font-weight: 700; color: var(--primary-color); line-height: 1; }
-        .inventory-quick { display: flex; gap: 8px; align-items: center; }
-        .inv-item { display: flex; align-items: center; gap: 3px; background: #222; padding: 3px 8px; border-radius: 4px; border: 1px solid #444; font-size: .9rem; color: #ccc; }
+        .inventory-quick { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .inv-item { display: flex; align-items: center; gap: 3px; background: #222; padding: 3px 8px; border-radius: 4px; border: 1px solid #444; font-size: .85rem; color: #ccc; cursor: pointer; transition: .2s; }
+        .inv-item:hover { background: #333; }
         .inv-item.active { border-color: var(--success); color: var(--success); }
         .rank-box { display: flex; flex-direction: column; align-items: center; background: black; padding: 5px 15px; border-radius: 4px; border: 1px solid #444; min-width: 120px; }
         .rank-name { font-size: 1rem; font-weight: 800; letter-spacing: 1px; text-transform: uppercase; }
@@ -80,15 +81,6 @@
         .squad-rank-left { display: flex; align-items: center; gap: 10px; }
         .squad-shield-small { width: 32px; height: 36px; }
         .squad-score { font-weight: 700; font-size: 1rem; }
-        .squad-missions-panel { background: var(--bg-panel); border: 1px solid #444; border-top: 4px solid #9b59b6; padding: 15px; border-radius: 4px; margin-top: 20px; }
-        .missions-title { font-family: 'Teko'; font-size: 1.4rem; color: #9b59b6; text-align: center; margin-bottom: 12px; text-transform: uppercase; }
-        .mission-item { background: rgba(155,89,182,.08); border: 1px solid rgba(155,89,182,.3); border-radius: 4px; padding: 10px 12px; margin-bottom: 8px; }
-        .mission-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
-        .mission-name { font-weight: 700; font-size: .9rem; color: #ccc; }
-        .mission-reward { font-size: .8rem; color: var(--primary-color); font-weight: 700; }
-        .mission-bar-wrap { height: 6px; background: #333; border-radius: 3px; overflow: hidden; }
-        .mission-bar { height: 100%; background: #9b59b6; border-radius: 3px; transition: width .5s; }
-        .mission-progress-text { font-size: .75rem; color: #888; margin-top: 4px; }
         .hall-of-fame { margin-top: 30px; padding-top: 20px; border-top: 1px solid #333; position: relative; }
         .hall-title { font-family: 'Teko'; font-size: 1.8rem; color: var(--error); text-align: center; margin-bottom: 15px; text-shadow: 0 0 10px rgba(255,23,68,.5); }
         .fame-list { list-style: none; padding: 0; margin: 0; max-height: 150px; overflow-y: auto; }
@@ -144,24 +136,24 @@
         .shop-btn-float { position: fixed; bottom: 80px; left: 20px; z-index: 9001; width: 60px; height: 60px; border-radius: 50%; background: var(--shop-purple); border: none; color: white; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 0 20px var(--shop-purple); transition: .2s; }
         .shop-btn-float:hover { transform: scale(1.1); }
         #shop-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.96); z-index: 99997; display: none; justify-content: center; align-items: center; }
-        .shop-box { background: #111; border: 2px solid var(--shop-purple); border-top: 6px solid var(--shop-purple); border-radius: 12px; width: 90%; max-width: 600px; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column; }
+        .shop-box { background: #111; border: 2px solid var(--shop-purple); border-top: 6px solid var(--shop-purple); border-radius: 12px; width: 90%; max-width: 700px; max-height: 85vh; overflow: hidden; display: flex; flex-direction: column; }
         .shop-header { padding: 20px 25px; background: rgba(124,58,237,.15); border-bottom: 2px solid var(--shop-purple); display: flex; justify-content: space-between; align-items: center; }
         .shop-title { font-family: 'Teko'; font-size: 2rem; color: var(--shop-purple); text-shadow: 0 0 20px rgba(124,58,237,.5); }
         .shop-coins-display { display: flex; align-items: center; gap: 8px; background: rgba(255,204,0,.2); padding: 8px 16px; border-radius: 30px; border: 1px solid gold; }
         .shop-coins-val { font-family: 'Teko'; font-size: 1.8rem; color: gold; }
-        .shop-body { padding: 20px; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
-        .shop-item { background: #1a1a1a; border: 1px solid #444; border-radius: 8px; padding: 20px; text-align: center; position: relative; }
+        .shop-body { padding: 20px; overflow-y: auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+        .shop-item { background: #1a1a1a; border: 1px solid #444; border-radius: 8px; padding: 15px; text-align: center; position: relative; }
         .shop-item.orange { border-top: 4px solid var(--shop-orange); }
         .shop-item:not(.orange) { border-top: 4px solid var(--shop-purple); }
-        .shop-item-icon { font-size: 3rem; margin-bottom: 10px; }
-        .shop-item-name { font-family: 'Teko'; font-size: 1.5rem; color: white; }
-        .shop-item-desc { font-size: .8rem; color: #aaa; margin: 10px 0; }
-        .shop-item-price { display: flex !important; align-items: center !important; justify-content: center !important; gap: 8px !important; font-family: 'Teko', sans-serif !important; font-size: 2.8rem !important; font-weight: 800 !important; color: #000 !important; background: #FFD700 !important; padding: 8px 5px !important; margin: 15px 0 !important; border-radius: 40px !important; border: 3px solid #FFA500 !important; box-shadow: 0 0 20px gold !important; }
-        .shop-item-price i { color: #000 !important; font-size: 2.4rem !important; }
-        .shop-buy-btn { width: 100%; padding: 12px; border: none; border-radius: 6px; font-family: 'Rajdhani'; font-weight: 700; font-size: 1.2rem; text-transform: uppercase; cursor: pointer; background: var(--shop-purple); color: white; }
+        .shop-item-icon { font-size: 2.5rem; margin-bottom: 8px; }
+        .shop-item-name { font-family: 'Teko'; font-size: 1.3rem; color: white; margin-bottom: 5px; }
+        .shop-item-desc { font-size: .75rem; color: #aaa; margin: 8px 0; min-height: 35px; }
+        .shop-item-price { display: flex !important; align-items: center !important; justify-content: center !important; gap: 5px !important; font-family: 'Teko', sans-serif !important; font-size: 2rem !important; font-weight: 800 !important; color: #000 !important; background: #FFD700 !important; padding: 5px 10px !important; margin: 10px 0 !important; border-radius: 30px !important; border: 2px solid #FFA500 !important; }
+        .shop-item-price i { color: #000 !important; font-size: 1.5rem !important; }
+        .shop-buy-btn { width: 100%; padding: 8px; border: none; border-radius: 6px; font-family: 'Rajdhani'; font-weight: 700; font-size: 1rem; text-transform: uppercase; cursor: pointer; background: var(--shop-purple); color: white; }
         .shop-buy-btn.orange-btn { background: var(--shop-orange); }
         .shop-buy-btn:disabled { background: #444; color: #888; cursor: not-allowed; }
-        .shop-qty-badge { position: absolute; top: 10px; right: 10px; background: gold; color: black; font-weight: bold; padding: 4px 12px; border-radius: 20px; font-size: 1.1rem; }
+        .shop-qty-badge { position: absolute; top: 8px; right: 8px; background: gold; color: black; font-weight: bold; padding: 3px 8px; border-radius: 15px; font-size: .9rem; }
         #admin-dashboard { width: 100%; display: none; flex-direction: column; gap: 20px; }
         .dash-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; }
         .dash-card { background: var(--bg-panel); border: 1px solid #333; border-radius: 8px; padding: 20px; }
@@ -213,10 +205,8 @@
         .epic-text { font-family: 'Teko', sans-serif; font-size: 8rem; color: var(--error); text-transform: uppercase; font-weight: 800; text-shadow: 0 0 20px rgba(255,0,0,.8), 4px 4px 0 #000; opacity: 0; }
         @keyframes epicPulse { 0%{transform:scale(.2) rotate(-10deg);opacity:0} 50%{transform:scale(1.2) rotate(5deg);opacity:1} 100%{transform:scale(1) rotate(0deg);opacity:1} }
         .gift-icon { transition: transform 0.3s; }
-.gift-icon.blinking { animation: giftPulse 0.5s infinite alternate; display: inline-block !important; }
-@keyframes giftPulse { 0%{transform:scale(1); opacity:0.6;} 100%{transform:scale(1.35); opacity:1; text-shadow: 0 0 12px #ff4081, 0 0 20px gold;} }
-
-        /* 🛡️ NUEVO: Barra de escudo en ranking */
+        .gift-icon.blinking { animation: giftPulse 0.5s infinite alternate; display: inline-block !important; }
+        @keyframes giftPulse { 0%{transform:scale(1); opacity:0.6;} 100%{transform:scale(1.35); opacity:1; text-shadow: 0 0 12px #ff4081, 0 0 20px gold;} }
         .shield-bar-container { display: flex; align-items: center; gap: 4px; margin-top: 3px; }
         .shield-icon { font-size: 0.7rem; }
         .shield-bar-bg { width: 60px; height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
@@ -232,55 +222,19 @@
 <div id="shop-modal" onclick="if(event.target.id==='shop-modal')closeShop()">
     <div class="shop-box">
         <div class="shop-header">
-            <span class="shop-title"><i class="fas fa-store"></i> DiviTienda</span>
+            <span class="shop-title"><i class="fas fa-store"></i> Arsenal</span>
             <div class="shop-coins-display">
                 <i class="fas fa-coins" style="color:var(--primary-color)"></i>
                 <span class="shop-coins-val" id="shop-coins-val">0</span>
-                <span style="font-size:.8rem;color:#aaa;">monedas</span>
             </div>
         </div>
-        <div class="shop-body">
-            <div class="shop-item orange">
-                <span class="shop-item-icon">🍅</span>
-                <div class="shop-item-name">Tomate</div>
-                <div class="shop-item-desc">Lanza un tomate a un rival (-50 pts).</div>
-                <div class="shop-item-price"><i class="fas fa-coins"></i> 200</div>
-                <div class="shop-qty-badge" id="shop-tom-qty">x0</div>
-                <button class="shop-buy-btn orange-btn" onclick="window.shopBuy('tomato',1,200)">Comprar 1</button>
-            </div>
-            <div class="shop-item orange">
-                <span class="shop-item-icon">🍅🍅🍅</span>
-                <div class="shop-item-name">Pack Tomates x5</div>
-                <div class="shop-item-desc">5 tomates con descuento.</div>
-                <div class="shop-item-price"><i class="fas fa-coins"></i> 800</div>
-                <button class="shop-buy-btn orange-btn" onclick="window.shopBuy('tomato',5,800)">Pack x5</button>
-            </div>
-            <div class="shop-item">
-                <span class="shop-item-icon">🛡️</span>
-                <div class="shop-item-name">Escudo (5 ataques)</div>
-                <div class="shop-item-desc">Resiste 5 ataques de tomate.</div>
-                <div class="shop-item-price"><i class="fas fa-coins"></i> 300</div>
-                <button class="shop-buy-btn" onclick="window.shopBuy('shield',5,300)">Comprar</button>
-            </div>
-            <div class="shop-item">
-                <span class="shop-item-icon">🛡️✨</span>
-                <div class="shop-item-name">Escudo Pro (15 ataques)</div>
-                <div class="shop-item-desc">Resiste 15 ataques de tomate.</div>
-                <div class="shop-item-price"><i class="fas fa-coins"></i> 700</div>
-                <button class="shop-buy-btn" onclick="window.shopBuy('shield',15,700)">Comprar</button>
-            </div>
-            <div class="shop-item" style="grid-column:span 2;">
-                <span class="shop-item-icon">👑</span>
-                <div class="shop-item-name">Pase de Batalla</div>
-                <div class="shop-item-desc">Desbloquea recompensas exclusivas.</div>
-                <div class="shop-item-price"><i class="fas fa-coins"></i> 1000</div>
-                <button class="shop-buy-btn" id="shop-bp-btn" onclick="window.shopBuy('bp',1,1000)">Comprar Pase</button>
-            </div>
+        <div class="shop-body" id="shop-items">
+            <!-- Items se generan dinámicamente -->
         </div>
     </div>
 </div>
 
-<button class="shop-btn-float" onclick="openShop()" title="DiviTienda"><i class="fas fa-store"></i></button>
+<button class="shop-btn-float" onclick="openShop()" title="Tienda"><i class="fas fa-store"></i></button>
 
 <div id="login-screen" style="display:none;">
     <div class="login-box">
@@ -340,12 +294,11 @@
                 <span class="coin-count" id="coinDisplay">0</span>
             </div>
             <div style="position:relative; margin-left:8px;">
-    <i class="fas fa-gift" id="gift-icon" style="font-size:1.3rem; color:#ff4081; display:none; cursor:default;"></i>
-    <span id="gift-badge" style="position:absolute; top:-6px; right:-8px; background:gold; color:black; font-size:0.6rem; font-weight:800; padding:2px 5px; border-radius:10px; display:none; box-shadow:0 0 8px gold;"></span>
-</div>
-            <div class="inventory-quick">
-                <div class="inv-item" id="inv-tomatoes" title="Tomates"><span>🍅</span><span id="inv-tom-count">0</span></div>
-                <div class="inv-item" id="inv-shield" title="Escudo"><span>🛡️</span><span id="inv-shield-count">0</span></div>
+                <i class="fas fa-gift" id="gift-icon" style="font-size:1.3rem; color:#ff4081; display:none; cursor:default;"></i>
+                <span id="gift-badge" style="position:absolute; top:-6px; right:-8px; background:gold; color:black; font-size:0.6rem; font-weight:800; padding:2px 5px; border-radius:10px; display:none; box-shadow:0 0 8px gold;"></span>
+            </div>
+            <div class="inventory-quick" id="inventory-container">
+                <!-- Inventario dinámico -->
             </div>
             <div class="rank-box" id="userRankBox">
                 <div class="rank-name" id="userRankName">...</div>
@@ -434,16 +387,29 @@
             <div class="squad-ranking-section">
                 <div class="ranking-title" style="font-size:1.2rem;border-color:#444;">Escuadras</div>
                 <ul class="squad-list" id="squad-list"></ul>
-                <div class="squad-missions-panel" id="squad-missions-panel" style="display:none;">
-                    <div class="missions-title"><i class="fas fa-tasks"></i> Misiones</div>
-                    <div id="missions-body"></div>
-                </div>
             </div>
             <div class="hall-of-fame">
                 <div class="hall-title"><i class="fas fa-trophy"></i> Salón de la Fama</div>
                 <ul class="fame-list" id="fame-list"></ul>
             </div>
         </div>
+    </div>
+</div>
+
+<div id="gift-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.92); z-index:99999; justify-content:center; align-items:center;">
+    <div class="modal-box" style="width:380px; border-top:4px solid var(--shop-purple);">
+        <h3 style="margin:0 0 15px 0; color:var(--primary-color); font-family:'Teko'; font-size:1.8rem; text-transform:uppercase;">🎁 Regalar DiviCoins</h3>
+        <select id="gift-recipient" class="login-input" style="margin-bottom:15px; font-size:0.95rem;">
+            <option value="all">👥 Todos los alumnos</option>
+        </select>
+        <div style="display:flex; gap:10px; justify-content:center; margin-bottom:15px;">
+            <button class="btn-small" onclick="selectGiftAmount(100)" style="flex:1; background:#1a1a1a; color:gold; border:1px solid gold; font-size:1rem;">100 💰</button>
+            <button class="btn-small" onclick="selectGiftAmount(500)" style="flex:1; background:#1a1a1a; color:gold; border:1px solid gold; font-size:1rem;">500 💰</button>
+            <button class="btn-small" onclick="selectGiftAmount(1000)" style="flex:1; background:#1a1a1a; color:gold; border:1px solid gold; font-size:1rem;">1000 💰</button>
+        </div>
+        <div id="gift-amount-display" style="text-align:center; font-size:1rem; color:#aaa; margin-bottom:15px;">Selecciona una cantidad</div>
+        <button class="btn-primary" onclick="executeGift()" style="width:100%; background:linear-gradient(45deg,var(--shop-purple),#9333ea);">🎁 Enviar Regalo</button>
+        <button class="btn-small" onclick="closeGiftModal()" style="width:100%; margin-top:10px; background:#222; color:#888;">Cancelar</button>
     </div>
 </div>
 
@@ -460,10 +426,28 @@ let isGridLocked = true, hasFinishedGame = false, isVerifying = false;
 let unlockedLevel = 1, isAdmin = false;
 let currentStreak = 0;
 const STREAK_BONUSES = {3:50, 5:100, 10:250, 15:500};
-let currentCoins = 0, hasBP = false, claimedBPRewards = [], itemTomatoes = 0, shieldDurability = 0;
-let playTimeCounter = 0;
+let currentCoins = 0, hasBP = false, claimedBPRewards = [], playTimeCounter = 0;
 const ANTENNA_SEQUENCE = [1,10,5,2,4,8,3,6,7,9];
 let currentAntennaIndex = 0;
+
+// 🎯 NUEVO SISTEMA DE ARMAS
+const WEAPONS = {
+    tomato: { icon:'🍅', name:'Tomate', damage:50, price:200, desc:'Daño básico' },
+    balloon: { icon:'🎈', name:'Globo Agua', damage:30, price:150, desc:'Daño leve' },
+    acid: { icon:'🧪', name:'Ácido', damage:100, price:400, desc:'Alto daño' },
+    bomb: { icon:'💣', name:'Bomba', damage:150, price:600, desc:'Daño masivo' },
+    chili: { icon:'🌶️', name:'Chile', damage:25, price:100, desc:'Daño mínimo' }
+};
+
+// Inventario del jugador
+let inventory = {
+    tomato: 0,
+    balloon: 0,
+    acid: 0,
+    bomb: 0,
+    chili: 0
+};
+
 const AVATAR_STYLES_STANDARD = [
     {id:'adventurer',name:'Guerrero'},{id:'bottts',name:'Robot'},{id:'pixel-art',name:'Pixel'},
     {id:'lorelei',name:'Fantasma'},{id:'big-ears',name:'Alien'},{id:'open-peeps',name:'Dibujo'},
@@ -491,9 +475,9 @@ function getRankInfo(score){
 
 const BP_REWARDS = [
     {level:1,xp:0,icon:"✍️",name:"Fuente Gaming",desc:"Tipografía Free Fire",type:"font"},
-    {level:2,xp:500,icon:"🍅",name:"3 Tomates",desc:"Ataca a rivales (-50 pts)",type:"item",item:"item_tomatoes",qty:3},
-    {level:3,xp:1500,icon:"🛡️",name:"Escudo (5 ataques)",desc:"Resiste 5 ataques",type:"item",item:"shield_durability",qty:5},
-    {level:4,xp:3000,icon:"🍔",name:"Comer en Clase",desc:"Pase para 1 día",type:"real_prize"},
+    {level:2,xp:500,icon:"🍅",name:"3 Tomates",desc:"Ataca a rivales",type:"item",item:"tomato",qty:3},
+    {level:3,xp:1500,icon:"🛡️",name:"Escudo (5)",desc:"Resiste 5 ataques",type:"item",item:"shield_durability",qty:5},
+    {level:4,xp:3000,icon:"🍔",name:"Comer en Clase",desc:"Pase 1 día",type:"real_prize"},
     {level:5,xp:5000,icon:"📝",name:"Sin Tarea",desc:"Pase Excusa",type:"real_prize"}
 ];
 
@@ -517,16 +501,7 @@ const DB = {
     10:[{d:45678912,div:234},{d:89012345,div:567},{d:12345678,div:901},{d:76543210,div:412},{d:33445566,div:777},{d:55667788,div:125},{d:98765432,div:850},{d:20406080,div:315},{d:61234567,div:621},{d:99999999,div:999}]
 };
 
-const SQUAD_MISSIONS = [
-    { id:'m1', name:'50 Aciertos en Escuadra', goal:50, reward:500, unit:'aciertos', icon:'✅', progressKey:'squadCorrect' },
-    { id:'m2', name:'Alcanzar Nivel 8', goal:1, reward:800, unit:'meta', icon:'🏆', progressKey:'squadMaxLevel' },
-    { id:'m3', name:'2000 Monedas acumuladas', goal:2000, reward:600, unit:'monedas', icon:'💰', progressKey:'squadCoins' },
-    { id:'m4', name:'5 Ataques con Tomate', goal:5, reward:300, unit:'ataques', icon:'🍅', progressKey:'squadTomatoAttacks' },
-    { id:'m5', name:'Comprar 3 Escudos', goal:3, reward:400, unit:'escudos', icon:'🛡️', progressKey:'squadShieldBuys' },
-    { id:'m6', name:'Ganar 10,000 puntos totales', goal:10000, reward:1000, unit:'puntos', icon:'🏅', progressKey:'squadTotalScore' }
-];
 let userSquadId = null;
-let squadMissionsCompleted = [];
 
 const AudioEngine = {
     ctx: null,
@@ -547,26 +522,6 @@ const AudioEngine = {
     playShop()    { this.playTone(440,80,'square',0.07); setTimeout(()=>this.playTone(550,120,'square',0.07),90); }
 };
 
-let ambientOn = false, ambientNodes = [], ambientGain = null;
-function startAmbientSound() {
-    AudioEngine.init(); const ctx = AudioEngine.ctx;
-    ambientGain = ctx.createGain(); ambientGain.gain.value = 0.03; ambientGain.connect(ctx.destination);
-    const o1 = ctx.createOscillator(); o1.type = 'sine'; o1.frequency.value = 55; o1.connect(ambientGain); o1.start();
-    const o2 = ctx.createOscillator(); o2.type = 'triangle'; o2.frequency.value = 110;
-    const lfo = ctx.createOscillator(), lg = ctx.createGain(); lfo.frequency.value = 0.4; lg.gain.value = 0.015;
-    lfo.connect(lg); lg.connect(ambientGain.gain); lfo.start(); o2.connect(ambientGain); o2.start();
-    ambientNodes = [o1,o2,lfo];
-}
-function stopAmbientSound() { ambientNodes.forEach(n=>{try{n.stop()}catch(e){}}); ambientNodes = []; if(ambientGain){ambientGain.disconnect(); ambientGain = null;} }
-function toggleAmbientSound() {
-    ambientOn = !ambientOn;
-    const btn = document.getElementById('sound-toggle-btn');
-    if(btn) {
-        if(ambientOn){ startAmbientSound(); btn.classList.add('on'); btn.innerHTML = '<i class="fas fa-volume-up"></i>'; }
-        else { stopAmbientSound(); btn.classList.remove('on'); btn.innerHTML = '<i class="fas fa-volume-mute"></i>'; }
-    }
-}
-
 function showToast(msg, type='success', duration=4000) {
     const c = document.getElementById('toast-container');
     const t = document.createElement('div');
@@ -577,13 +532,31 @@ function showToast(msg, type='success', duration=4000) {
 }
 
 function updateCoinDisplay(){ document.getElementById('coinDisplay').innerText = currentCoins; }
+
 function updateInventoryUI(){
-    document.getElementById('inv-tom-count').innerText = itemTomatoes;
-    document.getElementById('inv-shield-count').innerText = shieldDurability;
-    const s = document.getElementById('inv-shield');
-    if(shieldDurability > 0) { s.classList.add('active'); s.title = `Escudo: ${shieldDurability} ataques restantes`; }
-    else { s.classList.remove('active'); s.title = "Sin escudo"; }
+    const container = document.getElementById('inventory-container');
+    container.innerHTML = '';
+    
+    Object.entries(inventory).forEach(([key, count]) => {
+        if(count > 0) {
+            const weapon = WEAPONS[key];
+            const div = document.createElement('div');
+            div.className = 'inv-item';
+            div.title = `${weapon.name}: ${weapon.damage} pts de daño`;
+            div.innerHTML = `<span>${weapon.icon}</span><span>${count}</span>`;
+            container.appendChild(div);
+        }
+    });
+    
+    // Escudo
+    const shieldDiv = document.createElement('div');
+    shieldDiv.className = 'inv-item';
+    shieldDiv.id = 'inv-shield';
+    shieldDiv.title = `Escudo: ${shieldDurability} ataques restantes`;
+    shieldDiv.innerHTML = `<span>🛡️</span><span id="inv-shield-count">${shieldDurability}</span>`;
+    container.appendChild(shieldDiv);
 }
+
 function incrementStreak() {
     currentStreak++; updateStreakUI();
     const bonus = STREAK_BONUSES[currentStreak];
@@ -609,172 +582,112 @@ function renderMainAvatar() {
     if(currentUser) document.getElementById('main-avatar-img').src = getAvatarUrl(currentUser.email.split('@')[0], currentAvatarStyle);
 }
 
+// 🛒 TIENDA CON NUEVAS ARMAS
 function openShop(){
     document.getElementById('shop-modal').style.display='flex';
     document.getElementById('shop-coins-val').innerText = currentCoins;
-    document.getElementById('shop-tom-qty').innerText = 'x' + itemTomatoes;
-    const bpBtn = document.getElementById('shop-bp-btn');
-    if(hasBP) { bpBtn.disabled = true; bpBtn.innerText = "Ya tienes el pase"; }
-    else { bpBtn.disabled = false; bpBtn.innerText = "Comprar Pase"; }
+    
+    const container = document.getElementById('shop-items');
+    container.innerHTML = '';
+    
+    // Agregar todas las armas
+    Object.entries(WEAPONS).forEach(([key, weapon]) => {
+        const div = document.createElement('div');
+        div.className = 'shop-item orange';
+        div.innerHTML = `
+            <span class="shop-item-icon">${weapon.icon}</span>
+            <div class="shop-item-name">${weapon.name}</div>
+            <div class="shop-item-desc">${weapon.desc} (-${weapon.damage} pts)</div>
+            <div class="shop-item-price"><i class="fas fa-coins"></i> ${weapon.price}</div>
+            <div class="shop-qty-badge">x${inventory[key]}</div>
+            <button class="shop-buy-btn orange-btn" onclick="buyWeapon('${key}', ${weapon.price})">Comprar</button>
+        `;
+        container.appendChild(div);
+    });
+    
+    // Escudos
+    const shieldDiv = document.createElement('div');
+    shieldDiv.className = 'shop-item';
+    shieldDiv.innerHTML = `
+        <span class="shop-item-icon">🛡️</span>
+        <div class="shop-item-name">Escudo (5)</div>
+        <div class="shop-item-desc">Resiste 5 ataques</div>
+        <div class="shop-item-price"><i class="fas fa-coins"></i> 300</div>
+        <button class="shop-buy-btn" onclick="buyShield(5, 300)">Comprar</button>
+    `;
+    container.appendChild(shieldDiv);
+    
+    // Pase de Batalla
+    const bpDiv = document.createElement('div');
+    bpDiv.className = 'shop-item';
+    bpDiv.style.gridColumn = 'span 2';
+    bpDiv.innerHTML = `
+        <span class="shop-item-icon">👑</span>
+        <div class="shop-item-name">Pase de Batalla</div>
+        <div class="shop-item-desc">Recompensas exclusivas</div>
+        <div class="shop-item-price"><i class="fas fa-coins"></i> 1000</div>
+        <button class="shop-buy-btn" id="shop-bp-btn" onclick="buyBattlePass()">Comprar</button>
+    `;
+    container.appendChild(bpDiv);
+    
+    if(hasBP) {
+        document.getElementById('shop-bp-btn').disabled = true;
+        document.getElementById('shop-bp-btn').innerText = "Ya comprado";
+    }
 }
 function closeShop(){ document.getElementById('shop-modal').style.display='none'; }
 
-window.shopBuy = async function(type, qty, price) {
-    if(currentCoins < price) return showToast(`❌ No tienes suficientes monedas. Necesitas ${price}.`,'tomato');
-    let confirmMsg = '';
-    if(type==='tomato') confirmMsg = `¿Comprar ${qty} tomate(s) por ${price} monedas?`;
-    else if(type==='shield') confirmMsg = `¿Comprar Escudo (${qty} ataques) por ${price} monedas?`;
-    else if(type==='bp') confirmMsg = `¿Comprar Pase de Batalla por ${price} monedas?`;
-    if(!confirm(confirmMsg)) return;
+function buyWeapon(type, price) {
+    if(currentCoins < price) return showToast(`❌ Necesitas ${price} monedas`,'tomato');
+    if(!confirm(`¿Comprar ${WEAPONS[type].name} por ${price} monedas?`)) return;
+    
+    currentCoins -= price;
+    inventory[type]++;
+    updateCoinDisplay();
+    updateInventoryUI();
+    openShop(); // Refrescar tienda
+    AudioEngine.playShop();
+    showToast(`✅ ${WEAPONS[type].icon} ${WEAPONS[type].name} comprado!`,'success');
+}
 
-    const newCoins = currentCoins - price;
-    const updates = { coins: newCoins };
-    if(type==='tomato') { updates.item_tomatoes = itemTomatoes + qty; }
-    else if(type==='shield') { updates.shield_durability = shieldDurability + qty; }
-    else if(type==='bp') { if(hasBP) return alert("Ya tienes el pase."); updates.has_battle_pass = true; }
+function buyShield(qty, price) {
+    if(currentCoins < price) return showToast(`❌ Necesitas ${price} monedas`,'tomato');
+    if(!confirm(`¿Comprar Escudo (${qty} usos) por ${price} monedas?`)) return;
+    
+    currentCoins -= price;
+    shieldDurability += qty;
+    updateCoinDisplay();
+    updateInventoryUI();
+    openShop();
+    AudioEngine.playShop();
+    showToast(`✅ 🛡️ Escudo comprado!`,'success');
+}
 
-    try {
-        const { error } = await _supabase.from('profiles').update(updates).eq('id', currentUser.id);
-        if(error) throw error;
-        currentCoins = newCoins;
-        if(type==='tomato') itemTomatoes += qty;
-        else if(type==='shield') shieldDurability += qty;
-        else if(type==='bp') hasBP = true;
-        updateCoinDisplay(); updateInventoryUI(); updateBattlePassUI();
-        AudioEngine.playShop();
-        showToast(`✅ Compra exitosa: ${type==='tomato'?`🍅 x${qty}`:type==='shield'?`🛡️ ${qty} ataques`:'👑 Pase'}`,'shop');
-        if(type==='shield') incrementSquadMissionProgress('squadShieldBuys', 1);
-        openShop();
-    } catch(e) { showToast("❌ Error al comprar: "+e.message,'tomato'); }
-};
-
-function updateBattlePassUI(){
-    const bs = document.getElementById('bp-buy-section'), ps = document.getElementById('bp-progress-section'), st = document.getElementById('bp-status-text');
-    if(hasBP) { bs.style.display='none'; ps.style.display='block'; st.innerText="Activo"; st.style.color="var(--success)"; renderBPTiers(); }
-    else { bs.style.display='block'; ps.style.display='none'; st.innerText="Bloqueado"; st.style.color="#aaa"; }
-}
-function renderBPTiers(){
-    document.getElementById('bp-xp-val').innerText = totalScore;
-    const c = document.getElementById('bp-tiers-container'); c.innerHTML = '';
-    BP_REWARDS.forEach(tier => {
-        const isU = totalScore >= tier.xp, isC = claimedBPRewards.includes(tier.level);
-        let nc = isC ? 'claimed' : (isU ? 'unlocked' : '');
-        const d = document.createElement('div'); d.className = 'bp-tier';
-        d.innerHTML = `<div class="bp-tier-node ${nc}" onclick="openTierModal(${tier.level},${isU},${isC})">${isC?'✔':tier.icon}</div><div class="bp-tier-label">${isC?'OK':(isU?'¡Listo!':tier.xp+' pts')}</div><div class="bp-tier-desc">${tier.name}</div>`;
-        c.appendChild(d);
-    });
-}
-let currentViewingTier = null;
-function openTierModal(level, unlocked, claimed){
-    if(!unlocked) return alert("¡Aún no alcanzas este nivel!");
-    if(claimed) return alert("Ya reclamaste este premio.");
-    const tier = BP_REWARDS.find(t=>t.level===level); if(!tier) return;
-    currentViewingTier = tier;
-    const modal = document.getElementById('bp-modal');
-    if(modal) {
-        document.getElementById('bp-modal-icon').innerText = tier.icon;
-        document.getElementById('bp-modal-title').innerText = tier.name;
-        document.getElementById('bp-modal-desc').innerText = tier.desc;
-        modal.style.display = 'flex';
-    }
-}
-function closeBPModal(){ const modal = document.getElementById('bp-modal'); if(modal) modal.style.display='none'; currentViewingTier = null; }
-async function claimBPItem(){
-    if(!currentViewingTier) return;
-    AudioEngine.playSuccess();
-    if(!Array.isArray(claimedBPRewards)) claimedBPRewards = [];
-    claimedBPRewards.push(currentViewingTier.level);
-    const updates = { claimed_bp_rewards: claimedBPRewards };
-    if(currentViewingTier.type==='item'){
-        if(currentViewingTier.item==='item_tomatoes'){ itemTomatoes += currentViewingTier.qty; updates[currentViewingTier.item] = itemTomatoes; }
-        else if(currentViewingTier.item==='shield_durability'){ shieldDurability += currentViewingTier.qty; updates[currentViewingTier.item] = shieldDurability; }
-        else { updates[currentViewingTier.item] = true; }
-    } else if(currentViewingTier.type==='font') { updates.unlocked_font = 'freefire'; }
-    else if(currentViewingTier.type==='real_prize') { updates['pending_prize_'+currentViewingTier.level] = true; }
-    try {
-        await _supabase.from('profiles').update(updates).eq('id', currentUser.id);
-        alert("¡Recompensa reclamada!"); closeBPModal(); await loadScore(currentUser);
-    } catch(e) { alert("Error al reclamar: "+e.message); }
-}
 async function buyBattlePass(){
     if(hasBP) return alert("Ya tienes el pase.");
-    if(currentCoins<1000) return alert("No tienes suficientes DiviCoins. Necesitas 1000.");
-    if(!confirm("¿Comprar Pase de Batalla por 1000 DiviCoins?")) return;
+    if(currentCoins<1000) return alert("Necesitas 1000 monedas.");
+    if(!confirm("¿Comprar Pase de Batalla por 1000 monedas?")) return;
     try {
         const newCoins = currentCoins - 1000;
         await _supabase.from('profiles').update({coins:newCoins, has_battle_pass:true}).eq('id', currentUser.id);
         currentCoins = newCoins; hasBP = true;
-        updateCoinDisplay(); updateBattlePassUI(); AudioEngine.playSuccess();
-        showToast("👑 ¡Pase de Batalla desbloqueado! Reclama tus premios.",'success',5000);
-    } catch(e) { alert("Error al comprar: "+e.message); }
+        updateCoinDisplay(); openShop();
+        AudioEngine.playSuccess();
+        showToast("👑 ¡Pase comprado!",'success');
+    } catch(e) { alert("Error: "+e.message); }
 }
 
-async function loadSquadMissions(squadId) {
-    if(!squadId) { document.getElementById('squad-missions-panel').style.display='none'; return; }
-    userSquadId = squadId;
-    document.getElementById('squad-missions-panel').style.display = 'block';
-    const { data: members } = await _supabase.from('profiles').select('total_score,current_level,coins,squad_mission_progress,claimed_squad_missions').eq('squad_id', squadId);
-    if(!members) return;
-    let savedProgress = {}; let claimed = [];
-    try { savedProgress = members[0]?.squad_mission_progress || {}; claimed = members[0]?.claimed_squad_missions || []; } catch(e) {}
-    squadMissionsCompleted = claimed;
-    const totalCoins = members.reduce((s,u)=>s+(u.coins||0),0);
-    const maxLevel = Math.max(...members.map(u=>u.current_level||1));
-    const totalScoreSum = members.reduce((s,u)=>s+(u.total_score||0),0);
-    const approxCorrect = Math.floor(totalScoreSum / 100);
-    const currentProgress = {
-        squadCorrect: approxCorrect, squadMaxLevel: maxLevel >= 8 ? 1 : 0, squadCoins: totalCoins,
-        squadTomatoAttacks: savedProgress.squadTomatoAttacks || 0,
-        squadShieldBuys: savedProgress.squadShieldBuys || 0, squadTotalScore: totalScoreSum
-    };
-    const body = document.getElementById('missions-body');
-    body.innerHTML = SQUAD_MISSIONS.map(m => {
-        const prog = currentProgress[m.progressKey] || 0;
-        const pct = Math.min(100, Math.round((prog / m.goal) * 100));
-        const done = pct >= 100; const alreadyClaimed = claimed.includes(m.id);
-        return `<div class="mission-item ${done?'mission-complete':''}">
-            <div class="mission-header"><span class="mission-name">${m.icon} ${m.name}</span><span class="mission-reward">+${m.reward} 💰</span></div>
-            <div class="mission-bar-wrap"><div class="mission-bar" style="width:${pct}%"></div></div>
-            <div class="mission-progress-text">
-                ${done ? (alreadyClaimed ? '✅ Reclamada' : `<button onclick="claimSquadMission('${m.id}')" style="background:gold;color:black;border:none;padding:2px 8px;border-radius:4px;cursor:pointer;">Reclamar ${m.reward}💰</button>`) : `${Math.min(prog, m.goal)}/${m.goal} ${m.unit}`}
-            </div>
-        </div>`;
-    }).join('');
-    await _supabase.from('profiles').update({ squad_mission_progress: currentProgress }).eq('squad_id', squadId);
-}
-async function claimSquadMission(missionId) {
-    const mission = SQUAD_MISSIONS.find(m=>m.id===missionId);
-    if(!mission) return;
-    if(squadMissionsCompleted.includes(missionId)) return alert("Ya reclamada");
-    const { data: members } = await _supabase.from('profiles').select('id,coins,squad_mission_progress').eq('squad_id', userSquadId);
-    const saved = members[0]?.squad_mission_progress || {};
-    const prog = saved[mission.progressKey] || 0;
-    if(prog < mission.goal) return alert("Aún no se ha completado");
-    for(let m of members) {
-        const newCoins = (m.coins||0) + mission.reward;
-        await _supabase.from('profiles').update({coins:newCoins}).eq('id', m.id);
-    }
-    squadMissionsCompleted.push(missionId);
-    await _supabase.from('profiles').update({ claimed_squad_missions: squadMissionsCompleted }).eq('squad_id', userSquadId);
-    if(currentUser) await loadScore(currentUser);
-    loadSquadMissions(userSquadId);
-    showToast(`🎉 ¡Misión de escuadra completada! +${mission.reward} monedas para todos`, 'success');
-}
-async function incrementSquadMissionProgress(key, amount=1) {
-    if(!userSquadId) return;
-    const { data } = await _supabase.from('profiles').select('squad_mission_progress').eq('squad_id', userSquadId).limit(1);
-    const current = data?.[0]?.squad_mission_progress || {};
-    current[key] = (current[key]||0) + amount;
-    await _supabase.from('profiles').update({ squad_mission_progress: current }).eq('squad_id', userSquadId);
-    loadSquadMissions(userSquadId);
-}
-
-// 🍅 FIX 1: Tomates ahora sí restan puntos (con manejo de errores y reembolso)
-async function attackUser(targetId, targetName) {
-    if(itemTomatoes <= 0) return alert("No tienes tomates. ¡Ve a la tienda!");
-    if(!confirm(`¿Gastar 1 tomate para atacar a ${targetName}?`)) return;
-    itemTomatoes--;
+// 🎯 NUEVO SISTEMA DE ATAQUE CON ARMAS
+async function attackUser(targetId, targetName, weaponType) {
+    const weapon = WEAPONS[weaponType];
+    if(!weapon) return;
+    if(inventory[weaponType] <= 0) return showToast("¡No tienes esta arma!",'tomato');
+    
+    if(!confirm(`¿Usar ${weapon.icon} ${weapon.name} contra ${targetName}? (-${weapon.damage} pts)`)) return;
+    
+    inventory[weaponType]--;
     updateInventoryUI();
+    
     try {
         const { data: victim, error: fetchError } = await _supabase.from('profiles')
             .select('total_score, shield_durability, squad_id').eq('id', targetId).single();
@@ -785,33 +698,34 @@ async function attackUser(targetId, targetName) {
 
         if(victimShield > 0) {
             updates.shield_durability = victimShield - 1;
-            msg = `🛡️ ¡${targetName} tenía ESCUDO! Resistió el ataque. (Restante: ${victimShield - 1})`;
+            msg = `🛡️ ¡${targetName} tenía ESCUDO! Resistió el ${weapon.icon}. (Restante: ${victimShield - 1})`;
         } else {
-            const newScore = Math.max(0, (victim.total_score || 0) - 50);
+            const newScore = Math.max(0, (victim.total_score || 0) - weapon.damage);
             updates.total_score = newScore;
-            msg = `🍅 ¡Atacaste a ${targetName}! Perdió 50 puntos.`;
+            msg = `${weapon.icon} ¡Atacaste a ${targetName} con ${weapon.name}! Perdió ${weapon.damage} puntos.`;
         }
 
         const { error: updateError } = await _supabase.from('profiles').update(updates).eq('id', targetId);
         if(updateError) throw updateError;
 
-        await _supabase.from('profiles').update({ item_tomatoes: itemTomatoes }).eq('id', currentUser.id);
-        if(userSquadId && victim.squad_id === userSquadId) {
-            await incrementSquadMissionProgress('squadTomatoAttacks', 1);
-        }
+        // Actualizar inventario local
+        await _supabase.from('profiles').update({
+            [`inventory_${weaponType}`]: inventory[weaponType]
+        }).eq('id', currentUser.id);
+        
         showToast(msg, 'tomato');
         setTimeout(async () => { await updateRanking(); }, 600);
     } catch(e) {
         console.error('Error en ataque:', e);
-        showToast("❌ Error al atacar: "+e.message, 'tomato');
-        itemTomatoes++; updateInventoryUI();
+        showToast("❌ Error: "+e.message, 'tomato');
+        inventory[weaponType]++; // Reembolsar
+        updateInventoryUI();
     }
 }
 
 let rankInt;
 function startRanking(){ updateRanking(); rankInt = setInterval(updateRanking, 5000); }
 
-// 🛡️ FIX 2: Ranking con barra de escudo dinámica
 async function updateRanking(){
     const list = document.getElementById('ranking-list');
     try {
@@ -821,6 +735,7 @@ async function updateRanking(){
             .order('total_score',{ascending:false});
         if(error) throw error;
         if(!data||!data.length){ list.innerHTML='<li style="text-align:center;padding:10px;color:#666;">No hay datos.</li>'; return; }
+        
         list.innerHTML = data.map((u,i)=>{
             const s = u.total_score||0, rI = getRankInfo(s), isMe = (currentUser&&u.username===currentUser.email.split('@')[0]);
             let rc = "ranking-item "+rI.css, dn = u.username||'Yo';
@@ -828,7 +743,17 @@ async function updateRanking(){
             if(isMe) rc+=" me";
             const avUrl = getAvatarUrl(u.username||'guest', u.avatar_style||'adventurer');
             const sq = u.squad_id&&SQUADS[u.squad_id] ? `<div style="width:16px;height:18px;">${SQUADS[u.squad_id].svg}</div>` : '';
-            const atk = (!isMe && itemTomatoes>0) ? `<button class="attack-btn" onclick="attackUser('${u.id}','${u.username}')">🍅</button>` : '';
+            
+            // Botones de ataque dinámicos
+            let atkButtons = '';
+            if(!isMe) {
+                Object.entries(inventory).forEach(([key, count]) => {
+                    if(count > 0) {
+                        const w = WEAPONS[key];
+                        atkButtons += `<button class="attack-btn" onclick="attackUser('${u.id}','${u.username}','${key}')" title="${w.name} (-${w.damage})">${w.icon}</button> `;
+                    }
+                });
+            }
 
             let shieldHTML = '';
             const sh = u.shield_durability || 0;
@@ -841,12 +766,12 @@ async function updateRanking(){
                 shieldHTML = `<div class="shield-bar-container"><span class="shield-icon">🛡️</span><div class="shield-bar-bg"><div class="shield-bar-fill" style="width:${pct}%;background:${barColor};"></div></div><span class="shield-text">${sh}/${maxSh}</span></div>`;
             }
 
-            return `<li class="${rc}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${dn}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span>${shieldHTML}</div>${sq}</div><span class="rank-score">${s}</span>${atk}</li>`;
+            return `<li class="${rc}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${dn}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span>${shieldHTML}</div>${sq}</div><span class="rank-score">${s}</span><div style="display:flex;gap:2px;">${atkButtons}</div></li>`;
         }).join('');
         updateSquadRanking(data);
-        if(userSquadId) loadSquadMissions(userSquadId);
     } catch(err){ list.innerHTML='<li style="text-align:center;padding:10px;color:red;">Error.</li>'; }
 }
+
 function updateSquadRanking(all){
     const list = document.getElementById('squad-list'), ss = {};
     Object.keys(SQUADS).forEach(id=>ss[id]=0);
@@ -856,6 +781,7 @@ function updateSquadRanking(all){
         return `<li class="squad-rank-item" style="border-left-color:${sq.color}"><div class="squad-rank-left"><div class="squad-shield-small">${sq.svg}</div><span style="font-weight:700;color:${sq.color}">${sq.name}</span></div><span class="squad-score">${sc} pts</span></li>`;
     }).join('');
 }
+
 async function loadHallOfFame(){
     const list = document.getElementById('fame-list');
     try {
@@ -876,6 +802,7 @@ function toggleAdminDashboard(){
     if(document.getElementById('admin-dashboard').style.display === 'flex'){ logout(); }
     else { showAdminDashboard(); }
 }
+
 async function loadDashboardData(){
     const grid = document.getElementById('student-grid');
     try {
@@ -908,7 +835,7 @@ async function loadDashboardData(){
             Object.entries(SQUADS).forEach(([id,s]) => { sqOpts += `<option value="${id}" ${u.squad_id==id?'selected':''}>${s.name}</option>`; });
             return `<div class="student-card ${isOnline&&!isBanned?'':'offline'}">
                 <div class="sc-header"><img src="${getAvatarUrl(u.username||'guest',u.avatar_style)}" class="sc-avatar"><div class="sc-info"><div class="sc-name">${u.username}</div><div class="sc-status"><span class="status-dot ${isOnline&&!isBanned?'online':''}"></span>${isBanned?'Baneado':(isOnline?'En línea':'Offline')}</div></div></div>
-                <div class="sc-stats"><div>Puntos<br><span class="sc-stat-val">${u.total_score||0}</span></div><div>Nivel<br><span class="sc-stat-val">${u.current_level||1}</span></div><div>Tiempo<br><span class="sc-stat-val">${mins}m ${secs}s</span></div><div>Errores<br><span class="sc-stat-val">0</span></div></div>
+                <div class="sc-stats"><div>Puntos<br><span class="sc-stat-val">${u.total_score||0}</span></div><div>Nivel<br><span class="sc-stat-val">${u.current_level||1}</span></div><div>Tiempo<br><span class="sc-stat-val">${mins}m ${secs}s</span></div></div>
                 <div class="sc-squad-control"><select class="squad-select-admin" onchange="assignSquad('${u.id}',this.value)">${sqOpts}</select></div>
                 <div class="sc-actions"><button class="sc-btn ban ${isBanned?'active':''}" onclick="toggleBan('${u.id}',${isBanned})">${isBanned?'Desbanear':'Banear'}</button><button class="sc-btn delete" onclick="deleteUser('${u.id}','${u.username}')">Borrar</button></div>
             </div>`;
@@ -916,9 +843,11 @@ async function loadDashboardData(){
         document.getElementById('student-count').innerText = students.filter(u => (now - new Date(u.last_seen) < 30000) && !u.is_banned).length + " en línea";
     } catch(e){ grid.innerHTML = "Error al cargar datos"; }
 }
+
 async function markPrizeDelivered(uid, prizeLevel){
     try { await _supabase.from('profiles').update({[`pending_prize_${prizeLevel}`]:false}).eq('id',uid); loadDashboardData(); } catch(e){ alert("Error"); }
 }
+
 function updateControlButtons(settings){
     const pb = document.getElementById('btn-pause'), eb = document.getElementById('btn-exam');
     if(settings){
@@ -928,18 +857,22 @@ function updateControlButtons(settings){
         else { eb.classList.remove('active'); eb.querySelector('span').innerText = "Modo Examen"; }
     }
 }
+
 async function togglePause(){
     const { data: s } = await _supabase.from('game_settings').select('is_paused').single();
     await _supabase.from('game_settings').update({is_paused: !s.is_paused}).eq('id',1);
     loadDashboardData();
 }
+
 async function toggleExamMode(){
     const { data: s } = await _supabase.from('game_settings').select('exam_level').single();
     const nl = s.exam_level > 0 ? 0 : 1;
     await _supabase.from('game_settings').update({exam_level: nl, is_paused: false}).eq('id',1);
     loadDashboardData();
 }
+
 function showSeasonModal(){ const h = prompt("Horas:","0"), m = prompt("Minutos:","0"); if(h||m) startSeason(parseInt(h),parseInt(m)); }
+
 async function startSeason(h,m){
     if(h===0 && m===0) return alert("Ingresa tiempo.");
     const end = new Date(Date.now() + h*3600000 + m*60000);
@@ -950,30 +883,36 @@ async function startSeason(h,m){
         alert("¡Temporada "+ns+" iniciada!"); loadDashboardData();
     } catch(e){ alert("Error"); }
 }
+
 async function toggleBan(uid, cur){ try { await _supabase.from('profiles').update({is_banned: !cur}).eq('id',uid); loadDashboardData(); } catch(e){ alert("Error"); } }
+
 async function cleanInactiveUsers(){
     if(!confirm("¿Borrar cuentas con 0 puntos?")) return;
     try { await _supabase.from('profiles').delete().eq('total_score',0).neq('username',ADMIN_USER); alert("Limpieza completada."); loadDashboardData(); }
     catch(e){ alert("Error: "+e.message); }
 }
+
 async function deleteUser(uid, name){
     if(!confirm(`¿Borrar "${name}" permanentemente?`)) return;
     try { await _supabase.from('profiles').delete().eq('id',uid); alert(`${name} eliminado.`); loadDashboardData(); }
     catch(e){ alert("Error: "+e.message); }
 }
+
 async function resetAllUsers(){
     if(!confirm("¿Reiniciar TODOS los puntos y tiempo?")) return;
     try {
         await _supabase.from('profiles').update({
             total_score:0, current_level:1, completed_at:null, current_problem:1,
-            total_time_played:0, total_errors:0, squad_id:0, coins:0,
-            has_battle_pass:false, claimed_bp_rewards:[], item_tomatoes:0, shield_durability:0,
-            pending_prize_4:false, pending_prize_5:false
+            total_time_played:0, squad_id:0, coins:0,
+            has_battle_pass:false, claimed_bp_rewards:[],
+            inventory_tomato:0, inventory_balloon:0, inventory_acid:0, inventory_bomb:0, inventory_chili:0,
+            shield_durability:0, pending_prize_4:false, pending_prize_5:false
         }).neq('id','00000000-0000-0000-0000-000000000000');
         await _supabase.from('game_settings').update({season_end_time:null, is_paused:false, exam_level:0}).eq('id',1);
         alert("¡Reiniciado!"); loadDashboardData();
     } catch(e){ alert("Error: "+e.message); }
 }
+
 async function assignSquad(uid, sqId){ try { await _supabase.from('profiles').update({squad_id: sqId}).eq('id',uid); loadDashboardData(); } catch(e){ alert("Error"); } }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -996,12 +935,14 @@ function showLogin(){
         typingTimer = setTimeout(() => { img.src = `https://api.dicebear.com/8.x/adventurer/svg?seed=${e.target.value.trim()}`; }, 500);
     });
 }
+
 async function showApp(){
     document.getElementById('login-screen').style.display='none';
     document.querySelector('.app-container').style.display='flex';
     if(currentUser){ try{ await loadScore(currentUser); } catch(e){ console.error(e); } }
     if(isAdmin){ showAdminDashboard(); } else { initGame(); startRanking(); loadHallOfFame(); initSeason(); startStudentHeartbeat(); }
 }
+
 async function handleLogin(){
     const u = document.getElementById('login-username').value.trim();
     const p = document.getElementById('login-password').value;
@@ -1013,6 +954,7 @@ async function handleLogin(){
         currentUser = data.user; showApp();
     } catch(err){ e.textContent = "Error: "+err.message; e.style.display='block'; }
 }
+
 async function handleRegister(){
     const u = document.getElementById('login-username').value.trim();
     const p = document.getElementById('login-password').value;
@@ -1024,16 +966,19 @@ async function handleRegister(){
         alert("Registrado. Entra ahora.");
     } catch(err){ e.textContent = "Error: "+err.message; e.style.display='block'; }
 }
+
 async function logout(){
     await _supabase.auth.signOut();
-    currentUser = null; totalScore = 0; currentCoins = 0; hasBP = false; itemTomatoes = 0; shieldDurability = 0; currentStreak = 0;
+    currentUser = null; totalScore = 0; currentCoins = 0; hasBP = false; currentStreak = 0;
+    inventory = { tomato:0, balloon:0, acid:0, bomb:0, chili:0 };
+    shieldDurability = 0;
     showLogin(); clearInterval(rankInt);
 }
 
 async function loadScore(user){
     try {
         const { data } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
-        if(data?.is_banned){ alert("Tu cuenta está suspendida temporalmente."); logout(); return; }
+        if(data?.is_banned){ alert("Tu cuenta está suspendida."); logout(); return; }
         totalScore = data?.total_score || 0;
         currentAvatarStyle = data?.avatar_style || 'adventurer';
         unlockedLevel = data?.current_level || 1;
@@ -1044,10 +989,20 @@ async function loadScore(user){
         currentCoins = data?.coins || 0;
         hasBP = data?.has_battle_pass || false;
         const raw = data?.claimed_bp_rewards;
-        claimedBPRewards = Array.isArray(raw) ? raw : (raw && typeof raw === 'object' ? Object.values(raw) : []);
-        itemTomatoes = data?.item_tomatoes || 0;
+        claimedBPRewards = Array.isArray(raw) ? raw : [];
         shieldDurability = data?.shield_durability || 0;
-        updateCoinDisplay(); updateInventoryUI(); updateBattlePassUI(); updateStreakUI();
+        
+        // Cargar inventario
+        inventory.tomato = data?.inventory_tomato || 0;
+        inventory.balloon = data?.inventory_balloon || 0;
+        inventory.acid = data?.inventory_acid || 0;
+        inventory.bomb = data?.inventory_bomb || 0;
+        inventory.chili = data?.inventory_chili || 0;
+        
+        updateCoinDisplay();
+        updateInventoryUI();
+        updateStreakUI();
+        
         if(data?.squad_id && SQUADS[data.squad_id]){
             const sq = SQUADS[data.squad_id];
             document.getElementById('squad-display').style.display = 'flex';
@@ -1055,9 +1010,16 @@ async function loadScore(user){
             document.getElementById('user-squad-name').innerText = sq.name;
             document.getElementById('user-squad-name').style.color = sq.color;
             userSquadId = data.squad_id;
-            loadSquadMissions(data.squad_id);
-        } else { document.getElementById('squad-display').style.display = 'none'; userSquadId = null; }
-    } catch(e){ totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1; currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0; currentCoins = 0; hasBP = false; itemTomatoes = 0; shieldDurability = 0; }
+        } else { 
+            document.getElementById('squad-display').style.display = 'none'; 
+            userSquadId = null; 
+        }
+    } catch(e){ 
+        totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1; 
+        currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0; 
+        currentCoins = 0; hasBP = false; shieldDurability = 0;
+        inventory = { tomato:0, balloon:0, acid:0, bomb:0, chili:0 };
+    }
     isAdmin = (user.email.split('@')[0] === ADMIN_USER);
     document.getElementById('admin-header-btn').classList.toggle('visible', isAdmin);
     if(hasFinishedGame) document.getElementById('msg').innerHTML = "<span style='color:var(--primary-color);'>¡Ya terminaste!</span>";
@@ -1066,12 +1028,14 @@ async function loadScore(user){
 }
 
 function initGame(){ loadProblem(); populateLevelSelect(); }
+
 function jumpToLevel(l){
     AudioEngine.playClick();
     const t = parseInt(l);
     if(t > unlockedLevel){ alert("¡Debes completar el nivel anterior!"); document.getElementById('levelSelect').value = currentMainLevel; return; }
     currentMainLevel = t; currentProblemInLevel = 1; loadProblem();
 }
+
 async function loadProblem(){
     if(hasFinishedGame) return;
     const canPlay = await checkGlobalState(); if(!canPlay) return;
@@ -1087,7 +1051,9 @@ async function loadProblem(){
     createUI(); createAntena(); resetAll(); lockGrid();
     document.getElementById('msg').innerText = '';
 }
+
 function getDifficultyLabel(lvl){ if(lvl<=2) return "Divisor: 1 Cifra"; if([3,4,5,7,9].includes(lvl)) return "Divisor: 2 Cifras"; return "Divisor: 3 Cifras"; }
+
 function lockGrid(){
     isGridLocked = true;
     document.getElementById('grid-lock-overlay').classList.remove('hidden');
@@ -1097,6 +1063,7 @@ function lockGrid(){
         cell.disabled = true; cell.style.pointerEvents = 'none'; cell.style.opacity = '0.4';
     });
 }
+
 function unlockGrid(){
     isGridLocked = false;
     document.getElementById('grid-lock-overlay').classList.add('hidden');
@@ -1109,6 +1076,7 @@ function unlockGrid(){
     document.getElementById('msg').style.color = "var(--success)";
     triggerEpicEffect();
 }
+
 function triggerEpicEffect(){
     AudioEngine.playEpic();
     const ov = document.getElementById('epic-overlay'), tx = document.getElementById('epic-text');
@@ -1118,8 +1086,10 @@ function triggerEpicEffect(){
     tx.style.animation = 'epicPulse .5s ease-out forwards';
     setTimeout(() => ov.style.display = 'none', 1500);
 }
+
 function showVictoryScreen(){ createConfetti(); document.getElementById('victory-screen').style.display = 'flex'; AudioEngine.playLevelUp(); }
 function hideVictoryScreen(){ document.getElementById('victory-screen').style.display = 'none'; document.querySelectorAll('.confetti').forEach(c=>c.remove()); }
+
 function createConfetti(){
     const sc = document.getElementById('victory-screen'), colors = ['#ffcc00','#00e676','#2979ff','#f00','#ff9800'];
     for(let i=0;i<50;i++){
@@ -1163,8 +1133,10 @@ function createUI(){
         tR.appendChild(inp);
     }
 }
+
 function disableCocienteInputs(d){ document.querySelectorAll('.input-cociente-galera').forEach(i => i.disabled = d); }
 function syncT(){ let v = ""; document.querySelectorAll('.input-cociente-galera').forEach(x => v += x.value); document.getElementById('valCociente').value = v; }
+
 function createAntena(){
     const b = document.getElementById('antenaBody');
     document.getElementById('antenaLabel').innerText = currentDivisor;
@@ -1176,6 +1148,7 @@ function createAntena(){
     }
     currentAntennaIndex = 0; enableNextAntennaInput();
 }
+
 function enableNextAntennaInput(){
     if(currentAntennaIndex >= ANTENNA_SEQUENCE.length) return;
     const cId = ANTENNA_SEQUENCE[currentAntennaIndex];
@@ -1185,6 +1158,7 @@ function enableNextAntennaInput(){
         inp.oninput = e => { e.target.value = e.target.value.replace(/[^0-9]/g,''); checkAntennaInput(inp, cId); };
     }
 }
+
 function checkAntennaInput(inp, id){
     const val = parseInt(inp.value), exp = id * currentDivisor;
     if(val === exp){
@@ -1195,6 +1169,7 @@ function checkAntennaInput(inp, id){
         inp.classList.add('status-wrong'); setTimeout(() => inp.classList.remove('status-wrong'), 500);
     }
 }
+
 function resetAll(){
     document.getElementById('valCociente').value = '';
     document.getElementById('valResiduo').value = '';
@@ -1203,7 +1178,6 @@ function resetAll(){
     document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value = ''; i.disabled = false; i.style.pointerEvents = 'auto'; i.style.opacity = '1'; });
 }
 
-// 👑 FIX 3: Pase de Batalla se actualiza en tiempo real al ganar puntos
 async function verificarSolucion(){
     if(isVerifying) return;
     if(isGridLocked){ alert("¡Completa la Antena primero!"); return; }
@@ -1224,11 +1198,8 @@ async function verificarSolucion(){
         currentCoins += 5; updateCoinDisplay();
         document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:700;font-size:1.2rem;'>¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
         
-        // 👑 Actualizar BP en tiempo real
-        if(hasBP) updateBattlePassUI();
+        if(hasBP) { /* Actualizar BP si es necesario */ }
         
-        await incrementSquadMissionProgress('squadCorrect', 1);
-        await incrementSquadMissionProgress('squadTotalScore', POINTS);
         if(currentProblemInLevel < PROBLEMS_PER_LEVEL){
             currentProblemInLevel++;
         } else {
@@ -1260,7 +1231,7 @@ async function checkGlobalState(){
     if(isAdmin) return true;
     try {
         const { data } = await _supabase.from('game_settings').select('*').single();
-        if(data?.is_paused){ lockGrid(); document.getElementById('msg').innerHTML = "<span style='color:var(--error);font-size:1.5rem;'>⏸️ JUEGO PAUSADO POR EL PROFESOR</span>"; return false; }
+        if(data?.is_paused){ lockGrid(); document.getElementById('msg').innerHTML = "<span style='color:var(--error);font-size:1.5rem;'>⏸️ JUEGO PAUSADO</span>"; return false; }
         if(data?.exam_level > 0){
             if(currentMainLevel !== data.exam_level){ currentMainLevel = data.exam_level; unlockedLevel = data.exam_level; loadProblem(); alert("Modo Examen: Nivel "+data.exam_level); }
         }
@@ -1276,6 +1247,7 @@ async function initSeason(settings){
     if(data?.season_end_time){ startCountdown(new Date(data.season_end_time)); }
     else { document.getElementById('timer-display').innerText = isAdmin ? "SIN INICIAR" : "--:--"; document.getElementById('season-badge').classList.add('finished'); }
 }
+
 function startCountdown(endDate){
     clearInterval(seasonInterval);
     seasonInterval = setInterval(() => {
@@ -1294,12 +1266,14 @@ function startCountdown(endDate){
         document.getElementById('season-badge').classList.remove('finished');
     }, 1000);
 }
+
 let selectedGiftAmount = 0;
+
 function startStudentHeartbeat(){
     setInterval(async () => { if(currentUser && !isAdmin) await _supabase.from('profiles').update({last_seen: new Date().toISOString()}).eq('id', currentUser.id); }, 15000);
     setInterval(() => { if(!isGridLocked && !hasFinishedGame){ playTimeCounter++; if(playTimeCounter%60 === 0) saveTime(); } }, 1000);
     
-    // 🎁 Checker de regalos del profesor
+    // 🎁 Checker de regalos
     setInterval(async () => {
         if(!currentUser || isAdmin) return;
         const { data } = await _supabase.from('profiles').select('pending_gift_coins').eq('id', currentUser.id).single();
@@ -1315,7 +1289,7 @@ function startStudentHeartbeat(){
             icon.classList.add('blinking');
             badge.style.display = 'block';
             badge.innerText = `+${amount}`;
-            showToast(`🎁 ¡El profesor te regaló ${amount} DiviCoins!`, 'success', 5000);
+            showToast(`🎁 ¡El profesor te regaló ${amount} monedas!`, 'success', 5000);
             AudioEngine.playSuccess();
             
             setTimeout(() => {
@@ -1326,7 +1300,7 @@ function startStudentHeartbeat(){
     }, 4000);
 }
 
-// 🎁 Funciones Admin para regalar
+// 🎁 Funciones Admin
 function openGiftModal() {
     document.getElementById('gift-modal').style.display = 'flex';
     document.getElementById('gift-amount-display').innerText = 'Selecciona una cantidad';
@@ -1342,11 +1316,12 @@ function selectGiftAmount(amt) {
     selectedGiftAmount = amt;
     document.getElementById('gift-amount-display').innerText = `Cantidad seleccionada: ${amt} 💰`;
 }
+
 async function executeGift() {
     if(selectedGiftAmount <= 0) return alert('Selecciona una cantidad primero.');
     const recipient = document.getElementById('gift-recipient').value;
     const targetName = recipient === 'all' ? 'todos los alumnos' : document.getElementById('gift-recipient').selectedOptions[0].text;
-    if(!confirm(`¿Regalar ${selectedGiftAmount} DiviCoins a ${targetName}?`)) return;
+    if(!confirm(`¿Regalar ${selectedGiftAmount} monedas a ${targetName}?`)) return;
     try {
         let query = _supabase.from('profiles');
         if(recipient === 'all') {
@@ -1356,10 +1331,11 @@ async function executeGift() {
         }
         const { error } = await query;
         if(error) throw error;
-        showToast(`🎁 ¡Regalo de ${selectedGiftAmount} DiviCoins enviado!`, 'success');
+        showToast(`🎁 ¡Regalo de ${selectedGiftAmount} monedas enviado!`, 'success');
         closeGiftModal();
-    } catch(e) { alert('Error al enviar regalo: ' + e.message); }
+    } catch(e) { alert('Error: ' + e.message); }
 }
+
 async function saveTime(){
     if(!currentUser) return;
     try { await _supabase.from('profiles').update({total_time_played: playTimeCounter}).eq('id', currentUser.id); } catch(e){}
@@ -1374,6 +1350,7 @@ function populateLevelSelect(){
     }
     s.value = currentMainLevel;
 }
+
 function updateUI(){
     document.getElementById('scoreDisplay').innerText = totalScore;
     const rI = getRankInfo(totalScore);
@@ -1382,11 +1359,13 @@ function updateUI(){
     document.getElementById('userRankBar').style.width = rI.pct + "%";
     document.getElementById('main-avatar-box').className = "avatar-container " + rI.avatar;
 }
+
 function toggleAvatarModal(){
     const m = document.getElementById('avatar-modal');
     if(m.style.display === 'none'){ m.style.display = 'flex'; renderAvatarOptions(); }
     else { m.style.display = 'none'; }
 }
+
 function renderAvatarOptions(){
     const gs = document.getElementById('avatar-options-standard'), ge = document.getElementById('avatar-options-exclusive'), es = document.getElementById('exclusive-section');
     gs.innerHTML = ''; ge.innerHTML = '';
@@ -1411,11 +1390,13 @@ function renderAvatarOptions(){
         ge.appendChild(d);
     });
 }
+
 function selectAvatarStyle(id){
     const isEx = AVATAR_STYLES_EXCLUSIVE.some(s => s.id === id);
-    if(isEx && totalScore < 50000){ alert("¡Este avatar es exclusivo!"); return; }
+    if(isEx && totalScore < 50000){ alert("¡Avatar exclusivo!"); return; }
     currentAvatarStyle = id; renderAvatarOptions(); renderMainAvatar();
 }
+
 async function saveAvatarChoice(){
     AudioEngine.playClick();
     try {
@@ -1424,10 +1405,10 @@ async function saveAvatarChoice(){
         renderMainAvatar();
         toggleAvatarModal();
         updateRanking();
-        showToast('✅ ¡Avatar actualizado correctamente!','success');
+        showToast('✅ ¡Avatar actualizado!','success');
     } catch(e) {
         console.error('Error guardando avatar:', e);
-        showToast('❌ Error al guardar avatar: '+e.message,'tomato');
+        showToast('❌ Error: '+e.message,'tomato');
     }
 }
 
@@ -1437,31 +1418,17 @@ async function saveScore(){
         await _supabase.from('profiles').upsert({
             id: currentUser.id, username: currentUser.email.split('@')[0],
             total_score: totalScore, current_level: unlockedLevel,
-            current_problem: currentProblemInLevel, coins: currentCoins
+            current_problem: currentProblemInLevel, coins: currentCoins,
+            inventory_tomato: inventory.tomato,
+            inventory_balloon: inventory.balloon,
+            inventory_acid: inventory.acid,
+            inventory_bomb: inventory.bomb,
+            inventory_chili: inventory.chili,
+            shield_durability: shieldDurability
         });
         updateRanking();
     } catch(e){ console.error(e); }
 }
 </script>
-    <div id="gift-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.92); z-index:99999; justify-content:center; align-items:center;">
-    <div class="modal-box" style="width:380px; border-top:4px solid var(--shop-purple);">
-        <h3 style="margin:0 0 15px 0; color:var(--primary-color); font-family:'Teko'; font-size:1.8rem; text-transform:uppercase;">🎁 Regalar DiviCoins</h3>
-        <select id="gift-recipient" class="login-input" style="margin-bottom:15px; font-size:0.95rem;">
-            <option value="all">👥 Todos los alumnos</option>
-        </select>
-        <div style="display:flex; gap:10px; justify-content:center; margin-bottom:15px;">
-            <button class="btn-small" onclick="selectGiftAmount(100)" style="flex:1; background:#1a1a1a; color:gold; border:1px solid gold; font-size:1rem;">100 💰</button>
-            <button class="btn-small" onclick="selectGiftAmount(500)" style="flex:1; background:#1a1a1a; color:gold; border:1px solid gold; font-size:1rem;">500 💰</button>
-            <button class="btn-small" onclick="selectGiftAmount(1000)" style="flex:1; background:#1a1a1a; color:gold; border:1px solid gold; font-size:1rem;">1000 💰</button>
-        </div>
-        <div id="gift-amount-display" style="text-align:center; font-size:1rem; color:#aaa; margin-bottom:15px;">Selecciona una cantidad</div>
-        <button class="btn-primary" onclick="executeGift()" style="width:100%; background:linear-gradient(45deg,var(--shop-purple),#9333ea);">🎁 Enviar Regalo</button>
-        <button class="btn-small" onclick="closeGiftModal()" style="width:100%; margin-top:10px; background:#222; color:#888;">Cancelar</button>
-    </div>
-</div>
 </body>
 </html>
-
-
-
-
