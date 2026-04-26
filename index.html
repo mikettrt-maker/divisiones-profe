@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Reto de División - V26 (Cartas de Batalla)</title>
+    <title>Reto de División - V25 (Arsenal Medieval)</title>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -190,126 +190,40 @@
         .login-btn { width: 100%; margin-top: 10px; }
         .login-avatar-preview { width: 90px; height: 90px; border-radius: 50%; margin: 0 auto 20px auto; border: 2px solid var(--primary-color); overflow: hidden; background: black; box-shadow: 0 0 15px var(--primary-color); }
         .login-error { color: var(--error); font-size: .9rem; margin-top: 10px; display: none; }
+        .modal-box { background: var(--bg-panel); padding: 30px; border-radius: 4px; width: 450px; max-height: 80vh; overflow-y: auto; text-align: center; border: 1px solid #333; }
+        .avatar-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+        .avatar-option { cursor: pointer; padding: 5px; border-radius: 50%; border: 2px solid transparent; }
+        .avatar-option.selected { border-color: var(--primary-color); }
+        .avatar-option img { width: 50px; height: 50px; border-radius: 50%; background: #000; }
+        .avatar-locked { filter: grayscale(100%); opacity: .5; cursor: not-allowed; }
+        .toast-container { position: fixed; bottom: 90px; left: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
+        .toast { background: #1a1a1a; border: 1px solid #444; border-radius: 6px; padding: 10px 16px; font-size: .9rem; color: white; box-shadow: 0 4px 20px rgba(0,0,0,.5); animation: toastIn .3s ease, toastOut .3s ease 3.7s forwards; max-width: 300px; }
+        .toast.tomato { border-color: var(--error); border-left: 4px solid var(--error); }
+        .toast.success { border-color: var(--success); border-left: 4px solid var(--success); }
+        @keyframes toastIn { from{opacity:0;transform:translateX(-30px)} to{opacity:1;transform:translateX(0)} }
+        @keyframes toastOut { from{opacity:1} to{opacity:0;transform:translateX(-30px)} }
+        #victory-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.95); z-index: 99998; display: none; flex-direction: column; justify-content: center; align-items: center; }
+        .victory-title { font-size: 7rem; color: var(--primary-color); font-weight: 700; text-shadow: 0 0 30px var(--primary-color); font-family: 'Teko', sans-serif; animation: scaleUp .3s; text-transform: uppercase; }
+        .confetti { position: absolute; width: 10px; height: 10px; background: #f00; animation: fall linear forwards; }
+        @keyframes scaleUp { 0%{transform:scale(0);opacity:0} 100%{transform:scale(1);opacity:1} }
+        @keyframes fall { to{transform:translateY(100vh) rotate(720deg)} }
+        #epic-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99990; display: none; justify-content: center; align-items: center; pointer-events: none; }
+        .epic-text { font-family: 'Teko', sans-serif; font-size: 8rem; color: var(--error); text-transform: uppercase; font-weight: 800; text-shadow: 0 0 20px rgba(255,0,0,.8), 4px 4px 0 #000; opacity: 0; }
+        @keyframes epicPulse { 0%{transform:scale(.2) rotate(-10deg);opacity:0} 50%{transform:scale(1.2) rotate(5deg);opacity:1} 100%{transform:scale(1) rotate(0deg);opacity:1} }
+        .gift-icon { transition: transform 0.3s; }
+        .gift-icon.blinking { animation: giftPulse 0.5s infinite alternate; display: inline-block !important; }
+        @keyframes giftPulse { 0%{transform:scale(1); opacity:0.6;} 100%{transform:scale(1.35); opacity:1; text-shadow: 0 0 12px #ff4081, 0 0 20px gold;} }
+        .shield-bar-container { display: flex; align-items: center; gap: 4px; margin-top: 3px; }
+        .shield-icon { font-size: 0.7rem; }
+        .shield-bar-bg { width: 60px; height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
+        .shield-bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
+        .shield-text { font-size: 0.65rem; color: #888; margin-left: 2px; }
         
-        /* 🃏 ESTILOS NUEVOS PARA CARTAS DE AVATAR */
-        .modal-box { background: var(--bg-panel); padding: 30px; border-radius: 16px; width: 90%; max-width: 800px; max-height: 85vh; overflow-y: auto; text-align: center; border: 2px solid var(--primary-color); box-shadow: 0 0 40px rgba(255,204,0,0.2); }
-        
-        .avatar-card-grid { 
-            display: grid; 
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); 
-            gap: 20px; 
-            margin: 20px 0;
-        }
-
-        .avatar-card {
-            background: linear-gradient(145deg, #1e293b, #0f172a);
-            border: 2px solid #334155;
-            border-radius: 12px;
-            padding: 15px 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            position: relative;
-            overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-
-        .avatar-card:hover {
-            transform: translateY(-5px) scale(1.02);
-            border-color: var(--primary-color);
-            box-shadow: 0 0 20px rgba(255, 204, 0, 0.4), 0 0 40px rgba(255, 204, 0, 0.1);
-            z-index: 10;
-        }
-
-        .avatar-card.selected {
-            border-color: var(--success);
-            box-shadow: 0 0 20px var(--success), inset 0 0 10px rgba(0,230,118,0.2);
-            transform: scale(1.05);
-        }
-
-        .avatar-card img {
-            width: 80px;
-            height: 80px;
-            border-radius: 50%;
-            margin-bottom: 10px;
-            background: #000;
-            border: 2px solid #475569;
-            transition: all 0.3s;
-        }
-
-        .avatar-card:hover img {
-            border-color: var(--primary-color);
-        }
-
-        .avatar-card .card-name {
-            font-family: 'Teko', sans-serif;
-            font-size: 1.2rem;
-            color: #fff;
-            margin-bottom: 2px;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-        }
-
-        .avatar-card .card-rank {
-            font-size: 0.7rem;
-            color: #94a3b8;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* 🌟 EFECTOS EXCLUSIVOS HEROICO */
-        .avatar-card.exclusive {
-            background: linear-gradient(145deg, #2a1b3d, #1a0b2e);
-            border-color: #7c3aed;
-        }
-
-        .avatar-card.exclusive::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: conic-gradient(transparent, rgba(255,204,0,0.3), transparent 30%);
-            animation: shimmerRotate 4s linear infinite;
-        }
-
-        @keyframes shimmerRotate {
-            100% { transform: rotate(360deg); }
-        }
-
-        .avatar-card.exclusive:hover {
-            border-color: var(--neon-magenta);
-            box-shadow: 0 0 25px rgba(255, 0, 255, 0.5);
-        }
-
-        /* 🔒 ESTADO BLOQUEADO */
-        .avatar-card.locked {
-            cursor: not-allowed;
-            opacity: 0.6;
-            filter: grayscale(100%);
-        }
-        
-        .avatar-card.locked::after {
-            content: '🔒';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2rem;
-            filter: drop-shadow(0 0 5px black);
-        }
-
-        .avatar-card.locked:hover {
-            transform: none;
-            border-color: #ef4444;
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.3);
-        }
-
-        .exclusive-section {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 2px dashed #334155;
-        }
+        /* Estilos para Misiones Admin */
+        .mission-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; background: #222; padding: 15px; border-radius: 8px; }
+        .mission-form select, .mission-form input { width: 100%; padding: 8px; background: #333; border: 1px solid #555; color: white; border-radius: 4px; }
+        .mission-list-item { display: flex; justify-content: space-between; align-items: center; background: #222; padding: 10px; margin-bottom: 5px; border-radius: 4px; border-left: 4px solid var(--primary-color); }
+        .mission-delete-btn { background: var(--error); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
 
         /* 🌈 EFECTOS NEÓN MULTICOLOR - PARPADEO SUAVE */
         @keyframes neonMultiPulse {
@@ -420,40 +334,6 @@
         .season-badge.active {
             animation: neonMultiPulse 2s ease-in-out infinite;
         }
-
-        .avatar-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
-        .avatar-option { cursor: pointer; padding: 5px; border-radius: 50%; border: 2px solid transparent; }
-        .avatar-option.selected { border-color: var(--primary-color); }
-        .avatar-option img { width: 50px; height: 50px; border-radius: 50%; background: #000; }
-        .avatar-locked { filter: grayscale(100%); opacity: .5; cursor: not-allowed; }
-        .toast-container { position: fixed; bottom: 90px; left: 20px; z-index: 99999; display: flex; flex-direction: column; gap: 8px; pointer-events: none; }
-        .toast { background: #1a1a1a; border: 1px solid #444; border-radius: 6px; padding: 10px 16px; font-size: .9rem; color: white; box-shadow: 0 4px 20px rgba(0,0,0,.5); animation: toastIn .3s ease, toastOut .3s ease 3.7s forwards; max-width: 300px; }
-        .toast.tomato { border-color: var(--error); border-left: 4px solid var(--error); }
-        .toast.success { border-color: var(--success); border-left: 4px solid var(--success); }
-        @keyframes toastIn { from{opacity:0;transform:translateX(-30px)} to{opacity:1;transform:translateX(0)} }
-        @keyframes toastOut { from{opacity:1} to{opacity:0;transform:translateX(-30px)} }
-        #victory-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,.95); z-index: 99998; display: none; flex-direction: column; justify-content: center; align-items: center; }
-        .victory-title { font-size: 7rem; color: var(--primary-color); font-weight: 700; text-shadow: 0 0 30px var(--primary-color); font-family: 'Teko', sans-serif; animation: scaleUp .3s; text-transform: uppercase; }
-        .confetti { position: absolute; width: 10px; height: 10px; background: #f00; animation: fall linear forwards; }
-        @keyframes scaleUp { 0%{transform:scale(0);opacity:0} 100%{transform:scale(1);opacity:1} }
-        @keyframes fall { to{transform:translateY(100vh) rotate(720deg)} }
-        #epic-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 99990; display: none; justify-content: center; align-items: center; pointer-events: none; }
-        .epic-text { font-family: 'Teko', sans-serif; font-size: 8rem; color: var(--error); text-transform: uppercase; font-weight: 800; text-shadow: 0 0 20px rgba(255,0,0,.8), 4px 4px 0 #000; opacity: 0; }
-        @keyframes epicPulse { 0%{transform:scale(.2) rotate(-10deg);opacity:0} 50%{transform:scale(1.2) rotate(5deg);opacity:1} 100%{transform:scale(1) rotate(0deg);opacity:1} }
-        .gift-icon { transition: transform 0.3s; }
-        .gift-icon.blinking { animation: giftPulse 0.5s infinite alternate; display: inline-block !important; }
-        @keyframes giftPulse { 0%{transform:scale(1); opacity:0.6;} 100%{transform:scale(1.35); opacity:1; text-shadow: 0 0 12px #ff4081, 0 0 20px gold;} }
-        .shield-bar-container { display: flex; align-items: center; gap: 4px; margin-top: 3px; }
-        .shield-icon { font-size: 0.7rem; }
-        .shield-bar-bg { width: 60px; height: 4px; background: #333; border-radius: 2px; overflow: hidden; }
-        .shield-bar-fill { height: 100%; border-radius: 2px; transition: width 0.3s; }
-        .shield-text { font-size: 0.65rem; color: #888; margin-left: 2px; }
-        
-        /* Estilos para Misiones Admin */
-        .mission-form { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; background: #222; padding: 15px; border-radius: 8px; }
-        .mission-form select, .mission-form input { width: 100%; padding: 8px; background: #333; border: 1px solid #555; color: white; border-radius: 4px; }
-        .mission-list-item { display: flex; justify-content: space-between; align-items: center; background: #222; padding: 10px; margin-bottom: 5px; border-radius: 4px; border-left: 4px solid var(--primary-color); }
-        .mission-delete-btn { background: var(--error); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
     </style>
 </head>
 <body>
@@ -493,12 +373,10 @@
 
 <div id="avatar-modal" style="display:none;background:rgba(0,0,0,.9);" onclick="if(event.target.id==='avatar-modal')toggleAvatarModal()">
     <div class="modal-box">
-        <h3 style="margin:0 0 10px 0;color:var(--primary-color);font-family:'Teko';font-size:1.8rem;text-transform:uppercase;">🃏 Selecciona tu Guerrero</h3>
-        <div id="avatar-container" style="max-height: 70vh; overflow-y: auto; padding: 10px;">
-            <!-- Las cartas se generan dinámicamente aquí -->
-        </div>
-        <button class="btn-primary" onclick="saveAvatarChoice()" style="width:100%; margin-top:15px;">Guardar Personaje</button>
-        <button class="btn-small" onclick="toggleAvatarModal()" style="width:100%; margin-top:5px;">Cancelar</button>
+        <h3 style="margin:0 0 10px 0;color:var(--primary-color);font-family:'Teko';font-size:1.8rem;text-transform:uppercase;">Personaje</h3>
+        <div class="modal-section"><h4>Estándar</h4><div class="avatar-grid" id="avatar-options-standard"></div></div>
+        <div class="modal-section" id="exclusive-section" style="display:none;"><h4 style="color:var(--error);"><i class="fas fa-lock-open"></i> Exclusivos Heroico</h4><div class="avatar-grid" id="avatar-options-exclusive"></div></div>
+        <button class="btn-primary" onclick="saveAvatarChoice()">Guardar</button>
     </div>
 </div>
 
@@ -682,6 +560,7 @@
 </div>
 
 <script>
+// ... (TODO EL JAVASCRIPT ORIGINAL SIN CAMBIOS - MISMO CÓDIGO V25)
 const SUPABASE_URL = 'https://oskrniownbbzkgnwunzz.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_RcfluyMTRxDP4chkK91-2Q_UwLdLrqP';
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storage: window.sessionStorage, autoRefreshToken: false, persistSession: true, detectSessionInUrl: false } });
@@ -714,28 +593,12 @@ let inventory = {
 let shieldDurability = 0;
 let totalAttacks = 0; // Para misiones
 
-// 🃏 NUEVO SISTEMA DE AVATARES EN CARTAS
-const AVATAR_CARDS = [
-    // 🛡️ AVATARES ESTÁNDAR
-    { id:'adventurer', name:'Guerrero', rank:'Estándar', img:'https://api.dicebear.com/7.x/avataaars/svg?seed=Warrior&backgroundColor=b6e3f4&clothing=graphicShirt&eyes=happy&eyebrows=default&mouth=smile&top=shortHairTheCaesar', exclusive:false },
-    { id:'bottts', name:'Robot', rank:'Tecnológico', img:'https://api.dicebear.com/7.x/bottts/svg?seed=Robot1&backgroundColor=c0aede', exclusive:false },
-    { id:'pixel-art', name:'Pixel', rank:'Retro', img:'https://api.dicebear.com/7.x/pixel-art/svg?seed=Pixel1&backgroundColor=ffdfbf', exclusive:false },
-    { id:'lorelei', name:'Fantasma', rank:'Ethereal', img:'https://api.dicebear.com/7.x/lorelei/svg?seed=Ghost1&backgroundColor=ffd5dc&hairColor=000000', exclusive:false },
-    { id:'big-ears', name:'Alien', rank:'Extraterrestre', img:'https://api.dicebear.com/7.x/big-ears/svg?seed=Alien1&backgroundColor=b6e3f4', exclusive:false },
-    { id:'open-peeps', name:'Dibujo', rank:'Ilustración', img:'https://api.dicebear.com/7.x/open-peeps/svg?seed=Sketch1&backgroundColor=ffdfbf', exclusive:false },
-    { id:'croodles', name:'Boceto', rank:'Arte', img:'https://api.dicebear.com/7.x/croodles/svg?seed=Art1&backgroundColor=c0aede', exclusive:false },
-    { id:'identicon', name:'Matrix', rank:'Digital', img:'https://api.dicebear.com/7.x/identicon/svg?seed=Matrix1&backgroundColor=ffdfbf', exclusive:false },
-    
-    // 👑 AVATARES EXCLUSIVOS HEROICO
-    { id:'micah', name:'Élite', rank:'Heroico', img:'https://api.dicebear.com/7.x/micah/svg?seed=Elite1&backgroundColor=b6e3f4', exclusive:true },
-    { id:'personas', name:'Dios', rank:'Heroico', img:'https://api.dicebear.com/7.x/personas/svg?seed=God1&backgroundColor=c0aede', exclusive:true },
-    { id:'thumbs', name:'Leyenda', rank:'Heroico', img:'https://api.dicebear.com/7.x/thumbs/svg?seed=Legend1&backgroundColor=ffd5dc', exclusive:true },
-    { id:'fun-emoji', name:'Mítico', rank:'Heroico', img:'https://api.dicebear.com/7.x/fun-emoji/svg?seed=Myth1&backgroundColor=ffdfbf', exclusive:true }
+const AVATAR_STYLES_STANDARD = [
+    {id:'adventurer',name:'Guerrero'},{id:'bottts',name:'Robot'},{id:'pixel-art',name:'Pixel'},
+    {id:'lorelei',name:'Fantasma'},{id:'big-ears',name:'Alien'},{id:'open-peeps',name:'Dibujo'},
+    {id:'croodles',name:'Boceto'},{id:'identicon',name:'Matrix'}
 ];
-
-const AVATAR_STYLES_STANDARD = AVATAR_CARDS.filter(a => !a.exclusive);
-const AVATAR_STYLES_EXCLUSIVE = AVATAR_CARDS.filter(a => a.exclusive);
-
+const AVATAR_STYLES_EXCLUSIVE = [{id:'micah',name:'Élite'},{id:'personas',name:'Dios'},{id:'thumbs',name:'Leyenda'}];
 const RANKS = [
     {name:"Hierro",min:0,max:2999,icon:"🪨",css:"rank-iron",avatar:"avatar-iron"},
     {name:"Bronce",min:3000,max:6999,icon:"🥉",css:"rank-bronze",avatar:"avatar-bronze"},
@@ -859,13 +722,9 @@ function showStreakBonus(streak, bonus) {
     setTimeout(() => { if(el.parentNode) el.parentNode.removeChild(el); }, 1300);
     showToast(`🔥 ¡Racha de ${streak}! Bonus: +${bonus} monedas`,'success');
 }
-function getAvatarUrl(seed, style) { return `https://api.dicebear.com/7.x/${style}/svg?seed=${seed}`; }
+function getAvatarUrl(seed, style) { return `https://api.dicebear.com/8.x/${style}/svg?seed=${seed}`; }
 function renderMainAvatar() {
-    if(currentUser) {
-        // Buscar el avatar actual en las cartas para obtener la URL correcta
-        const card = AVATAR_CARDS.find(a => a.id === currentAvatarStyle);
-        document.getElementById('main-avatar-img').src = card ? card.img : getAvatarUrl(currentUser.email.split('@')[0], currentAvatarStyle);
-    }
+    if(currentUser) document.getElementById('main-avatar-img').src = getAvatarUrl(currentUser.email.split('@')[0], currentAvatarStyle);
 }
 
 // 🛒 TIENDA CON NUEVAS ARMAS
@@ -1053,9 +912,7 @@ async function updateRanking(){
             let rc = "ranking-item "+rI.css, dn = u.username||'Yo';
             if(i===0){ rc+=" rank-1"; dn+=" 👑"; } else if(i<10) rc+=" elite";
             if(isMe) rc+=" me";
-            // Usar el sistema de avatares nuevo
-            const card = AVATAR_CARDS.find(a => a.id === u.avatar_style);
-            const avUrl = card ? card.img : getAvatarUrl(u.username||'guest', u.avatar_style||'adventurer');
+            const avUrl = getAvatarUrl(u.username||'guest', u.avatar_style||'adventurer');
             const sq = u.squad_id&&SQUADS[u.squad_id] ? `<div style="width:16px;height:18px;">${SQUADS[u.squad_id].svg}</div>` : '';
             
             // Botones de ataque dinámicos
@@ -1736,61 +1593,39 @@ function updateUI(){
 
 function toggleAvatarModal(){
     const m = document.getElementById('avatar-modal');
-    if(m.style.display === 'none'){ 
-        m.style.display = 'flex'; 
-        renderAvatarCards(); // Usar nuevo sistema de cartas
-    } else { 
-        m.style.display = 'none'; 
-    }
+    if(m.style.display === 'none'){ m.style.display = 'flex'; renderAvatarOptions(); }
+    else { m.style.display = 'none'; }
 }
 
-// 🃏 NUEVA FUNCIÓN PARA RENDERIZAR CARTAS DE AVATAR
-function renderAvatarCards(){
-    const container = document.getElementById('avatar-container');
-    container.innerHTML = '';
-    
-    const isHeroic = totalScore >= 50000; // Verificar si es Heroico
-
-    // Renderizar todas las cartas
-    AVATAR_CARDS.forEach(card => {
-        const div = document.createElement('div');
-        div.className = 'avatar-card';
-        
-        // Marcar seleccionado
-        if(card.id === currentAvatarStyle) div.classList.add('selected');
-        
-        // Verificar si es exclusivo y está bloqueado
-        const isLocked = card.exclusive && !isHeroic;
-        if(isLocked) div.classList.add('locked', 'exclusive');
-        else if(card.exclusive) div.classList.add('exclusive');
-
-        div.innerHTML = `
-            <img src="${card.img}" alt="${card.name}">
-            <div class="card-name">${card.name}</div>
-            <div class="card-rank">${card.rank}</div>
-            ${isLocked ? '<div style="font-size:0.7rem; color:#ef4444; margin-top:5px;">🔒 Requiere Heroico</div>' : ''}
-        `;
-
-        div.onclick = () => {
-            if(isLocked) {
-                showToast('🔒 ¡Debes alcanzar Rango Heroico!', 'error');
-                return;
-            }
-            currentAvatarStyle = card.id;
-            // Actualizar selección visual
-            document.querySelectorAll('.avatar-card').forEach(c => c.classList.remove('selected'));
-            div.classList.add('selected');
-            AudioEngine.playClick();
-        };
-
-        container.appendChild(div);
+function renderAvatarOptions(){
+    const gs = document.getElementById('avatar-options-standard'), ge = document.getElementById('avatar-options-exclusive'), es = document.getElementById('exclusive-section');
+    gs.innerHTML = ''; ge.innerHTML = '';
+    const seed = currentUser.email.split('@')[0], isH = totalScore >= 50000;
+    AVATAR_STYLES_STANDARD.forEach(st => {
+        let d = document.createElement('div'); d.className = 'avatar-option' + (currentAvatarStyle===st.id?' selected':'');
+        d.onclick = () => selectAvatarStyle(st.id);
+        d.innerHTML = `<img src="${getAvatarUrl(seed,st.id)}"><span style="font-size:.7rem;font-weight:600;display:block;">${st.name}</span>`;
+        gs.appendChild(d);
+    });
+    es.style.display = 'block';
+    AVATAR_STYLES_EXCLUSIVE.forEach(st => {
+        let d = document.createElement('div');
+        if(isH){
+            d.className = 'avatar-option' + (currentAvatarStyle===st.id?' selected':'');
+            d.onclick = () => selectAvatarStyle(st.id);
+            d.innerHTML = `<img src="${getAvatarUrl(seed,st.id)}"><span style="font-size:.7rem;font-weight:600;display:block;">${st.name}</span>`;
+        } else {
+            d.className = 'avatar-option avatar-locked';
+            d.innerHTML = `<img src="${getAvatarUrl('demo',st.id)}"><div class="lock-icon"><i class="fas fa-lock"></i></div><span style="font-size:.7rem;font-weight:600;display:block;">${st.name}</span>`;
+        }
+        ge.appendChild(d);
     });
 }
 
 function selectAvatarStyle(id){
-    currentAvatarStyle = id; 
-    renderAvatarCards(); 
-    renderMainAvatar();
+    const isEx = AVATAR_STYLES_EXCLUSIVE.some(s => s.id === id);
+    if(isEx && totalScore < 50000){ alert("¡Avatar exclusivo!"); return; }
+    currentAvatarStyle = id; renderAvatarOptions(); renderMainAvatar();
 }
 
 async function saveAvatarChoice(){
@@ -1801,7 +1636,7 @@ async function saveAvatarChoice(){
         renderMainAvatar();
         toggleAvatarModal();
         updateRanking();
-        showToast('✅ ¡Personaje actualizado!','success');
+        showToast('✅ ¡Avatar actualizado!','success');
     } catch(e) {
         console.error('Error guardando avatar:', e);
         showToast('❌ Error: '+e.message,'tomato');
