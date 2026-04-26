@@ -14,6 +14,12 @@
             --cell-size: 32px; --rank-iron: #9e9e9e; --rank-bronze: #d97706; --rank-silver: #bdbdbd;
             --rank-gold: #fbbf24; --rank-platinum: #06b6d4; --rank-diamond: #8b5cf6; --rank-heroic: #ef4444;
             --bp-gold: #ffd700; --shop-purple: #7c3aed; --shop-orange: #ea580c;
+            /* 🌈 COLORES NEÓN MULTICOLOR */
+            --neon-cyan: #00f5ff;
+            --neon-magenta: #ff00ff;
+            --neon-green: #39ff14;
+            --neon-yellow: #fff01a;
+            --neon-pink: #ff1493;
         }
         * { box-sizing: border-box; }
         body { margin: 0; font-family: 'Rajdhani', sans-serif; background-color: var(--bg-dark); color: var(--text-dark); display: flex; flex-direction: column; align-items: center; min-height: 100vh; }
@@ -218,6 +224,116 @@
         .mission-form select, .mission-form input { width: 100%; padding: 8px; background: #333; border: 1px solid #555; color: white; border-radius: 4px; }
         .mission-list-item { display: flex; justify-content: space-between; align-items: center; background: #222; padding: 10px; margin-bottom: 5px; border-radius: 4px; border-left: 4px solid var(--primary-color); }
         .mission-delete-btn { background: var(--error); color: white; border: none; padding: 4px 8px; border-radius: 4px; cursor: pointer; }
+
+        /* 🌈 EFECTOS NEÓN MULTICOLOR - PARPADEO SUAVE */
+        @keyframes neonMultiPulse {
+            0%, 100% { 
+                box-shadow: 0 0 5px var(--neon-cyan), 0 0 10px var(--neon-cyan), 0 0 15px var(--neon-cyan);
+                border-color: var(--neon-cyan);
+            }
+            25% { 
+                box-shadow: 0 0 5px var(--neon-magenta), 0 0 10px var(--neon-magenta), 0 0 15px var(--neon-magenta);
+                border-color: var(--neon-magenta);
+            }
+            50% { 
+                box-shadow: 0 0 5px var(--neon-green), 0 0 10px var(--neon-green), 0 0 15px var(--neon-green);
+                border-color: var(--neon-green);
+            }
+            75% { 
+                box-shadow: 0 0 5px var(--neon-yellow), 0 0 10px var(--neon-yellow), 0 0 15px var(--neon-yellow);
+                border-color: var(--neon-yellow);
+            }
+        }
+        
+        @keyframes neonTextPulse {
+            0%, 100% { text-shadow: 0 0 5px var(--neon-cyan), 0 0 10px var(--neon-cyan); }
+            25% { text-shadow: 0 0 5px var(--neon-magenta), 0 0 10px var(--neon-magenta); }
+            50% { text-shadow: 0 0 5px var(--neon-green), 0 0 10px var(--neon-green); }
+            75% { text-shadow: 0 0 5px var(--neon-yellow), 0 0 10px var(--neon-yellow); }
+        }
+        
+        @keyframes neonIconPulse {
+            0%, 100% { filter: drop-shadow(0 0 3px var(--neon-cyan)); }
+            25% { filter: drop-shadow(0 0 3px var(--neon-magenta)); }
+            50% { filter: drop-shadow(0 0 3px var(--neon-green)); }
+            75% { filter: drop-shadow(0 0 3px var(--neon-yellow)); }
+        }
+
+        /* Aplicar efectos a botones principales */
+        .btn-primary {
+            animation: neonMultiPulse 3s ease-in-out infinite;
+            border: 2px solid var(--neon-cyan);
+        }
+        
+        .btn-primary:hover {
+            animation-duration: 1s;
+        }
+
+        /* Efectos en controles del admin */
+        .ctrl-btn {
+            transition: all 0.3s;
+        }
+        
+        .ctrl-btn:hover {
+            animation: neonMultiPulse 2s ease-in-out infinite;
+        }
+
+        /* Efectos en iconos de armas */
+        .shop-item-icon {
+            animation: neonIconPulse 4s ease-in-out infinite;
+        }
+
+        /* Efectos en contadores de monedas */
+        .coin-count, .shop-coins-val {
+            animation: neonTextPulse 3s ease-in-out infinite;
+        }
+
+        /* Efectos en títulos */
+        .ranking-title, .hall-title, .dash-title, .shop-title {
+            animation: neonTextPulse 4s ease-in-out infinite;
+        }
+
+        /* Efectos en botón de tienda flotante */
+        .shop-btn-float {
+            animation: neonMultiPulse 3s ease-in-out infinite;
+        }
+
+        /* Efectos en panel de batalla */
+        .battle-pass-panel {
+            border: 1px solid var(--neon-cyan);
+            box-shadow: 0 0 10px rgba(0, 245, 255, 0.2);
+        }
+
+        /* Efectos en items de inventario */
+        .inv-item {
+            transition: all 0.3s;
+        }
+        
+        .inv-item:hover {
+            box-shadow: 0 0 10px var(--neon-cyan);
+            border-color: var(--neon-cyan);
+        }
+
+        /* Efectos en ranking */
+        .ranking-item.rank-1 {
+            animation: neonMultiPulse 3s ease-in-out infinite;
+        }
+
+        /* Efectos en botón de verificar */
+        #btn-verify {
+            animation: neonMultiPulse 3s ease-in-out infinite;
+        }
+
+        /* Efectos en header */
+        .main-header {
+            border-bottom: 2px solid var(--neon-cyan);
+            box-shadow: 0 4px 20px rgba(0, 245, 255, 0.3);
+        }
+
+        /* Efectos en temporada badge */
+        .season-badge.active {
+            animation: neonMultiPulse 2s ease-in-out infinite;
+        }
     </style>
 </head>
 <body>
@@ -444,6 +560,7 @@
 </div>
 
 <script>
+// ... (TODO EL JAVASCRIPT ORIGINAL SIN CAMBIOS - MISMO CÓDIGO V25)
 const SUPABASE_URL = 'https://oskrniownbbzkgnwunzz.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_RcfluyMTRxDP4chkK91-2Q_UwLdLrqP';
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storage: window.sessionStorage, autoRefreshToken: false, persistSession: true, detectSessionInUrl: false } });
