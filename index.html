@@ -189,8 +189,8 @@ gap: 20px;
 .panel {
 background:
 linear-gradient(180deg, rgba(26,58,110,0.4) 0%, rgba(13,37,69,0.8) 100%);
-padding: 14px 22px;
-border-radius: 8px;
+padding: 18px 25px;
+border-radius: 10px;
 box-shadow:
 0 8px 24px rgba(0,0,0,0.7),
 inset 0 1px 0 rgba(255,255,255,0.08),
@@ -199,9 +199,9 @@ display: flex;
 justify-content: space-between;
 align-items: center;
 flex-wrap: wrap;
-gap: 15px;
-border: 1px solid var(--cr-blue-light);
-border-top: 3px solid var(--cr-gold-dark);
+gap: 20px;
+border: 2px solid var(--cr-blue-light);
+border-top: 4px solid var(--cr-gold-dark);
 position: relative;
 overflow: hidden;
 }
@@ -213,9 +213,9 @@ height: 1px;
 background: linear-gradient(90deg, transparent, rgba(245,197,24,0.4), transparent);
 }
 .level-select {
-padding: 8px 14px;
-border-radius: 6px;
-border: 2px solid var(--cr-gold-dark);
+padding: 12px 20px;
+border-radius: 8px;
+border: 3px solid var(--cr-gold-dark);
 background: linear-gradient(135deg, #0d2545, #1a3a6e);
 color: var(--cr-gold);
 font-family: 'Cinzel', serif;
@@ -223,10 +223,11 @@ font-weight: 700;
 cursor: pointer;
 outline: none;
 text-transform: uppercase;
-box-shadow: 0 2px 8px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
+font-size: 1.1rem;
+box-shadow: 0 3px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.1);
 }
-.level-select:focus { border-color: var(--cr-gold); box-shadow: 0 0 12px rgba(245,197,24,0.4); }
-.avatar-squad-wrapper { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.level-select:focus { border-color: var(--cr-gold); box-shadow: 0 0 15px rgba(245,197,24,0.4); }
+.avatar-squad-wrapper { display: flex; flex-direction: column; align-items: center; gap: 8px; }
 .avatar-container {
 width: 110px; 
 height: 140px; 
@@ -257,74 +258,82 @@ border-color: var(--cr-gold-light);
 }
 .avatar-rank-indicator {
   position: absolute;
-  top: 5px;
+  top: 6px;
   left: 50%;
   transform: translateX(-50%);
   background: linear-gradient(135deg, var(--cr-gold), var(--cr-gold-dark));
   color: #0a1628;
-  padding: 3px 10px;
-  border-radius: 8px;
-  font-size: 0.65rem;
+  padding: 4px 14px;
+  border-radius: 10px;
+  font-size: 0.8rem;
   font-weight: 800;
   font-family: 'Cinzel', serif;
   border: 2px solid var(--cr-blue-dark);
-  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
   white-space: nowrap;
   z-index: 2;
+  letter-spacing: 1px;
 }
-.avatar-badge-overlay {
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 50px;
-  height: 50px;
+.squad-badge-below {
+  width: 55px;
+  height: 55px;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1;
+  filter: drop-shadow(0 2px 8px rgba(245,197,24,0.4));
+  transition: all .3s;
+  cursor: pointer;
 }
-.user-info-panel { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.squad-badge-below:hover {
+  transform: scale(1.15);
+  filter: drop-shadow(0 4px 15px rgba(245,197,24,0.7));
+}
+.user-info-panel { display: flex; align-items: center; gap: 25px; flex-wrap: wrap; }
 .squad-display { display: flex; flex-direction: column; align-items: center; }
 .squad-shield { width: 40px; height: 45px; }
 .coin-display-container {
 display: flex;
 align-items: center;
-gap: 6px;
+gap: 10px;
 background: linear-gradient(135deg, rgba(180,130,0,0.25), rgba(245,197,24,0.12));
-padding: 6px 14px;
-border-radius: 20px;
-border: 2px solid var(--cr-gold-dark);
+padding: 10px 20px;
+border-radius: 25px;
+border: 3px solid var(--cr-gold-dark);
 cursor: default;
-box-shadow: 0 2px 8px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+box-shadow: 0 3px 12px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+transition: all .3s;
 }
-.coin-icon { font-size: 1.1rem; color: var(--cr-gold); }
+.coin-display-container:hover {
+  border-color: var(--cr-gold);
+  box-shadow: 0 3px 15px rgba(245,197,24,0.3);
+}
+.coin-icon { font-size: 1.6rem; color: var(--cr-gold); }
 .coin-count {
 font-family: 'Cinzel', serif;
-font-size: 1.1rem;
-font-weight: 700;
+font-size: 1.5rem;
+font-weight: 800;
 color: var(--cr-gold);
 line-height: 1;
 }
-.inventory-quick { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.inventory-quick { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
 .inv-item {
 display: flex;
 align-items: center;
-gap: 4px;
+gap: 5px;
 background: linear-gradient(135deg, rgba(26,58,110,0.6), rgba(13,37,69,0.9));
-padding: 4px 10px;
-border-radius: 6px;
-border: 1px solid var(--cr-blue-light);
-font-size: .85rem;
+padding: 6px 14px;
+border-radius: 8px;
+border: 2px solid var(--cr-blue-light);
+font-size: 1rem;
 color: #ccc;
 cursor: pointer;
 transition: all .2s;
-box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+box-shadow: 0 2px 8px rgba(0,0,0,0.4);
 }
 .inv-item:hover {
 background: linear-gradient(135deg, rgba(37,99,184,0.5), rgba(26,58,110,0.9));
 border-color: var(--cr-gold);
-box-shadow: 0 0 10px rgba(245,197,24,0.3);
+box-shadow: 0 0 12px rgba(245,197,24,0.3);
 }
 .inv-item.active { border-color: var(--success); color: var(--success); }
 .rank-box {
@@ -332,55 +341,61 @@ display: flex;
 flex-direction: column;
 align-items: center;
 background: linear-gradient(180deg, rgba(13,37,69,0.9), rgba(10,22,40,0.95));
-padding: 6px 18px;
-border-radius: 8px;
-border: 2px solid var(--cr-gold-dark);
-min-width: 130px;
-box-shadow: 0 4px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+padding: 10px 22px;
+border-radius: 10px;
+border: 3px solid var(--cr-gold-dark);
+min-width: 160px;
+box-shadow: 0 6px 18px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08);
+transition: all .3s;
+}
+.rank-box:hover {
+  border-color: var(--cr-gold);
+  box-shadow: 0 6px 25px rgba(245,197,24,0.2);
 }
 .rank-name {
-font-size: 1rem;
+font-size: 1.2rem;
 font-weight: 800;
 letter-spacing: 1px;
 text-transform: uppercase;
 font-family: 'Cinzel', serif;
 }
-.rank-progress { width: 100%; height: 5px; background: rgba(255,255,255,0.1); border-radius: 3px; margin-top: 4px; overflow: hidden; }
-.rank-progress-bar { height: 100%; transition: width .5s; background: linear-gradient(90deg, var(--cr-gold-dark), var(--cr-gold)); border-radius: 3px; }
-.rank-score-label { font-size: .75rem; color: #aaa; margin-top: 3px; font-family: 'Cinzel', serif; }
+.rank-progress { width: 100%; height: 7px; background: rgba(255,255,255,0.1); border-radius: 4px; margin-top: 6px; overflow: hidden; }
+.rank-progress-bar { height: 100%; transition: width .5s; background: linear-gradient(90deg, var(--cr-gold-dark), var(--cr-gold)); border-radius: 4px; }
+.rank-score-label { font-size: .9rem; color: #bbb; margin-top: 4px; font-family: 'Cinzel', serif; font-weight: 600; }
 .streak-display {
-display: flex; align-items: center; gap: 8px;
+display: flex; align-items: center; gap: 12px;
 background: linear-gradient(135deg, rgba(13,37,69,0.6), rgba(10,22,40,0.9));
-border: 1px solid rgba(255,255,255,0.1);
-padding: 5px 14px; border-radius: 20px; transition: all .3s;
+border: 2px solid rgba(255,255,255,0.1);
+padding: 8px 20px; border-radius: 25px; transition: all .3s;
 }
 .streak-display.active {
 border-color: var(--cr-gold);
 background: linear-gradient(135deg, rgba(180,130,0,0.2), rgba(13,37,69,0.9));
-box-shadow: 0 0 15px rgba(245,197,24,0.3);
+box-shadow: 0 0 18px rgba(245,197,24,0.3);
 }
 .streak-display.on-fire {
 border-color: #ff6600;
 background: linear-gradient(135deg, rgba(255,100,0,0.2), rgba(13,37,69,0.9));
-box-shadow: 0 0 20px rgba(255,100,0,0.5);
+box-shadow: 0 0 25px rgba(255,100,0,0.5);
 animation: firePulse 1s infinite alternate;
 }
 @keyframes firePulse { from{box-shadow:0 0 10px rgba(255,100,0,.4)} to{box-shadow:0 0 28px rgba(255,100,0,.9)} }
-.streak-count { font-family: 'Cinzel', serif; font-size: 1.4rem; color: var(--cr-gold); line-height: 1; font-weight: 700; }
+.streak-count { font-family: 'Cinzel', serif; font-size: 1.8rem; color: var(--cr-gold); line-height: 1; font-weight: 800; }
+.streak-label { font-size: .85rem; color: #aaa; font-family: 'Cinzel', serif; font-weight: 600; }
 .progress-bar-container {
-flex-grow: 1; margin: 0 20px; height: 14px;
+flex-grow: 1; margin: 0 25px; height: 18px;
 background: rgba(0,0,0,0.5);
-border-radius: 7px; overflow: hidden;
-min-width: 100px;
-border: 1px solid var(--cr-blue-light);
-box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+border-radius: 9px; overflow: hidden;
+min-width: 120px;
+border: 2px solid var(--cr-blue-light);
+box-shadow: inset 0 3px 6px rgba(0,0,0,0.5);
 }
 .progress-bar-fill {
 height: 100%;
 background: linear-gradient(90deg, #00a878, var(--success), #00ff88);
 width: 0%; transition: width .4s;
-box-shadow: 0 0 12px rgba(0,230,118,0.6);
-border-radius: 7px;
+box-shadow: 0 0 15px rgba(0,230,118,0.6);
+border-radius: 9px;
 }
 .main-layout { display: flex; flex-direction: row; gap: 20px; width: 100%; align-items: flex-start; flex-wrap: wrap; }
 .game-area { flex: 3; display: flex; flex-direction: column; gap: 20px; min-width: 300px; }
@@ -689,15 +704,35 @@ box-shadow: 0 4px 0 #222, 0 6px 10px rgba(0,0,0,0.4);
 border-color: #444; cursor: not-allowed; color: #888;
 }
 .btn-small {
-font-size: .85rem; padding: 6px 14px;
+font-size: 1rem; padding: 10px 22px;
 background: linear-gradient(135deg, rgba(26,58,110,0.6), rgba(13,37,69,0.9));
 color: var(--cr-gold-light);
-border: 1px solid var(--cr-blue-light);
-border-radius: 6px;
+border: 2px solid var(--cr-blue-light);
+border-radius: 8px;
 font-family: 'Cinzel', serif;
-box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+font-weight: 700;
+box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+transition: all .2s;
 }
-.btn-small:hover { border-color: var(--cr-gold); color: var(--cr-gold); }
+.btn-small:hover { border-color: var(--cr-gold); color: var(--cr-gold); transform: translateY(-1px); }
+.btn-exit {
+font-size: 1.1rem;
+padding: 12px 28px;
+background: linear-gradient(135deg, rgba(192,57,43,0.3), rgba(10,22,40,0.9));
+color: #ff6b6b;
+border: 2px solid var(--cr-red);
+border-radius: 8px;
+font-family: 'Cinzel', serif;
+font-weight: 700;
+box-shadow: 0 3px 10px rgba(0,0,0,0.4);
+transition: all .2s;
+}
+.btn-exit:hover { 
+  border-color: #ff4444; 
+  color: white;
+  background: linear-gradient(135deg, rgba(192,57,43,0.5), rgba(10,22,40,0.9));
+  transform: translateY(-1px);
+}
 #msg {
 width: 100%; text-align: center; font-weight: 700;
 margin-top: 5px; font-size: 1.1rem; min-height: 28px;
@@ -1137,7 +1172,7 @@ backdrop-filter: blur(4px);
 <div class="app-container">
 <div class="panel" id="top-bar-panel">
 <div>
-<label style="font-weight:700;color:var(--cr-gold-dark);font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:1px;">Nivel:</label>
+<label style="font-weight:700;color:var(--cr-gold-dark);font-family:'Cinzel',serif;font-size:1rem;letter-spacing:1px;">NIVEL:</label>
 <select id="levelSelect" class="level-select" onchange="jumpToLevel(this.value)"></select>
 </div>
 <div class="progress-bar-container"><div class="progress-bar-fill" id="progressBar"></div></div>
@@ -1146,28 +1181,24 @@ backdrop-filter: blur(4px);
 <div class="avatar-container" id="main-avatar-box">
   <div class="avatar-rank-indicator" id="avatar-rank-badge">HIERRO</div>
   <img id="main-avatar-img" class="avatar-img" src="" alt="Avatar">
-  <div class="avatar-badge-overlay" id="squad-badge-overlay"></div>
 </div>
-<div class="squad-display" id="squad-display" style="display:none;">
-<div class="squad-shield" id="user-squad-shield"></div>
-<div class="squad-name-small" id="user-squad-name">Sin Escuadra</div>
-</div>
+<div class="squad-badge-below" id="squad-badge-below" onclick="toggleAvatarModal()"></div>
 </div>
 <div class="user-stats">
-<div style="font-size:.8rem;color:var(--cr-gold-dark);font-family:'Cinzel',serif;" id="difficultyLabel">...</div>
-<div style="font-size:.85rem;color:#aaa;font-family:'Cinzel',serif;">Ej. <span id="subLevelCount">1</span>/10</div>
+<div style="font-size:.95rem;color:var(--cr-gold-dark);font-family:'Cinzel',serif;font-weight:600;" id="difficultyLabel">...</div>
+<div style="font-size:1.05rem;color:#bbb;font-family:'Cinzel',serif;font-weight:600;">Ej. <span id="subLevelCount">1</span>/10</div>
 </div>
 <div class="streak-display" id="streak-display">
-<span id="streak-icon">⚡</span>
-<div><div class="streak-count" id="streak-count">0</div><div class="streak-label" style="font-size:.7rem;color:#aaa;font-family:'Cinzel',serif;">Racha</div></div>
+<span id="streak-icon" style="font-size:1.6rem;">⚡</span>
+<div><div class="streak-count" id="streak-count">0</div><div class="streak-label">RACHA</div></div>
 </div>
 <div class="coin-display-container" title="DiviCoins">
 <i class="fas fa-coins coin-icon"></i>
 <span class="coin-count" id="coinDisplay">0</span>
 </div>
 <div style="position:relative; margin-left:8px;">
-<i class="fas fa-gift" id="gift-icon" style="font-size:1.3rem; color:#ff4081; display:none; cursor:default;"></i>
-<span id="gift-badge" style="position:absolute; top:-6px; right:-8px; background:linear-gradient(135deg,var(--cr-gold),var(--cr-gold-dark)); color:#0a1628; font-size:0.6rem; font-weight:800; padding:2px 5px; border-radius:10px; display:none; box-shadow:0 0 8px rgba(245,197,24,0.6); font-family:'Cinzel',serif;"></span>
+<i class="fas fa-gift" id="gift-icon" style="font-size:1.5rem; color:#ff4081; display:none; cursor:default;"></i>
+<span id="gift-badge" style="position:absolute; top:-6px; right:-8px; background:linear-gradient(135deg,var(--cr-gold),var(--cr-gold-dark)); color:#0a1628; font-size:0.65rem; font-weight:800; padding:2px 6px; border-radius:10px; display:none; box-shadow:0 0 8px rgba(245,197,24,0.6); font-family:'Cinzel',serif;"></span>
 </div>
 <div class="inventory-quick" id="inventory-container"></div>
 <div class="rank-box" id="userRankBox">
@@ -1175,7 +1206,7 @@ backdrop-filter: blur(4px);
 <div class="rank-progress"><div class="rank-progress-bar" id="userRankBar" style="width:0%"></div></div>
 <div class="rank-score-label"><span id="scoreDisplay">0</span> pts</div>
 </div>
-<button onclick="logout()" class="btn-small">Salir</button>
+<button onclick="logout()" class="btn-exit">SALIR</button>
 </div>
 </div>
 <div id="admin-dashboard">
@@ -1265,7 +1296,7 @@ backdrop-filter: blur(4px);
 </div>
 </div>
 <div class="ranking-sidebar">
-<div class="ranking-title">⚔️ Ranking ️</div>
+<div class="ranking-title">⚔️ Ranking ⚔️</div>
 <ul class="ranking-list" id="ranking-list"></ul>
 <div class="squad-ranking-section">
 <div class="ranking-title" style="font-size:1rem;border-color:rgba(245,197,24,0.3);">🛡️ Escuadras 🛡️</div>
@@ -1451,10 +1482,10 @@ document.getElementById('avatar-rank-badge').style.background = rankInfo.css ===
   ? 'linear-gradient(135deg, #ef4444, #7a0000)' 
   : 'linear-gradient(135deg, var(--cr-gold), var(--cr-gold-dark))';
 if(userSquadId && SQUADS[userSquadId]) {
-  document.getElementById('squad-badge-overlay').innerHTML = SQUADS[userSquadId].svg;
-  document.getElementById('squad-badge-overlay').style.display = 'flex';
+  document.getElementById('squad-badge-below').innerHTML = SQUADS[userSquadId].svg;
+  document.getElementById('squad-badge-below').style.display = 'flex';
 } else {
-  document.getElementById('squad-badge-overlay').style.display = 'none';
+  document.getElementById('squad-badge-below').style.display = 'none';
 }
 }
 function openShop(){
