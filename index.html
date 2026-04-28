@@ -2118,14 +2118,48 @@ const coc = parseInt(document.getElementById('valCociente').value);
 const res = parseInt(document.getElementById('valResiduo').value) || 0;
 const rC = Math.floor(currentDividend / currentDivisor);
 const rR = currentDividend % currentDivisor;
-if(coc === rC && res === rR){
-AudioEngine.playSuccess();
-totalScore += POINTS; updateUI(); incrementStreak();
-currentCoins += 5; updateCoinDisplay();
-if(hasBP) { bpXP += 10; updateBattlePassUI(); }
-document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
-if(currentProblemInLevel < PROBLEMS_PER_LEVEL){
-currentProblemInLevel++;
+  AudioEngine.playSuccess();
+  totalScore += POINTS; 
+  updateUI(); 
+  incrementStreak();
+  currentCoins += 5; 
+  updateCoinDisplay();
+  if(hasBP) { bpXP += 10; updateBattlePassUI(); }
+  
+  document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
+  
+  if(currentProblemInLevel < PROBLEMS_PER_LEVEL){
+    currentProblemInLevel++;
+  } else {
+    if(currentMainLevel < TOTAL_LEVELS){
+      unlockedLevel = currentMainLevel+1; 
+      currentMainLevel++; 
+      currentProblemInLevel = 1;
+      showVictoryScreen();
+    } else {
+      hasFinishedGame = true;
+      await _supabase.from('profiles').update({completed_at: new Date().toISOString()}).eq('id', currentUser.id);
+      loadHallOfFame();
+      await saveScore();
+      await updateRanking();
+      return;
+    }
+  }
+  
+  await saveTime(); 
+  const guardado = await saveScore();
+  
+  if(guardado) {
+    await updateRanking();
+  } else {
+    showToast('⚠️ Puntos sumados localmente, pero error al guardar en BD','tomato');
+  }
+  
+  if(document.getElementById('victory-screen').style.display === 'flex'){
+    setTimeout(() => { hideVictoryScreen(); loadProblem(); }, 3000);
+  } else { 
+    loadProblem(); 
+  }
 } else {
 if(currentMainLevel < TOTAL_LEVELS){
 unlockedLevel = currentMainLevel+1; currentMainLevel++; currentProblemInLevel = 1;
@@ -2308,18 +2342,32 @@ showToast('❌ Error: '+e.message,'tomato');
 }
 }
 async function saveScore(){
-if(!currentUser) return;
-try {
-await _supabase.from('profiles').upsert({
-id: currentUser.id, username: currentUser.email.split('@')[0],
-total_score: totalScore, current_level: unlockedLevel,
-current_problem: currentProblemInLevel, coins: currentCoins,
-inventory_dagger: inventory.dagger, inventory_sword: inventory.sword,
-inventory_bow: inventory.bow, inventory_axe: inventory.axe, inventory_hammer: inventory.hammer,
-shield_durability: shieldDurability, bp_xp: bpXP, claimed_bp_rewards: claimedBPRewards
-});
-updateRanking();
-} catch(e){ console.error(e); }
+  if(!currentUser) return false;
+  try {
+    const { error } = await _supabase
+      .from('profiles')
+      .update({
+        total_score: totalScore,
+        current_level: unlockedLevel,
+        current_problem: currentProblemInLevel,
+        coins: currentCoins,
+        inventory_dagger: inventory.dagger,
+        inventory_sword: inventory.sword,
+        inventory_bow: inventory.bow,
+        inventory_axe: inventory.axe,
+        inventory_hammer: inventory.hammer,
+        shield_durability: shieldDurability,
+        bp_xp: bpXP,
+        claimed_bp_rewards: claimedBPRewards
+      })
+      .eq('id', currentUser.id);
+      
+    if(error) throw error;
+    return true;
+  } catch(e) { 
+    console.error('Error guardando score:', e);
+    return false; 
+  }
 }
 </script>
 </body>
