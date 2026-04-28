@@ -1488,15 +1488,17 @@ try {
 currentCoins -= price;
 shieldDurability += qty;
 
-// ✅ Guardar AMBAS cosas en BD para que no se pierdan
-await _supabase.from('profiles').update({
+// ✅ Guardar en BD AMBAS cosas para que no se pierdan
+const { error } = await _supabase.from('profiles').update({
 coins: currentCoins,
 shield_durability: shieldDurability
 }).eq('id', currentUser.id);
 
+if (error) throw error;
+
 // ✅ Actualizar UI después de confirmar guardado
 updateCoinDisplay();
-updateInventoryUI(); // ✅ Aquí aparecerá el icono 🛡️
+updateInventoryUI();
 openShop();
 AudioEngine.playShop();
 showToast(`✅ 🛡️ Escudo comprado! Tienes ${shieldDurability} puntos`,'success');
@@ -1658,7 +1660,7 @@ Object.entries(inventory).forEach(([key, count]) => {
 if(count > 0) { const w = WEAPONS[key]; atkButtons += `<button class="attack-btn" onclick="attackUser('${u.id}','${u.username}','${key}')" title="${w.name} (-${w.damage})">${w.icon}</button> `; }
 });
 }
-// ✅ CORRECCIÓN B: Escudo visible para TODOS con degradado dinámico
+// ✅ CORRECCIÓN: Escudo visible para TODOS con degradado
 let shieldHTML = '';
 const sh = u.shield_durability || 0;
 if(sh > 0) {
@@ -1910,10 +1912,10 @@ try {
 const { data } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
 if(data?.is_banned){ alert("Tu cuenta está suspendida."); logout(); return; }
 
-// ✅ CORRECCIÓN: Leer monedas de BD PRIMERO
+// ✅ CORRECCIÓN MONEDAS: Leer monedas de BD PRIMERO
 currentCoins = data?.coins || 0;
 
-// ✅ Si hay regalos pendientes, sumarlos y guardar
+// Si hay regalos pendientes, sumarlos y guardar
 if(data?.pending_gift_coins > 0) {
 const giftAmount = data.pending_gift_coins;
 currentCoins += giftAmount;
@@ -1946,7 +1948,7 @@ inventory.hammer = data?.inventory_hammer || 0;
 
 // ✅ Actualizar UI solo después de cargar todo
 updateCoinDisplay(); 
-updateInventoryUI(); 
+updateInventoryUI(); // ✅ Esto mostrará el escudo si existe
 updateStreakUI(); 
 updateBattlePassUI();
 
@@ -2118,6 +2120,7 @@ const coc = parseInt(document.getElementById('valCociente').value);
 const res = parseInt(document.getElementById('valResiduo').value) || 0;
 const rC = Math.floor(currentDividend / currentDivisor);
 const rR = currentDividend % currentDivisor;
+if(coc === rC && res === rR){
   AudioEngine.playSuccess();
   totalScore += POINTS; 
   updateUI(); 
@@ -2146,9 +2149,11 @@ const rR = currentDividend % currentDivisor;
     }
   }
   
+  // ✅ Guarda en BD y espera confirmación
   await saveTime(); 
   const guardado = await saveScore();
   
+  // ✅ Si se guardó bien, actualiza ranking y escuadras inmediatamente
   if(guardado) {
     await updateRanking();
   } else {
@@ -2160,22 +2165,6 @@ const rR = currentDividend % currentDivisor;
   } else { 
     loadProblem(); 
   }
-} else {
-if(currentMainLevel < TOTAL_LEVELS){
-unlockedLevel = currentMainLevel+1; currentMainLevel++; currentProblemInLevel = 1;
-showVictoryScreen();
-} else {
-hasFinishedGame = true;
-await _supabase.from('profiles').update({completed_at: new Date().toISOString()}).eq('id', currentUser.id);
-loadHallOfFame();
-await saveScore();
-return;
-}
-}
-await saveTime(); await saveScore();
-if(document.getElementById('victory-screen').style.display === 'flex'){
-setTimeout(() => { hideVictoryScreen(); loadProblem(); }, 3000);
-} else { loadProblem(); }
 } else {
 AudioEngine.playError();
 document.getElementById('msg').innerHTML = `<span style='color:var(--cr-red);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>🛡️ INCORRECTO — Inténtalo de nuevo</span>`;
@@ -2342,32 +2331,31 @@ showToast('❌ Error: '+e.message,'tomato');
 }
 }
 async function saveScore(){
-  if(!currentUser) return false;
-  try {
-    const { error } = await _supabase
-      .from('profiles')
-      .update({
-        total_score: totalScore,
-        current_level: unlockedLevel,
-        current_problem: currentProblemInLevel,
-        coins: currentCoins,
-        inventory_dagger: inventory.dagger,
-        inventory_sword: inventory.sword,
-        inventory_bow: inventory.bow,
-        inventory_axe: inventory.axe,
-        inventory_hammer: inventory.hammer,
-        shield_durability: shieldDurability,
-        bp_xp: bpXP,
-        claimed_bp_rewards: claimedBPRewards
-      })
-      .eq('id', currentUser.id);
-      
-    if(error) throw error;
-    return true;
-  } catch(e) { 
-    console.error('Error guardando score:', e);
-    return false; 
-  }
+if(!currentUser) return false;
+try {
+const { error } = await _supabase
+.from('profiles')
+.update({
+total_score: totalScore,
+current_level: unlockedLevel,
+current_problem: currentProblemInLevel,
+coins: currentCoins,
+inventory_dagger: inventory.dagger,
+inventory_sword: inventory.sword,
+inventory_bow: inventory.bow,
+inventory_axe: inventory.axe,
+inventory_hammer: inventory.hammer,
+shield_durability: shieldDurability,
+bp_xp: bpXP,
+claimed_bp_rewards: claimedBPRewards
+})
+.eq('id', currentUser.id);
+if(error) throw error;
+return true;
+} catch(e) { 
+console.error('Error guardando score:', e);
+return false; 
+}
 }
 </script>
 </body>
