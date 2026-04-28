@@ -1299,7 +1299,7 @@ let unlockedLevel = 1, isAdmin = false;
 let currentStreak = 0;
 const STREAK_BONUSES = {3:50, 5:100, 10:250, 15:500};
 let currentCoins = 0, hasBP = false, claimedBPRewards = [], playTimeCounter = 0;
-let bpXP = 0; // ✅ NUEVO: XP para Battle Pass
+let bpXP = 0;
 const ANTENNA_SEQUENCE = [1,10,5,2,4,8,3,6,7,9];
 let currentAntennaIndex = 0;
 const WEAPONS = {
@@ -1390,8 +1390,6 @@ c.appendChild(t);
 setTimeout(() => { if(t.parentNode) t.parentNode.removeChild(t); }, duration);
 }
 function updateCoinDisplay(){ document.getElementById('coinDisplay').innerText = currentCoins; }
-
-// ✅ CORRECCIÓN 1: Escudo solo visible si tiene durabilidad > 0
 function updateInventoryUI(){
 const container = document.getElementById('inventory-container');
 container.innerHTML = '';
@@ -1405,7 +1403,6 @@ div.innerHTML = `<span>${weapon.icon}</span><span>${count}</span>`;
 container.appendChild(div);
 }
 });
-// ✅ SOLO mostrar escudo si tiene durabilidad > 0
 if(shieldDurability > 0) {
 const shieldDiv = document.createElement('div');
 shieldDiv.className = 'inv-item active';
@@ -1414,7 +1411,6 @@ shieldDiv.innerHTML = `<span>🛡️</span><span>${shieldDurability}</span>`;
 container.appendChild(shieldDiv);
 }
 }
-
 function incrementStreak() {
 currentStreak++; updateStreakUI();
 const bonus = STREAK_BONUSES[currentStreak];
@@ -1493,7 +1489,6 @@ AudioEngine.playShop();
 showToast(`✅ 🛡️ Escudo comprado!`,'success');
 saveInventory();
 }
-
 async function buyBattlePass(){
 if(hasBP) return alert("Ya tienes el pase.");
 if(currentCoins<1000) return alert("Necesitas 1000 monedas.");
@@ -1504,13 +1499,11 @@ await _supabase.from('profiles').update({coins:newCoins, has_battle_pass:true}).
 currentCoins = newCoins; hasBP = true;
 updateCoinDisplay(); 
 openShop();
-updateBattlePassUI(); // ✅ Actualizar UI del Battle Pass
+updateBattlePassUI();
 AudioEngine.playSuccess();
 showToast("👑 ¡Pase comprado! Revisa tus recompensas",'success');
 } catch(e) { alert("Error: "+e.message); }
 }
-
-// ✅ CORRECCIÓN 2: Sistema completo de Battle Pass
 function renderBattlePassTiers() {
   const container = document.getElementById('bp-tiers-container');
   if(!container) return;
@@ -1533,7 +1526,6 @@ function renderBattlePassTiers() {
     container.appendChild(tier);
   });
 }
-
 async function claimReward(level) {
   const reward = BP_REWARDS.find(r => r.level === level);
   if(!reward) return;
@@ -1569,7 +1561,6 @@ async function claimReward(level) {
     showToast('❌ Error: '+e.message,'tomato');
   }
 }
-
 function updateBattlePassUI() {
   const buySection = document.getElementById('bp-buy-section');
   const progressSection = document.getElementById('bp-progress-section');
@@ -1589,7 +1580,6 @@ function updateBattlePassUI() {
     statusText.style.color = '#aaa';
   }
 }
-
 async function attackUser(targetId, targetName, weaponType) {
 const weapon = WEAPONS[weaponType];
 if(!weapon) return;
@@ -1651,16 +1641,21 @@ Object.entries(inventory).forEach(([key, count]) => {
 if(count > 0) { const w = WEAPONS[key]; atkButtons += `<button class="attack-btn" onclick="attackUser('${u.id}','${u.username}','${key}')" title="${w.name} (-${w.damage})">${w.icon}</button> `; }
 });
 }
-// ✅ CORRECCIÓN 3: Escudo solo visible para el propio usuario en el ranking
+// ✅ CORRECCIÓN B: Escudo visible para TODOS con degradado dinámico
 let shieldHTML = '';
-if(isMe) {
 const sh = u.shield_durability || 0;
 if(sh > 0) {
 const maxSh = 5, pct = Math.min(100, (sh / maxSh) * 100);
-let barColor = '#00e676';
-if(pct <= 30) barColor = '#ff1744'; else if(pct <= 60) barColor = '#ffcc00';
-shieldHTML = `<div class="shield-bar-container"><span class="shield-icon">🛡️</span><div class="shield-bar-bg"><div class="shield-bar-fill" style="width:${pct}%;background:${barColor};"></div></div><span class="shield-text">${sh}/${maxSh}</span></div>`;
+let gradient = 'linear-gradient(90deg, #00e676, #00c853)';
+let glowColor = 'rgba(0,230,118,0.5)';
+if(pct <= 30) { 
+gradient = 'linear-gradient(90deg, #ff1744, #d50000)';
+glowColor = 'rgba(255,23,68,0.6)';
+} else if(pct <= 60) { 
+gradient = 'linear-gradient(90deg, #ffcc00, #ff9800)';
+glowColor = 'rgba(255,204,0,0.5)';
 }
+shieldHTML = `<div class="shield-bar-container"><span class="shield-icon">🛡️</span><div class="shield-bar-bg"><div class="shield-bar-fill" style="width:${pct}%;background:${gradient};box-shadow:0 0 8px ${glowColor};"></div></div><span class="shield-text">${sh}/${maxSh}</span></div>`;
 }
 return `<li class="${rc}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${dn}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span>${shieldHTML}</div>${sq}</div><span class="rank-score">${s}</span><div style="display:flex;gap:2px;">${atkButtons}</div></li>`;
 }).join('');
@@ -1897,6 +1892,18 @@ async function loadScore(user){
 try {
 const { data } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
 if(data?.is_banned){ alert("Tu cuenta está suspendida."); logout(); return; }
+
+// ✅ CORRECCIÓN A: Procesar regalos pendientes al cargar
+if(data?.pending_gift_coins > 0) {
+const giftAmount = data.pending_gift_coins;
+currentCoins += giftAmount;
+await _supabase.from('profiles').update({ 
+coins: currentCoins, 
+pending_gift_coins: 0 
+}).eq('id', user.id);
+showToast(`🎁 ¡Tenías ${giftAmount} monedas de regalo!`,'success');
+}
+
 totalScore = data?.total_score || 0;
 currentAvatarStyle = data?.avatar_style || 'adventurer';
 unlockedLevel = data?.current_level || 1;
@@ -1906,7 +1913,7 @@ hasFinishedGame = data?.completed_at || false;
 playTimeCounter = data?.total_time_played || 0;
 currentCoins = data?.coins || 0;
 hasBP = data?.has_battle_pass || false;
-bpXP = data?.bp_xp || 0; // ✅ Cargar XP del BP
+bpXP = data?.bp_xp || 0;
 const raw = data?.claimed_bp_rewards;
 claimedBPRewards = Array.isArray(raw) ? raw : [];
 shieldDurability = data?.shield_durability || 0;
@@ -2089,7 +2096,6 @@ if(coc === rC && res === rR){
 AudioEngine.playSuccess();
 totalScore += POINTS; updateUI(); incrementStreak();
 currentCoins += 5; updateCoinDisplay();
-// ✅ Dar XP al Battle Pass si está activo
 if(hasBP) { bpXP += 10; updateBattlePassUI(); }
 document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
 if(currentProblemInLevel < PROBLEMS_PER_LEVEL){
