@@ -1480,14 +1480,31 @@ AudioEngine.playShop();
 showToast(`✅ ${WEAPONS[type].icon} ${WEAPONS[type].name} comprado!`,'success');
 saveInventory();
 }
-function buyShield(qty, price) {
+async function buyShield(qty, price) {
 if(currentCoins < price) return showToast(`❌ Necesitas ${price} monedas`,'tomato');
 if(!confirm(`¿Comprar Escudo (${qty} usos) por ${price} monedas?`)) return;
-currentCoins -= price; shieldDurability += qty;
-updateCoinDisplay(); updateInventoryUI(); openShop();
+
+try {
+currentCoins -= price;
+shieldDurability += qty;
+
+// ✅ Guardar AMBAS cosas en BD para que no se pierdan
+await _supabase.from('profiles').update({
+coins: currentCoins,
+shield_durability: shieldDurability
+}).eq('id', currentUser.id);
+
+// ✅ Actualizar UI después de confirmar guardado
+updateCoinDisplay();
+updateInventoryUI(); // ✅ Aquí aparecerá el icono 🛡️
+openShop();
 AudioEngine.playShop();
-showToast(`✅ 🛡️ Escudo comprado!`,'success');
-saveInventory();
+showToast(`✅ 🛡️ Escudo comprado! Tienes ${shieldDurability} puntos`,'success');
+} catch(e) {
+currentCoins += price;
+shieldDurability -= qty;
+showToast(`❌ Error: ${e.message}`,'tomato');
+}
 }
 async function buyBattlePass(){
 if(hasBP) return alert("Ya tienes el pase.");
@@ -1893,7 +1910,10 @@ try {
 const { data } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
 if(data?.is_banned){ alert("Tu cuenta está suspendida."); logout(); return; }
 
-// ✅ CORRECCIÓN A: Procesar regalos pendientes al cargar
+// ✅ CORRECCIÓN: Leer monedas de BD PRIMERO
+currentCoins = data?.coins || 0;
+
+// ✅ Si hay regalos pendientes, sumarlos y guardar
 if(data?.pending_gift_coins > 0) {
 const giftAmount = data.pending_gift_coins;
 currentCoins += giftAmount;
@@ -1901,9 +1921,10 @@ await _supabase.from('profiles').update({
 coins: currentCoins, 
 pending_gift_coins: 0 
 }).eq('id', user.id);
-showToast(`🎁 ¡Tenías ${giftAmount} monedas de regalo!`,'success');
+showToast(`🎁 ¡Recibiste ${giftAmount} monedas de regalo!`,'success');
 }
 
+// ✅ Cargar el resto de datos
 totalScore = data?.total_score || 0;
 currentAvatarStyle = data?.avatar_style || 'adventurer';
 unlockedLevel = data?.current_level || 1;
@@ -1911,19 +1932,24 @@ currentProblemInLevel = data?.current_problem || 1;
 if(currentProblemInLevel > 10) currentProblemInLevel = 1;
 hasFinishedGame = data?.completed_at || false;
 playTimeCounter = data?.total_time_played || 0;
-currentCoins = data?.coins || 0;
 hasBP = data?.has_battle_pass || false;
 bpXP = data?.bp_xp || 0;
 const raw = data?.claimed_bp_rewards;
 claimedBPRewards = Array.isArray(raw) ? raw : [];
-shieldDurability = data?.shield_durability || 0;
+shieldDurability = data?.shield_durability || 0; // ✅ Cargar escudo real
 totalAttacks = data?.total_attacks || 0;
 inventory.dagger = data?.inventory_dagger || 0;
 inventory.sword = data?.inventory_sword || 0;
 inventory.bow = data?.inventory_bow || 0;
 inventory.axe = data?.inventory_axe || 0;
 inventory.hammer = data?.inventory_hammer || 0;
-updateCoinDisplay(); updateInventoryUI(); updateStreakUI(); updateBattlePassUI();
+
+// ✅ Actualizar UI solo después de cargar todo
+updateCoinDisplay(); 
+updateInventoryUI(); 
+updateStreakUI(); 
+updateBattlePassUI();
+
 if(data?.squad_id && SQUADS[data.squad_id]){
 const sq = SQUADS[data.squad_id];
 document.getElementById('squad-display').style.display = 'flex';
