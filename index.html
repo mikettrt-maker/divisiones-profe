@@ -8,19 +8,11 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* ✅ Fuente Gaming estilo Free Fire - MOVIDO AQUÍ */
+:root {
+  /* Fuente Gaming estilo Free Fire */
 @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Russo+One&display=swap');
 
 .font-gaming {
-  font-family: 'Black Ops One', cursive !important;
-}
-
-.font-gaming-title {
-  font-family: 'Russo One', cursive !important;
-}
-
-:root {
---primary-color: #ffcc00; --primary-light: #ff9800; --text-dark: #e0e0e0;
   font-family: 'Black Ops One', cursive !important;
 }
 
@@ -1581,33 +1573,18 @@ async function claimReward(level) {
       } else {
         inventory[reward.item] = (inventory[reward.item] || 0) + reward.qty;
       }
-    } 
-    else if(reward.type === 'font') {
-      // ✅ Lógica para desbloquear la fuente
-      await _supabase.from('profiles').update({ has_gaming_font: true }).eq('id', currentUser.id);
-      
-      // Aplicar fuente inmediatamente
-      document.body.classList.add('font-gaming');
-      document.querySelectorAll('h1, h2, h3, .ranking-title, .shop-title, .dash-title').forEach(el => {
-        el.classList.add('font-gaming-title');
-      });
-      showToast(`✅ ${reward.icon} ¡Fuente Gaming activada!`,'success');
-    } 
-    else if(reward.type === 'real_prize') {
+    } else if(reward.type === 'real_prize') {
       const prizeField = level === 4 ? 'pending_prize_4' : 'pending_prize_5';
       await _supabase.from('profiles').update({[prizeField]: true}).eq('id', currentUser.id);
       showToast(`✅ ${reward.icon} ${reward.name} - ¡Reclámalo con el profesor!`,'success');
     }
-    
     claimedBPRewards.push(level);
     await _supabase.from('profiles').update({claimed_bp_rewards: claimedBPRewards}).eq('id', currentUser.id);
     if(reward.type === 'item') await saveInventory();
     renderBattlePassTiers();
     updateInventoryUI();
     AudioEngine.playSuccess();
-    if(reward.type !== 'font') {
-      showToast(`✅ ${reward.icon} ¡${reward.name} reclamado!`,'success');
-    }
+    showToast(`✅ ${reward.icon} ¡${reward.name} reclamado!`,'success');
   } catch(e) {
     console.error('Error reclamando recompensa:', e);
     showToast('❌ Error: '+e.message,'tomato');
@@ -1959,61 +1936,6 @@ pending_gift_coins: 0
 showToast(`🎁 ¡Recibiste ${giftAmount} monedas de regalo!`,'success');
 }
 
-// ✅ Cargar TODOS los datos
-totalScore = data?.total_score || 0;
-currentAvatarStyle = data?.avatar_style || 'adventurer';
-unlockedLevel = data?.current_level || 1;
-currentProblemInLevel = data?.current_problem || 1;
-if(currentProblemInLevel > 10) currentProblemInLevel = 1;
-hasFinishedGame = data?.completed_at || false;
-playTimeCounter = data?.total_time_played || 0;
-hasBP = data?.has_battle_pass || false;
-bpXP = data?.bp_xp || 0;
-const raw = data?.claimed_bp_rewards;
-claimedBPRewards = Array.isArray(raw) ? raw : [];
-shieldDurability = data?.shield_durability || 0;
-totalAttacks = data?.total_attacks || 0;
-inventory.dagger = data?.inventory_dagger || 0;
-inventory.sword = data?.inventory_sword || 0;
-inventory.bow = data?.inventory_bow || 0;
-inventory.axe = data?.inventory_axe || 0;
-inventory.hammer = data?.inventory_hammer || 0;
-
-// ✅ APLICAR FUENTE GAMING si el usuario la tiene desbloqueada
-if(data?.has_gaming_font) {
-document.body.classList.add('font-gaming');
-// Aplicar a TODOS los títulos importantes
-document.querySelectorAll('h1, h2, h3, .ranking-title, .shop-title, .dash-title, .hall-title, .bp-header, .antena-header, .missions-title').forEach(el => {
-el.classList.add('font-gaming-title');
-});
-}
-
-// ✅ Actualizar UI
-updateCoinDisplay(); 
-updateInventoryUI();
-updateStreakUI(); 
-updateBattlePassUI();
-
-if(data?.squad_id && SQUADS[data.squad_id]){
-const sq = SQUADS[data.squad_id];
-document.getElementById('squad-display').style.display = 'flex';
-document.getElementById('user-squad-shield').innerHTML = sq.svg;
-document.getElementById('user-squad-name').innerText = sq.name;
-document.getElementById('user-squad-name').style.color = sq.color;
-userSquadId = data.squad_id;
-} else { document.getElementById('squad-display').style.display = 'none'; userSquadId = null; }
-} catch(e){
-totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1;
-currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0;
-currentCoins = 0; hasBP = false; bpXP = 0; shieldDurability = 0; totalAttacks = 0;
-inventory = { dagger:0, sword:0, bow:0, axe:0, hammer:0 };
-}
-isAdmin = (user.email.split('@')[0] === ADMIN_USER);
-document.getElementById('admin-header-btn').classList.toggle('visible', isAdmin);
-if(hasFinishedGame) document.getElementById('msg').innerHTML = "<span style='color:var(--cr-gold);font-family:\"Cinzel\",serif;'>¡Ya terminaste!</span>";
-currentMainLevel = unlockedLevel;
-populateLevelSelect(); updateUI(); renderMainAvatar();
-}
 // ✅ Cargar el resto de datos
 totalScore = data?.total_score || 0;
 currentAvatarStyle = data?.avatar_style || 'adventurer';
@@ -2028,18 +1950,6 @@ const raw = data?.claimed_bp_rewards;
 claimedBPRewards = Array.isArray(raw) ? raw : [];
 shieldDurability = data?.shield_durability || 0; // ✅ Cargar escudo real
 totalAttacks = data?.total_attacks || 0;
-  totalAttacks = data?.total_attacks || 0;
-
-// ✅ PEGA AQUÍ EL CÓDIGO DE LA FUENTE
-if(data?.has_gaming_font) {
-  document.body.classList.add('font-gaming');
-  document.querySelectorAll('h1, h2, h3, .ranking-title, .shop-title, .dash-title').forEach(el => {
-    el.classList.add('font-gaming-title');
-  });
-}
-
-// ✅ Actualizar UI solo después de cargar todo
-updateCoinDisplay(); 
 inventory.dagger = data?.inventory_dagger || 0;
 inventory.sword = data?.inventory_sword || 0;
 inventory.bow = data?.inventory_bow || 0;
