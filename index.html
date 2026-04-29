@@ -9,16 +9,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root {
-  /* Fuente Gaming estilo Free Fire */
-@import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Russo+One&display=swap');
-
-.font-gaming {
-  font-family: 'Black Ops One', cursive !important;
-}
-
-.font-gaming-title {
-  font-family: 'Russo One', cursive !important;
-}
 --primary-color: #ffcc00; --primary-light: #ff9800; --text-dark: #e0e0e0;
 --bg-dark: #0f0f0f; --bg-panel: #1a1a1a; --success: #00e676; --error: #ff1744;
 --cell-size: 32px; --rank-iron: #9e9e9e; --rank-bronze: #d97706; --rank-silver: #bdbdbd;
@@ -1310,6 +1300,7 @@ let currentStreak = 0;
 const STREAK_BONUSES = {3:50, 5:100, 10:250, 15:500};
 let currentCoins = 0, hasBP = false, claimedBPRewards = [], playTimeCounter = 0;
 let bpXP = 0;
+let completedLevels = []; // ✅ NUEVO: Niveles ya completados por el usuario
 const ANTENNA_SEQUENCE = [1,10,5,2,4,8,3,6,7,9];
 let currentAntennaIndex = 0;
 const WEAPONS = {
@@ -1498,7 +1489,6 @@ try {
 currentCoins -= price;
 shieldDurability += qty;
 
-// ✅ Guardar en BD AMBAS cosas para que no se pierdan
 const { error } = await _supabase.from('profiles').update({
 coins: currentCoins,
 shield_durability: shieldDurability
@@ -1506,7 +1496,6 @@ shield_durability: shieldDurability
 
 if (error) throw error;
 
-// ✅ Actualizar UI después de confirmar guardado
 updateCoinDisplay();
 updateInventoryUI();
 openShop();
@@ -1616,16 +1605,21 @@ if(inventory[weaponType] <= 0) return showToast("¡No tienes esta arma!",'tomato
 if(!confirm(`¿Usar ${weapon.icon} ${weapon.name} contra ${targetName}? (-${weapon.damage} pts, -${weapon.shieldDmg} 🛡️)`)) return;
 inventory[weaponType]--; totalAttacks++; updateInventoryUI();
 try {
+// ✅ CORRECCIÓN: Asegurar que se trae shield_durability
 const { data: victim, error: fetchError } = await _supabase.from('profiles').select('total_score, shield_durability, squad_id').eq('id', targetId).single();
 if(fetchError || !victim) throw new Error("Usuario no encontrado");
 let updates = {}; let msg = '';
 let victimShield = victim.shield_durability || 0;
+
+// ✅ CORRECCIÓN: Solo aplicar UN efecto (escudo O puntos), no ambos
 if(victimShield > 0) {
+// ✅ Solo reducir escudo, NO puntos
 victimShield = Math.max(0, victimShield - weapon.shieldDmg);
 updates.shield_durability = victimShield;
 msg = `🛡️ ¡${targetName} tenía ESCUDO! Tu ${weapon.icon} le quitó ${weapon.shieldDmg} puntos de escudo.`;
 if(victimShield === 0) msg += " ¡Escudo destruido!";
 } else {
+// ✅ Solo reducir puntos si NO tiene escudo
 const newScore = Math.max(0, (victim.total_score || 0) - weapon.damage);
 updates.total_score = newScore;
 msg = `${weapon.icon} ¡Atacaste a ${targetName} con ${weapon.name}! Perdió ${weapon.damage} puntos.`;
@@ -1670,7 +1664,6 @@ Object.entries(inventory).forEach(([key, count]) => {
 if(count > 0) { const w = WEAPONS[key]; atkButtons += `<button class="attack-btn" onclick="attackUser('${u.id}','${u.username}','${key}')" title="${w.name} (-${w.damage})">${w.icon}</button> `; }
 });
 }
-// ✅ CORRECCIÓN: Escudo visible para TODOS con degradado
 let shieldHTML = '';
 const sh = u.shield_durability || 0;
 if(sh > 0) {
@@ -1856,7 +1849,7 @@ total_score:0, current_level:1, completed_at:null, current_problem:1,
 total_time_played:0, squad_id:0, coins:0,
 has_battle_pass:false, claimed_bp_rewards:[],
 inventory_dagger:0, inventory_sword:0, inventory_bow:0, inventory_axe:0, inventory_hammer:0,
-shield_durability:0, pending_prize_4:false, pending_prize_5:false, bp_xp:0
+shield_durability:0, pending_prize_4:false, pending_prize_5:false, bp_xp:0, completed_levels:[]
 }).neq('id','00000000-0000-0000-0000-000000000000');
 await _supabase.from('game_settings').update({season_end_time:null, is_paused:false, exam_level:0}).eq('id',1);
 alert("¡Reiniciado!"); loadDashboardData();
@@ -1915,6 +1908,7 @@ await _supabase.auth.signOut();
 currentUser = null; totalScore = 0; currentCoins = 0; hasBP = false; currentStreak = 0; bpXP = 0;
 inventory = { dagger:0, sword:0, bow:0, axe:0, hammer:0 };
 shieldDurability = 0;
+completedLevels = [];
 showLogin(); clearInterval(rankInt);
 }
 async function loadScore(user){
@@ -1922,10 +1916,8 @@ try {
 const { data } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
 if(data?.is_banned){ alert("Tu cuenta está suspendida."); logout(); return; }
 
-// ✅ CORRECCIÓN MONEDAS: Leer monedas de BD PRIMERO
 currentCoins = data?.coins || 0;
 
-// Si hay regalos pendientes, sumarlos y guardar
 if(data?.pending_gift_coins > 0) {
 const giftAmount = data.pending_gift_coins;
 currentCoins += giftAmount;
@@ -1936,7 +1928,6 @@ pending_gift_coins: 0
 showToast(`🎁 ¡Recibiste ${giftAmount} monedas de regalo!`,'success');
 }
 
-// ✅ Cargar el resto de datos
 totalScore = data?.total_score || 0;
 currentAvatarStyle = data?.avatar_style || 'adventurer';
 unlockedLevel = data?.current_level || 1;
@@ -1948,17 +1939,18 @@ hasBP = data?.has_battle_pass || false;
 bpXP = data?.bp_xp || 0;
 const raw = data?.claimed_bp_rewards;
 claimedBPRewards = Array.isArray(raw) ? raw : [];
-shieldDurability = data?.shield_durability || 0; // ✅ Cargar escudo real
+shieldDurability = data?.shield_durability || 0;
 totalAttacks = data?.total_attacks || 0;
 inventory.dagger = data?.inventory_dagger || 0;
 inventory.sword = data?.inventory_sword || 0;
 inventory.bow = data?.inventory_bow || 0;
 inventory.axe = data?.inventory_axe || 0;
 inventory.hammer = data?.inventory_hammer || 0;
+// ✅ NUEVO: Cargar niveles completados
+completedLevels = Array.isArray(data?.completed_levels) ? data.completed_levels : [];
 
-// ✅ Actualizar UI solo después de cargar todo
 updateCoinDisplay(); 
-updateInventoryUI(); // ✅ Esto mostrará el escudo si existe
+updateInventoryUI();
 updateStreakUI(); 
 updateBattlePassUI();
 
@@ -1975,6 +1967,7 @@ totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1;
 currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0;
 currentCoins = 0; hasBP = false; bpXP = 0; shieldDurability = 0; totalAttacks = 0;
 inventory = { dagger:0, sword:0, bow:0, axe:0, hammer:0 };
+completedLevels = [];
 }
 isAdmin = (user.email.split('@')[0] === ADMIN_USER);
 document.getElementById('admin-header-btn').classList.toggle('visible', isAdmin);
@@ -2132,10 +2125,19 @@ const rC = Math.floor(currentDividend / currentDivisor);
 const rR = currentDividend % currentDivisor;
 if(coc === rC && res === rR){
   AudioEngine.playSuccess();
-  totalScore += POINTS; 
+  
+  // ✅ NUEVO: No dar puntos si el nivel ya fue completado
+  const levelKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
+  if(!completedLevels.includes(levelKey)) {
+    totalScore += POINTS; 
+    currentCoins += 5;
+    completedLevels.push(levelKey);
+    // Guardar niveles completados en BD
+    await _supabase.from('profiles').update({ completed_levels: completedLevels }).eq('id', currentUser.id);
+  }
+  
   updateUI(); 
   incrementStreak();
-  currentCoins += 5; 
   updateCoinDisplay();
   if(hasBP) { bpXP += 10; updateBattlePassUI(); }
   
@@ -2159,11 +2161,9 @@ if(coc === rC && res === rR){
     }
   }
   
-  // ✅ Guarda en BD y espera confirmación
   await saveTime(); 
   const guardado = await saveScore();
   
-  // ✅ Si se guardó bien, actualiza ranking y escuadras inmediatamente
   if(guardado) {
     await updateRanking();
   } else {
@@ -2357,7 +2357,8 @@ inventory_axe: inventory.axe,
 inventory_hammer: inventory.hammer,
 shield_durability: shieldDurability,
 bp_xp: bpXP,
-claimed_bp_rewards: claimedBPRewards
+claimed_bp_rewards: claimedBPRewards,
+completed_levels: completedLevels // ✅ NUEVO: Guardar niveles completados
 })
 .eq('id', currentUser.id);
 if(error) throw error;
