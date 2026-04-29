@@ -8,8 +8,7 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-:root {
-  /* Fuente Gaming estilo Free Fire */
+/* ✅ FUENTE GAMING - IMPORTAR AL INICIO */
 @import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Russo+One&display=swap');
 
 .font-gaming {
@@ -19,6 +18,8 @@
 .font-gaming-title {
   font-family: 'Russo One', cursive !important;
 }
+
+:root {
 --primary-color: #ffcc00; --primary-light: #ff9800; --text-dark: #e0e0e0;
 --bg-dark: #0f0f0f; --bg-panel: #1a1a1a; --success: #00e676; --error: #ff1744;
 --cell-size: 32px; --rank-iron: #9e9e9e; --rank-bronze: #d97706; --rank-silver: #bdbdbd;
@@ -1263,7 +1264,7 @@ backdrop-filter: blur(4px);
 </div>
 </div>
 <div class="ranking-sidebar">
-<div class="ranking-title">⚔️ Ranking ⚔️</div>
+<div class="ranking-title">⚔️ Ranking ️</div>
 <ul class="ranking-list" id="ranking-list"></ul>
 <div class="squad-ranking-section">
 <div class="ranking-title" style="font-size:1rem;border-color:rgba(245,197,24,0.3);">🛡️ Escuadras 🛡️</div>
@@ -1573,18 +1574,33 @@ async function claimReward(level) {
       } else {
         inventory[reward.item] = (inventory[reward.item] || 0) + reward.qty;
       }
-    } else if(reward.type === 'real_prize') {
+    } 
+    else if(reward.type === 'font') {
+      // ✅ Lógica para desbloquear la fuente
+      await _supabase.from('profiles').update({ has_gaming_font: true }).eq('id', currentUser.id);
+      
+      // Aplicar fuente inmediatamente
+      document.body.classList.add('font-gaming');
+      document.querySelectorAll('h1, h2, h3, .ranking-title, .shop-title, .dash-title').forEach(el => {
+        el.classList.add('font-gaming-title');
+      });
+      showToast(`✅ ${reward.icon} ¡Fuente Gaming activada!`,'success');
+    } 
+    else if(reward.type === 'real_prize') {
       const prizeField = level === 4 ? 'pending_prize_4' : 'pending_prize_5';
       await _supabase.from('profiles').update({[prizeField]: true}).eq('id', currentUser.id);
       showToast(`✅ ${reward.icon} ${reward.name} - ¡Reclámalo con el profesor!`,'success');
     }
+    
     claimedBPRewards.push(level);
     await _supabase.from('profiles').update({claimed_bp_rewards: claimedBPRewards}).eq('id', currentUser.id);
     if(reward.type === 'item') await saveInventory();
     renderBattlePassTiers();
     updateInventoryUI();
     AudioEngine.playSuccess();
-    showToast(`✅ ${reward.icon} ¡${reward.name} reclamado!`,'success');
+    if(reward.type !== 'font') {
+      showToast(`✅ ${reward.icon} ¡${reward.name} reclamado!`,'success');
+    }
   } catch(e) {
     console.error('Error reclamando recompensa:', e);
     showToast('❌ Error: '+e.message,'tomato');
@@ -1936,7 +1952,7 @@ pending_gift_coins: 0
 showToast(`🎁 ¡Recibiste ${giftAmount} monedas de regalo!`,'success');
 }
 
-// ✅ Cargar el resto de datos
+// ✅ Cargar TODOS los datos
 totalScore = data?.total_score || 0;
 currentAvatarStyle = data?.avatar_style || 'adventurer';
 unlockedLevel = data?.current_level || 1;
@@ -1948,7 +1964,7 @@ hasBP = data?.has_battle_pass || false;
 bpXP = data?.bp_xp || 0;
 const raw = data?.claimed_bp_rewards;
 claimedBPRewards = Array.isArray(raw) ? raw : [];
-shieldDurability = data?.shield_durability || 0; // ✅ Cargar escudo real
+shieldDurability = data?.shield_durability || 0;
 totalAttacks = data?.total_attacks || 0;
 inventory.dagger = data?.inventory_dagger || 0;
 inventory.sword = data?.inventory_sword || 0;
@@ -1956,9 +1972,18 @@ inventory.bow = data?.inventory_bow || 0;
 inventory.axe = data?.inventory_axe || 0;
 inventory.hammer = data?.inventory_hammer || 0;
 
-// ✅ Actualizar UI solo después de cargar todo
+// ✅ APLICAR FUENTE GAMING si el usuario la tiene desbloqueada
+if(data?.has_gaming_font) {
+document.body.classList.add('font-gaming');
+// Aplicar a TODOS los títulos importantes
+document.querySelectorAll('h1, h2, h3, .ranking-title, .shop-title, .dash-title, .hall-title, .bp-header, .antena-header, .missions-title').forEach(el => {
+el.classList.add('font-gaming-title');
+});
+}
+
+// ✅ Actualizar UI
 updateCoinDisplay(); 
-updateInventoryUI(); // ✅ Esto mostrará el escudo si existe
+updateInventoryUI();
 updateStreakUI(); 
 updateBattlePassUI();
 
