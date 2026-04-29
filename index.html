@@ -4,21 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Reto de División - V25 (Arsenal Medieval)</title>
-<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&family=Black+Ops+One&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
-/* ✅ FUENTE GAMING - IMPORTAR AL INICIO */
-@import url('https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Russo+One&display=swap');
-
-.font-gaming {
-  font-family: 'Black Ops One', cursive !important;
-}
-
-.font-gaming-title {
-  font-family: 'Russo One', cursive !important;
-}
-
 :root {
 --primary-color: #ffcc00; --primary-light: #ff9800; --text-dark: #e0e0e0;
 --bg-dark: #0f0f0f; --bg-panel: #1a1a1a; --success: #00e676; --error: #ff1744;
@@ -61,6 +50,14 @@ flex-direction: column;
 align-items: center;
 min-height: 100vh;
 }
+
+/* ✅ NUEVA CLASE: Nombre con fuente gaming (tipo Prof. Miguel) */
+.rank-name-gaming {
+  font-family: 'Cinzel Decorative', serif !important;
+  color: var(--cr-gold-light) !important;
+  text-shadow: 0 0 10px rgba(245,197,24,0.5) !important;
+}
+
 .cr-divider {
 width: 100%;
 height: 3px;
@@ -1576,15 +1573,9 @@ async function claimReward(level) {
       }
     } 
     else if(reward.type === 'font') {
-      // ✅ Lógica para desbloquear la fuente
+      // ✅ Lógica para desbloquear la fuente gaming en el nombre
       await _supabase.from('profiles').update({ has_gaming_font: true }).eq('id', currentUser.id);
-      
-      // Aplicar fuente inmediatamente
-      document.body.classList.add('font-gaming');
-      document.querySelectorAll('h1, h2, h3, .ranking-title, .shop-title, .dash-title').forEach(el => {
-        el.classList.add('font-gaming-title');
-      });
-      showToast(`✅ ${reward.icon} ¡Fuente Gaming activada!`,'success');
+      showToast(`✅ ${reward.icon} ¡Fuente Gaming desbloqueada! Tu nombre ahora es épico`,'success');
     } 
     else if(reward.type === 'real_prize') {
       const prizeField = level === 4 ? 'pending_prize_4' : 'pending_prize_5';
@@ -1632,7 +1623,7 @@ if(inventory[weaponType] <= 0) return showToast("¡No tienes esta arma!",'tomato
 if(!confirm(`¿Usar ${weapon.icon} ${weapon.name} contra ${targetName}? (-${weapon.damage} pts, -${weapon.shieldDmg} 🛡️)`)) return;
 inventory[weaponType]--; totalAttacks++; updateInventoryUI();
 try {
-const { data: victim, error: fetchError } = await _supabase.from('profiles').select('total_score, shield_durability, squad_id').eq('id', targetId).single();
+const {  victim, error: fetchError } = await _supabase.from('profiles').select('total_score, shield_durability, squad_id, has_gaming_font').eq('id', targetId).single();
 if(fetchError || !victim) throw new Error("Usuario no encontrado");
 let updates = {}; let msg = '';
 let victimShield = victim.shield_durability || 0;
@@ -1670,7 +1661,7 @@ function startRanking(){ updateRanking(); rankInt = setInterval(updateRanking, 5
 async function updateRanking(){
 const list = document.getElementById('ranking-list');
 try {
-const { data, error } = await _supabase.from('profiles').select('id,username,total_score,avatar_style,completed_at,is_banned,squad_id,shield_durability').is('completed_at', null).eq('is_banned', false).order('total_score',{ascending:false});
+const { data, error } = await _supabase.from('profiles').select('id,username,total_score,avatar_style,completed_at,is_banned,squad_id,shield_durability,has_gaming_font').is('completed_at', null).eq('is_banned', false).order('total_score',{ascending:false});
 if(error) throw error;
 if(!data||!data.length){ list.innerHTML='<li style="text-align:center;padding:10px;color:#666;">No hay datos.</li>'; return; }
 list.innerHTML = data.map((u,i)=>{
@@ -1702,7 +1693,11 @@ glowColor = 'rgba(255,204,0,0.5)';
 }
 shieldHTML = `<div class="shield-bar-container"><span class="shield-icon">🛡️</span><div class="shield-bar-bg"><div class="shield-bar-fill" style="width:${pct}%;background:${gradient};box-shadow:0 0 8px ${glowColor};"></div></div><span class="shield-text">${sh}/${maxSh}</span></div>`;
 }
-return `<li class="${rc}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${dn}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span>${shieldHTML}</div>${sq}</div><span class="rank-score">${s}</span><div style="display:flex;gap:2px;">${atkButtons}</div></li>`;
+
+// ✅ NUEVO: Si el usuario tiene has_gaming_font, aplicar clase especial al nombre
+const nameClass = u.has_gaming_font ? 'rank-name-list rank-name-gaming' : 'rank-name-list';
+
+return `<li class="${rc}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="${nameClass}">${dn}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span>${shieldHTML}</div>${sq}</div><span class="rank-score">${s}</span><div style="display:flex;gap:2px;">${atkButtons}</div></li>`;
 }).join('');
 updateSquadRanking(data);
 loadActiveMissions(data);
@@ -1720,7 +1715,7 @@ return `<li class="squad-rank-item" style="border-left-color:${sq.color}"><div c
 async function loadActiveMissions(allData){
 if(!userSquadId) { document.getElementById('squad-missions-panel').style.display='none'; return; }
 document.getElementById('squad-missions-panel').style.display = 'block';
-const { data: missions } = await _supabase.from('squad_missions').select('*').eq('is_active', true);
+const {  missions } = await _supabase.from('squad_missions').select('*').eq('is_active', true);
 if(!missions || missions.length === 0) { document.getElementById('missions-body').innerHTML = '<p style="text-align:center;color:#666;font-family:\'Cinzel\',serif;">No hay misiones activas.</p>'; return; }
 const squadMembers = allData.filter(u => u.squad_id == userSquadId);
 let squadPoints = squadMembers.reduce((sum, u) => sum + (u.total_score||0), 0);
@@ -1759,7 +1754,7 @@ loadAdminMissions();
 }
 async function loadAdminMissions() {
 const container = document.getElementById('admin-mission-list');
-const { data: missions } = await _supabase.from('squad_missions').select('*').order('created_at', {ascending: false});
+const {  missions } = await _supabase.from('squad_missions').select('*').order('created_at', {ascending: false});
 if(!missions || missions.length === 0) { container.innerHTML = '<p style="color:#666; font-size:.8rem;font-family:\'Cinzel\',serif;">No hay misiones creadas.</p>'; return; }
 container.innerHTML = missions.map(m => `<div class="mission-list-item"><div><strong>${m.name}</strong><br><small style="color:#aaa;">Meta: ${m.goal} ${m.type} | Recompensa: ${m.reward} 💰</small></div><button class="mission-delete-btn" onclick="deleteMission('${m.id}')"><i class="fas fa-trash"></i></button></div>`).join('');
 }
@@ -1787,9 +1782,9 @@ else { showAdminDashboard(); }
 async function loadDashboardData(){
 const grid = document.getElementById('student-grid');
 try {
-const { data: settings } = await _supabase.from('game_settings').select('*').single();
+const {  settings } = await _supabase.from('game_settings').select('*').single();
 updateControlButtons(settings); initSeason(settings);
-const { data: students, error } = await _supabase.from('profiles').select('*').order('total_score',{ascending:false});
+const {  students, error } = await _supabase.from('profiles').select('*').order('total_score',{ascending:false});
 if(error) throw error;
 const now = new Date();
 let ss = {}; Object.keys(SQUADS).forEach(id => ss[id] = {count:0, score:0});
@@ -1837,7 +1832,7 @@ await _supabase.from('game_settings').update({is_paused: !s.is_paused}).eq('id',
 loadDashboardData();
 }
 async function toggleExamMode(){
-const { data: s } = await _supabase.from('game_settings').select('exam_level').single();
+const {  s } = await _supabase.from('game_settings').select('exam_level').single();
 const nl = s.exam_level > 0 ? 0 : 1;
 await _supabase.from('game_settings').update({exam_level: nl, is_paused: false}).eq('id',1);
 loadDashboardData();
@@ -1846,7 +1841,7 @@ function showSeasonModal(){ const h = prompt("Horas:","0"), m = prompt("Minutos:
 async function startSeason(h,m){
 if(h===0 && m===0) return alert("Ingresa tiempo.");
 const end = new Date(Date.now() + h*3600000 + m*60000);
-const { data: s } = await _supabase.from('game_settings').select('season_number').single();
+const {  s } = await _supabase.from('game_settings').select('season_number').single();
 const ns = (s?.season_number||0) + 1;
 try {
 await _supabase.from('game_settings').upsert({id:1, season_end_time: end.toISOString(), is_paused: false, exam_level: 0, season_number: ns});
@@ -1872,7 +1867,7 @@ total_score:0, current_level:1, completed_at:null, current_problem:1,
 total_time_played:0, squad_id:0, coins:0,
 has_battle_pass:false, claimed_bp_rewards:[],
 inventory_dagger:0, inventory_sword:0, inventory_bow:0, inventory_axe:0, inventory_hammer:0,
-shield_durability:0, pending_prize_4:false, pending_prize_5:false, bp_xp:0
+shield_durability:0, pending_prize_4:false, pending_prize_5:false, bp_xp:0, has_gaming_font:false
 }).neq('id','00000000-0000-0000-0000-000000000000');
 await _supabase.from('game_settings').update({season_end_time:null, is_paused:false, exam_level:0}).eq('id',1);
 alert("¡Reiniciado!"); loadDashboardData();
@@ -1881,7 +1876,7 @@ alert("¡Reiniciado!"); loadDashboardData();
 async function assignSquad(uid, sqId){ try { await _supabase.from('profiles').update({squad_id: sqId}).eq('id',uid); loadDashboardData(); } catch(e){ alert("Error"); } }
 document.addEventListener('DOMContentLoaded', async () => {
 try {
-const { data: { session } } = await _supabase.auth.getSession();
+const {  { session } } = await _supabase.auth.getSession();
 if (session?.user) { currentUser = session.user; showApp(); }
 else { showLogin(); }
 } catch(e) { showLogin(); }
@@ -1971,15 +1966,6 @@ inventory.sword = data?.inventory_sword || 0;
 inventory.bow = data?.inventory_bow || 0;
 inventory.axe = data?.inventory_axe || 0;
 inventory.hammer = data?.inventory_hammer || 0;
-
-// ✅ APLICAR FUENTE GAMING si el usuario la tiene desbloqueada
-if(data?.has_gaming_font) {
-document.body.classList.add('font-gaming');
-// Aplicar a TODOS los títulos importantes
-document.querySelectorAll('h1, h2, h3, .ranking-title, .shop-title, .dash-title, .hall-title, .bp-header, .antena-header, .missions-title').forEach(el => {
-el.classList.add('font-gaming-title');
-});
-}
 
 // ✅ Actualizar UI
 updateCoinDisplay(); 
