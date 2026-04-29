@@ -1573,18 +1573,33 @@ async function claimReward(level) {
       } else {
         inventory[reward.item] = (inventory[reward.item] || 0) + reward.qty;
       }
-    } else if(reward.type === 'real_prize') {
+    } 
+    else if(reward.type === 'font') {
+      // ✅ Lógica para desbloquear la fuente
+      await _supabase.from('profiles').update({ has_gaming_font: true }).eq('id', currentUser.id);
+      
+      // Aplicar fuente inmediatamente
+      document.body.classList.add('font-gaming');
+      document.querySelectorAll('h1, h2, h3, .ranking-title, .shop-title, .dash-title').forEach(el => {
+        el.classList.add('font-gaming-title');
+      });
+      showToast(`✅ ${reward.icon} ¡Fuente Gaming activada!`,'success');
+    } 
+    else if(reward.type === 'real_prize') {
       const prizeField = level === 4 ? 'pending_prize_4' : 'pending_prize_5';
       await _supabase.from('profiles').update({[prizeField]: true}).eq('id', currentUser.id);
       showToast(`✅ ${reward.icon} ${reward.name} - ¡Reclámalo con el profesor!`,'success');
     }
+    
     claimedBPRewards.push(level);
     await _supabase.from('profiles').update({claimed_bp_rewards: claimedBPRewards}).eq('id', currentUser.id);
     if(reward.type === 'item') await saveInventory();
     renderBattlePassTiers();
     updateInventoryUI();
     AudioEngine.playSuccess();
-    showToast(`✅ ${reward.icon} ¡${reward.name} reclamado!`,'success');
+    if(reward.type !== 'font') {
+      showToast(`✅ ${reward.icon} ¡${reward.name} reclamado!`,'success');
+    }
   } catch(e) {
     console.error('Error reclamando recompensa:', e);
     showToast('❌ Error: '+e.message,'tomato');
@@ -1950,6 +1965,18 @@ const raw = data?.claimed_bp_rewards;
 claimedBPRewards = Array.isArray(raw) ? raw : [];
 shieldDurability = data?.shield_durability || 0; // ✅ Cargar escudo real
 totalAttacks = data?.total_attacks || 0;
+  totalAttacks = data?.total_attacks || 0;
+
+// ✅ PEGA AQUÍ EL CÓDIGO DE LA FUENTE
+if(data?.has_gaming_font) {
+  document.body.classList.add('font-gaming');
+  document.querySelectorAll('h1, h2, h3, .ranking-title, .shop-title, .dash-title').forEach(el => {
+    el.classList.add('font-gaming-title');
+  });
+}
+
+// ✅ Actualizar UI solo después de cargar todo
+updateCoinDisplay(); 
 inventory.dagger = data?.inventory_dagger || 0;
 inventory.sword = data?.inventory_sword || 0;
 inventory.bow = data?.inventory_bow || 0;
