@@ -936,36 +936,83 @@ else { showAdminDashboard(); }
 async function loadDashboardData(){
   const grid = document.getElementById('student-grid');
   try {
-    const { data: settings } = await _supabase.from('game_settings').select('*').single();
-    updateControlButtons(settings); initSeason(settings);
+    // ✅ Cargar configuración del juego
+    const { data: settings, error: settingsError } = await _supabase.from('game_settings').select('*').single();
+    if(settingsError) {
+      console.warn("No se encontró configuración de juego, usando defaults");
+    } else {
+      updateControlButtons(settings); 
+      initSeason(settings);
+    }
     
-    // ✅ CORRECCIÓN: Sintaxis correcta para extraer 'data' como 'students'
-    const { data: students, error } = await _supabase.from('profiles').select('*').order('total_score',{ascending:false});
-    if(error) throw error;
+    // ✅ Cargar estudiantes con manejo de errores explícito
+    const { data: students, error: studentsError } = await _supabase
+      .from('profiles')
+      .select('*')
+      .order('total_score', { ascending: false });
     
+    if(studentsError) {
+      console.error("Error cargando estudiantes:", studentsError);
+      throw studentsError;
+    }
+    
+    if(!students || students.length === 0) {
+      grid.innerHTML = "<p style='color:#888;text-align:center;padding:20px;'>No hay estudiantes registrados aún.</p>";
+      document.getElementById('student-count').innerText = "0 activos";
+      return;
+    }
+    
+    // ✅ Calcular estadísticas de escuadras
     const now = new Date();
-    let ss = {}; Object.keys(SQUADS).forEach(id => ss[id] = {count:0, score:0});
-    students.forEach(u => { if(u.squad_id && ss[u.squad_id]){ ss[u.squad_id].count++; ss[u.squad_id].score += (u.total_score||0); } });
+    let ss = {}; 
+    Object.keys(SQUADS).forEach(id => ss[id] = {count:0, score:0});
     
-    document.getElementById('squad-admin-tbody').innerHTML = Object.entries(ss).map(([id,st]) => {
-      const sq = SQUADS[id];
-      return `<tr><td class="shield-cell"><div>${sq.svg}</div></td><td style="color:${sq.color};">${sq.name}</td><td>${st.count}</td><td class="points-cell">${st.score}</td></tr>`;
-    }).join('');
+    students.forEach(u => { 
+      if(u.squad_id && ss[u.squad_id]){ 
+        ss[u.squad_id].count++; 
+        ss[u.squad_id].score += (u.total_score||0); 
+      } 
+    });
     
+    // ✅ Renderizar tabla de escuadras
+    const squadTableBody = document.getElementById('squad-admin-tbody');
+    if(squadTableBody) {
+      squadTableBody.innerHTML = Object.entries(ss).map(([id,st]) => {
+        const sq = SQUADS[id];
+        return `<tr>
+          <td class="shield-cell"><div>${sq.svg}</div></td>
+          <td style="color:${sq.color};">${sq.name}</td>
+          <td>${st.count}</td>
+          <td class="points-cell">${st.score}</td>
+        </tr>`;
+      }).join('');
+    }
+    
+    // ✅ Renderizar grid de estudiantes
     grid.innerHTML = students.map(u => {
-      const isOnline = u.last_seen && (now - new Date(u.last_seen) < 30000), isBanned = u.is_banned;
+      const isOnline = u.last_seen && (now - new Date(u.last_seen) < 30000);
+      const isBanned = u.is_banned || false;
       const mins = u.total_time_played ? Math.floor(u.total_time_played/60) : 0;
       const secs = u.total_time_played ? u.total_time_played%60 : 0;
-      let sqOpts = `<option value="0" ${u.squad_id==0?'selected':''}>Sin Escuadra</option>`;
-      Object.entries(SQUADS).forEach(([id,s]) => { sqOpts += `<option value="${id}" ${u.squad_id==id?'selected':''}>${s.name}</option>`; });
       
-      // ✅ CORRECCIÓN: HTML limpio y cerrado correctamente para que muestre todos los datos
-      return `<div class="student-card ${isOnline&&!isBanned?'':'offline'}">
+      let sqOpts = `<option value="0" ${u.squad_id==0?'selected':''}>Sin Escuadra</option>`;
+      Object.entries(SQUADS).forEach(([id,s]) => { 
+        sqOpts += `<option value="${id}" ${u.squad_id==id?'selected':''}>${s.name}</option>`; 
+      });
+      
+      const onlineClass = isOnline && !isBanned ? 'online' : '';
+      const cardClass = isOnline && !isBanned ? '' : 'offline';
+      const statusText = isBanned ? 'Baneado' : (isOnline ? 'En línea' : 'Offline');
+      
+      return `<div class="student-card ${cardClass}">
         <div class="sc-header">
-          <img src="${getAvatarUrl(u.username||'guest',u.avatar_style)}" class="sc-avatar">
+          <img src="${getAvatarUrl(u.username||'guest',u.avatar_style||'adventurer')}" class="sc-avatar" onerror="this.src='https://api.dicebear.com/8.x/identicon/svg?seed=guest'">
           <div class="sc-info">
-            <div class="sc-name">${u.username}</div>
-            <div class="sc-status"><span class="status-dot ${isOnline&&!isBanned?'online':''}"></span>${isBanned?'Baneado':(isOnline?'En línea':'Offline')}</div>
+            <div class="sc-name">${u.username||'Sin nombre'}</div>
+            <div class="sc-status">
+              <span class="status-dot ${onlineClass}"></span>
+              ${statusText}
+            </div>
           </div>
         </div>
         <div class="sc-stats">
@@ -974,19 +1021,41 @@ async function loadDashboardData(){
           <div>Tiempo<br><span class="sc-stat-val">${mins}m ${secs}s</span></div>
         </div>
         <div class="sc-squad-control">
-          <select class="squad-select-admin" onchange="assignSquad('${u.id}',this.value)">${sqOpts}</select>
+          <select class="squad-select-admin" onchange="assignSquad('${u.id}',this.value)">
+            ${sqOpts}
+          </select>
         </div>
         <div class="sc-actions">
-          <button class="sc-btn ban ${isBanned?'active':''}" onclick="toggleBan('${u.id}',${isBanned})">${isBanned?'Desbanear':'Banear'}</button>
-          <button class="sc-btn delete" onclick="deleteUser('${u.id}','${u.username}')">Borrar</button>
+          <button class="sc-btn ban ${isBanned?'active':''}" onclick="toggleBan('${u.id}',${isBanned})">
+            ${isBanned?'Desbanear':'Banear'}
+          </button>
+          <button class="sc-btn delete" onclick="deleteUser('${u.id}','${u.username||'Usuario'}')">
+            Borrar
+          </button>
         </div>
       </div>`;
     }).join('');
     
-    document.getElementById('student-count').innerText = students.filter(u => (now - new Date(u.last_seen) < 30000) && !u.is_banned).length + " en línea";
+    // ✅ Actualizar contador de activos
+    const activeCount = students.filter(u => {
+      if(!u.last_seen) return false;
+      if(u.is_banned) return false;
+      return (now - new Date(u.last_seen) < 30000);
+    }).length;
+    
+    document.getElementById('student-count').innerText = activeCount + " activos";
+    
   } catch(e){ 
-    console.error("Error cargando dashboard:", e);
-    grid.innerHTML = "<p style='color:red;text-align:center;'>Error al cargar datos. Revisa consola.</p>"; 
+    console.error("Error completo en loadDashboardData:", e);
+    grid.innerHTML = `
+      <div style="background:rgba(192,57,43,0.2);border:2px solid var(--cr-red);border-radius:8px;padding:20px;text-align:center;">
+        <p style="color:var(--cr-red);font-weight:700;margin-bottom:10px;">❌ Error al cargar datos</p>
+        <p style="color:#aaa;font-size:0.9rem;">${e.message||'Error desconocido'}</p>
+        <button onclick="loadDashboardData()" style="margin-top:15px;padding:8px 16px;background:var(--cr-gold);color:#000;border:none;border-radius:4px;cursor:pointer;font-family:'Cinzel',serif;">
+          🔄 Reintentar
+        </button>
+      </div>
+    `;
   }
 }
 async function assignSquad(uid, sqId){ try { await _supabase.from('profiles').update({squad_id: sqId}).eq('id',uid); loadDashboardData(); } catch(e){ alert("Error"); } }
