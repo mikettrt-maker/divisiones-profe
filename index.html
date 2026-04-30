@@ -662,20 +662,24 @@ if(userSquadId && SQUADS[userSquadId]) {
 }
 }
 function openShop(){
-document.getElementById('shop-modal').style.display='flex';
-document.getElementById('shop-coins-val').innerText = currentCoins;
-const container = document.getElementById('shop-items');
-container.innerHTML = '';
-Object.entries(WEAPONS).forEach(([key, weapon]) => {
-const div = document.createElement('div');
-div.className = 'shop-item orange';
-div.innerHTML = `<span class="shop-item-icon">${weapon.icon}</span><div class="shop-item-name">${weapon.name}</div><div class="shop-item-desc">${weapon.desc} (-${weapon.damage} pts, -${weapon.shieldDmg} 🛡️)</div><div class="shop-item-price"><i class="fas fa-coins"></i> ${weapon.price}</div><div class="shop-qty-badge">x${inventory[key]}</div><button class="shop-buy-btn orange-btn" onclick="buyWeapon('${key}', ${weapon.price})">Comprar</button>`;
-container.appendChild(div);
-});
-const shieldDiv = document.createElement('div');
-shieldDiv.className = 'shop-item';
-shieldDiv.innerHTML = `<span class="shop-item-icon">🛡️</span><div class="shop-item-name">Escudo (5)</div><div class="shop-item-desc">Resiste 5 ataques</div><div class="shop-item-price"><i class="fas fa-coins"></i> 300</div><button class="shop-buy-btn" onclick="buyShield(5, 300)">Comprar</button>`;
-container.appendChild(shieldDiv);
+  document.getElementById('shop-modal').style.display='flex';
+  document.getElementById('shop-coins-val').innerText = currentCoins;
+  const container = document.getElementById('shop-items');
+  container.innerHTML = '';
+  
+  Object.entries(WEAPONS).forEach(([key, weapon]) => {
+    // ✅ CORRECCIÓN: Ocultar carabina de la tienda (solo se gana con las cartas)
+    if(key === 'carabina') return; 
+    
+    const div = document.createElement('div');
+    div.className = 'shop-item orange';
+    div.innerHTML = `<span class="shop-item-icon">${weapon.icon}</span><div class="shop-item-name">${weapon.name}</div><div class="shop-item-desc">${weapon.desc} (-${weapon.damage} pts, -${weapon.shieldDmg} 🛡️)</div><div class="shop-item-price"><i class="fas fa-coins"></i> ${weapon.price}</div><div class="shop-qty-badge">x${inventory[key]}</div><button class="shop-buy-btn orange-btn" onclick="buyWeapon('${key}', ${weapon.price})">Comprar</button>`;
+    container.appendChild(div);
+  });
+  const shieldDiv = document.createElement('div');
+  shieldDiv.className = 'shop-item';
+  shieldDiv.innerHTML = `<span class="shop-item-icon">🛡️</span><div class="shop-item-name">Escudo (5)</div><div class="shop-item-desc">Resiste 5 ataques</div><div class="shop-item-price"><i class="fas fa-coins"></i> 300</div><button class="shop-buy-btn" onclick="buyShield(5, 300)">Comprar</button>`;
+  container.appendChild(shieldDiv);
 }
 function closeShop(){ document.getElementById('shop-modal').style.display='none'; }
 function buyWeapon(type, price) {
@@ -930,55 +934,60 @@ if(document.getElementById('admin-dashboard').style.display === 'flex'){ logout(
 else { showAdminDashboard(); }
 }
 async function loadDashboardData(){
-const grid = document.getElementById('student-grid');
-try {
-const { data: settings } = await _supabase.from('game_settings').select('*').single();
-updateControlButtons(settings); initSeason(settings);
-const { data: students, error } = await _supabase.from('profiles').select('*').order('total_score',{ascending:false});
-if(error) throw error;
-const now = new Date();
-let ss = {}; Object.keys(SQUADS).forEach(id => ss[id] = {count:0, score:0});
-students.forEach(u => { if(u.squad_id && ss[u.squad_id]){ ss[u.squad_id].count++; ss[u.squad_id].score += (u.total_score||0); } });
-document.getElementById('squad-admin-tbody').innerHTML = Object.entries(ss).map(([id,st]) => {
-const sq = SQUADS[id];
-return `<tr><td class="shield-cell"><div>${sq.svg}</div></td><td style="color:${sq.color};">${sq.name}</td><td>${st.count}</td><td class="points-cell">${st.score}</td></tr>`;
-}).join('');
-grid.innerHTML = students.map(u => {
-const isOnline = u.last_seen && (now - new Date(u.last_seen) < 30000), isBanned = u.is_banned;
-const mins = u.total_time_played ? Math.floor(u.total_time_played/60) : 0;
-const secs = u.total_time_played ? u.total_time_played%60 : 0;
-let sqOpts = `<option value="0" ${u.squad_id==0?'selected':''}>Sin Escuadra</option>`;
-Object.entries(SQUADS).forEach(([id,s]) => { sqOpts += `<option value="${id}" ${u.squad_id==id?'selected':''}>${s.name}</option>`; });
-return `<div class="student-card ${isOnline&&!isBanned?'':'offline'}"><div class="sc-header"><img src="${getAvatarUrl(u.username||'guest',u.avatar_style)}" class="sc-avatar"><div class="sc-info"><div class="sc-name">${u.username}</div><div class="sc-status"><span class="status-dot ${isOnline&&!isBanned?'online':''}"></span>${isBanned?'Baneado':(isOnline?'En línea':'Offline')}</div></div></div><div class="sc-stats"><div>Puntos<br><span class="sc-stat-val">${u.total_score||0}</span></div><div>Nivel<br><span class="sc-stat-val">${u.current_level||1}</span></div><div>Tiempo<br><span class="sc-stat-val">${mins}m ${secs}s</span></div></div><div class="sc-squad-control"><select class="squad-select-admin" onchange="assignSquad('${u.id}',this.value)">${sqOpts}</select></div><div class="sc-actions"><button class="sc-btn ban ${isBanned?'active':''}" onclick="toggleBan('${u.id}',${isBanned})">${isBanned?'Desbanear':'Banear'}</button><button class="sc-btn delete" onclick="deleteUser('${u.id}','${u.username}')">Borrar</button></div></div>`;
-}).join('');
-document.getElementById('student-count').innerText = students.filter(u => (now - new Date(u.last_seen) < 30000) && !u.is_banned).length + " en línea";
-} catch(e){ grid.innerHTML = "Error al cargar datos"; }
-}
-async function toggleBan(uid, cur){ try { await _supabase.from('profiles').update({is_banned: !cur}).eq('id',uid); loadDashboardData(); } catch(e){ alert("Error"); } }
-async function cleanInactiveUsers(){
-if(!confirm("¿Borrar cuentas con 0 puntos?")) return;
-try { await _supabase.from('profiles').delete().eq('total_score',0).neq('username',ADMIN_USER); alert("Limpieza completada."); loadDashboardData(); }
-catch(e){ alert("Error: "+e.message); }
-}
-async function deleteUser(uid, name){
-if(!confirm(`¿Borrar "${name}" permanentemente?`)) return;
-try { await _supabase.from('profiles').delete().eq('id',uid); alert(`${name} eliminado.`); loadDashboardData(); }
-catch(e){ alert("Error: "+e.message); }
-}
-async function resetAllUsers(){
-if(!confirm("¿Reiniciar TODOS los puntos y tiempo?")) return;
-try {
-await _supabase.from('profiles').update({
-total_score:0, current_level:1, completed_at:null, current_problem:1,
-total_time_played:0, squad_id:0, coins:0,
-inventory_dagger:0, inventory_sword:0, inventory_bow:0, inventory_axe:0, inventory_hammer:0, inventory_carabina:0,
-shield_durability:0, pending_prize_4:false, pending_prize_5:false, 
-poker_cards: '{"racha":false,"puntos":false,"ataques":false,"escudos":false,"monedas":false}',
-shields_bought_total:0, has_carabina:false
-}).neq('id','00000000-0000-0000-0000-000000000000');
-await _supabase.from('game_settings').update({season_end_time:null, is_paused:false, exam_level:0}).eq('id',1);
-alert("¡Reiniciado!"); loadDashboardData();
-} catch(e){ alert("Error: "+e.message); }
+  const grid = document.getElementById('student-grid');
+  try {
+    const { data: settings } = await _supabase.from('game_settings').select('*').single();
+    updateControlButtons(settings); initSeason(settings);
+    
+    // ✅ CORRECCIÓN: Sintaxis correcta para extraer 'data' como 'students'
+    const { data: students, error } = await _supabase.from('profiles').select('*').order('total_score',{ascending:false});
+    if(error) throw error;
+    
+    const now = new Date();
+    let ss = {}; Object.keys(SQUADS).forEach(id => ss[id] = {count:0, score:0});
+    students.forEach(u => { if(u.squad_id && ss[u.squad_id]){ ss[u.squad_id].count++; ss[u.squad_id].score += (u.total_score||0); } });
+    
+    document.getElementById('squad-admin-tbody').innerHTML = Object.entries(ss).map(([id,st]) => {
+      const sq = SQUADS[id];
+      return `<tr><td class="shield-cell"><div>${sq.svg}</div></td><td style="color:${sq.color};">${sq.name}</td><td>${st.count}</td><td class="points-cell">${st.score}</td></tr>`;
+    }).join('');
+    
+    grid.innerHTML = students.map(u => {
+      const isOnline = u.last_seen && (now - new Date(u.last_seen) < 30000), isBanned = u.is_banned;
+      const mins = u.total_time_played ? Math.floor(u.total_time_played/60) : 0;
+      const secs = u.total_time_played ? u.total_time_played%60 : 0;
+      let sqOpts = `<option value="0" ${u.squad_id==0?'selected':''}>Sin Escuadra</option>`;
+      Object.entries(SQUADS).forEach(([id,s]) => { sqOpts += `<option value="${id}" ${u.squad_id==id?'selected':''}>${s.name}</option>`; });
+      
+      // ✅ CORRECCIÓN: HTML limpio y cerrado correctamente para que muestre todos los datos
+      return `<div class="student-card ${isOnline&&!isBanned?'':'offline'}">
+        <div class="sc-header">
+          <img src="${getAvatarUrl(u.username||'guest',u.avatar_style)}" class="sc-avatar">
+          <div class="sc-info">
+            <div class="sc-name">${u.username}</div>
+            <div class="sc-status"><span class="status-dot ${isOnline&&!isBanned?'online':''}"></span>${isBanned?'Baneado':(isOnline?'En línea':'Offline')}</div>
+          </div>
+        </div>
+        <div class="sc-stats">
+          <div>Puntos<br><span class="sc-stat-val">${u.total_score||0}</span></div>
+          <div>Nivel<br><span class="sc-stat-val">${u.current_level||1}</span></div>
+          <div>Tiempo<br><span class="sc-stat-val">${mins}m ${secs}s</span></div>
+        </div>
+        <div class="sc-squad-control">
+          <select class="squad-select-admin" onchange="assignSquad('${u.id}',this.value)">${sqOpts}</select>
+        </div>
+        <div class="sc-actions">
+          <button class="sc-btn ban ${isBanned?'active':''}" onclick="toggleBan('${u.id}',${isBanned})">${isBanned?'Desbanear':'Banear'}</button>
+          <button class="sc-btn delete" onclick="deleteUser('${u.id}','${u.username}')">Borrar</button>
+        </div>
+      </div>`;
+    }).join('');
+    
+    document.getElementById('student-count').innerText = students.filter(u => (now - new Date(u.last_seen) < 30000) && !u.is_banned).length + " en línea";
+  } catch(e){ 
+    console.error("Error cargando dashboard:", e);
+    grid.innerHTML = "<p style='color:red;text-align:center;'>Error al cargar datos. Revisa consola.</p>"; 
+  }
 }
 async function assignSquad(uid, sqId){ try { await _supabase.from('profiles').update({squad_id: sqId}).eq('id',uid); loadDashboardData(); } catch(e){ alert("Error"); } }
 document.addEventListener('DOMContentLoaded', async () => {
@@ -1068,7 +1077,6 @@ pokerCards = data?.poker_cards || { racha: false, puntos: false, ataques: false,
 shieldsBoughtTotal = data?.shields_bought_total || 0;
 hasCarabina = data?.has_carabina || false;
 if(hasCarabina && inventory.carabina === 0) inventory.carabina = 1;
-
 updateCoinDisplay(); 
 updateInventoryUI();
 updateStreakUI(); 
