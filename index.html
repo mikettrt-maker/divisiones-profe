@@ -649,7 +649,6 @@ function getAvatarUrl(seed, styleOrObj) {
     const allAvatars = [...AVATAR_STYLES_STANDARD, ...AVATAR_STYLES_EXCLUSIVE];
     const found = allAvatars.find(a => a.id === styleOrObj);
     if (found) return found.url + '?t=' + Date.now();
-    // fallback a avatar por defecto
     const defaultAvatar = AVATAR_STYLES_STANDARD[0];
     if (defaultAvatar) return defaultAvatar.url + '?t=' + Date.now();
   }
@@ -697,7 +696,7 @@ currentCoins -= price; inventory[type]++;
 updateCoinDisplay(); updateInventoryUI(); openShop();
 AudioEngine.playShop();
 showToast(`✅ ${WEAPONS[type].icon} ${WEAPONS[type].name} añadido a tu arsenal!`,'success');
-saveInventory();
+saveInventory(); // <-- Esta función ahora guarda las monedas
 }
 async function buyShield(qty, price) {
 if(currentCoins < price) return showToast(`❌ Necesitas ${price} florines`,'tomato');
@@ -747,12 +746,14 @@ showToast("❌ Error: "+e.message, 'tomato');
 inventory[weaponType]++; updateInventoryUI();
 }
 }
+// ✅ saveInventory ahora guarda también las monedas
 function saveInventory(){
 if(!currentUser) return;
 _supabase.from('profiles').update({
 inventory_dagger: inventory.dagger, inventory_sword: inventory.sword,
 inventory_bow: inventory.bow, inventory_axe: inventory.axe, inventory_hammer: inventory.hammer,
-shield_durability: shieldDurability, total_attacks: totalAttacks
+shield_durability: shieldDurability, total_attacks: totalAttacks,
+coins: currentCoins   // ← ¡Guardamos monedas!
 }).eq('id', currentUser.id).then(res => { if(res.error) console.error("Error guardando inventario", res.error); });
 }
 let rankInt;
@@ -1300,7 +1301,7 @@ const amount = data.pending_gift_coins;
 currentCoins += amount; updateCoinDisplay();
 await _supabase.from('profiles').update({ 
   pending_gift_coins: 0,
-  coins: currentCoins          // 🔥 Guardamos las monedas ahora!
+  coins: currentCoins
 }).eq('id', currentUser.id);
 const icon = document.getElementById('gift-icon');
 const badge = document.getElementById('gift-badge');
@@ -1452,4 +1453,3 @@ toggleBtn.innerHTML = '⚔️ Ejércitos';
 </script>
 </body>
 </html>
-```
