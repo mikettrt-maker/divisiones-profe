@@ -696,7 +696,10 @@ currentCoins -= price; inventory[type]++;
 updateCoinDisplay(); updateInventoryUI(); openShop();
 AudioEngine.playShop();
 showToast(`✅ ${WEAPONS[type].icon} ${WEAPONS[type].name} añadido a tu arsenal!`,'success');
-saveInventory(); // <-- Esta función ahora guarda las monedas
+// Guardar monedas inmediatamente para evitar que se pierdan al recargar
+_supabase.from('profiles').update({ coins: currentCoins }).eq('id', currentUser.id)
+  .then(res => { if(res.error) console.error("Error guardando monedas en compra", res.error); });
+saveInventory();
 }
 async function buyShield(qty, price) {
 if(currentCoins < price) return showToast(`❌ Necesitas ${price} florines`,'tomato');
@@ -746,14 +749,12 @@ showToast("❌ Error: "+e.message, 'tomato');
 inventory[weaponType]++; updateInventoryUI();
 }
 }
-// ✅ saveInventory ahora guarda también las monedas
 function saveInventory(){
 if(!currentUser) return;
 _supabase.from('profiles').update({
 inventory_dagger: inventory.dagger, inventory_sword: inventory.sword,
 inventory_bow: inventory.bow, inventory_axe: inventory.axe, inventory_hammer: inventory.hammer,
-shield_durability: shieldDurability, total_attacks: totalAttacks,
-coins: currentCoins   // ← ¡Guardamos monedas!
+shield_durability: shieldDurability, total_attacks: totalAttacks
 }).eq('id', currentUser.id).then(res => { if(res.error) console.error("Error guardando inventario", res.error); });
 }
 let rankInt;
