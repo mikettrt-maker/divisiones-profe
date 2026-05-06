@@ -288,7 +288,17 @@ button{border:none; padding:12px 28px; font-weight:900; border-radius:8px; curso
 #btn-verify{animation:neonMultiPulse 4s ease-in-out infinite;}
 .ranking-item.rank-1{animation:rank1Glow 2s infinite alternate,neonMultiPulse 4s ease-in-out infinite;}
 .avatar-badge-overlay{position:absolute; bottom:-5px; right:-5px; background:linear-gradient(135deg,var(--cr-gold),var(--cr-gold-dark)); border:3px solid var(--cr-blue-dark); border-radius:50%; width:35px; height:35px; display:flex; align-items:center; justify-content:center; font-size:1.2rem; box-shadow:0 2px 8px rgba(0,0,0,0.5);}
-.avatar-rank-indicator{position:absolute; top:-5px; left:50%; transform:translateX(-50%); background:linear-gradient(135deg,var(--cr-red),#7a0000); color:white; padding:2px 12px; border-radius:12px; font-size:0.7rem; font-weight:700; font-family:'Cinzel',serif; border:2px solid var(--cr-gold); box-shadow:0 2px 8px rgba(0,0,0,0.5); white-space:nowrap;}
+/* Indicador de rango DEBAJO del avatar (limpio, sin tapar) */
+.avatar-rank-indicator{
+position:relative; top:auto; left:auto; transform:none;
+display:block; width:fit-content; margin:4px auto 0 auto;
+background:linear-gradient(135deg,var(--cr-gold-dark),#b8860b);
+color:#0d1c3b; padding:3px 12px; border-radius:12px;
+font-size:0.65rem; font-weight:700; font-family:'Cinzel',serif;
+border:1px solid var(--cr-gold-light);
+box-shadow:0 2px 6px rgba(0,0,0,0.4);
+white-space:nowrap; text-align:center; letter-spacing:0.5px;
+}
 #gift-modal{display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,12,28,.97); z-index:99999; justify-content:center; align-items:center; backdrop-filter:blur(4px);}
 ::-webkit-scrollbar{width:5px; height:5px;}
 ::-webkit-scrollbar-track{background:rgba(10,22,40,0.8);}
@@ -339,7 +349,7 @@ transform: translateZ(0);
 
 <div id="login-screen" style="display:none;">
 <div class="login-box">
-<div class="login-avatar-preview"><img id="login-avatar-img" src="https://api.dicebear.com/8.x/identicon/svg?seed=Shadow"></div>
+<div class="login-avatar-preview"><img id="login-avatar-img" src="https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/1.png"></div>
 <h2>⚜️ Códice Merovingio ⚜️</h2>
 <p style="margin-bottom:20px;color:#888;font-family:'Cinzel',serif;font-size:.9rem;">Ingresa tu nombre, digno aspirante</p>
 <input type="text" id="login-username" class="login-input" placeholder="Usuario">
@@ -375,9 +385,9 @@ transform: translateZ(0);
 <div class="avatar-squad-wrapper" onclick="toggleAvatarModal()" title="Cambiar Efigie">
 <div class="avatar-container" id="main-avatar-box">
   <img id="main-avatar-img" class="avatar-img" src="" alt="Efigie">
-  <div class="avatar-rank-indicator" id="avatar-rank-badge">ESCUDERO</div>
   <div class="avatar-badge-overlay" id="squad-badge-overlay" title="Casa"></div>
 </div>
+<div class="avatar-rank-indicator" id="avatar-rank-badge">ESCUDERO</div>
 <div class="squad-display" id="squad-display" style="display:none;">
 <div class="squad-shield" id="user-squad-shield"></div>
 <div class="squad-name-small" id="user-squad-name">Sin Casa</div>
@@ -514,7 +524,7 @@ const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { st
 const TOTAL_LEVELS = 10, PROBLEMS_PER_LEVEL = 10, POINTS = 100;
 const ADMIN_USER = 'profemiguel';
 let currentMainLevel = 1, currentProblemInLevel = 1, currentDivisor = 0, currentDividend = 0;
-let totalScore = 0, currentUser = null, currentAvatarStyle = 'adventurer';
+let totalScore = 0, currentUser = null, currentAvatarStyle = 'avatar1';
 let isGridLocked = true, hasFinishedGame = false, isVerifying = false;
 let unlockedLevel = 1, isAdmin = false;
 let currentStreak = 0;
@@ -533,20 +543,23 @@ hammer: { icon:'🔨', name:'Martillo de la Justicia', damage:1500, shieldDmg:5,
 let inventory = { dagger: 0, sword: 0, bow: 0, axe: 0, hammer: 0 };
 let shieldDurability = 0;
 let totalAttacks = 0;
+
+// ----- TUS 10 AVATARES PERSONALIZADOS -----
 const AVATAR_STYLES_STANDARD = [
-{id:'adventurer',name:'Caballero del Reino'},
-{id:'lorelei',name:'Espectro de la Noche'},
-{id:'pixel-art',name:'Pergamino Antiguo'},
-{id:'bottts',name:'Gólem de Hierro'},
-{id:'big-ears',name:'Sabio de la Tormenta'},
-{id:'croodles',name:'Boceto del Destino'},
-{id:'identicon',name:'Cifrado Místico'}
+  { id:'avatar1', name:'Caballero del Reino', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/1.png' },
+  { id:'avatar2', name:'Espectro de la Noche', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/2.png' },
+  { id:'avatar3', name:'Pergamino Antiguo', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/3.png' },
+  { id:'avatar4', name:'Gólem de Hierro', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/4.png' },
+  { id:'avatar5', name:'Sabio de la Tormenta', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/5.png' },
+  { id:'avatar6', name:'Boceto del Destino', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/6.png' },
+  { id:'avatar7', name:'Cifrado Místico', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/7.png' }
 ];
 const AVATAR_STYLES_EXCLUSIVE = [
-{id:'avataaars',name:'Señor de la Guerra'},
-{id:'micah',name:'Maestro de las Sombras'},
-{id:'personas',name:'Avatar de la Leyenda'}
+  { id:'avatar8', name:'Señor de la Guerra', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/8.png' },
+  { id:'avatar9', name:'Maestro de las Sombras', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/9.png' },
+  { id:'avatar10', name:'Avatar de la Leyenda', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/10.png' }
 ];
+
 const RANKS = [
 {name:"Escudero",min:0,max:2999,icon:"🪨",css:"rank-iron",avatar:"avatar-iron"},
 {name:"Caballero",min:3000,max:6999,icon:"🥉",css:"rank-bronze",avatar:"avatar-bronze"},
@@ -653,16 +666,23 @@ document.body.appendChild(el);
 setTimeout(() => { if(el.parentNode) el.parentNode.removeChild(el); }, 1300);
 showToast(`🔥 ¡Racha de ${streak}! Bonus: +${bonus} monedas`,'success');
 }
-function getAvatarUrl(seed, style) { return `https://api.dicebear.com/7.x/${style}/svg?seed=${seed}`; }
+function getAvatarUrl(seed, styleOrObj) {
+  if (typeof styleOrObj === 'object' && styleOrObj.url) {
+    return styleOrObj.url + '?t=' + Date.now();
+  }
+  return `https://api.dicebear.com/7.x/${styleOrObj}/svg?seed=${seed}`;
+}
 function renderMainAvatar() {
 if(!currentUser) return;
-const avatarUrl = getAvatarUrl(currentUser.email.split('@')[0], currentAvatarStyle);
+const allAvatars = [...AVATAR_STYLES_STANDARD, ...AVATAR_STYLES_EXCLUSIVE];
+const found = allAvatars.find(a => a.id === currentAvatarStyle);
+const avatarUrl = found ? found.url : getAvatarUrl(currentUser.email.split('@')[0], currentAvatarStyle);
 document.getElementById('main-avatar-img').src = avatarUrl;
 const rankInfo = getRankInfo(totalScore);
 document.getElementById('avatar-rank-badge').innerText = rankInfo.name.toUpperCase();
 document.getElementById('avatar-rank-badge').style.background = rankInfo.css === 'rank-heroic' 
   ? 'linear-gradient(135deg, #ef4444, #7a0000)' 
-  : 'linear-gradient(135deg, var(--cr-gold), var(--cr-gold-dark))';
+  : 'linear-gradient(135deg, var(--cr-gold-dark), #b8860b)';
 if(userSquadId && SQUADS[userSquadId]) {
   document.getElementById('squad-badge-overlay').innerHTML = SQUADS[userSquadId].svg;
   document.getElementById('squad-badge-overlay').style.display = 'flex';
@@ -702,10 +722,7 @@ if(!confirm(`¿Comprar Protección del Consejo (${qty} usos) por ${price} florin
 try {
 currentCoins -= price;
 shieldDurability += qty;
-const { error } = await _supabase.from('profiles').update({
-coins: currentCoins,
-shield_durability: shieldDurability
-}).eq('id', currentUser.id);
+const { error } = await _supabase.from('profiles').update({coins: currentCoins, shield_durability: shieldDurability}).eq('id', currentUser.id);
 if (error) throw error;
 updateCoinDisplay(); updateInventoryUI(); openShop();
 AudioEngine.playShop();
@@ -768,7 +785,7 @@ const s = u.total_score||0, rI = getRankInfo(s), isMe = (currentUser&&u.username
 let rc = "ranking-item "+rI.css, dn = u.username||'Yo';
 if(i===0){ rc+=" rank-1"; dn+=" 👑"; } else if(i<10) rc+=" elite";
 if(isMe) rc+=" me";
-const avUrl = getAvatarUrl(u.username||'guest', u.avatar_style||'adventurer');
+const avUrl = getAvatarUrl(u.username||'guest', u.avatar_style||'avatar1');
 const sq = u.squad_id&&SQUADS[u.squad_id] ? `<div style="width:16px;height:18px;">${SQUADS[u.squad_id].svg}</div>` : '';
 let atkButtons = '';
 if(!isMe) {
@@ -969,7 +986,7 @@ const inp = document.getElementById('login-username'), img = document.getElement
 const ni = inp.cloneNode(true); inp.parentNode.replaceChild(ni, inp);
 document.getElementById('login-username').addEventListener('input', e => {
 clearTimeout(typingTimer);
-if(!e.target.value.trim()){ img.src="https://api.dicebear.com/8.x/identicon/svg?seed=Shadow"; return; }
+if(!e.target.value.trim()){ img.src="https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/1.png"; return; }
 typingTimer = setTimeout(() => { img.src = `https://api.dicebear.com/8.x/adventurer/svg?seed=${e.target.value.trim()}`; }, 500);
 });
 }
@@ -1022,7 +1039,7 @@ await _supabase.from('profiles').update({ coins: currentCoins, pending_gift_coin
 showToast(`🎁 ¡Recibiste ${giftAmount} florines de ofrenda!`,'success');
 }
 totalScore = data?.total_score || 0;
-currentAvatarStyle = data?.avatar_style || 'adventurer';
+currentAvatarStyle = data?.avatar_style || 'avatar1';
 unlockedLevel = data?.current_level || 1;
 currentProblemInLevel = data?.current_problem || 1;
 if(currentProblemInLevel > 10) currentProblemInLevel = 1;
@@ -1046,7 +1063,7 @@ document.getElementById('user-squad-name').style.color = sq.color;
 userSquadId = data.squad_id;
 } else { document.getElementById('squad-display').style.display = 'none'; userSquadId = null; }
 } catch(e){
-totalScore = 0; currentAvatarStyle = 'adventurer'; unlockedLevel = 1;
+totalScore = 0; currentAvatarStyle = 'avatar1'; unlockedLevel = 1;
 currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0;
 currentCoins = 0; shieldDurability = 0; totalAttacks = 0;
 inventory = { dagger:0, sword:0, bow:0, axe:0, hammer:0 };
@@ -1373,7 +1390,7 @@ const seed = currentUser.email.split('@')[0], isH = totalScore >= 50000;
 AVATAR_STYLES_STANDARD.forEach(st => {
 let d = document.createElement('div'); d.className = 'avatar-option' + (currentAvatarStyle===st.id?' selected':'');
 d.onclick = () => selectAvatarStyle(st.id);
-d.innerHTML = `<img src="${getAvatarUrl(seed,st.id)}"><span style="font-size:.7rem;font-weight:600;display:block;font-family:'Cinzel',serif;">${st.name}</span>`;
+d.innerHTML = `<img src="${getAvatarUrl(seed, st)}"><span style="font-size:.7rem;font-weight:600;display:block;font-family:'Cinzel',serif;">${st.name}</span>`;
 gs.appendChild(d);
 });
 es.style.display = 'block';
@@ -1382,15 +1399,16 @@ let d = document.createElement('div');
 if(isH){
 d.className = 'avatar-option' + (currentAvatarStyle===st.id?' selected':'');
 d.onclick = () => selectAvatarStyle(st.id);
-d.innerHTML = `<img src="${getAvatarUrl(seed,st.id)}"><span style="font-size:.7rem;font-weight:600;display:block;font-family:'Cinzel',serif;">${st.name}</span>`;
+d.innerHTML = `<img src="${getAvatarUrl(seed, st)}"><span style="font-size:.7rem;font-weight:600;display:block;font-family:'Cinzel',serif;">${st.name}</span>`;
 } else {
 d.className = 'avatar-option avatar-locked';
-d.innerHTML = `<img src="${getAvatarUrl('demo',st.id)}"><div class="lock-icon"><i class="fas fa-lock"></i></div><span style="font-size:.7rem;font-weight:600;display:block;font-family:'Cinzel',serif;">${st.name}</span>`;
+d.innerHTML = `<img src="${getAvatarUrl(seed, st)}"><div class="lock-icon"><i class="fas fa-lock"></i></div><span style="font-size:.7rem;font-weight:600;display:block;font-family:'Cinzel',serif;">${st.name}</span>`;
 }
 ge.appendChild(d);
 });
 }
 function selectAvatarStyle(id){
+const all = [...AVATAR_STYLES_STANDARD, ...AVATAR_STYLES_EXCLUSIVE];
 const isEx = AVATAR_STYLES_EXCLUSIVE.some(s => s.id === id);
 if(isEx && totalScore < 50000){ alert("¡Solo para Reyes Merovingios!"); return; }
 currentAvatarStyle = id; renderAvatarOptions(); renderMainAvatar();
