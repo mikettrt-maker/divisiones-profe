@@ -667,28 +667,24 @@ setTimeout(() => { if(el.parentNode) el.parentNode.removeChild(el); }, 1300);
 showToast(`🔥 ¡Racha de ${streak}! Bonus: +${bonus} monedas`,'success');
 }
 function getAvatarUrl(seed, styleOrObj) {
+  // Si ya recibimos un objeto con url (caso de los selectores), se usa directamente
   if (typeof styleOrObj === 'object' && styleOrObj.url) {
     return styleOrObj.url + '?t=' + Date.now();
   }
-  return `https://api.dicebear.com/7.x/${styleOrObj}/svg?seed=${seed}`;
-}
-function renderMainAvatar() {
-if(!currentUser) return;
-const allAvatars = [...AVATAR_STYLES_STANDARD, ...AVATAR_STYLES_EXCLUSIVE];
-const found = allAvatars.find(a => a.id === currentAvatarStyle);
-const avatarUrl = found ? found.url : getAvatarUrl(currentUser.email.split('@')[0], currentAvatarStyle);
-document.getElementById('main-avatar-img').src = avatarUrl;
-const rankInfo = getRankInfo(totalScore);
-document.getElementById('avatar-rank-badge').innerText = rankInfo.name.toUpperCase();
-document.getElementById('avatar-rank-badge').style.background = rankInfo.css === 'rank-heroic' 
-  ? 'linear-gradient(135deg, #ef4444, #7a0000)' 
-  : 'linear-gradient(135deg, var(--cr-gold-dark), #b8860b)';
-if(userSquadId && SQUADS[userSquadId]) {
-  document.getElementById('squad-badge-overlay').innerHTML = SQUADS[userSquadId].svg;
-  document.getElementById('squad-badge-overlay').style.display = 'flex';
-} else {
-  document.getElementById('squad-badge-overlay').style.display = 'none';
-}
+  
+  // Si es un string, buscamos en las listas de avatares personalizados
+  if (typeof styleOrObj === 'string') {
+    const allAvatars = [...AVATAR_STYLES_STANDARD, ...AVATAR_STYLES_EXCLUSIVE];
+    const found = allAvatars.find(a => a.id === styleOrObj);
+    if (found) return found.url + '?t=' + Date.now();
+    
+    // Si no se encuentra, devolvemos el avatar estándar por defecto (el primero de la lista)
+    const defaultAvatar = AVATAR_STYLES_STANDARD[0];
+    if (defaultAvatar) return defaultAvatar.url + '?t=' + Date.now();
+  }
+  
+  // Fallback absoluto (nunca debería llegar aquí si tienes al menos un avatar)
+  return 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/1.png';
 }
 function openShop(){
 document.getElementById('shop-modal').style.display='flex';
