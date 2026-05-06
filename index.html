@@ -146,7 +146,7 @@ display:flex; justify-content:center; align-items:center; gap:20px; position:rel
 .input-residuo:focus{border-color:var(--cr-gold); box-shadow:0 0 10px rgba(201,168,76,0.4);}
 .input-residuo:disabled{background:#050c1c; color:#333; border-color:#1a2a3a; cursor:not-allowed; opacity:.5; pointer-events:none;}
 .antena-panel{background:linear-gradient(180deg,rgba(26,58,110,0.5) 0%,rgba(10,22,40,0.95) 100%); border:2px solid var(--cr-gold-dark); padding:16px; border-radius:10px; border-top:4px solid var(--cr-gold); width:240px; flex-shrink:0; margin-left:auto; box-shadow:0 8px 24px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.06); position:relative;}
-.antena-panel::before{content:'⚜'; position:absolute; top:-14px; left:50%; transform:translateX(-50%); font-size:1.3rem; background:linear-gradient(135deg,#0d1c3b,#1e3a5f); padding:2px 8px; border-radius:20px; border:1px solid var(--cr-gold-dark);}
+.antena-panel::before{content:'💀'; position:absolute; top:-14px; left:50%; transform:translateX(-50%); font-size:1.3rem; background:linear-gradient(135deg,#0d1c3b,#1e3a5f); padding:2px 8px; border-radius:20px; border:1px solid var(--cr-gold-dark);}
 .antena-header{text-align:center; font-weight:900; color:var(--cr-gold); margin-bottom:14px; font-size:1rem; text-transform:uppercase; font-family:'Cinzel',serif; letter-spacing:2px;}
 .antena-row{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; opacity:1; transition:opacity .3s; font-size:.9rem; color:#c8d8f0;}
 .antena-row.locked-row{opacity:.35;}
@@ -321,7 +321,7 @@ transform: translateZ(0);
 <body>
 <div class="toast-container" id="toast-container"></div>
 <div id="victory-screen"><div class="victory-title">¡VICTORIA!</div></div>
-<div id="epic-overlay"><div class="epic-text" id="epic-text">¡POR LA REINA!</div></div>
+<div id="epic-overlay"><div class="epic-text" id="epic-text">💀 ¡Por la Gloria Oscura!</div></div>
 <div id="shop-modal" onclick="if(event.target.id==='shop-modal')closeShop()">
 <div class="shop-box">
 <div class="shop-header">
@@ -335,7 +335,7 @@ transform: translateZ(0);
 </div>
 </div>
 <button class="shop-btn-float" onclick="openShop()" title="Tesoro"><i class="fas fa-coins"></i></button>
-<button id="mobile-ranking-toggle" class="btn-small" style="display:none; position:fixed; bottom:20px; right:20px; z-index:9000;">🏆 Corte</button>
+<button id="mobile-ranking-toggle" class="btn-small" style="display:none; position:fixed; bottom:20px; right:20px; z-index:9000;">⚔️ Ejércitos</button>
 
 <div id="login-screen" style="display:none;">
 <div class="login-box">
@@ -352,7 +352,7 @@ transform: translateZ(0);
 <div id="avatar-modal" style="display:none;background:rgba(5,12,28,.95);" onclick="if(event.target.id==='avatar-modal')toggleAvatarModal()">
 <div class="modal-box">
 <h3 style="margin:0 0 12px 0;color:transparent;background:linear-gradient(135deg,var(--cr-gold-light),var(--cr-gold));-webkit-background-clip:text;background-clip:text;font-family:'Cinzel Decorative',serif;font-size:1.6rem;text-transform:uppercase;">Efigie del Guardián</h3>
-<div class="modal-section"><h4 style="color:var(--cr-gold-dark);font-family:'Cinzel',serif;">Linaje Común</h4><div class="avatar-grid" id="avatar-options-standard"></div></div>
+<div class="modal-section"><h4 style="color:var(--cr-gold-dark);font-family:'Cinzel',serif;">Linaje de Hierro</h4><div class="avatar-grid" id="avatar-options-standard"></div></div>
 <div class="modal-section" id="exclusive-section" style="display:none;"><h4 style="color:var(--cr-red);font-family:'Cinzel',serif;">Sangre de Reyes</h4><div class="avatar-grid" id="avatar-options-exclusive"></div></div>
 <button class="btn-primary" onclick="saveAvatarChoice()" style="margin-top:15px;">Sellar la Elección</button>
 </div>
@@ -360,7 +360,7 @@ transform: translateZ(0);
 <header class="main-header">
 <div class="season-badge" id="season-badge"><i class="fas fa-hourglass"></i><span class="timer-display" id="timer-display">--:--</span></div>
 <h1>Prof. Miguel</h1>
-<div class="season-banner-top"><div class="marquee-text">🐝 El Códice Merovingio – Temporada <span id="season-num-display">1</span> 🐝</div></div>
+<div class="season-banner-top"><div class="marquee-text">⚔️💀🐉⚜️ El Códice de los Reyes Oscuros – Temporada <span id="season-num-display">1</span> ⚜️🐉💀⚔️</div></div>
 <span style="color:var(--cr-gold-dark);font-size:.9rem;font-family:'Cinzel',serif;letter-spacing:1px;">Maestre del Conocimiento</span>
 <button id="admin-header-btn" class="admin-btn" onclick="toggleAdminDashboard()"><i class="fas fa-scroll"></i> Cámara del Maestre</button>
 </header>
@@ -474,7 +474,7 @@ transform: translateZ(0);
 </div>
 </div>
 <div class="ranking-sidebar" id="ranking-sidebar">
-<div class="ranking-title">⚜️ Corte de los Francos ⚜️</div>
+<div class="ranking-title">💀 Corte de los Reyes Oscuros 💀</div>
 <ul class="ranking-list" id="ranking-list"></ul>
 <div class="squad-ranking-section">
 <div class="ranking-title" style="font-size:1rem;border-color:rgba(201,168,76,0.3);">🛡️ Casas Nobles 🛡️</div>
@@ -534,11 +534,19 @@ let inventory = { dagger: 0, sword: 0, bow: 0, axe: 0, hammer: 0 };
 let shieldDurability = 0;
 let totalAttacks = 0;
 const AVATAR_STYLES_STANDARD = [
-{id:'adventurer',name:'Caballero'},{id:'bottts',name:'Golem'},{id:'pixel-art',name:'Pergamino'},
-{id:'lorelei',name:'Espectro'},{id:'big-ears',name:'Sabio'},{id:'open-peeps',name:'Manuscrito'},
-{id:'croodles',name:'Boceto'},{id:'identicon',name:'Cifrado'}
+{id:'adventurer',name:'Caballero del Reino'},
+{id:'lorelei',name:'Espectro de la Noche'},
+{id:'pixel-art',name:'Pergamino Antiguo'},
+{id:'bottts',name:'Gólem de Hierro'},
+{id:'big-ears',name:'Sabio de la Tormenta'},
+{id:'croodles',name:'Boceto del Destino'},
+{id:'identicon',name:'Cifrado Místico'}
 ];
-const AVATAR_STYLES_EXCLUSIVE = [{id:'micah',name:'Druida'},{id:'personas',name:'Monarca'},{id:'thumbs',name:'Leyenda'}];
+const AVATAR_STYLES_EXCLUSIVE = [
+{id:'avataaars',name:'Señor de la Guerra'},
+{id:'micah',name:'Maestro de las Sombras'},
+{id:'personas',name:'Avatar de la Leyenda'}
+];
 const RANKS = [
 {name:"Escudero",min:0,max:2999,icon:"🪨",css:"rank-iron",avatar:"avatar-iron"},
 {name:"Caballero",min:3000,max:6999,icon:"🥉",css:"rank-bronze",avatar:"avatar-bronze"},
@@ -558,10 +566,10 @@ let pct = Math.min(100,((score-rank.min)/range)*100);
 return {...rank, tier, pct};
 }
 const SQUADS = {
-1:{name:"Los Sicambrios",color:"#e74c3c",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#2c0404" stroke="#e74c3c" stroke-width="4"/><path d="M30 60L45 75L70 40" stroke="#e74c3c" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/></svg>`},
-2:{name:"Los Reyes Brujos",color:"#9b59b6",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#1a0b2e" stroke="#9b59b6" stroke-width="4"/><circle cx="50" cy="55" r="20" stroke="#9b59b6" stroke-width="4"/><path d="M50 35V25M50 85V75M30 55H20M80 55H70" stroke="#9b59b6" stroke-width="4"/></svg>`},
-3:{name:"Guardianes del Grial",color:"#3498db",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#0d1b2a" stroke="#3498db" stroke-width="4"/><path d="M50 25V85M25 50H75" stroke="#3498db" stroke-width="8" stroke-linecap="round"/><circle cx="50" cy="50" r="15" stroke="#3498db" stroke-width="4"/></svg>`},
-4:{name:"Tejedores de Enigmas",color:"#f39c12",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#2c1f00" stroke="#f39c12" stroke-width="4"/><path d="M50 30L35 60L50 50L65 60L50 30Z" fill="#f39c12"/><path d="M50 50V80" stroke="#f39c12" stroke-width="4"/></svg>`}
+1:{name:"La Casa del Trueno",color:"#00d4ff",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#0d1c3b" stroke="#00d4ff" stroke-width="4"/><path d="M50 30L35 65L50 52L65 65L50 30Z" fill="#00d4ff" stroke="#00d4ff" stroke-width="2"/><rect x="46" y="0" width="8" height="12" fill="#ffd700"/> </svg>`},
+2:{name:"Reyes Brujos",color:"#9b59b6",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#1a0b2e" stroke="#9b59b6" stroke-width="4"/><circle cx="50" cy="55" r="18" fill="none" stroke="#9b59b6" stroke-width="3"/><circle cx="50" cy="55" r="8" fill="#9b59b6"/><path d="M40 42L35 38M60 42L65 38" stroke="#9b59b6" stroke-width="3"/></svg>`},
+3:{name:"Guardianes del Grial",color:"#ffd700",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#1a1a00" stroke="#ffd700" stroke-width="4"/><path d="M40 50 C40 30 60 30 60 50 L55 65 L45 65 Z" fill="#ffd700" stroke="#ffd700" stroke-width="2"/><path d="M35 55 L25 40 M65 55 L75 40" stroke="#ffd700" stroke-width="4"/> </svg>`},
+4:{name:"Ejército de la Penumbra",color:"#c0392b",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#2c0404" stroke="#c0392b" stroke-width="4"/><circle cx="50" cy="55" r="18" fill="none" stroke="#c0392b" stroke-width="3"/><circle cx="40" cy="50" r="3" fill="#c0392b"/><circle cx="60" cy="50" r="3" fill="#c0392b"/><path d="M45 62 L55 62 L50 58 Z" fill="#c0392b"/><path d="M50 70 L50 57" stroke="#c0392b" stroke-width="3"/> </svg>`}
 };
 const DB = {
 1:[{d:456,div:4},{d:789,div:3},{d:125,div:5},{d:982,div:7},{d:641,div:2},{d:333,div:9},{d:805,div:6},{d:219,div:8},{d:567,div:4},{d:901,div:3}],
@@ -1097,7 +1105,7 @@ triggerEpicEffect();
 function triggerEpicEffect(){
 AudioEngine.playEpic();
 const ov = document.getElementById('epic-overlay'), tx = document.getElementById('epic-text');
-const msgs = ["⚔️ ¡Por la Reina!","🏆 ¡Larga vida al Rey!","💀 ¡El conocimiento despierta!"];
+const msgs = ["⚔️ ¡Por la Gloria Oscura!","💀 ¡No hay piedad!","🐉 ¡Fuego y Sangre!"];
 tx.innerText = msgs[Math.floor(Math.random()*msgs.length)];
 ov.style.display = 'flex'; tx.style.animation = 'none'; void tx.offsetWidth;
 tx.style.animation = 'epicPulse .5s ease-out forwards';
@@ -1433,7 +1441,7 @@ sidebar.style.display = 'block';
 toggleBtn.innerHTML = '❌ Cerrar Corte';
 } else {
 sidebar.style.display = 'none';
-toggleBtn.innerHTML = '🏆 Corte';
+toggleBtn.innerHTML = '⚔️ Ejércitos';
 }
 });
 })();
