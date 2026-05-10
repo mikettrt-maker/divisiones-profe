@@ -263,7 +263,6 @@ button{border:none; padding:12px 28px; font-weight:900; border-radius:8px; curso
 .mission-delete-btn{background:linear-gradient(135deg,var(--cr-red),#7a0000); color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer; font-family:'Cinzel',serif;}
 .squad-missions-panel{margin:10px 12px; background:linear-gradient(135deg,rgba(13,37,69,0.6),rgba(10,22,40,0.9)); border-radius:8px; padding:14px; border:2px solid var(--cr-gold-dark);}
 .missions-title{font-family:'Cinzel',serif; font-weight:700; color:var(--cr-gold); font-size:.95rem; text-transform:uppercase; margin-bottom:10px; letter-spacing:1px;}
-/* Indicador de rango DEBAJO del avatar */
 .avatar-rank-indicator{
 position:relative; top:auto; left:auto; transform:none;
 display:block; width:fit-content; margin:4px auto 0 auto;
@@ -274,7 +273,6 @@ border:1px solid var(--cr-gold-light);
 box-shadow:0 2px 6px rgba(0,0,0,0.4);
 white-space:nowrap; text-align:center; letter-spacing:0.5px;
 }
-/* Carta del enemigo */
 .enemy-card-container {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
   margin: 15px 0; width: 100%;
@@ -289,11 +287,9 @@ white-space:nowrap; text-align:center; letter-spacing:0.5px;
   position: relative;
   transition: all 0.3s ease;
 }
-  /* Efecto de resplandor para el jefe */
 .enemy-card {
   animation: enemyGlow 2s infinite alternate;
 }
-
 @keyframes enemyGlow {
   0%   { box-shadow: 0 0 15px #ffd700, 0 0 30px #ff8c00, 0 0 45px #ff4500; }
   100% { box-shadow: 0 0 25px #ffec80, 0 0 50px #ffaa00, 0 0 75px #ff5500; }
@@ -343,8 +339,6 @@ white-space:nowrap; text-align:center; letter-spacing:0.5px;
 ::-webkit-scrollbar-track{background:rgba(10,22,40,0.8);}
 ::-webkit-scrollbar-thumb{background:var(--cr-gold-dark); border-radius:3px;}
 ::-webkit-scrollbar-thumb:hover{background:var(--cr-gold);}
-
-/* MÓVIL */
 @media (max-width: 767px) {
 .main-layout{flex-direction:column;}
 .ranking-sidebar{width:100%; min-width:unset; max-height:50vh;}
@@ -506,7 +500,6 @@ white-space:nowrap; text-align:center; letter-spacing:0.5px;
 <div class="fila-residuo"><span class="residuo-label">Residuo:</span><input type="number" id="valResiduo" class="input-residuo" placeholder="0"></div>
 </div>
 </div>
-<!-- Carta del enemigo -->
 <div class="enemy-card-container" id="enemy-card-section">
 <div class="enemy-name" id="enemy-name">El Engendro</div>
 <div class="enemy-card" id="enemy-card">
@@ -578,8 +571,8 @@ let currentCoins = 0, playTimeCounter = 0;
 let completedLevels = [];
 const ANTENNA_SEQUENCE = [1,10,5,2,4,8,3,6,7,9];
 let currentAntennaIndex = 0;
+let enemyEnergy = 100;
 
-// Enemigos
 const ENEMIES = {
   1: { name: 'El Engendro', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/1.jpg' },
   2: { name: 'La Plaga de Sangre', gif: 'URL_DE_TU_IMAGEN_2' },
@@ -590,9 +583,8 @@ const ENEMIES = {
   7: { name: 'La Sombra Eterna', gif: 'URL_DE_TU_IMAGEN_7' },
   8: { name: 'El Cazador de Brujos', gif: 'URL_DE_TU_IMAGEN_8' },
   9: { name: 'El Señor de la Penumbra', gif: 'URL_DE_TU_IMAGEN_9' },
-  10: { name: 'El Señor de la Penumbra', gif: 'URL_DE_TU_IMAGEN_9' } // mismo jefe que nivel 9
+  10: { name: 'El Señor de la Penumbra', gif: 'URL_DE_TU_IMAGEN_9' }
 };
-let enemyEnergy = 100; // se cargará desde la BD después
 
 const WEAPONS = {
 dagger: { icon:'🗡️', name:'Daga de los Sicambrios', damage:100, shieldDmg:0, price:100, desc:'Rauda y silenciosa' },
@@ -605,7 +597,6 @@ let inventory = { dagger: 0, sword: 0, bow: 0, axe: 0, hammer: 0 };
 let shieldDurability = 0;
 let totalAttacks = 0;
 
-// Avatares
 const AVATAR_STYLES_STANDARD = [
   { id:'avatar1', name:'Caballero del Reino', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/1.webp' },
   { id:'avatar2', name:'Espectro de la Noche', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/2.webp' },
@@ -1003,7 +994,7 @@ try {
 const { data, error } = await _supabase.from('profiles').select('username,completed_at').not('completed_at','is',null).order('completed_at',{ascending:true}).limit(5);
 if(error) throw error;
 if(!data||!data.length){ list.innerHTML='<li style="text-align:center;color:#555;font-size:.8rem;padding:10px;font-family:\'Cinzel\',serif;">Nadie ha completado el Códice aún</li>'; return; }
-list.innerHTML = data.map(u=>{ const d = new Date(u.completed_at); return `<li class="fame-item"><i class="fas fa-crown" style="color:var(--cr-gold)"></i><span style="font-family:'Cinzel',serif;">Rey ${u.username}</span><span class="fame-time">${d.toLocaleDateString()} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></li>`; }).join('');
+list.innerHTML = data.map(u=>{ const d = new Date(u.completed_at); return `<li class="fame-item"><i class="fas fa-crown" style="color:var(--cr-gold)"></i><span style="font-family:\'Cinzel\',serif;">Rey ${u.username}</span><span class="fame-time">${d.toLocaleDateString()} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></li>`; }).join('');
 } catch(e) { console.error(e); }
 }
 function showAdminDashboard(){
@@ -1092,7 +1083,8 @@ await _supabase.from('profiles').update({
 total_score:0, current_level:1, completed_at:null, current_problem:1,
 total_time_played:0, squad_id:0, coins:0,
 inventory_dagger:0, inventory_sword:0, inventory_bow:0, inventory_axe:0, inventory_hammer:0,
-shield_durability:0, completed_levels:[]
+shield_durability:0, completed_levels:[],
+enemy_energy:100, current_problem_key:null
 }).neq('id','00000000-0000-0000-0000-000000000000');
 await _supabase.from('game_settings').update({season_end_time:null, is_paused:false, exam_level:0}).eq('id',1);
 alert("¡Reiniciado!"); loadDashboardData();
@@ -1172,10 +1164,10 @@ unlockedLevel = data?.current_level || 1;
 currentProblemInLevel = data?.current_problem || 1;
 if(currentProblemInLevel > 10) currentProblemInLevel = 1;
 hasFinishedGame = data?.completed_at || false;
-  // Cargar energía del jefe actual (solo si sigue en el mismo nivel que la última vez)
-const savedProblemKey = data?.current_problem_key;
-const expectedKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
-if (savedProblemKey === expectedKey && data?.enemy_energy != null) {
+// Cargar energía persistida
+const savedKey = data?.current_problem_key;
+const currentKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
+if (savedKey === currentKey && data?.enemy_energy != null) {
   enemyEnergy = data.enemy_energy;
 } else {
   enemyEnergy = 100;
@@ -1200,7 +1192,7 @@ userSquadId = data.squad_id;
 } else { document.getElementById('squad-display').style.display = 'none'; userSquadId = null; }
 } catch(e){
 totalScore = 0; currentAvatarStyle = 'avatar1'; unlockedLevel = 1;
-currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0;
+currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0; enemyEnergy = 100;
 currentCoins = 0; shieldDurability = 0; totalAttacks = 0;
 inventory = { dagger:0, sword:0, bow:0, axe:0, hammer:0 };
 completedLevels = [];
@@ -1216,6 +1208,18 @@ function jumpToLevel(l){
 AudioEngine.playClick();
 const t = parseInt(l);
 if(t > unlockedLevel){ alert("¡Debes completar el nivel anterior!"); document.getElementById('levelSelect').value = currentMainLevel; return; }
+if (t !== currentMainLevel) {
+    // Cambio de nivel: resetear energía
+    enemyEnergy = 100;
+    if (currentUser) {
+        _supabase.from('profiles').update({
+            enemy_energy: 100,
+            current_problem_key: null
+        }).eq('id', currentUser.id).then(res => {
+            if(res.error) console.error("Error reseteando energía por cambio de nivel", res.error);
+        });
+    }
+}
 currentMainLevel = t; currentProblemInLevel = 1; loadProblem();
 }
 function updateEnemyCard() {
@@ -1240,32 +1244,23 @@ function updateEnergyBar() {
     fill.style.boxShadow = '0 0 12px rgba(255,23,68,0.7)';
   }
 }
-function resetEnemy(fullReset = false) {
-  if (fullReset) {
-    enemyEnergy = 100;
-    // También limpiamos la clave del problema en la BD
-    if (currentUser) {
-      _supabase.from('profiles').update({
-        enemy_energy: 100,
-        current_problem_key: null
-      }).eq('id', currentUser.id).then(res => {
-        if(res.error) console.error("Error reseteando energía", res.error);
-      });
-    }
-  } else {
-    // Si no es fullReset, mantenemos la energía actual (ya cargada de la BD)
-    // Solo actualizamos la barra visual
-  }
-  document.getElementById('enemy-card').classList.remove('defeated');
-  updateEnergyBar();
-}
 function defeatEnemy() {
   document.getElementById('enemy-card').style.animation = 'none';
   document.getElementById('enemy-card').classList.add('defeated');
   document.getElementById('energy-bar-fill').style.background = '#333';
   document.getElementById('energy-text').innerText = '¡DERROTADO!';
-  showToast(`💀 ¡Has derrotado a ${ENEMIES[currentMainLevel]?.name || 'el enemigo'}!`, 'success', 3000);
-  resetEnemy(true); // <-- línea nueva que reinicia la energía para el próximo nivel
+  showToast(`💀 ¡Has derrotado a ${ENEMIES[currentMainLevel]?.name || 'el enemigo'}!`, 'success', 3000); 
+  enemyEnergy = 100;
+  if (currentUser) {
+      _supabase.from('profiles').update({
+          enemy_energy: 100,
+          current_problem_key: null
+      }).eq('id', currentUser.id).then(res => {
+          if(res.error) console.error("Error reseteando energía tras derrota", res.error);
+      });
+  }
+  document.getElementById('enemy-card').style.animation = 'enemyGlow 2s infinite alternate';
+  updateEnergyBar();
 }
 async function loadProblem(){
 if(hasFinishedGame) return;
@@ -1280,20 +1275,34 @@ const d = DB[currentMainLevel];
 if(d && d[currentProblemInLevel-1]){ currentDividend = d[currentProblemInLevel-1].d; currentDivisor = d[currentProblemInLevel-1].div; }
 document.getElementById('difficultyLabel').innerText = getDifficultyLabel(currentMainLevel);
 updateEnemyCard();
-resetEnemy();
-createUI(); createAntena(); resetAll(); lockGrid();
-document.getElementById('msg').innerText = '';
-document.getElementById('enemy-card').style.animation = 'enemyGlow 2s infinite alternate';
+// Cargar energía persistente para este problema
+const currentKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
+if (currentUser) {
+    const { data: profile } = await _supabase
+        .from('profiles')
+        .select('enemy_energy, current_problem_key')
+        .eq('id', currentUser.id)
+        .single();
+    if (profile && profile.current_problem_key === currentKey && profile.enemy_energy != null) {
+        enemyEnergy = profile.enemy_energy;
+    } else {
+        enemyEnergy = 100;
+        await _supabase.from('profiles').update({
+            enemy_energy: 100,
+            current_problem_key: currentKey
+        }).eq('id', currentUser.id);
+    }
 }
-function getDifficultyLabel(lvl){ if(lvl<=2) return "Divisor: 1 Cifra"; if([3,4,5,7,9].includes(lvl)) return "Divisor: 2 Cifras"; return "Divisor: 3 Cifras"; }
-function lockGrid(){
-isGridLocked = true;
-document.getElementById('grid-lock-overlay').classList.remove('hidden');
+updateEnergyBar();
+document.getElementById('enemy-card').classList.remove('defeated');
+document.getElementById('enemy-card').style.animation = 'enemyGlow 2s infinite alternate';
+createUI();
+createAntena();
+resetAll();
+isGridLocked = true; document.getElementById('grid-lock-overlay').classList.remove('hidden');
 disableCocienteInputs(true);
 document.getElementById('valResiduo').disabled = true;
-document.querySelectorAll('.cell:not(.cell-locked)').forEach(cell => {
-cell.disabled = true; cell.style.pointerEvents = 'none'; cell.style.opacity = '0.4';
-});
+document.querySelectorAll('.cell:not(.cell-locked)').forEach(cell => { cell.disabled = true; cell.style.pointerEvents = 'none'; cell.style.opacity = '0.5'; });
 }
 function unlockGrid(){
 isGridLocked = false;
@@ -1425,15 +1434,12 @@ if(coc === rC && res === rR){
   updateCoinDisplay();
   document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
   enemyEnergy = Math.max(0, enemyEnergy - 10);
+  const currentKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
+  await _supabase.from('profiles').update({
+    enemy_energy: enemyEnergy,
+    current_problem_key: currentKey
+  }).eq('id', currentUser.id);
   updateEnergyBar();
-  // Guardar energía en la BD
-const problemKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
-await _supabase.from('profiles').update({
-  enemy_energy: enemyEnergy,
-  current_problem_key: problemKey
-}).eq('id', currentUser.id).then(res => {
-  if(res.error) console.error("Error guardando energía", res.error);
-});
   if (enemyEnergy === 0) defeatEnemy();
   if(currentProblemInLevel < PROBLEMS_PER_LEVEL){
     currentProblemInLevel++;
@@ -1477,6 +1483,13 @@ if(currentMainLevel !== data.exam_level){ currentMainLevel = data.exam_level; un
 }
 return true;
 } catch(e){ return true; }
+}
+function lockGrid(){
+isGridLocked = true;
+document.getElementById('grid-lock-overlay').classList.remove('hidden');
+disableCocienteInputs(true);
+document.getElementById('valResiduo').disabled = true;
+document.querySelectorAll('.cell:not(.cell-locked)').forEach(cell => { cell.disabled = true; cell.style.pointerEvents = 'none'; cell.style.opacity = '0.5'; });
 }
 let seasonInterval;
 async function initSeason(settings){
@@ -1647,7 +1660,12 @@ if(error) throw error;
 return true;
 } catch(e) { console.error('Error guardando score:', e); return false; }
 }
-// Móvil: toggle ranking
+function getDifficultyLabel(level){
+if(level<=2) return "⚔️ Novicio";
+if(level<=5) return "🛡️ Veterano";
+if(level<=8) return "💀 Maestre";
+return "🐉 Leyenda";
+}
 (function() {
 const toggleBtn = document.getElementById('mobile-ranking-toggle');
 const sidebar = document.getElementById('ranking-sidebar');
