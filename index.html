@@ -1172,6 +1172,14 @@ unlockedLevel = data?.current_level || 1;
 currentProblemInLevel = data?.current_problem || 1;
 if(currentProblemInLevel > 10) currentProblemInLevel = 1;
 hasFinishedGame = data?.completed_at || false;
+// Cargar energía del jefe guardada
+const savedKey = data?.current_problem_key;
+const currentKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
+if (savedKey === currentKey && data?.enemy_energy != null) {
+  enemyEnergy = data.enemy_energy;
+} else {
+  enemyEnergy = 100;
+}  
   // Cargar energía del jefe actual (solo si sigue en el mismo nivel que la última vez)
 const savedProblemKey = data?.current_problem_key;
 const expectedKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
@@ -1200,7 +1208,7 @@ userSquadId = data.squad_id;
 } else { document.getElementById('squad-display').style.display = 'none'; userSquadId = null; }
 } catch(e){
 totalScore = 0; currentAvatarStyle = 'avatar1'; unlockedLevel = 1;
-currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0;
+currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0; enemyEnergy = 100;
 currentCoins = 0; shieldDurability = 0; totalAttacks = 0;
 inventory = { dagger:0, sword:0, bow:0, axe:0, hammer:0 };
 completedLevels = [];
@@ -1264,7 +1272,9 @@ function defeatEnemy() {
   document.getElementById('enemy-card').classList.add('defeated');
   document.getElementById('energy-bar-fill').style.background = '#333';
   document.getElementById('energy-text').innerText = '¡DERROTADO!';
-  showToast(`💀 ¡Has derrotado a ${ENEMIES[currentMainLevel]?.name || 'el enemigo'}!`, 'success', 3000);
+  showToast(`💀 ¡Has derrotado a ${ENEMIES[currentMainLevel]?.name || 'el enemigo'}!`, 'success', 3000); 
+  resetEnemy(true);   // cuando muere el jefe, reiniciamos la energía a 100 para el próximo
+document.getElementById('enemy-card').style.animation = 'none';
   resetEnemy(true); // <-- línea nueva que reinicia la energía para el próximo nivel
 }
 async function loadProblem(){
@@ -1281,19 +1291,21 @@ if(d && d[currentProblemInLevel-1]){ currentDividend = d[currentProblemInLevel-1
 document.getElementById('difficultyLabel').innerText = getDifficultyLabel(currentMainLevel);
 updateEnemyCard();
 resetEnemy();
-createUI(); createAntena(); resetAll(); lockGrid();
-document.getElementById('msg').innerText = '';
-document.getElementById('enemy-card').style.animation = 'enemyGlow 2s infinite alternate';
-}
-function getDifficultyLabel(lvl){ if(lvl<=2) return "Divisor: 1 Cifra"; if([3,4,5,7,9].includes(lvl)) return "Divisor: 2 Cifras"; return "Divisor: 3 Cifras"; }
-function lockGrid(){
-isGridLocked = true;
-document.getElementById('grid-lock-overlay').classList.remove('hidden');
-disableCocienteInputs(true);
-document.getElementById('valResiduo').disabled = true;
-document.querySelectorAll('.cell:not(.cell-locked)').forEach(cell => {
-cell.disabled = true; cell.style.pointerEvents = 'none'; cell.style.opacity = '0.4';
-});
+function resetEnemy(fullReset = false) {
+  if (fullReset) {
+    enemyEnergy = 100;
+    if (currentUser) {
+      _supabase.from('profiles').update({
+        enemy_energy: 100,
+        current_problem_key: null
+      }).eq('id', currentUser.id).then(res => {
+        if(res.error) console.error("Error reseteando energía", res.error);
+      });
+    }
+  }
+  document.getElementById('enemy-card').classList.remove('defeated');
+  updateEnergyBar();
+  document.getElementById('enemy-card').style.animation = 'enemyGlow 2s infinite alternate';
 }
 function unlockGrid(){
 isGridLocked = false;
@@ -1425,6 +1437,14 @@ if(coc === rC && res === rR){
   updateCoinDisplay();
   document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
   enemyEnergy = Math.max(0, enemyEnergy - 10);
+  // Guardar energía y clave actual en la BD
+const currentKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
+_supabase.from('profiles').update({
+  enemy_energy: enemyEnergy,
+  current_problem_key: currentKey
+}).eq('id', currentUser.id).then(res => {
+  if(res.error) console.error("Error guardando energía", res.error);
+});
   updateEnergyBar();
   // Guardar energía en la BD
 const problemKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
