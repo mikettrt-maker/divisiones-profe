@@ -289,6 +289,15 @@ white-space:nowrap; text-align:center; letter-spacing:0.5px;
   position: relative;
   transition: all 0.3s ease;
 }
+  /* Efecto de resplandor para el jefe */
+.enemy-card {
+  animation: enemyGlow 2s infinite alternate;
+}
+
+@keyframes enemyGlow {
+  0%   { box-shadow: 0 0 15px #ffd700, 0 0 30px #ff8c00, 0 0 45px #ff4500; }
+  100% { box-shadow: 0 0 25px #ffec80, 0 0 50px #ffaa00, 0 0 75px #ff5500; }
+}
 .enemy-card img { width: 100%; height: 100%; object-fit: cover; }
 .enemy-card.defeated {
   filter: grayscale(100%) brightness(0.6);
@@ -1251,6 +1260,7 @@ function resetEnemy(fullReset = false) {
   updateEnergyBar();
 }
 function defeatEnemy() {
+  document.getElementById('enemy-card').style.animation = 'none';
   document.getElementById('enemy-card').classList.add('defeated');
   document.getElementById('energy-bar-fill').style.background = '#333';
   document.getElementById('energy-text').innerText = '¡DERROTADO!';
@@ -1273,6 +1283,7 @@ updateEnemyCard();
 resetEnemy();
 createUI(); createAntena(); resetAll(); lockGrid();
 document.getElementById('msg').innerText = '';
+document.getElementById('enemy-card').style.animation = 'enemyGlow 2s infinite alternate';
 }
 function getDifficultyLabel(lvl){ if(lvl<=2) return "Divisor: 1 Cifra"; if([3,4,5,7,9].includes(lvl)) return "Divisor: 2 Cifras"; return "Divisor: 3 Cifras"; }
 function lockGrid(){
