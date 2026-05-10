@@ -1282,11 +1282,11 @@ async function loadProblem(){
   document.getElementById('difficultyLabel').innerText = getDifficultyLabel(currentMainLevel);
   updateEnemyCard();
   
-  // ✅ CORRECCIÓN: Energía persistente del jefe
+  // ✅ Verificar energía persistente
   const problemKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
   const savedKey = currentUser?.current_problem_key;
   
-  if (savedKey !== problemKey || enemyEnergy === null || enemyEnergy === undefined) {
+  if (savedKey !== problemKey) {
     enemyEnergy = 100;
     resetEnemy(true);
   } else {
@@ -1295,7 +1295,6 @@ async function loadProblem(){
       document.getElementById('energy-text').innerText = '¡DERROTADO!';
       document.getElementById('energy-bar-fill').style.background = '#333';
       btn.disabled = true;
-      showToast('💀 El jefe ya ha sido derrotado. ¡Completa la división para avanzar!', 'success');
     } else {
       updateEnergyBar();
       document.getElementById('enemy-card').classList.remove('defeated');
@@ -1448,16 +1447,15 @@ if(coc === rC && res === rR){
   enemyEnergy = Math.max(0, enemyEnergy - 10);
   updateEnergyBar();
   
-  // ✅ Guardar energía en la base de datos (UNA SOLA VEZ)
+  // ✅ Guardar energía y actualizar currentUser
   const problemKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
   if (currentUser) {
-    _supabase.from('profiles').update({
+    const { error } = await _supabase.from('profiles').update({
       enemy_energy: enemyEnergy,
       current_problem_key: problemKey
-    }).eq('id', currentUser.id)
-    .then(res => {
-      if(res.error) console.error("Error guardando energía", res.error);
-    });
+    }).eq('id', currentUser.id);
+    if(error) console.error("Error guardando energía", error);
+    currentUser.current_problem_key = problemKey;
   }
   
   if (enemyEnergy === 0) defeatEnemy();
@@ -1605,6 +1603,10 @@ document.getElementById('userRankName').className = "rank-name " + rI.css;
 document.getElementById('userRankBar').style.width = rI.pct + "%";
 document.getElementById('main-avatar-box').className = "avatar-container " + rI.avatar;
 renderMainAvatar();
+// ✅ Guardar current_problem_key en currentUser
+if (data?.current_problem_key) {
+  currentUser.current_problem_key = data.current_problem_key;
+}
 }
 function toggleAvatarModal(){
 const m = document.getElementById('avatar-modal');
