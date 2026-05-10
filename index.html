@@ -582,15 +582,15 @@ let currentAntennaIndex = 0;
 // Enemigos
 const ENEMIES = {
   1: { name: 'El Engendro', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/1.jpg' },
-  2: { name: 'La Plaga de Sangre', gif: 'URL_DE_TU_IMAGEN_2' },
-  3: { name: 'El Monje Ciego', gif: 'URL_DE_TU_IMAGEN_3' },
-  4: { name: 'La Dama del Espejo', gif: 'URL_DE_TU_IMAGEN_4' },
-  5: { name: 'El Verdugo Real', gif: 'URL_DE_TU_IMAGEN_5' },
-  6: { name: 'El Sepulturero', gif: 'URL_DE_TU_IMAGEN_6' },
-  7: { name: 'La Sombra Eterna', gif: 'URL_DE_TU_IMAGEN_7' },
-  8: { name: 'El Cazador de Brujos', gif: 'URL_DE_TU_IMAGEN_8' },
-  9: { name: 'El Señor de la Penumbra', gif: 'URL_DE_TU_IMAGEN_9' },
-  10: { name: 'El Señor de la Penumbra', gif: 'URL_DE_TU_IMAGEN_9' } // mismo jefe que nivel 9
+  2: { name: 'La Plaga de Sangre', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/2.jpg' },
+  3: { name: 'El Monje Ciego', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/3.jpg' },
+  4: { name: 'La Dama del Espejo', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/4.jpg' },
+  5: { name: 'El Verdugo Real', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/5.jpg' },
+  6: { name: 'El Sepulturero', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/6.jpg' },
+  7: { name: 'La Sombra Eterna', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/7.jpg' },
+  8: { name: 'El Cazador de Brujos', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/8.jpg' },
+  9: { name: 'El Señor de la Penumbra', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/9.jpg' },
+  10: { name: 'El Señor de la Penumbra', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/9.jpg' } // mismo jefe que nivel 9
 };
 let enemyEnergy = 100; // se cargará desde la BD después
 
@@ -1243,19 +1243,15 @@ function updateEnergyBar() {
 function resetEnemy(fullReset = false) {
   if (fullReset) {
     enemyEnergy = 100;
-    // También limpiamos la clave del problema en la BD
+    // Guardar en base de datos que es un problema nuevo
     if (currentUser) {
       _supabase.from('profiles').update({
         enemy_energy: 100,
         current_problem_key: null
-      }).eq('id', currentUser.id).then(res => {
-        if(res.error) console.error("Error reseteando energía", res.error);
-      });
+      }).eq('id', currentUser.id);
     }
-  } else {
-    // Si no es fullReset, mantenemos la energía actual (ya cargada de la BD)
-    // Solo actualizamos la barra visual
   }
+  // Siempre actualizar la barra visual con el valor actual de enemyEnergy
   document.getElementById('enemy-card').classList.remove('defeated');
   updateEnergyBar();
 }
@@ -1268,22 +1264,53 @@ function defeatEnemy() {
   resetEnemy(true); // <-- línea nueva que reinicia la energía para el próximo nivel
 }
 async function loadProblem(){
-if(hasFinishedGame) return;
-const canPlay = await checkGlobalState(); if(!canPlay) return;
-isVerifying = false;
-const btn = document.getElementById('btn-verify');
-btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "⚔️ Verificar"; btn.onclick = verificarSolucion;
-document.getElementById('subLevelCount').innerText = currentProblemInLevel;
-document.getElementById('progressBar').style.width = ((currentMainLevel-1)/TOTAL_LEVELS)*100 + '%';
-populateLevelSelect();
-const d = DB[currentMainLevel];
-if(d && d[currentProblemInLevel-1]){ currentDividend = d[currentProblemInLevel-1].d; currentDivisor = d[currentProblemInLevel-1].div; }
-document.getElementById('difficultyLabel').innerText = getDifficultyLabel(currentMainLevel);
-updateEnemyCard();
-resetEnemy();
-createUI(); createAntena(); resetAll(); lockGrid();
-document.getElementById('msg').innerText = '';
-document.getElementById('enemy-card').style.animation = 'enemyGlow 2s infinite alternate';
+  if(hasFinishedGame) return;
+  const canPlay = await checkGlobalState(); if(!canPlay) return;
+  
+  isVerifying = false;
+  const btn = document.getElementById('btn-verify');
+  btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "⚔️ Verificar"; btn.onclick = verificarSolucion;
+  
+  document.getElementById('subLevelCount').innerText = currentProblemInLevel;
+  document.getElementById('progressBar').style.width = ((currentMainLevel-1)/TOTAL_LEVELS)*100 + '%';
+  populateLevelSelect();
+  
+  const d = DB[currentMainLevel];
+  if(d && d[currentProblemInLevel-1]){ 
+    currentDividend = d[currentProblemInLevel-1].d; 
+    currentDivisor = d[currentProblemInLevel-1].div; 
+  }
+  
+  document.getElementById('difficultyLabel').innerText = getDifficultyLabel(currentMainLevel);
+  updateEnemyCard();
+  
+  // ✅ CORRECCIÓN: Energía persistente del jefe
+  const problemKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
+  const savedKey = currentUser?.current_problem_key;
+  
+  if (savedKey !== problemKey || enemyEnergy === null || enemyEnergy === undefined) {
+    // Problema nuevo: resetear energía a 100
+    enemyEnergy = 100;
+    resetEnemy(true);
+  } else {
+    // Mismo problema: mantener energía guardada
+    if (enemyEnergy <= 0) {
+      // Jefe ya derrotado
+      document.getElementById('enemy-card').classList.add('defeated');
+      document.getElementById('energy-text').innerText = '¡DERROTADO!';
+      document.getElementById('energy-bar-fill').style.background = '#333';
+      btn.disabled = true;
+      showToast('💀 El jefe ya ha sido derrotado. ¡Completa la división para avanzar!', 'success');
+    } else {
+      // Jefe con energía parcial - actualizar barra visual
+      updateEnergyBar();
+      document.getElementById('enemy-card').classList.remove('defeated');
+    }
+  }
+  
+  createUI(); createAntena(); resetAll(); lockGrid();
+  document.getElementById('msg').innerText = '';
+  document.getElementById('enemy-card').style.animation = 'enemyGlow 2s infinite alternate';
 }
 function getDifficultyLabel(lvl){ if(lvl<=2) return "Divisor: 1 Cifra"; if([3,4,5,7,9].includes(lvl)) return "Divisor: 2 Cifras"; return "Divisor: 3 Cifras"; }
 function lockGrid(){
@@ -1426,6 +1453,14 @@ if(coc === rC && res === rR){
   document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
   enemyEnergy = Math.max(0, enemyEnergy - 10);
   updateEnergyBar();
+    // ✅ Guardar energía en la base de datos para que no se pierda al refrescar
+  const problemKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
+  if (currentUser) {
+    _supabase.from('profiles').update({
+      enemy_energy: enemyEnergy,
+      current_problem_key: problemKey
+    }).eq('id', currentUser.id);
+  }
   // Guardar energía en la BD
 const problemKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
 await _supabase.from('profiles').update({
