@@ -274,6 +274,61 @@ border:1px solid var(--cr-gold-light);
 box-shadow:0 2px 6px rgba(0,0,0,0.4);
 white-space:nowrap; text-align:center; letter-spacing:0.5px;
 }
+/* Carta del enemigo */
+.enemy-card-container {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  margin: 15px 0; width: 100%;
+}
+.enemy-card {
+  width: 160px; height: 220px;
+  border: 4px solid var(--cr-gold-dark);
+  border-radius: 12px;
+  overflow: hidden;
+  background: linear-gradient(135deg, #1a0b2e, #0d1c3b);
+  box-shadow: 0 0 20px rgba(201,168,76,0.4), 0 8px 16px rgba(0,0,0,0.7);
+  position: relative;
+  transition: all 0.3s ease;
+}
+.enemy-card img { width: 100%; height: 100%; object-fit: cover; }
+.enemy-card.defeated {
+  filter: grayscale(100%) brightness(0.6);
+  box-shadow: 0 0 8px rgba(255,0,0,0.6);
+  animation: cardShake 0.5s ease-in-out;
+}
+@keyframes cardShake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-8px); }
+  50% { transform: translateX(8px); }
+  75% { transform: translateX(-4px); }
+  100% { transform: translateX(0); }
+}
+.energy-bar-container {
+  width: 160px; height: 18px;
+  background: rgba(0,0,0,0.7);
+  border: 2px solid var(--cr-gold-dark);
+  border-radius: 10px;
+  margin-top: 8px;
+  overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+}
+.energy-bar-fill {
+  height: 100%; width: 100%;
+  background: linear-gradient(90deg, #ff1744, #ff9800, #ffcc00, #00e676);
+  border-radius: 8px;
+  transition: width 0.4s ease;
+  box-shadow: 0 0 12px rgba(0,230,118,0.5);
+}
+.energy-text {
+  font-size: 0.6rem; color: var(--cr-gold-light);
+  text-align: center; margin-top: 3px;
+  font-family: 'Cinzel', serif; letter-spacing: 1px;
+}
+.enemy-name {
+  font-size: 0.8rem; color: var(--cr-gold);
+  text-align: center; margin-bottom: 4px;
+  font-family: 'Cinzel Decorative', serif;
+  letter-spacing: 1px; text-transform: uppercase;
+}
 #gift-modal{display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,12,28,.97); z-index:99999; justify-content:center; align-items:center; backdrop-filter:blur(4px);}
 ::-webkit-scrollbar{width:5px; height:5px;}
 ::-webkit-scrollbar-track{background:rgba(10,22,40,0.8);}
@@ -295,11 +350,6 @@ white-space:nowrap; text-align:center; letter-spacing:0.5px;
 .season-banner-top{display:none;}
 .user-info-panel{flex-wrap:wrap; justify-content:center; gap:8px;}
 .avatar-container{width:70px; height:70px;}
-}
-
-.shop-btn-float, .btn-primary, .epic-text, .victory-title, .ranking-item.rank-1, .season-badge.active, .bp-tier-node {
-will-change: transform, opacity;
-transform: translateZ(0);
 }
 </style>
 </head>
@@ -447,6 +497,17 @@ transform: translateZ(0);
 <div class="fila-residuo"><span class="residuo-label">Residuo:</span><input type="number" id="valResiduo" class="input-residuo" placeholder="0"></div>
 </div>
 </div>
+<!-- Carta del enemigo -->
+<div class="enemy-card-container" id="enemy-card-section">
+<div class="enemy-name" id="enemy-name">El Engendro</div>
+<div class="enemy-card" id="enemy-card">
+<img id="enemy-img" src="https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/El%20Engendro.gif" alt="Enemigo">
+</div>
+<div class="energy-bar-container">
+<div class="energy-bar-fill" id="energy-bar-fill"></div>
+</div>
+<div class="energy-text" id="energy-text">Salud: 100%</div>
+</div>
 <div class="antena-panel">
 <div class="antena-header">Sello Real (x <span id="antenaLabel">...</span>)</div>
 <div id="antenaBody"></div>
@@ -503,11 +564,18 @@ let totalScore = 0, currentUser = null, currentAvatarStyle = 'avatar1';
 let isGridLocked = true, hasFinishedGame = false, isVerifying = false;
 let unlockedLevel = 1, isAdmin = false;
 let currentStreak = 0;
-const STREAK_BONUSES = {3:50, 5:100, 10:250, 15:500};
+const STREAK_BONUSES = {3:30, 5:70, 10:100, 15:200};
 let currentCoins = 0, playTimeCounter = 0;
 let completedLevels = [];
 const ANTENNA_SEQUENCE = [1,10,5,2,4,8,3,6,7,9];
 let currentAntennaIndex = 0;
+
+// Enemigos
+const ENEMIES = {
+  1: { name: 'El Engendro', gif: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/El%20Engendro.gif' }
+};
+let enemyEnergy = 100; // se cargará desde la BD después
+
 const WEAPONS = {
 dagger: { icon:'🗡️', name:'Daga de los Sicambrios', damage:100, shieldDmg:0, price:100, desc:'Rauda y silenciosa' },
 sword: { icon:'⚔️', name:'Espada Franca', damage:300, shieldDmg:1, price:250, desc:'Equilibrio en batalla' },
@@ -519,20 +587,20 @@ let inventory = { dagger: 0, sword: 0, bow: 0, axe: 0, hammer: 0 };
 let shieldDurability = 0;
 let totalAttacks = 0;
 
-// ----- TUS 10 AVATARES PERSONALIZADOS -----
+// Avatares
 const AVATAR_STYLES_STANDARD = [
-  { id:'avatar1', name:'Caballero del Reino', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/1.png' },
-  { id:'avatar2', name:'Espectro de la Noche', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/2.png' },
-  { id:'avatar3', name:'Pergamino Antiguo', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/3.png' },
-  { id:'avatar4', name:'Gólem de Hierro', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/4.png' },
-  { id:'avatar5', name:'Sabio de la Tormenta', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/5.png' },
-  { id:'avatar6', name:'Boceto del Destino', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/6.png' },
-  { id:'avatar7', name:'Cifrado Místico', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/7.png' }
+  { id:'avatar1', name:'Caballero del Reino', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/1.webp' },
+  { id:'avatar2', name:'Espectro de la Noche', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/2.webp' },
+  { id:'avatar3', name:'Pergamino Antiguo', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/3.webp' },
+  { id:'avatar4', name:'Gólem de Hierro', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/4.webp' },
+  { id:'avatar5', name:'Sabio de la Tormenta', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/5.webp' },
+  { id:'avatar6', name:'Boceto del Destino', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/6.webp' },
+  { id:'avatar7', name:'Cifrado Místico', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/7.webp' }
 ];
 const AVATAR_STYLES_EXCLUSIVE = [
-  { id:'avatar8', name:'Señor de la Guerra', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/8.png' },
-  { id:'avatar9', name:'Maestro de las Sombras', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/9.png' },
-  { id:'avatar10', name:'Avatar de la Leyenda', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/10.png' }
+  { id:'avatar8', name:'Señor de la Guerra', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/8.webp' },
+  { id:'avatar9', name:'Maestro de las Sombras', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/9.webp' },
+  { id:'avatar10', name:'Avatar de la Leyenda', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/10.webp' }
 ];
 
 const RANKS = [
@@ -696,7 +764,9 @@ currentCoins -= price; inventory[type]++;
 updateCoinDisplay(); updateInventoryUI(); openShop();
 AudioEngine.playShop();
 showToast(`✅ ${WEAPONS[type].icon} ${WEAPONS[type].name} añadido a tu arsenal!`,'success');
-saveInventory(); // <-- Esta función ahora guarda las monedas
+_supabase.from('profiles').update({ coins: currentCoins }).eq('id', currentUser.id)
+  .then(res => { if(res.error) console.error("Error guardando monedas en compra", res.error); });
+saveInventory();
 }
 async function buyShield(qty, price) {
 if(currentCoins < price) return showToast(`❌ Necesitas ${price} florines`,'tomato');
@@ -746,57 +816,113 @@ showToast("❌ Error: "+e.message, 'tomato');
 inventory[weaponType]++; updateInventoryUI();
 }
 }
-// ✅ saveInventory ahora guarda también las monedas
 function saveInventory(){
 if(!currentUser) return;
 _supabase.from('profiles').update({
 inventory_dagger: inventory.dagger, inventory_sword: inventory.sword,
 inventory_bow: inventory.bow, inventory_axe: inventory.axe, inventory_hammer: inventory.hammer,
-shield_durability: shieldDurability, total_attacks: totalAttacks,
-coins: currentCoins   // ← ¡Guardamos monedas!
+shield_durability: shieldDurability, total_attacks: totalAttacks
 }).eq('id', currentUser.id).then(res => { if(res.error) console.error("Error guardando inventario", res.error); });
 }
 let rankInt;
 function startRanking(){ updateRanking(); rankInt = setInterval(updateRanking, 5000); }
+let rankingDataCache = [];
 async function updateRanking(){
 const list = document.getElementById('ranking-list');
 try {
-const { data, error } = await _supabase.from('profiles').select('id,username,total_score,avatar_style,completed_at,is_banned,squad_id,shield_durability').is('completed_at', null).eq('is_banned', false).order('total_score',{ascending:false});
+const { data, error } = await _supabase.from('profiles')
+  .select('id,username,total_score,avatar_style,completed_at,is_banned,squad_id,shield_durability')
+  .is('completed_at', null)
+  .eq('is_banned', false)
+  .order('total_score',{ascending:false});
 if(error) throw error;
 if(!data||!data.length){ list.innerHTML='<li style="text-align:center;padding:10px;color:#666;">La corte está vacía.</li>'; return; }
-list.innerHTML = data.map((u,i)=>{
-const s = u.total_score||0, rI = getRankInfo(s), isMe = (currentUser&&u.username===currentUser.email.split('@')[0]);
-let rc = "ranking-item "+rI.css, dn = u.username||'Yo';
-if(i===0){ rc+=" rank-1"; dn+=" 👑"; } else if(i<10) rc+=" elite";
-if(isMe) rc+=" me";
-const avUrl = getAvatarUrl(u.username||'guest', u.avatar_style||'avatar1');
-const sq = u.squad_id&&SQUADS[u.squad_id] ? `<div style="width:16px;height:18px;">${SQUADS[u.squad_id].svg}</div>` : '';
-let atkButtons = '';
-if(!isMe) {
-Object.entries(inventory).forEach(([key, count]) => {
-if(count > 0) { const w = WEAPONS[key]; atkButtons += `<button class="attack-btn" onclick="attackUser('${u.id}','${u.username}','${key}')" title="${w.name} (-${w.damage})">${w.icon}</button> `; }
-});
+
+if (list.children.length !== data.length) {
+  rankingDataCache = data;
+  renderFullRanking(data);
+} else {
+  const existingItems = list.querySelectorAll('.ranking-item');
+  data.forEach((u, i) => {
+    const old = rankingDataCache[i];
+    if (!old || old.id !== u.id) {
+      rankingDataCache = data;
+      renderFullRanking(data);
+      return;
+    }
+    const item = existingItems[i];
+    if (!item) return;
+    const posSpan = item.querySelector('.rank-pos');
+    if (posSpan) posSpan.textContent = (i+1) + '.';
+    const scoreSpan = item.querySelector('.rank-score');
+    if (scoreSpan && (u.total_score||0) !== (old.total_score||0)) {
+      scoreSpan.textContent = u.total_score||0;
+    }
+    const rI = getRankInfo(u.total_score||0);
+    const rankName = item.querySelector('.rank-name-list');
+    if (rankName) {
+      let dn = u.username||'Yo';
+      if (i === 0) dn += ' 👑';
+      rankName.textContent = dn;
+    }
+    const tierSpan = item.querySelector('.rank-tier-list');
+    if (tierSpan) tierSpan.textContent = `${rI.icon} ${rI.name} ${rI.tier}`;
+    const avatarImg = item.querySelector('.list-avatar');
+    const newAvatarUrl = getAvatarUrl(u.username||'guest', u.avatar_style||'avatar1');
+    if (avatarImg && avatarImg.src !== newAvatarUrl) {
+      avatarImg.src = newAvatarUrl;
+    }
+    const shieldContainer = item.querySelector('.shield-bar-container');
+    if (shieldContainer) {
+      const sh = u.shield_durability || 0;
+      const maxSh = 5, pct = Math.min(100, (sh / maxSh) * 100);
+      const fill = shieldContainer.querySelector('.shield-bar-fill');
+      if (fill) fill.style.width = pct + '%';
+      const text = shieldContainer.querySelector('.shield-text');
+      if (text) text.textContent = `${sh}/${maxSh}`;
+    }
+  });
+  rankingDataCache = data;
 }
-let shieldHTML = '';
-const sh = u.shield_durability || 0;
-if(sh > 0) {
-const maxSh = 5, pct = Math.min(100, (sh / maxSh) * 100);
-let gradient = 'linear-gradient(90deg, #00e676, #00c853)';
-let glowColor = 'rgba(0,230,118,0.5)';
-if(pct <= 30) { 
-gradient = 'linear-gradient(90deg, #ff1744, #d50000)';
-glowColor = 'rgba(255,23,68,0.6)';
-} else if(pct <= 60) { 
-gradient = 'linear-gradient(90deg, #ffcc00, #ff9800)';
-glowColor = 'rgba(255,204,0,0.5)';
-}
-shieldHTML = `<div class="shield-bar-container"><span class="shield-icon">🛡️</span><div class="shield-bar-bg"><div class="shield-bar-fill" style="width:${pct}%;background:${gradient};box-shadow:0 0 8px ${glowColor};"></div></div><span class="shield-text">${sh}/${maxSh}</span></div>`;
-}
-return `<li class="${rc}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${dn}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span>${shieldHTML}</div>${sq}</div><span class="rank-score">${s}</span><div style="display:flex;gap:2px;">${atkButtons}</div></li>`;
-}).join('');
 updateSquadRanking(data);
 loadActiveMissions(data);
 } catch(err){ list.innerHTML='<li style="text-align:center;padding:10px;color:red;">Error.</li>'; }
+}
+function renderFullRanking(data) {
+  const list = document.getElementById('ranking-list');
+  const me = currentUser?.email?.split('@')[0];
+  list.innerHTML = data.map((u,i)=>{
+    const s = u.total_score||0, rI = getRankInfo(s);
+    const isMe = (me && u.username===me);
+    let rc = "ranking-item "+rI.css, dn = u.username||'Yo';
+    if(i===0){ rc+=" rank-1"; dn+=" 👑"; } else if(i<10) rc+=" elite";
+    if(isMe) rc+=" me";
+    const avUrl = getAvatarUrl(u.username||'guest', u.avatar_style||'adventurer');
+    const sq = u.squad_id&&SQUADS[u.squad_id] ? `<div style="width:16px;height:18px;">${SQUADS[u.squad_id].svg}</div>` : '';
+    let atkButtons = '';
+    if(!isMe) {
+      Object.entries(inventory).forEach(([key, count]) => {
+        if(count > 0) { const w = WEAPONS[key]; atkButtons += `<button class="attack-btn" onclick="attackUser('${u.id}','${u.username}','${key}')" title="${w.name} (-${w.damage})">${w.icon}</button> `; }
+      });
+    }
+    let shieldHTML = '';
+    const sh = u.shield_durability || 0;
+    if(sh > 0) {
+      const maxSh = 5, pct = Math.min(100, (sh / maxSh) * 100);
+      let gradient = 'linear-gradient(90deg, #00e676, #00c853)';
+      let glowColor = 'rgba(0,230,118,0.5)';
+      if(pct <= 30) { 
+        gradient = 'linear-gradient(90deg, #ff1744, #d50000)';
+        glowColor = 'rgba(255,23,68,0.6)';
+      } else if(pct <= 60) { 
+        gradient = 'linear-gradient(90deg, #ffcc00, #ff9800)';
+        glowColor = 'rgba(255,204,0,0.5)';
+      }
+      shieldHTML = `<div class="shield-bar-container"><span class="shield-icon">🛡️</span><div class="shield-bar-bg"><div class="shield-bar-fill" style="width:${pct}%;background:${gradient};box-shadow:0 0 8px ${glowColor};"></div></div><span class="shield-text">${sh}/${maxSh}</span></div>`;
+    }
+    return `<li class="${rc}" data-userid="${u.id}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${dn}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span>${shieldHTML}</div>${sq}</div><span class="rank-score">${s}</span><div style="display:flex;gap:2px;">${atkButtons}</div></li>`;
+  }).join('');
+  rankingDataCache = data;
 }
 function updateSquadRanking(all){
 const list = document.getElementById('squad-list'), ss = {};
@@ -1004,7 +1130,7 @@ alert("Registrado. Entra ahora.");
 }
 async function logout(){
 await _supabase.auth.signOut();
-currentUser = null; totalScore = 0; currentCoins = 0; currentStreak = 0;
+currentUser = null; totalScore = 0; currentCoins = 0; enemyEnergy = 100; currentStreak = 0;
 inventory = { dagger:0, sword:0, bow:0, axe:0, hammer:0 };
 shieldDurability = 0;
 completedLevels = [];
@@ -1028,6 +1154,14 @@ unlockedLevel = data?.current_level || 1;
 currentProblemInLevel = data?.current_problem || 1;
 if(currentProblemInLevel > 10) currentProblemInLevel = 1;
 hasFinishedGame = data?.completed_at || false;
+  // Cargar energía del jefe actual (solo si sigue en el mismo nivel que la última vez)
+const savedProblemKey = data?.current_problem_key;
+const expectedKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
+if (savedProblemKey === expectedKey && data?.enemy_energy != null) {
+  enemyEnergy = data.enemy_energy;
+} else {
+  enemyEnergy = 100;
+}
 playTimeCounter = data?.total_time_played || 0;
 shieldDurability = data?.shield_durability || 0;
 totalAttacks = data?.total_attacks || 0;
@@ -1066,6 +1200,54 @@ const t = parseInt(l);
 if(t > unlockedLevel){ alert("¡Debes completar el nivel anterior!"); document.getElementById('levelSelect').value = currentMainLevel; return; }
 currentMainLevel = t; currentProblemInLevel = 1; loadProblem();
 }
+function updateEnemyCard() {
+  const level = currentMainLevel;
+  const enemy = ENEMIES[level] || ENEMIES[1];
+  document.getElementById('enemy-name').innerText = enemy.name;
+  document.getElementById('enemy-img').src = enemy.gif;
+}
+function updateEnergyBar() {
+  const fill = document.getElementById('energy-bar-fill');
+  const text = document.getElementById('energy-text');
+  fill.style.width = enemyEnergy + '%';
+  text.innerText = `Salud: ${enemyEnergy}%`;
+  if (enemyEnergy > 60) {
+    fill.style.background = 'linear-gradient(90deg, #00e676, #00c853)';
+    fill.style.boxShadow = '0 0 12px rgba(0,230,118,0.7)';
+  } else if (enemyEnergy > 30) {
+    fill.style.background = 'linear-gradient(90deg, #ffcc00, #ff9800)';
+    fill.style.boxShadow = '0 0 12px rgba(255,152,0,0.7)';
+  } else {
+    fill.style.background = 'linear-gradient(90deg, #ff1744, #d50000)';
+    fill.style.boxShadow = '0 0 12px rgba(255,23,68,0.7)';
+  }
+}
+function resetEnemy(fullReset = false) {
+  if (fullReset) {
+    enemyEnergy = 100;
+    // También limpiamos la clave del problema en la BD
+    if (currentUser) {
+      _supabase.from('profiles').update({
+        enemy_energy: 100,
+        current_problem_key: null
+      }).eq('id', currentUser.id).then(res => {
+        if(res.error) console.error("Error reseteando energía", res.error);
+      });
+    }
+  } else {
+    // Si no es fullReset, mantenemos la energía actual (ya cargada de la BD)
+    // Solo actualizamos la barra visual
+  }
+  document.getElementById('enemy-card').classList.remove('defeated');
+  updateEnergyBar();
+}
+function defeatEnemy() {
+  document.getElementById('enemy-card').classList.add('defeated');
+  document.getElementById('energy-bar-fill').style.background = '#333';
+  document.getElementById('energy-text').innerText = '¡DERROTADO!';
+  showToast(`💀 ¡Has derrotado a ${ENEMIES[currentMainLevel]?.name || 'el enemigo'}!`, 'success', 3000);
+  resetEnemy(true); // <-- línea nueva que reinicia la energía para el próximo nivel
+}
 async function loadProblem(){
 if(hasFinishedGame) return;
 const canPlay = await checkGlobalState(); if(!canPlay) return;
@@ -1078,6 +1260,8 @@ populateLevelSelect();
 const d = DB[currentMainLevel];
 if(d && d[currentProblemInLevel-1]){ currentDividend = d[currentProblemInLevel-1].d; currentDivisor = d[currentProblemInLevel-1].div; }
 document.getElementById('difficultyLabel').innerText = getDifficultyLabel(currentMainLevel);
+updateEnemyCard();
+resetEnemy();
 createUI(); createAntena(); resetAll(); lockGrid();
 document.getElementById('msg').innerText = '';
 }
@@ -1220,6 +1404,17 @@ if(coc === rC && res === rR){
   incrementStreak();
   updateCoinDisplay();
   document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
+  enemyEnergy = Math.max(0, enemyEnergy - 10);
+  updateEnergyBar();
+  // Guardar energía en la BD
+const problemKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
+await _supabase.from('profiles').update({
+  enemy_energy: enemyEnergy,
+  current_problem_key: problemKey
+}).eq('id', currentUser.id).then(res => {
+  if(res.error) console.error("Error guardando energía", res.error);
+});
+  if (enemyEnergy === 0) defeatEnemy();
   if(currentProblemInLevel < PROBLEMS_PER_LEVEL){
     currentProblemInLevel++;
   } else {
