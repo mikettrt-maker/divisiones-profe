@@ -1423,82 +1423,97 @@ document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value = ''
 async function verificarSolucion(){
   if(isVerifying) return;
   if(isGridLocked){ alert("¡Rompe el Sello Real primero!"); return; }
-  
+
   isVerifying = true;
   const btn = document.getElementById('btn-verify');
-  btn.disabled = true; btn.style.opacity = '0.4'; btn.innerText = "Verificando...";
+  btn.disabled = true;
+  btn.style.opacity = '0.4';
+  btn.innerText = "Verificando...";
 
-  const coc = parseInt(document.getElementById('valCociente').value);
-  const res = parseInt(document.getElementById('valResiduo').value) || 0;
-  const rC = Math.floor(currentDividend / currentDivisor);
-  const rR = currentDividend % currentDivisor;
+  try {
+    const coc = parseInt(document.getElementById('valCociente').value);
+    const res = parseInt(document.getElementById('valResiduo').value) || 0;
+    const rC = Math.floor(currentDividend / currentDivisor);
+    const rR = currentDividend % currentDivisor;
 
-  if(coc === rC && res === rR){
-    AudioEngine.playSuccess();
-    
-    // 1. Actualizar puntuación localmente primero (para que sea inmediato)
-    const levelKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
-    if(!completedLevels.includes(levelKey)) {
-      totalScore += POINTS; 
-      currentCoins += 5;
-      completedLevels.push(levelKey);
-    }
-    
-    updateUI(); 
-    incrementStreak();
-    updateCoinDisplay();
-    document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
-    
-    // 2. Actualizar enemigo visualmente
-    enemyEnergy = Math.max(0, enemyEnergy - 10);
-    updateEnergyBar();
-    if(enemyEnergy === 0) defeatEnemy();
+    if(coc === rC && res === rR){
+      AudioEngine.playSuccess();
 
-    // 3. Guardar en base de datos (sin esperar, para que no se trabe)
-    if (currentUser) {
-      const problemKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
-      
-      // Guardamos puntos
-      _supabase.from('profiles').update({ 
-        total_score: totalScore,
-        current_level: unlockedLevel,
-        current_problem: currentProblemInLevel,
-        coins: currentCoins,
-        completed_levels: completedLevels,
-        enemy_energy: enemyEnergy, // Guardamos la nueva energía
-        current_problem_key: problemKey // Guardamos la clave del problema actual
-      }).eq('id', currentUser.id);
-    }
-
-    // 4. Pasar al siguiente problema o nivel
-    setTimeout(() => {
-      if(currentProblemInLevel < PROBLEMS_PER_LEVEL){
-        currentProblemInLevel++;
-        loadProblem();
-      } else {
-        if(currentMainLevel < TOTAL_LEVELS){
-          unlockedLevel = currentMainLevel+1; 
-          currentMainLevel++; 
-          currentProblemInLevel = 1;
-          showVictoryScreen();
-          setTimeout(() => { hideVictoryScreen(); loadProblem(); }, 3000);
-        } else {
-          hasFinishedGame = true;
-          _supabase.from('profiles').update({completed_at: new Date().toISOString()}).eq('id', currentUser.id);
-          loadHallOfFame();
-          document.getElementById('msg').innerHTML = "<span style='color:gold;'>¡CÓDICE COMPLETADO!</span>";
-        }
+      // 1. Actualizar localmente (instantáneo)
+      const levelKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
+      if(!completedLevels.includes(levelKey)) {
+        totalScore += POINTS; 
+        currentCoins += 5;
+        completedLevels.push(levelKey);
       }
-    }, 1000); // Espera 1 segundo para que veas el mensaje de "CORRECTO"
+      
+      updateUI(); 
+      incrementStreak();
+      updateCoinDisplay();
+      document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
+      
+      // 2. Actualizar enemigo
+      enemyEnergy = Math.max(0, enemyEnergy - 10);
+      updateEnergyBar();
+      if(enemyEnergy === 0) defeatEnemy();
 
-  } else {
-    AudioEngine.playError();
-    document.getElementById('msg').innerHTML = `<span style='color:var(--cr-red);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>🛡️ INCORRECTO — Inténtalo de nuevo</span>`;
-    resetStreak();
-    
-    // Habilitar botón de nuevo
+      // 3. Guardar en BD (sin await para NO bloquear la pantalla)
+      if (currentUser) {
+        const problemKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
+        _supabase.from('profiles').update({ 
+          total_score: totalScore,
+          current_level: unlockedLevel,
+          current_problem: currentProblemInLevel,
+          coins: currentCoins,
+          completed_levels: completedLevels,
+          enemy_energy: enemyEnergy,
+          current_problem_key: problemKey
+        }).eq('id', currentUser.id).catch(e => console.log("Sync BD:", e));
+      }
+
+      // 4. Avanzar después de 1 segundo
+      setTimeout(() => {
+        try {
+          if(currentProblemInLevel < PROBLEMS_PER_LEVEL){
+            currentProblemInLevel++;
+            loadProblem();
+          } else {
+            if(currentMainLevel < TOTAL_LEVELS){
+              unlockedLevel = currentMainLevel+1; 
+              currentMainLevel++; 
+              currentProblemInLevel = 1;
+              showVictoryScreen();
+              setTimeout(() => { hideVictoryScreen(); loadProblem(); }, 3000);
+            } else {
+              hasFinishedGame = true;
+              if(currentUser) _supabase.from('profiles').update({completed_at: new Date().toISOString()}).eq('id', currentUser.id);
+              loadHallOfFame();
+              document.getElementById('msg').innerHTML = "<span style='color:gold;'>¡CÓDICE COMPLETADO!</span>";
+            }
+          }
+        } catch(err) {
+          console.error("Error al avanzar:", err);
+          loadProblem(); // Recupera el juego si falla
+        }
+      }, 1000);
+
+    } else {
+      AudioEngine.playError();
+      document.getElementById('msg').innerHTML = `<span style='color:var(--cr-red);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>🛡️ INCORRECTO — Inténtalo de nuevo</span>`;
+      resetStreak();
+    }
+  } catch(err) {
+    console.error("Error crítico en verificar:", err);
+    document.getElementById('msg').innerHTML = `<span style='color:#ff6b6b;'>⚠️ Error de conexión. Revisa tu internet.</span>`;
+  } finally {
+    // ✅ GARANTÍA: Siempre resetea el estado de verificación
     isVerifying = false;
-    btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "⚔️ Verificar";
+    const msgEl = document.getElementById('msg');
+    if (!msgEl.innerHTML.includes('CORRECTO')) {
+      btn.disabled = false;
+      btn.style.opacity = '1';
+      btn.innerText = "⚔️ Verificar";
+    }
   }
 }
 async function checkGlobalState(){
