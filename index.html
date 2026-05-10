@@ -404,7 +404,7 @@ white-space:nowrap; text-align:center; letter-spacing:0.5px;
 <header class="main-header">
 <div class="season-badge" id="season-badge"><i class="fas fa-hourglass"></i><span class="timer-display" id="timer-display">--:--</span></div>
 <h1>Prof. Miguel</h1>
-<div class="season-banner-top"><div class="marquee-text">⚔️💀🐉⚜️ El Códice de los Reyes Oscuros – Temporada <span id="season-num-display">1</span> ⚜️🐉💀⚔️</div></div>
+<div class="season-banner-top"><div class="marquee-text">⚔️💀🐉️ El Códice de los Reyes Oscuros – Temporada <span id="season-num-display">1</span> ⚜️🐉💀⚔️</div></div>
 <span style="color:var(--cr-gold-dark);font-size:.9rem;font-family:'Cinzel',serif;letter-spacing:1px;">Maestre del Conocimiento</span>
 <button id="admin-header-btn" class="admin-btn" onclick="toggleAdminDashboard()"><i class="fas fa-scroll"></i> Cámara del Maestre</button>
 </header>
@@ -590,9 +590,9 @@ const ENEMIES = {
   7: { name: 'La Sombra Eterna', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/7.jpg' },
   8: { name: 'El Cazador de Brujos', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/8.jpg' },
   9: { name: 'El Señor de la Penumbra', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/9.jpg' },
-  10: { name: 'El Señor de la Penumbra', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/9.jpg' } // mismo jefe que nivel 9
+  10: { name: 'El Señor de la Penumbra', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/9.jpg' }
 };
-let enemyEnergy = 100; // se cargará desde la BD después
+let enemyEnergy = 100;
 
 const WEAPONS = {
 dagger: { icon:'🗡️', name:'Daga de los Sicambrios', damage:100, shieldDmg:0, price:100, desc:'Rauda y silenciosa' },
@@ -1243,7 +1243,6 @@ function updateEnergyBar() {
 function resetEnemy(fullReset = false) {
   if (fullReset) {
     enemyEnergy = 100;
-    // Guardar en base de datos que es un problema nuevo
     if (currentUser) {
       _supabase.from('profiles').update({
         enemy_energy: 100,
@@ -1251,7 +1250,6 @@ function resetEnemy(fullReset = false) {
       }).eq('id', currentUser.id);
     }
   }
-  // Siempre actualizar la barra visual con el valor actual de enemyEnergy
   document.getElementById('enemy-card').classList.remove('defeated');
   updateEnergyBar();
 }
@@ -1261,7 +1259,7 @@ function defeatEnemy() {
   document.getElementById('energy-bar-fill').style.background = '#333';
   document.getElementById('energy-text').innerText = '¡DERROTADO!';
   showToast(`💀 ¡Has derrotado a ${ENEMIES[currentMainLevel]?.name || 'el enemigo'}!`, 'success', 3000);
-  resetEnemy(true); // <-- línea nueva que reinicia la energía para el próximo nivel
+  resetEnemy(true);
 }
 async function loadProblem(){
   if(hasFinishedGame) return;
@@ -1289,20 +1287,16 @@ async function loadProblem(){
   const savedKey = currentUser?.current_problem_key;
   
   if (savedKey !== problemKey || enemyEnergy === null || enemyEnergy === undefined) {
-    // Problema nuevo: resetear energía a 100
     enemyEnergy = 100;
     resetEnemy(true);
   } else {
-    // Mismo problema: mantener energía guardada
     if (enemyEnergy <= 0) {
-      // Jefe ya derrotado
       document.getElementById('enemy-card').classList.add('defeated');
       document.getElementById('energy-text').innerText = '¡DERROTADO!';
       document.getElementById('energy-bar-fill').style.background = '#333';
       btn.disabled = true;
       showToast('💀 El jefe ya ha sido derrotado. ¡Completa la división para avanzar!', 'success');
     } else {
-      // Jefe con energía parcial - actualizar barra visual
       updateEnergyBar();
       document.getElementById('enemy-card').classList.remove('defeated');
     }
@@ -1453,22 +1447,19 @@ if(coc === rC && res === rR){
   document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
   enemyEnergy = Math.max(0, enemyEnergy - 10);
   updateEnergyBar();
-    // ✅ Guardar energía en la base de datos para que no se pierda al refrescar
+  
+  // ✅ Guardar energía en la base de datos (UNA SOLA VEZ)
   const problemKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
   if (currentUser) {
     _supabase.from('profiles').update({
       enemy_energy: enemyEnergy,
       current_problem_key: problemKey
-    }).eq('id', currentUser.id);
+    }).eq('id', currentUser.id)
+    .then(res => {
+      if(res.error) console.error("Error guardando energía", res.error);
+    });
   }
-  // Guardar energía en la BD
-const problemKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
-await _supabase.from('profiles').update({
-  enemy_energy: enemyEnergy,
-  current_problem_key: problemKey
-}).eq('id', currentUser.id).then(res => {
-  if(res.error) console.error("Error guardando energía", res.error);
-});
+  
   if (enemyEnergy === 0) defeatEnemy();
   if(currentProblemInLevel < PROBLEMS_PER_LEVEL){
     currentProblemInLevel++;
@@ -1682,6 +1673,58 @@ if(error) throw error;
 return true;
 } catch(e) { console.error('Error guardando score:', e); return false; }
 }
+
+// 🎵 MÚSICA MEDIEVAL PROCEDURAL
+const MedievalMusic = {
+  ctx: null, isPlaying: false, loopTimer: null,
+  init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
+  playNote(freq, duration, delay = 0, vol = 0.08) {
+    setTimeout(() => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = 'triangle';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(vol, this.ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
+      osc.connect(gain); gain.connect(this.ctx.destination);
+      osc.start(); osc.stop(this.ctx.currentTime + duration);
+    }, delay);
+  },
+  playLoop() {
+    if (!this.isPlaying) return;
+    const notes = [220, 261.63, 329.63, 392, 329.63, 261.63, 220];
+    let delay = 0;
+    notes.forEach((note, i) => {
+      this.playNote(note, 0.5, delay);
+      delay += 600;
+    });
+    this.loopTimer = setTimeout(() => this.playLoop(), delay);
+  },
+  start() {
+    this.init();
+    this.isPlaying = true;
+    this.playLoop();
+    document.getElementById('music-btn').innerHTML = '🔇 Pausar Música';
+  },
+  stop() {
+    this.isPlaying = false;
+    clearTimeout(this.loopTimer);
+    document.getElementById('music-btn').innerHTML = '🎵 Activar Música';
+  },
+  toggle() { if (this.isPlaying) this.stop(); else this.start(); }
+};
+
+document.addEventListener('DOMContentLoaded', () => {
+  const btn = document.createElement('button');
+  btn.id = 'music-btn';
+  btn.innerHTML = '🎵 Activar Música';
+  btn.style.cssText = `position:fixed; bottom:20px; left:90px; z-index:9001; background:linear-gradient(135deg,#8b6914,#c9a84c); color:#0d1c3b; border:none; padding:10px 16px; border-radius:25px; cursor:pointer; font-family:'Cinzel',serif; font-weight:700; box-shadow:0 4px 12px rgba(0,0,0,0.4); transition:all 0.2s;`;
+  btn.onclick = () => MedievalMusic.toggle();
+  btn.onmouseenter = () => btn.style.transform = 'translateY(-2px)';
+  btn.onmouseleave = () => btn.style.transform = 'translateY(0)';
+  document.body.appendChild(btn);
+});
+
 // Móvil: toggle ranking
 (function() {
 const toggleBtn = document.getElementById('mobile-ranking-toggle');
