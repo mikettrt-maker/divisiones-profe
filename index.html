@@ -1421,9 +1421,7 @@ document.querySelectorAll('.input-cociente-galera').forEach(i => i.value = '');
 document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value = ''; i.disabled = false; i.style.pointerEvents = 'auto'; i.style.opacity = '1'; });
 }
 async function verificarSolucion(){
-  // ✅ Seguridad: Si ya se está verificando o no hay usuario, no hacer nada
   if(isVerifying) return;
-  if(!currentUser) { alert("Error: No has iniciado sesión."); return; }
   if(isGridLocked){ alert("¡Rompe el Sello Real primero!"); return; }
 
   isVerifying = true;
@@ -1433,95 +1431,73 @@ async function verificarSolucion(){
   btn.innerText = "Verificando...";
 
   try {
-    // ✅ Seguridad: Asegurar que la lista de niveles existe
-    if(!Array.isArray(completedLevels)) completedLevels = [];
-
     const coc = parseInt(document.getElementById('valCociente').value);
     const res = parseInt(document.getElementById('valResiduo').value) || 0;
-    
-    // Evitar error si el divisor es 0
-    if(currentDivisor === 0) throw new Error("Error en datos");
-
     const rC = Math.floor(currentDividend / currentDivisor);
     const rR = currentDividend % currentDivisor;
 
     if(coc === rC && res === rR){
       AudioEngine.playSuccess();
-
-      const levelKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
-      if(!completedLevels.includes(levelKey)) {
-        totalScore += POINTS; 
-        currentCoins += 5;
-        completedLevels.push(levelKey);
-      }
       
-      // ✅ Actualizar interfaz con protección contra errores
-      try { updateUI(); } catch(e){ console.log("Error UI:", e); }
-      try { incrementStreak(); } catch(e){ console.log("Error Streak:", e); }
-      try { updateCoinDisplay(); } catch(e){ console.log("Error Coins:", e); }
+      // Sumar puntos
+      totalScore += POINTS;
+      currentCoins += 5;
       
-      document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
-      
+      // Actualizar enemigo
       enemyEnergy = Math.max(0, enemyEnergy - 10);
-      try { updateEnergyBar(); } catch(e){ console.log("Error Energy:", e); }
-      if(enemyEnergy === 0) try { defeatEnemy(); } catch(e){ console.log("Error Enemy:", e); }
+      
+      // Mostrar mensaje
+      document.getElementById('msg').innerHTML = "<span style='color:#00e676;font-size:1.2rem;'>⚔️ ¡CORRECTO!</span>";
+      document.getElementById('coinDisplay').innerText = currentCoins;
+      document.getElementById('scoreDisplay').innerText = totalScore;
+      
+      // Actualizar barra de energía visualmente
+      const fill = document.getElementById('energy-bar-fill');
+      const text = document.getElementById('energy-text');
+      fill.style.width = enemyEnergy + '%';
+      text.innerText = 'Salud: ' + enemyEnergy + '%';
+      
+      if(enemyEnergy === 0) {
+        document.getElementById('enemy-card').classList.add('defeated');
+        text.innerText = '¡DERROTADO!';
+      }
 
-      // Guardar en BD en segundo plano (no bloquea la pantalla)
-      if (currentUser) {
-        const problemKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
-        _supabase.from('profiles').update({ 
+      // Guardar en base de datos
+      if(currentUser) {
+        const problemKey = 'L' + currentMainLevel + '_P' + currentProblemInLevel;
+        
+        await _supabase.from('profiles').update({ 
           total_score: totalScore,
-          current_level: unlockedLevel,
-          current_problem: currentProblemInLevel,
           coins: currentCoins,
-          completed_levels: completedLevels,
           enemy_energy: enemyEnergy,
           current_problem_key: problemKey
-        }).eq('id', currentUser.id).catch(e => console.log("Sync BD:", e));
+        }).eq('id', currentUser.id);
       }
 
-      // ✅ Avanzar al siguiente problema después de 1 segundo
-      setTimeout(() => {
-        try {
-          if(currentProblemInLevel < PROBLEMS_PER_LEVEL){
-            currentProblemInLevel++;
-            loadProblem();
-          } else {
-            if(currentMainLevel < TOTAL_LEVELS){
-              unlockedLevel = currentMainLevel+1; 
-              currentMainLevel++; 
-              currentProblemInLevel = 1;
-              showVictoryScreen();
-              setTimeout(() => { hideVictoryScreen(); loadProblem(); }, 3000);
-            } else {
-              hasFinishedGame = true;
-              if(currentUser) _supabase.from('profiles').update({completed_at: new Date().toISOString()}).eq('id', currentUser.id);
-              loadHallOfFame();
-              document.getElementById('msg').innerHTML = "<span style='color:gold;'>¡CÓDICE COMPLETADO!</span>";
-            }
-          }
-        } catch(err) {
-          console.error("Error al avanzar:", err);
-          loadProblem(); // Si falla, recarga el problema actual para no perder el progreso
+      // Esperar 1 segundo y avanzar
+      setTimeout(function() {
+        currentProblemInLevel++;
+        if(currentProblemInLevel > 10) {
+          currentProblemInLevel = 1;
+          currentMainLevel++;
         }
+        loadProblem();
       }, 1000);
 
     } else {
       AudioEngine.playError();
-      document.getElementById('msg').innerHTML = `<span style='color:var(--cr-red);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>🛡️ INCORRECTO — Inténtalo de nuevo</span>`;
-      try { resetStreak(); } catch(e){}
+      document.getElementById('msg').innerHTML = "<span style='color:#ff1744;font-size:1.2rem;'>🛡️ INCORRECTO</span>";
     }
   } catch(err) {
-    console.error("Error crítico en verificar:", err);
-    // ✅ Mensaje de error genérico si algo falla internamente
-    document.getElementById('msg').innerHTML = `<span style='color:#ff6b6b;'>⚠️ Ocurrió un error interno. Recarga la página.</span>`;
-  } finally {
-    // ✅ GARANTÍA: Siempre habilita el botón de nuevo, pase lo que pase
-    isVerifying = false;
-    btn.disabled = false;
-    btn.style.opacity = '1';
-    btn.innerText = "⚔️ Verificar";
+    console.log("Error:", err);
+    document.getElementById('msg').innerHTML = "<span style='color:orange;'>⚠️ Error. Intenta de nuevo.</span>";
   }
+  
+  // Reactivar botón
+  isVerifying = false;
+  btn.disabled = false;
+  btn.style.opacity = '1';
+  btn.innerText = "⚔️ Verificar";
 }
 async function checkGlobalState(){
 if(isAdmin) return true;
