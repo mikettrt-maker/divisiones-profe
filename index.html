@@ -1423,81 +1423,87 @@ document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value = ''
 async function verificarSolucion(){
   if(isVerifying) return;
   if(isGridLocked){ alert("¡Rompe el Sello Real primero!"); return; }
-
+  
   isVerifying = true;
   const btn = document.getElementById('btn-verify');
-  btn.disabled = true;
-  btn.style.opacity = '0.4';
-  btn.innerText = "Verificando...";
+  btn.disabled = true; btn.style.opacity = '0.4'; btn.innerText = "Verificando...";
 
-  try {
-    const coc = parseInt(document.getElementById('valCociente').value);
-    const res = parseInt(document.getElementById('valResiduo').value) || 0;
-    const rC = Math.floor(currentDividend / currentDivisor);
-    const rR = currentDividend % currentDivisor;
+  const coc = parseInt(document.getElementById('valCociente').value);
+  const res = parseInt(document.getElementById('valResiduo').value) || 0;
+  const rC = Math.floor(currentDividend / currentDivisor);
+  const rR = currentDividend % currentDivisor;
 
-    if(coc === rC && res === rR){
-      AudioEngine.playSuccess();
-      
-      // Sumar puntos
-      totalScore += POINTS;
+  if(coc === rC && res === rR){
+    AudioEngine.playSuccess();
+    
+    // 1. Actualizar puntuación localmente primero (para que sea inmediato)
+    const levelKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
+    if(!completedLevels.includes(levelKey)) {
+      totalScore += POINTS; 
       currentCoins += 5;
-      
-      // Actualizar enemigo
-      enemyEnergy = Math.max(0, enemyEnergy - 10);
-      
-      // Mostrar mensaje
-      document.getElementById('msg').innerHTML = "<span style='color:#00e676;font-size:1.2rem;'>⚔️ ¡CORRECTO!</span>";
-      document.getElementById('coinDisplay').innerText = currentCoins;
-      document.getElementById('scoreDisplay').innerText = totalScore;
-      
-      // Actualizar barra de energía visualmente
-      const fill = document.getElementById('energy-bar-fill');
-      const text = document.getElementById('energy-text');
-      fill.style.width = enemyEnergy + '%';
-      text.innerText = 'Salud: ' + enemyEnergy + '%';
-      
-      if(enemyEnergy === 0) {
-        document.getElementById('enemy-card').classList.add('defeated');
-        text.innerText = '¡DERROTADO!';
-      }
-
-      // Guardar en base de datos
-      if(currentUser) {
-        const problemKey = 'L' + currentMainLevel + '_P' + currentProblemInLevel;
-        
-        await _supabase.from('profiles').update({ 
-          total_score: totalScore,
-          coins: currentCoins,
-          enemy_energy: enemyEnergy,
-          current_problem_key: problemKey
-        }).eq('id', currentUser.id);
-      }
-
-      // Esperar 1 segundo y avanzar
-      setTimeout(function() {
-        currentProblemInLevel++;
-        if(currentProblemInLevel > 10) {
-          currentProblemInLevel = 1;
-          currentMainLevel++;
-        }
-        loadProblem();
-      }, 1000);
-
-    } else {
-      AudioEngine.playError();
-      document.getElementById('msg').innerHTML = "<span style='color:#ff1744;font-size:1.2rem;'>🛡️ INCORRECTO</span>";
+      completedLevels.push(levelKey);
     }
-  } catch(err) {
-    console.log("Error:", err);
-    document.getElementById('msg').innerHTML = "<span style='color:orange;'>⚠️ Error. Intenta de nuevo.</span>";
+    
+    updateUI(); 
+    incrementStreak();
+    updateCoinDisplay();
+    document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
+    
+    // 2. Actualizar enemigo visualmente
+    enemyEnergy = Math.max(0, enemyEnergy - 10);
+    updateEnergyBar();
+    if(enemyEnergy === 0) defeatEnemy();
+
+    // 3. Guardar en base de datos (sin esperar, para que no se trabe)
+    if (currentUser) {
+      const problemKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
+      
+      // Guardamos puntos
+      _supabase.from('profiles').update({ 
+        total_score: totalScore,
+        current_level: unlockedLevel,
+        current_problem: currentProblemInLevel,
+        coins: currentCoins,
+        completed_levels: completedLevels,
+        enemy_energy: enemyEnergy, // Guardamos la nueva energía
+        current_problem_key: problemKey // Guardamos la clave del problema actual
+      }).eq('id', currentUser.id);
+    }
+
+    // 4. Pasar al siguiente problema o nivel
+    setTimeout(() => {
+      // Restaurar el estado del botón antes de cargar el siguiente problema
+      isVerifying = false;
+      btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "⚔️ Verificar";
+
+      if(currentProblemInLevel < PROBLEMS_PER_LEVEL){
+        currentProblemInLevel++;
+        loadProblem();
+      } else {
+        if(currentMainLevel < TOTAL_LEVELS){
+          unlockedLevel = currentMainLevel+1; 
+          currentMainLevel++; 
+          currentProblemInLevel = 1;
+          showVictoryScreen();
+          setTimeout(() => { hideVictoryScreen(); loadProblem(); }, 3000);
+        } else {
+          hasFinishedGame = true;
+          _supabase.from('profiles').update({completed_at: new Date().toISOString()}).eq('id', currentUser.id);
+          loadHallOfFame();
+          document.getElementById('msg').innerHTML = "<span style='color:gold;'>¡CÓDICE COMPLETADO!</span>";
+        }
+      }
+    }, 1000); // Espera 1 segundo para que veas el mensaje de "CORRECTO"
+
+  } else {
+    AudioEngine.playError();
+    document.getElementById('msg').innerHTML = `<span style='color:var(--cr-red);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>🛡️ INCORRECTO — Inténtalo de nuevo</span>`;
+    resetStreak();
+    
+    // Habilitar botón de nuevo
+    isVerifying = false;
+    btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "⚔️ Verificar";
   }
-  
-  // Reactivar botón
-  isVerifying = false;
-  btn.disabled = false;
-  btn.style.opacity = '1';
-  btn.innerText = "⚔️ Verificar";
 }
 async function checkGlobalState(){
 if(isAdmin) return true;
@@ -1683,57 +1689,6 @@ if(error) throw error;
 return true;
 } catch(e) { console.error('Error guardando score:', e); return false; }
 }
-
-// 🎵 MÚSICA MEDIEVAL PROCEDURAL
-const MedievalMusic = {
-  ctx: null, isPlaying: false, loopTimer: null,
-  init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
-  playNote(freq, duration, delay = 0, vol = 0.08) {
-    setTimeout(() => {
-      const osc = this.ctx.createOscillator();
-      const gain = this.ctx.createGain();
-      osc.type = 'triangle';
-      osc.frequency.value = freq;
-      gain.gain.setValueAtTime(vol, this.ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + duration);
-      osc.connect(gain); gain.connect(this.ctx.destination);
-      osc.start(); osc.stop(this.ctx.currentTime + duration);
-    }, delay);
-  },
-  playLoop() {
-    if (!this.isPlaying) return;
-    const notes = [220, 261.63, 329.63, 392, 329.63, 261.63, 220];
-    let delay = 0;
-    notes.forEach((note, i) => {
-      this.playNote(note, 0.5, delay);
-      delay += 600;
-    });
-    this.loopTimer = setTimeout(() => this.playLoop(), delay);
-  },
-  start() {
-    this.init();
-    this.isPlaying = true;
-    this.playLoop();
-    document.getElementById('music-btn').innerHTML = '🔇 Pausar Música';
-  },
-  stop() {
-    this.isPlaying = false;
-    clearTimeout(this.loopTimer);
-    document.getElementById('music-btn').innerHTML = '🎵 Activar Música';
-  },
-  toggle() { if (this.isPlaying) this.stop(); else this.start(); }
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-  const btn = document.createElement('button');
-  btn.id = 'music-btn';
-  btn.innerHTML = '🎵 Activar Música';
-  btn.style.cssText = `position:fixed; bottom:20px; left:90px; z-index:9001; background:linear-gradient(135deg,#8b6914,#c9a84c); color:#0d1c3b; border:none; padding:10px 16px; border-radius:25px; cursor:pointer; font-family:'Cinzel',serif; font-weight:700; box-shadow:0 4px 12px rgba(0,0,0,0.4); transition:all 0.2s;`;
-  btn.onclick = () => MedievalMusic.toggle();
-  btn.onmouseenter = () => btn.style.transform = 'translateY(-2px)';
-  btn.onmouseleave = () => btn.style.transform = 'translateY(0)';
-  document.body.appendChild(btn);
-});
 
 // Móvil: toggle ranking
 (function() {
