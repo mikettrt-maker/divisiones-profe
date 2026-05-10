@@ -1421,7 +1421,9 @@ document.querySelectorAll('.input-cociente-galera').forEach(i => i.value = '');
 document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value = ''; i.disabled = false; i.style.pointerEvents = 'auto'; i.style.opacity = '1'; });
 }
 async function verificarSolucion(){
+  // ✅ Seguridad: Si ya se está verificando o no hay usuario, no hacer nada
   if(isVerifying) return;
+  if(!currentUser) { alert("Error: No has iniciado sesión."); return; }
   if(isGridLocked){ alert("¡Rompe el Sello Real primero!"); return; }
 
   isVerifying = true;
@@ -1431,15 +1433,21 @@ async function verificarSolucion(){
   btn.innerText = "Verificando...";
 
   try {
+    // ✅ Seguridad: Asegurar que la lista de niveles existe
+    if(!Array.isArray(completedLevels)) completedLevels = [];
+
     const coc = parseInt(document.getElementById('valCociente').value);
     const res = parseInt(document.getElementById('valResiduo').value) || 0;
+    
+    // Evitar error si el divisor es 0
+    if(currentDivisor === 0) throw new Error("Error en datos");
+
     const rC = Math.floor(currentDividend / currentDivisor);
     const rR = currentDividend % currentDivisor;
 
     if(coc === rC && res === rR){
       AudioEngine.playSuccess();
 
-      // 1. Actualizar localmente (instantáneo)
       const levelKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
       if(!completedLevels.includes(levelKey)) {
         totalScore += POINTS; 
@@ -1447,17 +1455,18 @@ async function verificarSolucion(){
         completedLevels.push(levelKey);
       }
       
-      updateUI(); 
-      incrementStreak();
-      updateCoinDisplay();
+      // ✅ Actualizar interfaz con protección contra errores
+      try { updateUI(); } catch(e){ console.log("Error UI:", e); }
+      try { incrementStreak(); } catch(e){ console.log("Error Streak:", e); }
+      try { updateCoinDisplay(); } catch(e){ console.log("Error Coins:", e); }
+      
       document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
       
-      // 2. Actualizar enemigo
       enemyEnergy = Math.max(0, enemyEnergy - 10);
-      updateEnergyBar();
-      if(enemyEnergy === 0) defeatEnemy();
+      try { updateEnergyBar(); } catch(e){ console.log("Error Energy:", e); }
+      if(enemyEnergy === 0) try { defeatEnemy(); } catch(e){ console.log("Error Enemy:", e); }
 
-      // 3. Guardar en BD (sin await para NO bloquear la pantalla)
+      // Guardar en BD en segundo plano (no bloquea la pantalla)
       if (currentUser) {
         const problemKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
         _supabase.from('profiles').update({ 
@@ -1471,7 +1480,7 @@ async function verificarSolucion(){
         }).eq('id', currentUser.id).catch(e => console.log("Sync BD:", e));
       }
 
-      // 4. Avanzar después de 1 segundo
+      // ✅ Avanzar al siguiente problema después de 1 segundo
       setTimeout(() => {
         try {
           if(currentProblemInLevel < PROBLEMS_PER_LEVEL){
@@ -1493,27 +1502,25 @@ async function verificarSolucion(){
           }
         } catch(err) {
           console.error("Error al avanzar:", err);
-          loadProblem(); // Recupera el juego si falla
+          loadProblem(); // Si falla, recarga el problema actual para no perder el progreso
         }
       }, 1000);
 
     } else {
       AudioEngine.playError();
       document.getElementById('msg').innerHTML = `<span style='color:var(--cr-red);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>🛡️ INCORRECTO — Inténtalo de nuevo</span>`;
-      resetStreak();
+      try { resetStreak(); } catch(e){}
     }
   } catch(err) {
     console.error("Error crítico en verificar:", err);
-    document.getElementById('msg').innerHTML = `<span style='color:#ff6b6b;'>⚠️ Error de conexión. Revisa tu internet.</span>`;
+    // ✅ Mensaje de error genérico si algo falla internamente
+    document.getElementById('msg').innerHTML = `<span style='color:#ff6b6b;'>⚠️ Ocurrió un error interno. Recarga la página.</span>`;
   } finally {
-    // ✅ GARANTÍA: Siempre resetea el estado de verificación
+    // ✅ GARANTÍA: Siempre habilita el botón de nuevo, pase lo que pase
     isVerifying = false;
-    const msgEl = document.getElementById('msg');
-    if (!msgEl.innerHTML.includes('CORRECTO')) {
-      btn.disabled = false;
-      btn.style.opacity = '1';
-      btn.innerText = "⚔️ Verificar";
-    }
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.innerText = "⚔️ Verificar";
   }
 }
 async function checkGlobalState(){
