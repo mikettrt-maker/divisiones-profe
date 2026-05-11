@@ -570,6 +570,7 @@ const SUPABASE_KEY = 'sb_publishable_RcfluyMTRxDP4chkK91-2Q_UwLdLrqP';
 const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storage: window.sessionStorage, autoRefreshToken: false, persistSession: true, detectSessionInUrl: false } });
 const TOTAL_LEVELS = 10, PROBLEMS_PER_LEVEL = 10, POINTS = 100;
 const ADMIN_USER = 'profemiguel';
+const GITHUB = 'https://mikettrt-maker.github.io/divisiones-profe/img';
 let currentMainLevel = 1, currentProblemInLevel = 1, currentDivisor = 0, currentDividend = 0;
 let totalScore = 0, currentUser = null, currentAvatarStyle = 'avatar1';
 let isGridLocked = true, hasFinishedGame = false, isVerifying = false;
@@ -586,16 +587,16 @@ let savedProblemKey = null;
 let currentEnemyLevel = 1; // nivel al que pertenece la energía actual
 
 const ENEMIES = {
-  1: { name: 'El Engendro', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/1.jpg' },
-  2: { name: 'La Plaga de Sangre', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/2.jpg' },
-  3: { name: 'El Monje Ciego', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/3.jpg' },
-  4: { name: 'La Dama del Espejo', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/4.jpg' },
-  5: { name: 'El Verdugo Real', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/5.jpg' },
-  6: { name: 'El Sepulturero', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/6.jpg' },
-  7: { name: 'La Sombra Eterna', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/7.jpg' },
-  8: { name: 'El Cazador de Brujos', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/8.jpg' },
-  9: { name: 'El Señor de la Penumbra', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/9.jpg' },
-  10: { name: 'El Señor de la Penumbra', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/9.jpg' }
+  1:  { name:'El Engendro',             jpg: GITHUB+'/1.jpg' },
+  2:  { name:'La Plaga de Sangre',      jpg: GITHUB+'/2.jpg' },
+  3:  { name:'El Monje Ciego',          jpg: GITHUB+'/3.jpg' },
+  4:  { name:'La Dama del Espejo',      jpg: GITHUB+'/4.jpg' },
+  5:  { name:'El Verdugo Real',         jpg: GITHUB+'/5.jpg' },
+  6:  { name:'El Sepulturero',          jpg: GITHUB+'/6.jpg' },
+  7:  { name:'La Sombra Eterna',        jpg: GITHUB+'/7.jpg' },
+  8:  { name:'El Cazador de Brujos',    jpg: GITHUB+'/8.jpg' },
+  9:  { name:'El Señor de la Penumbra', jpg: GITHUB+'/9.jpg' },
+  10: { name:'El Señor de la Penumbra', jpg: GITHUB+'/9.jpg' }
 };
 let enemyEnergy = 100;
 
@@ -611,18 +612,18 @@ let shieldDurability = 0;
 let totalAttacks = 0;
 
 const AVATAR_STYLES_STANDARD = [
-  { id:'avatar1', name:'Caballero del Reino', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/1.webp' },
-  { id:'avatar2', name:'Espectro de la Noche', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/2.webp' },
-  { id:'avatar3', name:'Pergamino Antiguo', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/3.webp' },
-  { id:'avatar4', name:'Gólem de Hierro', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/4.webp' },
-  { id:'avatar5', name:'Sabio de la Tormenta', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/5.webp' },
-  { id:'avatar6', name:'Boceto del Destino', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/6.webp' },
-  { id:'avatar7', name:'Cifrado Místico', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/7.webp' }
+  { id:'avatar1', name:'Caballero del Reino',    url: GITHUB+'/1.webp' },
+  { id:'avatar2', name:'Espectro de la Noche',   url: GITHUB+'/2.webp' },
+  { id:'avatar3', name:'Pergamino Antiguo',       url: GITHUB+'/3.webp' },
+  { id:'avatar4', name:'Gólem de Hierro',         url: GITHUB+'/4.webp' },
+  { id:'avatar5', name:'Sabio de la Tormenta',    url: GITHUB+'/5.webp' },
+  { id:'avatar6', name:'Boceto del Destino',      url: GITHUB+'/6.webp' },
+  { id:'avatar7', name:'Cifrado Místico',         url: GITHUB+'/7.webp' }
 ];
 const AVATAR_STYLES_EXCLUSIVE = [
-  { id:'avatar8', name:'Señor de la Guerra', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/8.webp' },
-  { id:'avatar9', name:'Maestro de las Sombras', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/9.webp' },
-  { id:'avatar10', name:'Avatar de la Leyenda', url:'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/enemigos/10.webp' }
+  { id:'avatar8', name:'Señor de la Guerra',      url: GITHUB+'/8.webp' },
+  { id:'avatar9', name:'Maestro de las Sombras',  url: GITHUB+'/9.webp' },
+  { id:'avatar10', name:'Avatar de la Leyenda',   url: GITHUB+'/10.webp' }
 ];
 
 const RANKS = [
@@ -1781,8 +1782,7 @@ var bgMusic = null;
 var musicEnabled = true;
 
 function initMusic() {
-  bgMusic = new Audio('https://archive.org/download/Incompetech/mp3-royaltyfree/Angevin%20B.mp3');
-  bgMusic.loop = true;
+bgMusic = new Audio(GITHUB+'/Angevin B.mp3');  bgMusic.loop = true;
   bgMusic.volume = 0.25;
 }
 
