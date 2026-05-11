@@ -1768,23 +1768,20 @@ return true;
 } catch(e) { console.error('Error guardando score:', e); return false; }
 }
 
-// Móvil: toggle ranking
-(function() {
-  // 🎵 MÚSICA — Angevin B (Kevin MacLeod)
-// ================================================
-let bgMusic = null;
-let musicEnabled = true;
+// 🎵 MÚSICA — Angevin B (Kevin MacLeod) - FUERA del function
+var bgMusic = null;
+var musicEnabled = true;
 
 function initMusic() {
-  bgMusic = new Audio('https://dn710000.ca.archive.org/0/items/Incompetech/mp3-royaltyfree/Angevin%20B.mp3');
+  bgMusic = new Audio('https://archive.org/download/Incompetech/mp3-royaltyfree/Angevin%20B.mp3');
   bgMusic.loop = true;
   bgMusic.volume = 0.25;
 }
 
 function playMusic() {
   if (!bgMusic) initMusic();
-  bgMusic.play().catch(() => {
-    document.addEventListener('click', () => {
+  bgMusic.play().catch(function() {
+    document.addEventListener('click', function() {
       if (musicEnabled && bgMusic.paused) bgMusic.play();
     }, { once: true });
   });
@@ -1793,32 +1790,33 @@ function playMusic() {
 function toggleMusic() {
   if (!bgMusic) initMusic();
   musicEnabled = !musicEnabled;
-  const btn = document.getElementById('music-toggle-btn');
+  var btn = document.getElementById('music-toggle-btn');
   if (musicEnabled) {
-    bgMusic.play().catch(() => {});
+    bgMusic.play().catch(function(){});
     btn.innerHTML = '🎵';
   } else {
     bgMusic.pause();
     btn.innerHTML = '🔇';
   }
 }
-const toggleBtn = document.getElementById('mobile-ranking-toggle');
-const sidebar = document.getElementById('ranking-sidebar');
-if (window.innerWidth < 768) {
-toggleBtn.style.display = 'block';
-sidebar.style.display = 'none';
-}
-toggleBtn.addEventListener('click', () => {
-if (sidebar.style.display === 'none') {
-sidebar.style.display = 'block';
-toggleBtn.innerHTML = '❌ Cerrar Corte';
-} else {
-sidebar.style.display = 'none';
-toggleBtn.innerHTML = '⚔️ Ejércitos';
-}
-});
-  // ================================================
 
+// Móvil: toggle ranking
+(function() {
+  const toggleBtn = document.getElementById('mobile-ranking-toggle');
+  const sidebar = document.getElementById('ranking-sidebar');
+  if (window.innerWidth < 768) {
+    toggleBtn.style.display = 'block';
+    sidebar.style.display = 'none';
+  }
+  toggleBtn.addEventListener('click', () => {
+    if (sidebar.style.display === 'none') {
+      sidebar.style.display = 'block';
+      toggleBtn.innerHTML = '❌ Cerrar Corte';
+    } else {
+      sidebar.style.display = 'none';
+      toggleBtn.innerHTML = '⚔️ Ejércitos';
+    }
+  });
 })();
 </script>
 </body>
