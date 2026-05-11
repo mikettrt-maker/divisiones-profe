@@ -1172,6 +1172,7 @@ document.getElementById('login-screen').style.display='none';
 document.querySelector('.app-container').style.display='flex';
 if(currentUser){ try{ await loadScore(currentUser); } catch(e){ console.error(e); } }
 if(isAdmin){ showAdminDashboard(); } else { initGame(); startRanking(); loadHallOfFame(); initSeason(); startStudentHeartbeat(); }
+    if (musicEnabled) playMusic();
 }
 async function handleLogin(){
 const u = document.getElementById('login-username').value.trim();
