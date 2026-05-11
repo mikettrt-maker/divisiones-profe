@@ -571,11 +571,9 @@ let completedLevels = [];
 const ANTENNA_SEQUENCE = [1,10,5,2,4,8,3,6,7,9];
 let currentAntennaIndex = 0;
 
-// =====================================================
-// FIX 1: Variable separada para guardar la clave del
-//         problema actual (NO usar currentUser para esto)
-// =====================================================
+// Variable para rastrear el nivel actual del enemigo (energía persiste por NIVEL, no por problema)
 let savedProblemKey = null;
+let currentEnemyLevel = 1; // nivel al que pertenece la energía actual
 
 const ENEMIES = {
   1: { name: 'El Engendro', jpg: 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/1.jpg' },
@@ -1182,7 +1180,7 @@ async function logout(){
 await _supabase.auth.signOut();
 currentUser = null; totalScore = 0; currentCoins = 0; enemyEnergy = 100; currentStreak = 0;
 inventory = { dagger:0, sword:0, bow:0, axe:0, hammer:0 };
-shieldDurability = 0; completedLevels = []; savedProblemKey = null;
+shieldDurability = 0; completedLevels = []; savedProblemKey = null; currentEnemyLevel = 1;
 showLogin(); clearInterval(rankInt);
 }
 async function loadScore(user){
@@ -1204,16 +1202,14 @@ currentProblemInLevel = data?.current_problem || 1;
 if(currentProblemInLevel > 10) currentProblemInLevel = 1;
 hasFinishedGame = data?.completed_at || false;
 
-// =====================================================
-// FIX 3: Usar variable savedProblemKey (no currentUser)
-//         para restaurar la energía del jefe correctamente
-// =====================================================
+// Restaurar energía del jefe — persiste por NIVEL completo
 savedProblemKey = data?.current_problem_key || null;
-const expectedKey = `L${unlockedLevel}_P${currentProblemInLevel}`;
-if (savedProblemKey === expectedKey && data?.enemy_energy != null) {
+currentEnemyLevel = data?.enemy_level || unlockedLevel;
+if (currentEnemyLevel === unlockedLevel && data?.enemy_energy != null) {
   enemyEnergy = data.enemy_energy;
 } else {
   enemyEnergy = 100;
+  currentEnemyLevel = unlockedLevel;
 }
 
 playTimeCounter = data?.total_time_played || 0;
@@ -1239,7 +1235,7 @@ totalScore = 0; currentAvatarStyle = 'avatar1'; unlockedLevel = 1;
 currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0;
 currentCoins = 0; shieldDurability = 0; totalAttacks = 0;
 inventory = { dagger:0, sword:0, bow:0, axe:0, hammer:0 };
-completedLevels = []; savedProblemKey = null; enemyEnergy = 100;
+completedLevels = []; savedProblemKey = null; enemyEnergy = 100; currentEnemyLevel = 1;
 isAdmin = (user.email.split('@')[0] === ADMIN_USER);
 }
 document.getElementById('admin-header-btn').classList.toggle('visible', isAdmin);
@@ -1252,7 +1248,10 @@ function jumpToLevel(l){
 AudioEngine.playClick();
 const t = parseInt(l);
 if(t > unlockedLevel){ alert("¡Debes completar el nivel anterior!"); document.getElementById('levelSelect').value = currentMainLevel; return; }
-currentMainLevel = t; currentProblemInLevel = 1; loadProblem();
+currentMainLevel = t; currentProblemInLevel = 1;
+// Al saltar de nivel, forzar reset de energía
+currentEnemyLevel = -1;
+loadProblem();
 }
 function updateEnemyCard() {
   const level = currentMainLevel;
@@ -1323,38 +1322,32 @@ async function loadProblem(){
   document.getElementById('difficultyLabel').innerText = getDifficultyLabel(currentMainLevel);
   updateEnemyCard();
 
-  // =====================================================
-  // FIX 3 (parte 2): Comparar con savedProblemKey (variable
-  //                  local) en vez de currentUser.current_problem_key
-  // =====================================================
-  const problemKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
-
-  if (savedProblemKey !== problemKey) {
-    // Problema nuevo → resetear energía del jefe
+  // La energía del enemigo persiste por NIVEL completo.
+  // Solo se resetea cuando el jugador cambia de nivel.
+  if (currentEnemyLevel !== currentMainLevel) {
+    // Nivel nuevo → resetear energía
     enemyEnergy = 100;
-    savedProblemKey = problemKey;
-    resetEnemy(false); // false porque ya seteamos enemyEnergy=100 manualmente
-    updateEnergyBar();
-    // Guardar en BD
+    currentEnemyLevel = currentMainLevel;
+    savedProblemKey = null;
     if (currentUser) {
       _supabase.from('profiles').update({
         enemy_energy: 100,
-        current_problem_key: problemKey
+        enemy_level: currentMainLevel,
+        current_problem_key: null
       }).eq('id', currentUser.id);
     }
+  }
+
+  // Restaurar estado visual del enemigo
+  if (enemyEnergy <= 0) {
+    document.getElementById('enemy-card').style.animation = 'none';
+    document.getElementById('enemy-card').classList.add('defeated');
+    document.getElementById('energy-bar-fill').style.background = '#333';
+    document.getElementById('energy-text').innerText = '¡DERROTADO!';
   } else {
-    // Mismo problema (p.ej. al recargar página): restaurar estado
-    if (enemyEnergy <= 0) {
-      document.getElementById('enemy-card').style.animation = 'none';
-      document.getElementById('enemy-card').classList.add('defeated');
-      document.getElementById('energy-bar-fill').style.background = '#333';
-      document.getElementById('energy-text').innerText = '¡DERROTADO!';
-      btn.disabled = true; btn.style.opacity = '0.4';
-    } else {
-      document.getElementById('enemy-card').classList.remove('defeated');
-      document.getElementById('enemy-card').style.animation = 'enemyGlow 2s infinite alternate';
-      updateEnergyBar();
-    }
+    document.getElementById('enemy-card').classList.remove('defeated');
+    document.getElementById('enemy-card').style.animation = 'enemyGlow 2s infinite alternate';
+    updateEnergyBar();
   }
 
   createUI(); createAntena(); resetAll(); lockGrid();
@@ -1512,7 +1505,7 @@ async function verificarSolucion(){
     updateCoinDisplay();
     document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
 
-    // Reducir energía del enemigo
+    // Reducir energía del enemigo (10% por problema resuelto, persiste por nivel)
     enemyEnergy = Math.max(0, enemyEnergy - 10);
     updateEnergyBar();
     const enemyDefeated = (enemyEnergy === 0);
@@ -1527,6 +1520,7 @@ async function verificarSolucion(){
         coins: currentCoins,
         completed_levels: completedLevels,
         enemy_energy: enemyEnergy,
+        enemy_level: currentEnemyLevel,
         current_problem_key: levelKey
       }).eq('id', currentUser.id).then(r => {
         if(r.error) console.error("Error guardando progreso:", r.error);
@@ -1549,7 +1543,8 @@ async function verificarSolucion(){
           unlockedLevel = currentMainLevel + 1;
           currentMainLevel++;
           currentProblemInLevel = 1;
-          savedProblemKey = null; // Forzar reset de energía al nuevo nivel
+          currentEnemyLevel = -1; // Forzar reset de energía al nuevo nivel
+          savedProblemKey = null;
           showVictoryScreen();
           setTimeout(() => { hideVictoryScreen(); loadProblem(); }, 3000);
         } else {
