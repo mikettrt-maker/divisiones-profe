@@ -371,6 +371,16 @@ white-space:nowrap; text-align:center; letter-spacing:0.5px;
 </div>
 </div>
 <button class="shop-btn-float" onclick="openShop()" title="Tesoro"><i class="fas fa-coins"></i></button>
+ <button id="music-toggle-btn" onclick="toggleMusic()" title="Silenciar música"
+  style="position:fixed; bottom:155px; left:20px; z-index:9001;
+         width:56px; height:56px; border-radius:50%;
+         background:linear-gradient(180deg,#1e3a5f,#0d1c3b);
+         border:3px solid var(--cr-gold-dark); color:var(--cr-gold);
+         font-size:1.5rem; display:flex; align-items:center;
+         justify-content:center; cursor:pointer;
+         box-shadow:0 5px 0 #050c1c,0 7px 16px rgba(0,0,0,0.5);">
+  🎵
+</button>
 <button id="mobile-ranking-toggle" class="btn-small" style="display:none; position:fixed; bottom:20px; right:20px; z-index:9000;">⚔️ Ejércitos</button>
 
 <div id="login-screen" style="display:none;">
@@ -1775,6 +1785,39 @@ sidebar.style.display = 'none';
 toggleBtn.innerHTML = '⚔️ Ejércitos';
 }
 });
+  // ================================================
+// 🎵 MÚSICA — Angevin B (Kevin MacLeod)
+// ================================================
+let bgMusic = null;
+let musicEnabled = true;
+
+function initMusic() {
+  bgMusic = new Audio('https://archive.org/download/Incompetech/mp3-royaltyfree/Angevin%20B.mp3');
+  bgMusic.loop = true;
+  bgMusic.volume = 0.25;
+}
+
+function playMusic() {
+  if (!bgMusic) initMusic();
+  bgMusic.play().catch(() => {
+    document.addEventListener('click', () => {
+      if (musicEnabled && bgMusic.paused) bgMusic.play();
+    }, { once: true });
+  });
+}
+
+function toggleMusic() {
+  if (!bgMusic) initMusic();
+  musicEnabled = !musicEnabled;
+  const btn = document.getElementById('music-toggle-btn');
+  if (musicEnabled) {
+    bgMusic.play().catch(() => {});
+    btn.innerHTML = '🎵';
+  } else {
+    bgMusic.pause();
+    btn.innerHTML = '🔇';
+  }
+}
 })();
 </script>
 </body>
