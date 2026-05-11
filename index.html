@@ -371,7 +371,7 @@ white-space:nowrap; text-align:center; letter-spacing:0.5px;
 </div>
 </div>
 <button class="shop-btn-float" onclick="openShop()" title="Tesoro"><i class="fas fa-coins"></i></button>
- <button id="music-toggle-btn" title="Silenciar música"
+<button id="music-toggle-btn" title="Silenciar música" onclick="toggleMusic()"
   style="position:fixed; bottom:155px; left:20px; z-index:9001;
          width:56px; height:56px; border-radius:50%;
          background:linear-gradient(180deg,#1e3a5f,#0d1c3b);
@@ -816,11 +816,6 @@ showToast(`❌ Error: ${e.message}`,'tomato');
 }
 }
 
-// =====================================================
-// FIX 2: attackUser ahora lee el score actualizado y
-//         resta DIRECTAMENTE usando rpc increment o
-//         con UPDATE correcto para garantizar el descuento
-// =====================================================
 async function attackUser(targetId, targetName, weaponType) {
 const weapon = WEAPONS[weaponType];
 if(!weapon) return;
@@ -830,7 +825,6 @@ if(!confirm(`¿Usar ${weapon.icon} ${weapon.name} contra ${targetName}? (-${weap
 inventory[weaponType]--; totalAttacks++; updateInventoryUI();
 
 try {
-  // Leer el perfil de la víctima
   const { data: victim, error: fetchError } = await _supabase
     .from('profiles')
     .select('total_score, shield_durability')
@@ -845,19 +839,16 @@ try {
   let currentVictimScore = victim.total_score || 0;
 
   if(victimShield > 0) {
-    // Tiene escudo: reducir escudo
     const newShield = Math.max(0, victimShield - weapon.shieldDmg);
     updates.shield_durability = newShield;
     msg = `🛡️ ¡${targetName} tenía PROTECCIÓN! Tu ${weapon.icon} le quitó ${weapon.shieldDmg} puntos de escudo.`;
     if(newShield === 0) msg += " ¡Escudo destruido!";
   } else {
-    // Sin escudo: restar puntos directamente del valor actual leído
     const newScore = Math.max(0, currentVictimScore - weapon.damage);
     updates.total_score = newScore;
     msg = `${weapon.icon} ¡Atacaste a ${targetName} con ${weapon.name}! Perdió ${weapon.damage} puntos. (${currentVictimScore} → ${newScore})`;
   }
 
-  // Aplicar cambios a la víctima
   const { error: updateError } = await _supabase
     .from('profiles')
     .update(updates)
@@ -865,20 +856,17 @@ try {
 
   if(updateError) throw updateError;
 
-  // Guardar inventario del atacante
   await _supabase.from('profiles').update({
     [`inventory_${weaponType}`]: inventory[weaponType],
     total_attacks: totalAttacks
   }).eq('id', currentUser.id);
 
   showToast(msg, 'tomato', 5000);
-  // Refrescar ranking tras el ataque
   setTimeout(async () => { await updateRanking(); }, 800);
 
 } catch(e) {
   console.error('Error en ataque:', e);
   showToast("❌ Error: " + e.message, 'tomato');
-  // Revertir si falló
   inventory[weaponType]++; totalAttacks--; updateInventoryUI();
 }
 }
@@ -1222,7 +1210,6 @@ currentProblemInLevel = data?.current_problem || 1;
 if(currentProblemInLevel > 10) currentProblemInLevel = 1;
 hasFinishedGame = data?.completed_at || false;
 
-// Restaurar energía del jefe — persiste por NIVEL completo
 savedProblemKey = data?.current_problem_key || null;
 currentEnemyLevel = data?.enemy_level || unlockedLevel;
 if (currentEnemyLevel === unlockedLevel && data?.enemy_energy != null) {
@@ -1269,7 +1256,6 @@ AudioEngine.playClick();
 const t = parseInt(l);
 if(t > unlockedLevel){ alert("¡Debes completar el nivel anterior!"); document.getElementById('levelSelect').value = currentMainLevel; return; }
 currentMainLevel = t; currentProblemInLevel = 1;
-// Al saltar de nivel, forzar reset de energía
 currentEnemyLevel = -1;
 loadProblem();
 }
@@ -1321,10 +1307,6 @@ async function loadProblem(){
   if(hasFinishedGame) return;
   const canPlay = await checkGlobalState(); if(!canPlay) return;
 
-  // =====================================================
-  // FIX 1 (parte 2): Resetear isVerifying SIEMPRE al
-  //                  cargar un nuevo problema
-  // =====================================================
   isVerifying = false;
   const btn = document.getElementById('btn-verify');
   btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "⚔️ Verificar"; btn.onclick = verificarSolucion;
@@ -1342,10 +1324,7 @@ async function loadProblem(){
   document.getElementById('difficultyLabel').innerText = getDifficultyLabel(currentMainLevel);
   updateEnemyCard();
 
-  // La energía del enemigo persiste por NIVEL completo.
-  // Solo se resetea cuando el jugador cambia de nivel.
   if (currentEnemyLevel !== currentMainLevel) {
-    // Nivel nuevo → resetear energía
     enemyEnergy = 100;
     currentEnemyLevel = currentMainLevel;
     savedProblemKey = null;
@@ -1358,7 +1337,6 @@ async function loadProblem(){
     }
   }
 
-  // Restaurar estado visual del enemigo
   if (enemyEnergy <= 0) {
     document.getElementById('enemy-card').style.animation = 'none';
     document.getElementById('enemy-card').classList.add('defeated');
@@ -1426,6 +1404,7 @@ dB.appendChild(i);
 });
 for(let r=0; r<15; r++) for(let c=0; c<9; c++){
 let i = document.createElement('input'); i.type = 'text'; i.className = 'cell'; i.maxLength = 1; i.id = "c-"+r+"-"+c;
+i.setAttribute('autocomplete', 'off');
 i.addEventListener('input', e => {
 if(!isGridLocked && e.target.value){
 let n = (c<8) ? "c-"+r+"-"+(c+1) : (r<14) ? "c-"+(r+1)+"-0" : null;
@@ -1489,13 +1468,7 @@ document.querySelectorAll('.input-cociente-galera').forEach(i => i.value = '');
 document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value = ''; i.disabled = false; i.style.pointerEvents = 'auto'; i.style.opacity = '1'; });
 }
 
-// =====================================================
-// FIX 1 (parte 3): verificarSolucion COMPLETAMENTE
-//                  reescrita para evitar el bloqueo.
-//                  - isVerifying se limpia ANTES del setTimeout
-//                  - El avance al siguiente problema ocurre
-//                    dentro del setTimeout sin race conditions
-// =====================================================
+// ========== CORREGIDA: verificarSolucion (async + guarda todo con await) ==========
 async function verificarSolucion(){
   if(isVerifying) return;
   if(isGridLocked){ alert("¡Rompe el Sello Real primero!"); return; }
@@ -1512,7 +1485,6 @@ async function verificarSolucion(){
   if(coc === rC && res === rR){
     AudioEngine.playSuccess();
 
-    // Sumar puntos solo si no se completó antes
     const levelKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
     if(!completedLevels.includes(levelKey)) {
       totalScore += POINTS;
@@ -1525,45 +1497,48 @@ async function verificarSolucion(){
     updateCoinDisplay();
     document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
 
-    // Reducir energía del enemigo (10% por problema resuelto, persiste por nivel)
     enemyEnergy = Math.max(0, enemyEnergy - 10);
     updateEnergyBar();
     const enemyDefeated = (enemyEnergy === 0);
     if(enemyDefeated) defeatEnemy();
 
-    // Guardar en BD de forma asíncrona (no bloqueante)
+    // Guardar en BD esperando confirmación
     if(currentUser) {
-      _supabase.from('profiles').update({
-        total_score: totalScore,
-        current_level: unlockedLevel,
-        current_problem: currentProblemInLevel,
-        coins: currentCoins,
-        completed_levels: completedLevels,
-        enemy_energy: enemyEnergy,
-        enemy_level: currentEnemyLevel,
-        current_problem_key: levelKey
-      }).eq('id', currentUser.id).then(r => {
-        if(r.error) console.error("Error guardando progreso:", r.error);
-      });
+      try {
+        const { error } = await _supabase.from('profiles').update({
+          total_score: totalScore,
+          current_level: unlockedLevel,
+          current_problem: currentProblemInLevel,
+          coins: currentCoins,
+          completed_levels: completedLevels,
+          enemy_energy: enemyEnergy,
+          enemy_level: currentEnemyLevel,
+          current_problem_key: levelKey,
+          inventory_dagger: inventory.dagger,
+          inventory_sword: inventory.sword,
+          inventory_bow: inventory.bow,
+          inventory_axe: inventory.axe,
+          inventory_hammer: inventory.hammer,
+          shield_durability: shieldDurability
+        }).eq('id', currentUser.id);
+        if(error) console.error("Error guardando progreso:", error);
+      } catch(e) { console.error(e); }
     }
 
-    // Liberar bloqueo ANTES del setTimeout para evitar race conditions
     isVerifying = false;
-    btn.disabled = true; // Mantener desactivado visualmente hasta cargar el siguiente
+    btn.disabled = true;
     btn.style.opacity = '0.4';
 
-    // Esperar 1.2 s y avanzar
     setTimeout(() => {
       if(currentProblemInLevel < PROBLEMS_PER_LEVEL){
         currentProblemInLevel++;
         loadProblem();
       } else {
-        // Completó el nivel
         if(currentMainLevel < TOTAL_LEVELS){
           unlockedLevel = currentMainLevel + 1;
           currentMainLevel++;
           currentProblemInLevel = 1;
-          currentEnemyLevel = -1; // Forzar reset de energía al nuevo nivel
+          currentEnemyLevel = -1;
           savedProblemKey = null;
           showVictoryScreen();
           setTimeout(() => { hideVictoryScreen(); loadProblem(); }, 3000);
@@ -1572,19 +1547,16 @@ async function verificarSolucion(){
           _supabase.from('profiles').update({ completed_at: new Date().toISOString() }).eq('id', currentUser.id);
           loadHallOfFame();
           document.getElementById('msg').innerHTML = "<span style='color:gold;'>¡CÓDICE COMPLETADO!</span>";
-          // Rehabilitar botón para que no quede bloqueado
           btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "⚔️ Verificar";
         }
       }
     }, 1200);
 
   } else {
-    // Respuesta incorrecta
     AudioEngine.playError();
     document.getElementById('msg').innerHTML = `<span style='color:var(--cr-red);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>🛡️ INCORRECTO — Inténtalo de nuevo</span>`;
     resetStreak();
 
-    // Liberar bloqueo inmediatamente
     isVerifying = false;
     btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "⚔️ Verificar";
   }
@@ -1609,23 +1581,31 @@ document.getElementById('season-num-display').innerText = data?.season_number ||
 if(data?.season_end_time){ startCountdown(new Date(data.season_end_time)); }
 else { document.getElementById('timer-display').innerText = isAdmin ? "SIN INICIAR" : "--:--"; document.getElementById('season-badge').classList.add('finished'); }
 }
+// ========== CORREGIDA: startCountdown (recarga en estudiantes al terminar) ==========
 function startCountdown(endDate){
-clearInterval(seasonInterval);
-seasonInterval = setInterval(() => {
-const diff = endDate - new Date();
-if(diff <= 0){
-clearInterval(seasonInterval);
-document.getElementById('timer-display').innerText = "00:00:00";
-document.getElementById('season-badge').classList.add('finished');
-document.getElementById('season-badge').classList.remove('active');
-if(isAdmin){ alert("¡Tiempo terminado!"); resetAllUsers(); }
-return;
-}
-const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
-document.getElementById('timer-display').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
-document.getElementById('season-badge').classList.add('active');
-document.getElementById('season-badge').classList.remove('finished');
-}, 1000);
+  clearInterval(seasonInterval);
+  seasonInterval = setInterval(() => {
+    const diff = endDate - new Date();
+    if(diff <= 0){
+      clearInterval(seasonInterval);
+      document.getElementById('timer-display').innerText = "00:00:00";
+      document.getElementById('season-badge').classList.add('finished');
+      document.getElementById('season-badge').classList.remove('active');
+      if(isAdmin){ 
+        alert("¡Tiempo terminado!"); 
+        resetAllUsers(); 
+      } else {
+        // Avisar a los aspirantes y recargar la página para cargar los valores reiniciados
+        showToast("⏰ La temporada ha terminado. Los puntos se reiniciarán.", 'tomato', 5000);
+        setTimeout(() => { location.reload(); }, 4000);
+      }
+      return;
+    }
+    const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
+    document.getElementById('timer-display').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    document.getElementById('season-badge').classList.add('active');
+    document.getElementById('season-badge').classList.remove('finished');
+  }, 1000);
 }
 let selectedGiftAmount = 0;
 function startStudentHeartbeat(){
@@ -1694,11 +1674,6 @@ s.appendChild(o);
 }
 s.value = currentMainLevel;
 }
-// =====================================================
-// FIX 2 (parte 2): updateUI limpiada — eliminado el
-//                  bloque que intentaba leer data.current_problem_key
-//                  (data no existe en este scope)
-// =====================================================
 function updateUI(){
 document.getElementById('scoreDisplay').innerText = totalScore;
 const rI = getRankInfo(totalScore);
