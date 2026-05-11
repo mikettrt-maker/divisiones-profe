@@ -731,18 +731,26 @@ document.body.appendChild(el);
 setTimeout(() => { if(el.parentNode) el.parentNode.removeChild(el); }, 1300);
 showToast(`🔥 ¡Racha de ${streak}! Bonus: +${bonus} monedas`,'success');
 }
+// Caché de imágenes para reducir egress de Supabase
+const imgCache = {};
+
 function getAvatarUrl(seed, styleOrObj) {
+  let url;
   if (typeof styleOrObj === 'object' && styleOrObj.url) {
-    return styleOrObj.url + '?t=' + Date.now();
-  }
-  if (typeof styleOrObj === 'string') {
+    url = styleOrObj.url;
+  } else if (typeof styleOrObj === 'string') {
     const allAvatars = [...AVATAR_STYLES_STANDARD, ...AVATAR_STYLES_EXCLUSIVE];
     const found = allAvatars.find(a => a.id === styleOrObj);
-    if (found) return found.url + '?t=' + Date.now();
-    const defaultAvatar = AVATAR_STYLES_STANDARD[0];
-    if (defaultAvatar) return defaultAvatar.url + '?t=' + Date.now();
+    if (found) url = found.url;
+    else url = AVATAR_STYLES_STANDARD[0].url;
+  } else {
+    url = 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/1.png';
   }
-  return 'https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/1.png';
+
+  // Si ya la cargamos antes, devolver la misma sin hacer nueva petición
+  if (imgCache[url]) return imgCache[url];
+  imgCache[url] = url;
+  return url;
 }
 function renderMainAvatar() {
 if(!currentUser) return;
@@ -883,7 +891,7 @@ shield_durability: shieldDurability, total_attacks: totalAttacks
 }).eq('id', currentUser.id).then(res => { if(res.error) console.error("Error guardando inventario", res.error); });
 }
 let rankInt;
-function startRanking(){ updateRanking(); rankInt = setInterval(updateRanking, 5000); }
+function startRanking(){ updateRanking(); rankInt = setInterval(updateRanking, 20000); }
 let rankingDataCache = [];
 async function updateRanking(){
 const list = document.getElementById('ranking-list');
