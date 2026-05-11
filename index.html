@@ -1770,23 +1770,7 @@ return true;
 
 // Móvil: toggle ranking
 (function() {
-const toggleBtn = document.getElementById('mobile-ranking-toggle');
-const sidebar = document.getElementById('ranking-sidebar');
-if (window.innerWidth < 768) {
-toggleBtn.style.display = 'block';
-sidebar.style.display = 'none';
-}
-toggleBtn.addEventListener('click', () => {
-if (sidebar.style.display === 'none') {
-sidebar.style.display = 'block';
-toggleBtn.innerHTML = '❌ Cerrar Corte';
-} else {
-sidebar.style.display = 'none';
-toggleBtn.innerHTML = '⚔️ Ejércitos';
-}
-});
-  // ================================================
-// 🎵 MÚSICA — Angevin B (Kevin MacLeod)
+  // 🎵 MÚSICA — Angevin B (Kevin MacLeod)
 // ================================================
 let bgMusic = null;
 let musicEnabled = true;
@@ -1818,6 +1802,23 @@ function toggleMusic() {
     btn.innerHTML = '🔇';
   }
 }
+const toggleBtn = document.getElementById('mobile-ranking-toggle');
+const sidebar = document.getElementById('ranking-sidebar');
+if (window.innerWidth < 768) {
+toggleBtn.style.display = 'block';
+sidebar.style.display = 'none';
+}
+toggleBtn.addEventListener('click', () => {
+if (sidebar.style.display === 'none') {
+sidebar.style.display = 'block';
+toggleBtn.innerHTML = '❌ Cerrar Corte';
+} else {
+sidebar.style.display = 'none';
+toggleBtn.innerHTML = '⚔️ Ejércitos';
+}
+});
+  // ================================================
+
 })();
 </script>
 </body>
