@@ -1782,7 +1782,8 @@ var bgMusic = null;
 var musicEnabled = true;
 
 function initMusic() {
-bgMusic = new Audio(GITHUB+'/Angevin - Thatched Villagers by Kevin MacLeod - LIMO Recording Studio (youtube).mp3');  bgMusic.loop = true;
+  bgMusic = new Audio(GITHUB + '/' + encodeURIComponent('Angevin - Thatched Villagers by Kevin MacLeod - LIMO Recording Studio (youtube).mp3'));
+  bgMusic.loop = true;
   bgMusic.volume = 0.25;
 }
 
