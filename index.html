@@ -899,7 +899,6 @@ const list = document.getElementById('ranking-list');
 try {
 const { data, error } = await _supabase.from('profiles')
   .select('id,username,total_score,avatar_style,completed_at,is_banned,squad_id,shield_durability')
-  .is('completed_at', null)
   .eq('is_banned', false)
   .order('total_score',{ascending:false});
 if(error) throw error;
@@ -1569,15 +1568,27 @@ async function verificarSolucion(){
           showVictoryScreen();
           setTimeout(() => { hideVictoryScreen(); loadProblem(); }, 3000);
         } else {
-          hasFinishedGame = true;
-          _supabase.from('profiles').update({ completed_at: new Date().toISOString() }).eq('id', currentUser.id);
-          loadHallOfFame();
-          document.getElementById('msg').innerHTML = "<span style='color:gold;'>¡CÓDICE COMPLETADO!</span>";
-          // Rehabilitar botón para que no quede bloqueado
-          btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "⚔️ Verificar";
-        }
-      }
-    }, 1200);
+       } else {
+    hasFinishedGame = false;
+    _supabase.from('profiles').update({ 
+        completed_at: new Date().toISOString(),
+        completed_levels: [],
+        current_level: 1,
+        current_problem: 1
+    }).eq('id', currentUser.id);
+    completedLevels = [];
+    unlockedLevel = 1;
+    currentMainLevel = 1;
+    currentProblemInLevel = 1;
+    loadHallOfFame();
+    showVictoryScreen();
+    setTimeout(() => { 
+        hideVictoryScreen(); 
+        loadProblem(); 
+    }, 3000);
+    document.getElementById('msg').innerHTML = "<span style='color:gold;'>¡CÓDICE COMPLETADO! ¡Sigue conquistando!</span>";
+    btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "⚔️ Verificar";
+}
 
   } else {
     // Respuesta incorrecta
