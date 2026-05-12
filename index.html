@@ -194,6 +194,8 @@ button{border:none; padding:12px 28px; font-weight:900; border-radius:8px; curso
 .shop-buy-btn.orange-btn:hover{box-shadow:0 4px 0 #7a3500;}
 .shop-buy-btn:disabled{background:linear-gradient(135deg,#444,#333); color:#666; box-shadow:none; cursor:not-allowed;}
 .shop-qty-badge{position:absolute; top:8px; right:8px; background:linear-gradient(135deg,var(--cr-gold),var(--cr-gold-dark)); color:#0d1c3b; font-weight:900; padding:3px 8px; border-radius:15px; font-size:.75rem; font-family:'Cinzel',serif; box-shadow:0 2px 4px rgba(0,0,0,0.4);}
+.chest-item { border-top:4px solid #ffd700!important; background:linear-gradient(180deg, #3a2e0a 0%, #1a1a2e 100%)!important; }
+.chest-btn { background:linear-gradient(180deg, #ffd700, #b8860b)!important; color:#0d1c3b!important; box-shadow:0 3px 0 #7a5a00!important; }
 #admin-dashboard{width:100%; display:none; flex-direction:column; gap:20px;}
 .dash-grid{display:grid; grid-template-columns:1fr 2fr; gap:20px;}
 .dash-card{background:linear-gradient(180deg,rgba(13,37,69,0.95) 0%,rgba(10,22,40,1) 100%); border:2px solid var(--cr-blue-light); border-top:4px solid var(--cr-gold-dark); border-radius:10px; padding:20px; box-shadow:0 8px 24px rgba(0,0,0,0.6);}
@@ -368,6 +370,16 @@ white-space:nowrap; text-align:center; letter-spacing:0.5px;
 </div>
 </div>
 <div class="shop-body" id="shop-items"></div>
+<!-- Cofre Misterioso (estático) -->
+<div style="display:flex; justify-content:center; padding:10px 20px 20px 20px; border-top:2px solid var(--cr-gold-dark);">
+  <div class="shop-item chest-item" style="max-width:300px;">
+    <span class="shop-item-icon">🎁</span>
+    <div class="shop-item-name">Cofre Misterioso</div>
+    <div class="shop-item-desc">Abre un cofre legendario. ¡Premios aleatorios!</div>
+    <div class="shop-item-price"><span>💎</span> 1</div>
+    <button class="shop-buy-btn chest-btn" onclick="openMysteryChest()">Abrir</button>
+  </div>
+</div>
 </div>
 </div>
 <button class="shop-btn-float" onclick="openShop()" title="Tesoro"><i class="fas fa-coins"></i></button>
@@ -440,6 +452,10 @@ white-space:nowrap; text-align:center; letter-spacing:0.5px;
 <div class="coin-display-container" title="Florines Reales">
 <i class="fas fa-coins coin-icon"></i>
 <span class="coin-count" id="coinDisplay">0</span>
+</div>
+<div class="coin-display-container" title="Gemas">
+  <span style="font-size:1.1rem;">💎</span>
+  <span class="coin-count" id="gemDisplay">0</span>
 </div>
 <div style="position:relative; margin-left:8px;">
 <i class="fas fa-gift" id="gift-icon" style="font-size:1.3rem; color:#ff4081; display:none; cursor:default;"></i>
@@ -581,6 +597,7 @@ let currentCoins = 0, playTimeCounter = 0;
 let completedLevels = [];
 const ANTENNA_SEQUENCE = [1,10,5,2,4,8,3,6,7,9];
 let currentAntennaIndex = 0;
+let gems = 0; // ← nueva variable de gemas
 
 let savedProblemKey = null;
 let currentEnemyLevel = 1;
@@ -689,7 +706,10 @@ t.innerHTML = msg;
 c.appendChild(t);
 setTimeout(() => { if(t.parentNode) t.parentNode.removeChild(t); }, duration);
 }
-function updateCoinDisplay(){ document.getElementById('coinDisplay').innerText = currentCoins; }
+function updateCoinDisplay(){
+  document.getElementById('coinDisplay').innerText = currentCoins;
+  document.getElementById('gemDisplay').innerText = gems;
+}
 function updateInventoryUI(){
 const container = document.getElementById('inventory-container');
 container.innerHTML = '';
@@ -785,6 +805,7 @@ const shieldDiv = document.createElement('div');
 shieldDiv.className = 'shop-item';
 shieldDiv.innerHTML = `<span class="shop-item-icon">🛡️</span><div class="shop-item-name">Protección del Consejo</div><div class="shop-item-desc">Resiste 5 ataques</div><div class="shop-item-price"><i class="fas fa-coins"></i> 300</div><button class="shop-buy-btn" onclick="buyShield(5, 300)">Adquirir</button>`;
 container.appendChild(shieldDiv);
+// El cofre ya está estático en el HTML, no se regenera.
 }
 function closeShop(){ document.getElementById('shop-modal').style.display='none'; }
 function buyWeapon(type, price) {
@@ -876,7 +897,8 @@ if(!currentUser) return;
 _supabase.from('profiles').update({
 inventory_dagger: inventory.dagger, inventory_sword: inventory.sword,
 inventory_bow: inventory.bow, inventory_axe: inventory.axe, inventory_hammer: inventory.hammer,
-shield_durability: shieldDurability, total_attacks: totalAttacks
+shield_durability: shieldDurability, total_attacks: totalAttacks,
+gems: gems
 }).eq('id', currentUser.id).then(res => { if(res.error) console.error("Error guardando inventario", res.error); });
 }
 let rankInt;
@@ -1129,7 +1151,8 @@ await _supabase.from('profiles').update({
 total_score:0, current_level:1, completed_at:null, current_problem:1,
 total_time_played:0, squad_id:0, coins:0,
 inventory_dagger:0, inventory_sword:0, inventory_bow:0, inventory_axe:0, inventory_hammer:0,
-shield_durability:0, completed_levels:[], enemy_energy:100, current_problem_key:null
+shield_durability:0, completed_levels:[], enemy_energy:100, current_problem_key:null,
+gems:0
 }).neq('id','00000000-0000-0000-0000-000000000000');
 await _supabase.from('game_settings').update({season_end_time:null, is_paused:false, exam_level:0}).eq('id',1);
 alert("¡Reiniciado!"); loadDashboardData();
@@ -1188,6 +1211,7 @@ await _supabase.auth.signOut();
 currentUser = null; totalScore = 0; currentCoins = 0; enemyEnergy = 100; currentStreak = 0;
 inventory = { dagger:0, sword:0, bow:0, axe:0, hammer:0 };
 shieldDurability = 0; completedLevels = []; savedProblemKey = null; currentEnemyLevel = 1;
+gems = 0;
 showLogin(); clearInterval(rankInt);
 }
 async function loadScore(user){
@@ -1196,6 +1220,7 @@ const { data } = await _supabase.from('profiles').select('*').eq('id', user.id).
 if(data?.is_banned){ alert("Tu cuenta está suspendida."); logout(); return; }
 isAdmin = data?.is_admin === true || user.email.split('@')[0] === ADMIN_USER;
 currentCoins = data?.coins || 0;
+gems = data?.gems || 0; // ← cargar gemas
 if(data?.pending_gift_coins > 0) {
 const giftAmount = data.pending_gift_coins;
 currentCoins += giftAmount;
@@ -1246,6 +1271,7 @@ currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0;
 currentCoins = 0; shieldDurability = 0; totalAttacks = 0;
 inventory = { dagger:0, sword:0, bow:0, axe:0, hammer:0 };
 completedLevels = []; savedProblemKey = null; enemyEnergy = 100; currentEnemyLevel = 1;
+gems = 0;
 isAdmin = (user.email.split('@')[0] === ADMIN_USER);
 }
 document.getElementById('admin-header-btn').classList.toggle('visible', isAdmin);
@@ -1320,7 +1346,6 @@ async function loadProblem(){
   populateLevelSelect();
 
   const d = DB[currentMainLevel];
-  // Avanzar automáticamente si el problema ya fue completado
   while (d && d[currentProblemInLevel-1]) {
     const key = `L${currentMainLevel}_P${currentProblemInLevel}`;
     if (completedLevels.includes(key)) {
@@ -1497,7 +1522,7 @@ document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value = ''
 }
 
 // =====================================================
-// verificarSolucion sin enemy_level y con aviso de error
+// verificarSolucion modificada para otorgar gema por nivel
 // =====================================================
 async function verificarSolucion(){
   if(isVerifying) return;
@@ -1520,6 +1545,12 @@ async function verificarSolucion(){
       totalScore += POINTS;
       currentCoins += 5;
       completedLevels.push(levelKey);
+      
+      // Si es el último problema del nivel, ganar 1 gema
+      if(currentProblemInLevel === PROBLEMS_PER_LEVEL) {
+        gems += 1;
+        setTimeout(() => showToast('💎 ¡Has ganado 1 gema por completar el nivel!', 'success', 4000), 300);
+      }
     }
 
     updateUI();
@@ -1532,7 +1563,7 @@ async function verificarSolucion(){
     const enemyDefeated = (enemyEnergy === 0);
     if(enemyDefeated) defeatEnemy();
 
-    // Guardar en BD (sin enemy_level)
+    // Guardar en BD (incluye gemas)
     if(currentUser) {
       _supabase.from('profiles').update({
         total_score: totalScore,
@@ -1540,6 +1571,7 @@ async function verificarSolucion(){
         current_problem: currentProblemInLevel,
         coins: currentCoins,
         completed_levels: completedLevels,
+        gems: gems,
         enemy_energy: enemyEnergy,
         current_problem_key: levelKey
       }).eq('id', currentUser.id).then(function(r) {
@@ -1590,6 +1622,138 @@ async function verificarSolucion(){
     isVerifying = false;
     btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "⚔️ Verificar";
   }
+}
+
+// =====================================================
+// Función para abrir el cofre misterioso (gasta 1 gema)
+// =====================================================
+function openMysteryChest() {
+  if (gems < 1) {
+    showToast('💎 Necesitas al menos 1 gema para abrir un cofre', 'tomato', 3000);
+    return;
+  }
+  if (!currentUser) return;
+  
+  // Descontar gema
+  gems -= 1;
+  updateCoinDisplay();
+  
+  // Sorteo
+  const rand = Math.floor(Math.random() * 100) + 1; // 1-100
+  let chestLevel, chestName, emoji;
+  
+  if (rand <= 30) {
+    chestLevel = 1; chestName = 'Cofre Oxidado'; emoji = '💩';
+  } else if (rand <= 55) {
+    chestLevel = 2; chestName = 'Cofre de Hierro'; emoji = '🟤';
+  } else if (rand <= 75) {
+    chestLevel = 3; chestName = 'Cofre de Plata'; emoji = '⚪';
+  } else if (rand <= 90) {
+    chestLevel = 4; chestName = 'Cofre Dorado'; emoji = '🟡';
+  } else if (rand <= 97) {
+    chestLevel = 5; chestName = 'Cofre Legendario'; emoji = '💎';
+  } else {
+    chestLevel = 6; chestName = 'Cofre Infernal'; emoji = '🔥';
+  }
+  
+  // Determinar recompensa dentro del nivel
+  let rewardText = '';
+  let rewardCallback = null; // función que aplica el premio
+  
+  const randomFromArray = (arr) => arr[Math.floor(Math.random() * arr.length)];
+  
+  switch(chestLevel) {
+    case 1: // Oxidado
+      rewardCallback = () => {
+        if (Math.random() < 0.5) {
+          currentCoins += 5;
+          rewardText = '5 monedas';
+        } else {
+          inventory.dagger++;
+          rewardText = '1 Daga 🗡️';
+        }
+      };
+      break;
+    case 2: // Hierro
+      const hierroRewards = [
+        { text: '20 monedas', action: () => { currentCoins += 20; } },
+        { text: '1 Daga 🗡️', action: () => { inventory.dagger++; } },
+        { text: '2 usos de Escudo 🛡️', action: () => { shieldDurability += 2; } }
+      ];
+      const chosen2 = randomFromArray(hierroRewards);
+      rewardText = chosen2.text;
+      rewardCallback = chosen2.action;
+      break;
+    case 3: // Plata
+      const plataRewards = [
+        { text: '80 monedas', action: () => { currentCoins += 80; } },
+        { text: '1 Espada Franca ⚔️', action: () => { inventory.sword++; } },
+        { text: '1 Arco de la Reina 🏹', action: () => { inventory.bow++; } },
+        { text: '4 usos de Escudo 🛡️', action: () => { shieldDurability += 4; } }
+      ];
+      const chosen3 = randomFromArray(plataRewards);
+      rewardText = chosen3.text;
+      rewardCallback = chosen3.action;
+      break;
+    case 4: // Dorado
+      const doradoRewards = [
+        { text: '400 monedas', action: () => { currentCoins += 400; } },
+        { text: '1 Hacha de los Brujos 🪓', action: () => { inventory.axe++; } },
+        { text: '6 usos de Escudo 🛡️', action: () => { shieldDurability += 6; } },
+        { text: '1 Arco de la Reina + 2 Escudos 🏹🛡️', action: () => { inventory.bow++; shieldDurability += 2; } }
+      ];
+      const chosen4 = randomFromArray(doradoRewards);
+      rewardText = chosen4.text;
+      rewardCallback = chosen4.action;
+      break;
+    case 5: // Legendario
+      const legendRewards = [
+        { text: '1000 monedas', action: () => { currentCoins += 1000; } },
+        { text: '1 Martillo de la Justicia 🔨', action: () => { inventory.hammer++; } },
+        { text: '10 usos de Escudo 🛡️', action: () => { shieldDurability += 10; } },
+        { text: '1 Martillo + 500 monedas 🔨💰', action: () => { inventory.hammer++; currentCoins += 500; } }
+      ];
+      const chosen5 = randomFromArray(legendRewards);
+      rewardText = chosen5.text;
+      rewardCallback = chosen5.action;
+      break;
+    case 6: // Infernal
+      const infernalRewards = [
+        { text: '2000 monedas', action: () => { currentCoins += 2000; } },
+        { text: '2 Martillos de la Justicia 🔨🔨', action: () => { inventory.hammer += 2; } },
+        { text: '20 usos de Escudo 🛡️', action: () => { shieldDurability += 20; } },
+        { text: '1 Martillo + 1000 monedas + 5 Escudos 🔨💰🛡️', action: () => { inventory.hammer++; currentCoins += 1000; shieldDurability += 5; } }
+      ];
+      const chosen6 = randomFromArray(infernalRewards);
+      rewardText = chosen6.text;
+      rewardCallback = chosen6.action;
+      break;
+  }
+  
+  // Ejecutar premio
+  rewardCallback();
+  
+  // Actualizar UI
+  updateCoinDisplay();
+  updateInventoryUI();
+  
+  // Guardar en BD
+  _supabase.from('profiles').update({
+    gems: gems,
+    coins: currentCoins,
+    inventory_dagger: inventory.dagger,
+    inventory_sword: inventory.sword,
+    inventory_bow: inventory.bow,
+    inventory_axe: inventory.axe,
+    inventory_hammer: inventory.hammer,
+    shield_durability: shieldDurability
+  }).eq('id', currentUser.id).then(r => {
+    if (r.error) console.error('Error guardando cofre:', r.error);
+  });
+  
+  // Mostrar resultado
+  showToast(`${emoji} ¡${chestName}! ${rewardText}`, 'success', 5000);
+  AudioEngine.playShop();
 }
 
 async function checkGlobalState(){
@@ -1766,6 +1930,7 @@ inventory_axe: inventory.axe,
 inventory_hammer: inventory.hammer,
 shield_durability: shieldDurability,
 completed_levels: completedLevels,
+gems: gems,
 enemy_energy: enemyEnergy,
 current_problem_key: savedProblemKey
 })
