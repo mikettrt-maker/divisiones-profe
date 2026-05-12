@@ -1258,6 +1258,7 @@ function jumpToLevel(l){
 AudioEngine.playClick();
 const t = parseInt(l);
 if(t > unlockedLevel){ alert("¡Debes completar el nivel anterior!"); document.getElementById('levelSelect').value = currentMainLevel; return; }
+if(t < unlockedLevel){ alert("¡Ya has superado este nivel! No puedes regresar."); document.getElementById('levelSelect').value = currentMainLevel; return; }
 currentMainLevel = t; currentProblemInLevel = 1;
 currentEnemyLevel = -1;
 loadProblem();
@@ -1319,10 +1320,36 @@ async function loadProblem(){
   populateLevelSelect();
 
   const d = DB[currentMainLevel];
-  if(d && d[currentProblemInLevel-1]){
-    currentDividend = d[currentProblemInLevel-1].d;
-    currentDivisor = d[currentProblemInLevel-1].div;
+  // Avanzar automáticamente si el problema ya fue completado
+  while (d && d[currentProblemInLevel-1]) {
+    const key = `L${currentMainLevel}_P${currentProblemInLevel}`;
+    if (completedLevels.includes(key)) {
+      if (currentProblemInLevel < PROBLEMS_PER_LEVEL) {
+        currentProblemInLevel++;
+      } else {
+        if (currentMainLevel < TOTAL_LEVELS) {
+          unlockedLevel = currentMainLevel + 1;
+          currentMainLevel++;
+          currentProblemInLevel = 1;
+          currentEnemyLevel = -1;
+          savedProblemKey = null;
+          loadProblem();
+          return;
+        } else {
+          hasFinishedGame = true;
+          if (currentUser) {
+            _supabase.from('profiles').update({ completed_at: new Date().toISOString() }).eq('id', currentUser.id);
+          }
+          document.getElementById('msg').innerHTML = "<span style='color:gold;'>¡CÓDICE COMPLETADO!</span>";
+          return;
+        }
+      }
+    } else {
+      break;
+    }
   }
+  currentDividend = d[currentProblemInLevel-1].d;
+  currentDivisor = d[currentProblemInLevel-1].div;
 
   document.getElementById('difficultyLabel').innerText = getDifficultyLabel(currentMainLevel);
   updateEnemyCard();
@@ -1507,15 +1534,15 @@ async function verificarSolucion(){
 
     // Guardar en BD (sin enemy_level)
     if(currentUser) {
-     _supabase.from('profiles').update({
-  total_score: totalScore,
-  current_level: unlockedLevel,
-  current_problem: currentProblemInLevel,
-  coins: currentCoins,
-  completed_levels: completedLevels,   // ← sin JSON.stringify
-  enemy_energy: enemyEnergy,
-  current_problem_key: levelKey
-}).eq('id', currentUser.id)...
+      _supabase.from('profiles').update({
+        total_score: totalScore,
+        current_level: unlockedLevel,
+        current_problem: currentProblemInLevel,
+        coins: currentCoins,
+        completed_levels: completedLevels,
+        enemy_energy: enemyEnergy,
+        current_problem_key: levelKey
+      }).eq('id', currentUser.id).then(function(r) {
         if (r.error) {
           console.error("Error guardando progreso:", r.error);
           document.getElementById('msg').innerHTML = '<span style="color:#ff4444;">🔴 Error al guardar: ' + r.error.message + '</span>';
@@ -1664,7 +1691,7 @@ function populateLevelSelect(){
 const s = document.getElementById('levelSelect'); s.innerHTML = '';
 for(let i=1; i<=TOTAL_LEVELS; i++){
 let o = document.createElement('option'); o.value = i; o.innerText = "Nivel "+i;
-if(i > unlockedLevel){ o.disabled = true; o.innerText += " 🔒"; }
+if(i > unlockedLevel || i < unlockedLevel){ o.disabled = true; o.innerText += " 🔒"; }
 s.appendChild(o);
 }
 s.value = currentMainLevel;
@@ -1738,7 +1765,7 @@ inventory_bow: inventory.bow,
 inventory_axe: inventory.axe,
 inventory_hammer: inventory.hammer,
 shield_durability: shieldDurability,
-completed_levels: completedLevels,  
+completed_levels: completedLevels,
 enemy_energy: enemyEnergy,
 current_problem_key: savedProblemKey
 })
