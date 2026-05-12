@@ -1137,23 +1137,26 @@ catch(e){ alert("Error: "+e.message); }
 async function resetAllUsers(){
 if(!confirm("¿Reiniciar TODOS los puntos y tiempo?")) return;
 try {
-await _supabase.from('profiles').update({
-total_score:0, current_level:1, completed_at:null, current_problem:1,
-total_time_played:0, squad_id:0, coins:0,
-inventory_dagger:0, inventory_sword:0, inventory_bow:0, inventory_axe:0, inventory_hammer:0,
-shield_durability:0, completed_levels:[], enemy_energy:100, current_problem_key:null
-}).neq('id','00000000-0000-0000-0000-000000000000');
-await _supabase.from('game_settings').update({season_end_time:null, is_paused:false, exam_level:0}).eq('id',1);
-alert("¡Reiniciado!"); loadDashboardData();
-} catch(e){ alert("Error: "+e.message); }
-}
-async function assignSquad(uid, sqId){ try { await _supabase.from('profiles').update({squad_id: sqId}).eq('id',uid); loadDashboardData(); } catch(e){ alert("Error"); } }
-document.addEventListener('DOMContentLoaded', async () => {
-try {
-const { data: { session } } = await _supabase.auth.getSession();
-if (session?.user) { currentUser = session.user; showApp(); }
-else { showLogin(); }
-} catch(e) { showLogin(); }
+_supabase.from('profiles').update({
+  total_score: totalScore,
+  current_level: unlockedLevel,
+  current_problem: currentProblemInLevel,
+  coins: currentCoins,
+  completed_levels: completedLevels,
+  enemy_energy: enemyEnergy,
+  enemy_level: currentEnemyLevel,
+  current_problem_key: levelKey
+}).eq('id', currentUser.id).then(r => {
+  if (r.error) {
+    console.error("Error guardando progreso:", r.error);
+    // Mostrar un mensaje visible en el juego
+    document.getElementById('msg').innerHTML = '<span style="color:#ff4444;">🔴 Error al guardar: ' + r.error.message + '</span>';
+    // También un aviso emergente
+    alert("Error al guardar: " + r.error.message);
+  } else {
+    // Si no hay error, podemos confirmar (opcional, solo para pruebas)
+    console.log("Progreso guardado correctamente");
+  }
 });
 let typingTimer;
 function showLogin(){
