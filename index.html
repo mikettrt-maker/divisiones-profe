@@ -1507,15 +1507,15 @@ async function verificarSolucion(){
 
     // Guardar en BD (sin enemy_level)
     if(currentUser) {
-      _supabase.from('profiles').update({
-        total_score: totalScore,
-        current_level: unlockedLevel,
-        current_problem: currentProblemInLevel,
-        coins: currentCoins,
-        completed_levels: JSON.stringify(completedLevels),
-        enemy_energy: enemyEnergy,
-        current_problem_key: levelKey
-      }).eq('id', currentUser.id).then(function(r) {
+     _supabase.from('profiles').update({
+  total_score: totalScore,
+  current_level: unlockedLevel,
+  current_problem: currentProblemInLevel,
+  coins: currentCoins,
+  completed_levels: completedLevels,   // ← sin JSON.stringify
+  enemy_energy: enemyEnergy,
+  current_problem_key: levelKey
+}).eq('id', currentUser.id)...
         if (r.error) {
           console.error("Error guardando progreso:", r.error);
           document.getElementById('msg').innerHTML = '<span style="color:#ff4444;">🔴 Error al guardar: ' + r.error.message + '</span>';
@@ -1738,7 +1738,7 @@ inventory_bow: inventory.bow,
 inventory_axe: inventory.axe,
 inventory_hammer: inventory.hammer,
 shield_durability: shieldDurability,
-completed_levels: JSON.stringify(completedLevels), // CORRECCIÓN
+completed_levels: completedLevels,  
 enemy_energy: enemyEnergy,
 current_problem_key: savedProblemKey
 })
