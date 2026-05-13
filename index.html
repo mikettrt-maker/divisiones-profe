@@ -1158,7 +1158,7 @@ const inp = document.getElementById('login-username'), img = document.getElement
 const ni = inp.cloneNode(true); inp.parentNode.replaceChild(ni, inp);
 document.getElementById('login-username').addEventListener('input', e => {
 clearTimeout(typingTimer);
-if(!e.target.value.trim()){ img.src="https://oskrniownbbzkgnwunzz.supabase.co/storage/v1/object/public/avatares/1.png"; return; }
+if(!e.target.value.trim()){ img.src="https://mikettrt-maker.github.io/divisiones-profe/img/1.png"; return; }
 typingTimer = setTimeout(() => { img.src = `https://api.dicebear.com/8.x/adventurer/svg?seed=${e.target.value.trim()}`; }, 500);
 });
 }
