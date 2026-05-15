@@ -1915,6 +1915,10 @@ document.getElementById('season-badge').classList.remove('finished');
 let selectedGiftAmount = 0;
 function startStudentHeartbeat(){
 setInterval(async () => { if(currentUser && !isAdmin) await _supabase.from('profiles').update({last_seen: new Date().toISOString()}).eq('id', currentUser.id); }, 15000);
+// Forzar actualización de last_seen al cargar
+if (currentUser && !isAdmin) {
+  _supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', currentUser.id);
+}
 setInterval(() => { if(!isGridLocked && !hasFinishedGame){ playTimeCounter++; if(playTimeCounter%60 === 0) saveTime(); } }, 1000);
 setInterval(async () => {
 if(!currentUser || isAdmin) return;
