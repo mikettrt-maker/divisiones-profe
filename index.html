@@ -706,29 +706,23 @@ function generarDivision(nivel) {
   const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
   if (nivel <= 2) {
-    // 1 cifra, sin residuo
     divisor = rand(2, 9);
-    dividendo = divisor * rand(10, 199); // hasta 3 cifras
+    dividendo = divisor * rand(10, 199);
   } else if (nivel <= 5) {
-    // 2 cifras, sin residuo
     divisor = rand(10, 99);
-    dividendo = divisor * rand(5, 99); // 3-4 cifras
+    dividendo = divisor * rand(5, 99);
   } else if (nivel <= 7) {
-    // 3 cifras, sin residuo
     divisor = rand(100, 999);
-    dividendo = divisor * rand(2, 50); // 4-5 cifras
+    dividendo = divisor * rand(2, 50);
   } else if (nivel <= 8) {
-    // 2 cifras, con residuo pequeño
     divisor = rand(10, 99);
     residuoEsperado = rand(1, 9);
     dividendo = divisor * rand(50, 500) + residuoEsperado;
   } else if (nivel === 9) {
-    // 3 cifras, con residuo
     divisor = rand(100, 999);
     residuoEsperado = rand(1, 9);
     dividendo = divisor * rand(10, 50) + residuoEsperado;
   } else {
-    // nivel 10: 3 cifras, dividendo más grande, residuo
     divisor = rand(100, 999);
     residuoEsperado = rand(1, 9);
     dividendo = divisor * rand(20, 100) + residuoEsperado;
@@ -1305,10 +1299,40 @@ if(!u || p.length < 6){ e.textContent = "Datos incompletos."; e.style.display='b
 try {
 const { data, error } = await _supabase.auth.signUp({ email: u+"@profemiguel.com", password: p });
 if(error) throw error;
+
+// Crear perfil automáticamente tras el registro
+await _supabase.from('profiles').insert({
+  id: data.user.id,
+  username: u,
+  total_score: 0,
+  current_level: 1,
+  current_problem: 1,
+  coins: 0,
+  gems: 0,
+  player_health: 100,
+  is_dead: false,
+  enemy_energy: 100,
+  shield_durability: 0,
+  total_attacks: 0,
+  avatar_style: 'avatar1',
+  squad_id: 0,
+  is_banned: false,
+  completed_levels: [],
+  inventory_dagger: 0,
+  inventory_sword: 0,
+  inventory_bow: 0,
+  inventory_axe: 0,
+  inventory_hammer: 0
+});
+
 alert("Registrado. Entra ahora.");
 } catch(err){ e.textContent = "Error: "+err.message; e.style.display='block'; }
 }
 async function logout(){
+// Guardar antes de cerrar sesión
+if (currentUser && !isAdmin) {
+  await saveScore();
+}
 await _supabase.auth.signOut();
 currentUser = null; totalScore = 0; currentCoins = 0; enemyEnergy = 100; currentStreak = 0;
 inventory = { dagger:0, sword:0, bow:0, axe:0, hammer:0 };
@@ -1654,9 +1678,9 @@ async function verificarSolucion(){
     if(enemyDefeated) defeatEnemy();
 
     if(currentUser) {
-      // Función de guardado con reintento
-      const guardarProgreso = () => {
-        _supabase.from('profiles').update({
+      // Guardado con reintento
+      const guardar = async () => {
+        const { error } = await _supabase.from('profiles').update({
           total_score: totalScore,
           current_level: unlockedLevel,
           current_problem: currentProblemInLevel,
@@ -1666,32 +1690,29 @@ async function verificarSolucion(){
           player_health: playerHealth,
           enemy_energy: enemyEnergy,
           current_problem_key: levelKey
-        }).eq('id', currentUser.id).then(function(r) {
-          if (r.error) {
-            console.error("Error guardando progreso, reintentando en 1.5s:", r.error);
-            document.getElementById('msg').innerHTML = '<span style="color:#ff4444;">🔴 No se pudo guardar, reintentando...</span>';
-            setTimeout(() => {
-              _supabase.from('profiles').update({
-                total_score: totalScore,
-                current_level: unlockedLevel,
-                current_problem: currentProblemInLevel,
-                coins: currentCoins,
-                completed_levels: completedLevels,
-                gems: gems,
-                player_health: playerHealth,
-                enemy_energy: enemyEnergy,
-                current_problem_key: levelKey
-              }).eq('id', currentUser.id);
-            }, 1500);
-          } else {
-            console.log("Progreso guardado correctamente");
-          }
-        }).catch(function(err) {
-          console.error("Excepción en guardado:", err);
-          document.getElementById('msg').innerHTML = '<span style="color:#ff4444;">🔴 Error inesperado al guardar</span>';
-        });
+        }).eq('id', currentUser.id);
+        if (error) {
+          console.error("Error guardando progreso:", error);
+          document.getElementById('msg').innerHTML = '<span style="color:#ff4444;">🔴 Error al guardar: ' + error.message + '</span>';
+          // Reintento tras 1.5s
+          setTimeout(() => {
+            _supabase.from('profiles').update({
+              total_score: totalScore,
+              current_level: unlockedLevel,
+              current_problem: currentProblemInLevel,
+              coins: currentCoins,
+              completed_levels: completedLevels,
+              gems: gems,
+              player_health: playerHealth,
+              enemy_energy: enemyEnergy,
+              current_problem_key: levelKey
+            }).eq('id', currentUser.id);
+          }, 1500);
+        } else {
+          console.log("Progreso guardado correctamente");
+        }
       };
-      guardarProgreso();
+      guardar();
     }
 
     isVerifying = false;
@@ -1735,14 +1756,14 @@ async function verificarSolucion(){
       btn.disabled = true;
       document.getElementById('msg').innerHTML = '<span style="color:red;">💀 HAS MUERTO. Espera la próxima temporada.</span>';
       if (currentUser) {
-        _supabase.from('profiles').update({ player_health: 0, is_dead: true }).eq('id', currentUser.id);
+        await _supabase.from('profiles').update({ player_health: 0, is_dead: true }).eq('id', currentUser.id);
       }
       isVerifying = false;
       return;
     }
 
     if (currentUser) {
-      _supabase.from('profiles').update({ player_health: playerHealth }).eq('id', currentUser.id);
+      await _supabase.from('profiles').update({ player_health: playerHealth }).eq('id', currentUser.id);
     }
 
     isVerifying = false;
