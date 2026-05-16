@@ -1645,6 +1645,7 @@ async function verificarSolucion(){
     incrementStreak();
     updateCoinDisplay();
     updateHealthBar();
+    updateRanking();   // ← ACTUALIZACIÓN INMEDIATA DEL RANKING
     document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
 
     enemyEnergy = Math.max(0, enemyEnergy - 10);
@@ -1653,27 +1654,44 @@ async function verificarSolucion(){
     if(enemyDefeated) defeatEnemy();
 
     if(currentUser) {
-      _supabase.from('profiles').update({
-        total_score: totalScore,
-        current_level: unlockedLevel,
-        current_problem: currentProblemInLevel,
-        coins: currentCoins,
-        completed_levels: completedLevels,
-        gems: gems,
-        player_health: playerHealth,
-        enemy_energy: enemyEnergy,
-        current_problem_key: levelKey
-      }).eq('id', currentUser.id).then(function(r) {
-        if (r.error) {
-          console.error("Error guardando progreso:", r.error);
-          document.getElementById('msg').innerHTML = '<span style="color:#ff4444;">🔴 Error al guardar: ' + r.error.message + '</span>';
-        } else {
-          console.log("Progreso guardado correctamente");
-        }
-      }).catch(function(err) {
-        console.error("Excepción en guardado:", err);
-        document.getElementById('msg').innerHTML = '<span style="color:#ff4444;">🔴 Error inesperado al guardar</span>';
-      });
+      // Función de guardado con reintento
+      const guardarProgreso = () => {
+        _supabase.from('profiles').update({
+          total_score: totalScore,
+          current_level: unlockedLevel,
+          current_problem: currentProblemInLevel,
+          coins: currentCoins,
+          completed_levels: completedLevels,
+          gems: gems,
+          player_health: playerHealth,
+          enemy_energy: enemyEnergy,
+          current_problem_key: levelKey
+        }).eq('id', currentUser.id).then(function(r) {
+          if (r.error) {
+            console.error("Error guardando progreso, reintentando en 1.5s:", r.error);
+            document.getElementById('msg').innerHTML = '<span style="color:#ff4444;">🔴 No se pudo guardar, reintentando...</span>';
+            setTimeout(() => {
+              _supabase.from('profiles').update({
+                total_score: totalScore,
+                current_level: unlockedLevel,
+                current_problem: currentProblemInLevel,
+                coins: currentCoins,
+                completed_levels: completedLevels,
+                gems: gems,
+                player_health: playerHealth,
+                enemy_energy: enemyEnergy,
+                current_problem_key: levelKey
+              }).eq('id', currentUser.id);
+            }, 1500);
+          } else {
+            console.log("Progreso guardado correctamente");
+          }
+        }).catch(function(err) {
+          console.error("Excepción en guardado:", err);
+          document.getElementById('msg').innerHTML = '<span style="color:#ff4444;">🔴 Error inesperado al guardar</span>';
+        });
+      };
+      guardarProgreso();
     }
 
     isVerifying = false;
@@ -1709,6 +1727,7 @@ async function verificarSolucion(){
 
     playerHealth = Math.max(0, playerHealth - 10);
     updateHealthBar();
+    updateRanking();   // ← ACTUALIZACIÓN INMEDIATA DE LA SALUD EN EL RANKING
 
     if (playerHealth === 0) {
       isDead = true;
