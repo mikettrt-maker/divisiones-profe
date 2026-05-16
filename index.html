@@ -1655,15 +1655,14 @@ async function verificarSolucion(){
       currentCoins += 5;
       completedLevels.push(levelKey);
       
-      if(currentProblemInLevel === PROBLEMS_PER_LEVEL) {
+    if(currentProblemInLevel === PROBLEMS_PER_LEVEL) {
         gems += 1;
         if (currentMainLevel < TOTAL_LEVELS) {
           unlockedLevel = currentMainLevel + 1;
-          currentProblemInLevel = 1;
+          // NO modificamos currentProblemInLevel aquí; lo hará el setTimeout
         }
         setTimeout(() => showToast('💎 ¡Has ganado 1 gema por completar el nivel!', 'success', 4000), 300);
       }
-    }
 
     updateUI();
     incrementStreak();
