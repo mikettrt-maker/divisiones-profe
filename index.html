@@ -1655,7 +1655,7 @@ async function verificarSolucion(){
       currentCoins += 5;
       completedLevels.push(levelKey);
       
-    if(currentProblemInLevel === PROBLEMS_PER_LEVEL) {
+     if(currentProblemInLevel === PROBLEMS_PER_LEVEL) {
         gems += 1;
         if (currentMainLevel < TOTAL_LEVELS) {
           unlockedLevel = currentMainLevel + 1;
@@ -1663,9 +1663,11 @@ async function verificarSolucion(){
         }
         setTimeout(() => showToast('💎 ¡Has ganado 1 gema por completar el nivel!', 'success', 4000), 300);
       }
+    }  // ← ESTA ES LA LLAVE QUE FALTA (cierra el if(!completedLevels.includes(levelKey)))
 
     updateUI();
     incrementStreak();
+      
     updateCoinDisplay();
     updateHealthBar();
     updateRanking();   // ← ACTUALIZACIÓN INMEDIATA DEL RANKING
