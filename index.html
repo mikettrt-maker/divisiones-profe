@@ -1364,7 +1364,7 @@ hasFinishedGame = data?.completed_at || false;
 
 savedProblemKey = data?.current_problem_key || null;
 currentEnemyLevel = data?.enemy_level || unlockedLevel;
-if (currentEnemyLevel === unlockedLevel && data?.enemy_energy != null) {
+if (currentEnemyLevel === unlockedLevel && data?.enemy_energy != null && data.enemy_energy > 0) {
   enemyEnergy = data.enemy_energy;
 } else {
   enemyEnergy = 100;
@@ -1486,6 +1486,13 @@ async function loadProblem(){
 
   document.getElementById('difficultyLabel').innerText = getDifficultyLabel(currentMainLevel);
   updateEnemyCard();
+  // Si la energía está en 0 pero no hemos acabado el nivel, la restablecemos
+if (enemyEnergy <= 0 && !completedLevels.includes(`L${currentMainLevel}_P${PROBLEMS_PER_LEVEL}`)) {
+  enemyEnergy = 100;
+  if (currentUser) {
+    _supabase.from('profiles').update({ enemy_energy: 100 }).eq('id', currentUser.id);
+  }
+}
 
   if (currentEnemyLevel !== currentMainLevel) {
     enemyEnergy = 100;
