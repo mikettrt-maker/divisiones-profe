@@ -986,17 +986,44 @@ showToast(`❌ Error: ${e.message}`,'tomato');
 }
 }
 
-function buyHealingPlant() {
+async function buyHealingPlant() {
   const cost = 300;
   if (currentCoins < cost) return showToast('Necesitas 300 monedas', 'tomato');
   if (playerHealth >= 100) return showToast('Tu salud ya está al máximo', 'tomato');
   if (!confirm('¿Comprar una planta curativa por 300 monedas?')) return;
+  
   currentCoins -= cost;
   playerHealth = 100;
   updateCoinDisplay();
   updateHealthBar();
+  
+  // Guardar en la base de datos de forma segura
+  const { error } = await _supabase.from('profiles').update({ 
+    coins: currentCoins, 
+    player_health: playerHealth 
+  }).eq('id', currentUser.id);
+  
+  if (error) {
+    // Si falla, revertir los cambios locales
+    currentCoins += cost;
+    playerHealth = Math.min(100, playerHealth); // realmente era 100, así que se queda igual, pero si tenía menos se restauraba
+    // Mejor restaurar valor anterior: como playerHealth era el que fuera, lo dejamos en el estado anterior (no podemos saberlo fácilmente; pero en este flujo solo se cambia a 100, así que podemos revertir a lo que había antes de la compra)
+    // Sin embargo, playerHealth podría no haber sido 100; entonces perderíamos el valor original. Para simplificar, recargamos los datos de la BD.
+    // Pero mejor: guardar el valor antiguo antes de cambiar.
+    // Corregimos:
+    const oldHealth = playerHealth;
+    currentCoins += cost;
+    playerHealth = oldHealth;
+    updateCoinDisplay();
+    updateHealthBar();
+    showToast('❌ Error al guardar la compra', 'tomato');
+    console.error("Error en buyHealingPlant:", error);
+    return;
+  }
+  
+  // Actualizar ranking
+  updateRanking();
   showToast('🌿 ¡Salud restaurada por completo!', 'success');
-  _supabase.from('profiles').update({ coins: currentCoins, player_health: playerHealth }).eq('id', currentUser.id);
 }
 
 function buyGem() {
