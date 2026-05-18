@@ -387,6 +387,22 @@ white-space:nowrap; text-align:center; letter-spacing:0.5px;
 .avatar-container{width:70px; height:70px;}
 }
 .inv-item.empty { opacity: 0.4; filter: grayscale(100%); cursor: default; }
+.mission-card {
+  transition: all 0.3s ease;
+  cursor: default;
+}
+.mission-card img {
+  display: block;
+  transition: filter 0.4s, opacity 0.4s;
+}
+.mission-card.completed img {
+  filter: grayscale(0%) !important;
+  opacity: 1 !important;
+  box-shadow: 0 0 15px gold;
+}
+.mission-card:hover {
+  transform: scale(1.1);
+}
 </style>
 </head>
 <body>
@@ -572,6 +588,29 @@ white-space:nowrap; text-align:center; letter-spacing:0.5px;
 <input type="hidden" id="valCociente">
 <button id="btn-verify" class="btn-primary" onclick="verificarSolucion()">⚔️ Verificar</button>
 <div id="msg"></div>
+<!-- Cartas de Misión -->
+<div id="mission-cards" style="display:flex; justify-content:center; gap:15px; margin-top:10px; flex-wrap:wrap;">
+  <!-- Carta 1: 3000 florines (cambia el src por el nombre real de la imagen) -->
+  <div class="mission-card" title="Acumula 3000 florines en total">
+    <img src="https://mikettrt-maker.github.io/divisiones-profe/img/14.jpg" alt="3000 Florines" style="width:70px; height:100px; border-radius:8px; filter:grayscale(100%); opacity:0.5;">
+  </div>
+  <!-- Carta 2: 50 escudos -->
+  <div class="mission-card" title="Acumula 50 usos de escudo">
+    <img src="https://mikettrt-maker.github.io/divisiones-profe/img/13.jpg" alt="50 Escudos" style="width:70px; height:100px; border-radius:8px; filter:grayscale(100%); opacity:0.5;">
+  </div>
+  <!-- Carta 3: 10 ataques -->
+  <div class="mission-card" title="Realiza 10 ataques">
+    <img src="https://mikettrt-maker.github.io/divisiones-profe/img/12.jpg" alt="10 Ataques" style="width:70px; height:100px; border-radius:8px; filter:grayscale(100%); opacity:0.5;">
+  </div>
+  <!-- Carta 4: Racha de 15 -->
+  <div class="mission-card" title="Alcanza una racha de 15">
+    <img src="https://mikettrt-maker.github.io/divisiones-profe/img/11.jpg" alt="Racha 15" style="width:70px; height:100px; border-radius:8px; filter:grayscale(100%); opacity:0.5;">
+  </div>
+  <!-- Carta 5: 2000 puntos -->
+  <div class="mission-card" title="Acumula 2000 puntos totales">
+    <img src="https://mikettrt-maker.github.io/divisiones-profe/img/10.jpg" alt="2000 Puntos" style="width:70px; height:100px; border-radius:8px; filter:grayscale(100%); opacity:0.5;">
+  </div>
+</div>  
 </div>
 </div>
 <div class="ranking-sidebar" id="ranking-sidebar">
