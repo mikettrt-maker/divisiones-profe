@@ -391,41 +391,18 @@ white-space:nowrap; text-align:center; letter-spacing:0.5px;
   transition: all 0.3s ease;
   cursor: default;
 }
-.mission-card-wrap {
-  display: flex; flex-direction: column; align-items: center;
-  gap: 4px; position: relative; cursor: pointer;
+.mission-card img {
+  display: block;
+  transition: filter 0.4s, opacity 0.4s;
 }
-.mission-card-wrap img {
-  width: 100px; height: 140px; border-radius: 8px;
-  transition: filter 0.5s, opacity 0.5s, box-shadow 0.5s, transform 0.3s;
-  filter: grayscale(100%); opacity: 0.45;
+.mission-card.completed img {
+  filter: grayscale(0%) !important;
+  opacity: 1 !important;
+  box-shadow: 0 0 15px gold;
 }
-.mission-card-wrap:hover img { transform: scale(1.08); }
-.mission-card-wrap.completed img {
-  filter: grayscale(0%); opacity: 1;
-  box-shadow: 0 0 18px 4px gold, 0 0 36px 8px rgba(255,200,0,0.4);
-  animation: missionGlow 2s infinite alternate;
+.mission-card:hover {
+  transform: scale(1.1);
 }
-@keyframes missionGlow {
-  from { box-shadow: 0 0 12px 3px gold, 0 0 24px 6px rgba(255,200,0,0.3); }
-  to   { box-shadow: 0 0 22px 6px #ffe066, 0 0 44px 12px rgba(255,200,0,0.6); }
-}
-.mission-progress-bar-bg {
-  width: 100px; height: 6px; background: rgba(255,255,255,0.12);
-  border-radius: 3px; overflow: hidden; border: 1px solid rgba(201,168,76,0.3);
-}
-.mission-progress-bar-fill {
-  height: 100%; border-radius: 3px;
-  background: linear-gradient(90deg, var(--cr-gold-dark), var(--cr-gold));
-  transition: width 0.4s;
-}
-.mission-label {
-  font-family: 'Cinzel', serif; font-size: 0.6rem;
-  color: #aaa; text-align: center; max-width: 100px;
-}
-.mission-label.done { color: var(--cr-gold); font-weight: 700; }
-.shop-item.locked-legendary { opacity: 0.55; filter: grayscale(70%); }
-.shop-item.locked-legendary .shop-buy-btn { cursor: not-allowed; }
 </style>
 </head>
 <body>
@@ -612,7 +589,27 @@ white-space:nowrap; text-align:center; letter-spacing:0.5px;
 <button id="btn-verify" class="btn-primary" onclick="verificarSolucion()">⚔️ Verificar</button>
 <div id="msg"></div>
 <!-- Cartas de Misión -->
-<div id="mission-cards" style="display:flex; justify-content:center; gap:18px; margin-top:14px; flex-wrap:wrap; align-items:flex-end;">
+<div id="mission-cards" style="display:flex; justify-content:center; gap:25px; margin-top:10px; flex-wrap:wrap;">
+  <!-- Carta 1: 3000 florines (cambia el src por el nombre real de la imagen) -->
+  <div class="mission-card" title="Acumula 3000 florines en total">
+    <img src="https://mikettrt-maker.github.io/divisiones-profe/img/14.jpg" alt="3000 Florines" style="width:100px; height:140px; border-radius:8px; filter:grayscale(100%); opacity:0.5;">
+  </div>
+  <!-- Carta 2: 50 escudos -->
+  <div class="mission-card" title="Acumula 50 usos de escudo">
+    <img src="https://mikettrt-maker.github.io/divisiones-profe/img/13.jpg" alt="50 Escudos" style="width:100px; height:140px; border-radius:8px; filter:grayscale(100%); opacity:0.5;">
+  </div>
+  <!-- Carta 3: 10 ataques -->
+  <div class="mission-card" title="Realiza 10 ataques">
+    <img src="https://mikettrt-maker.github.io/divisiones-profe/img/12.jpg" alt="10 Ataques" style="width:100px; height:140px; border-radius:8px; filter:grayscale(100%); opacity:0.5;">
+  </div>
+  <!-- Carta 4: Racha de 15 -->
+  <div class="mission-card" title="Alcanza una racha de 15">
+    <img src="https://mikettrt-maker.github.io/divisiones-profe/img/11.jpg" alt="Racha 15" style="width:100px; height:140px; border-radius:8px; filter:grayscale(100%); opacity:0.5;">
+  </div>
+  <!-- Carta 5: 2000 puntos -->
+  <div class="mission-card" title="Acumula 2000 puntos totales">
+    <img src="https://mikettrt-maker.github.io/divisiones-profe/img/10.jpg" alt="2000 Puntos" style="width:100px; height:140px; border-radius:8px; filter:grayscale(100%); opacity:0.5;">
+  </div>
 </div>  
 </div>
 </div>
@@ -739,153 +736,7 @@ const SQUADS = {
 3:{name:"Guardianes del Grial",color:"#ffd700",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#1a1a00" stroke="#ffd700" stroke-width="4"/><path d="M40 50 C40 30 60 30 60 50 L55 65 L45 65 Z" fill="#ffd700" stroke="#ffd700" stroke-width="2"/><path d="M35 55 L25 40 M65 55 L75 40" stroke="#ffd700" stroke-width="4"/> </svg>`},
 4:{name:"Ejército de la Penumbra",color:"#c0392b",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#2c0404" stroke="#c0392b" stroke-width="4"/><circle cx="50" cy="55" r="18" fill="none" stroke="#c0392b" stroke-width="3"/><circle cx="40" cy="50" r="3" fill="#c0392b"/><circle cx="60" cy="50" r="3" fill="#c0392b"/><path d="M45 62 L55 62 L50 58 Z" fill="#c0392b"/><path d="M50 70 L50 57" stroke="#c0392b" stroke-width="3"/> </svg>`}
 };
-// ── Variables de misiones ─────────────────────
-let totalCoinsEarned   = 0;
-let totalShieldsEarned = 0;
-let maxStreak          = 0;
-let missionsCompleted  = [];
-let hasDiamondArmor    = false;
 
-// ── Definición de misiones ────────────────────
-const MISSIONS = [
-  { id:0, img:'https://mikettrt-maker.github.io/divisiones-profe/img/14.jpg', title:'3000 Florines', desc:'Acumula 3000 florines en total', check:()=>totalCoinsEarned>=3000, progress:()=>({cur:Math.min(totalCoinsEarned,3000),max:3000}) },
-  { id:1, img:'https://mikettrt-maker.github.io/divisiones-profe/img/13.jpg', title:'50 Escudos', desc:'Obtén 50 usos de escudo en total', check:()=>totalShieldsEarned>=50, progress:()=>({cur:Math.min(totalShieldsEarned,50),max:50}) },
-  { id:2, img:'https://mikettrt-maker.github.io/divisiones-profe/img/12.jpg', title:'10 Ataques', desc:'Realiza 10 ataques contra rivales', check:()=>totalAttacks>=10, progress:()=>({cur:Math.min(totalAttacks,10),max:10}) },
-  { id:3, img:'https://mikettrt-maker.github.io/divisiones-profe/img/11.jpg', title:'Racha de 15', desc:'Alcanza una racha de 15 aciertos', check:()=>maxStreak>=15, progress:()=>({cur:Math.min(maxStreak,15),max:15}) },
-  { id:4, img:'https://mikettrt-maker.github.io/divisiones-profe/img/10.jpg', title:'2000 Puntos', desc:'Acumula 2000 puntos de rango', check:()=>totalScore>=2000, progress:()=>({cur:Math.min(totalScore,2000),max:2000}) }
-];
-
-// ── Render de cartas ──────────────────────────
-function renderMissionCards() {
-  const container = document.getElementById('mission-cards');
-  if (!container) return;
-  container.innerHTML = '';
-  MISSIONS.forEach(m => {
-    const done = missionsCompleted.includes(m.id);
-    const prog = m.progress();
-    const pct  = Math.min(100, Math.round((prog.cur / prog.max) * 100));
-    const wrap = document.createElement('div');
-    wrap.className = 'mission-card-wrap' + (done ? ' completed' : '');
-    wrap.title = m.desc;
-    wrap.innerHTML = `
-      <img src="${m.img}" alt="${m.title}">
-      <div class="mission-progress-bar-bg">
-        <div class="mission-progress-bar-fill" style="width:${pct}%"></div>
-      </div>
-      <div class="mission-label ${done ? 'done' : ''}">
-        ${done ? '✅ ¡Completada!' : `${prog.cur}/${prog.max}`}
-      </div>`;
-    container.appendChild(wrap);
-  });
-}
-
-// ── Verificar y otorgar misiones ──────────────
-async function checkAndAwardMissions() {
-  if (!currentUser || isAdmin) return;
-  let newlyCompleted = false;
-  const allDoneBefore = missionsCompleted.length === 5;
-  for (const m of MISSIONS) {
-    if (!missionsCompleted.includes(m.id) && m.check()) {
-      missionsCompleted.push(m.id);
-      newlyCompleted = true;
-      inventory.codex_sword = (inventory.codex_sword || 0) + 1;
-      showToast(`🃏 ¡Misión completada! "${m.title}" → +1 ⚔️ Espada del Códice`, 'success', 6000);
-      AudioEngine.playLevelUp();
-      triggerEpicEffect();
-    }
-  }
-  const allDoneNow = missionsCompleted.length === 5;
-  if (!allDoneBefore && allDoneNow && !hasDiamondArmor) {
-    hasDiamondArmor = true;
-    showToast('🛡️💎 ¡ARMADURA DE DIAMANTE DESBLOQUEADA! Protección absoluta durante la temporada.', 'success', 8000);
-    setTimeout(() => triggerEpicEffect(), 500);
-  }
-  if (newlyCompleted) {
-    await saveMissionProgress();
-    renderMissionCards();
-    updateInventoryUI();
-  }
-}
-
-// ── Guardar progreso de misiones ──────────────
-async function saveMissionProgress() {
-  if (!currentUser) return;
-  const missionFlags = {
-    mission1_completed: missionsCompleted.includes(0),
-    mission2_completed: missionsCompleted.includes(1),
-    mission3_completed: missionsCompleted.includes(2),
-    mission4_completed: missionsCompleted.includes(3),
-    mission5_completed: missionsCompleted.includes(4)
-  };
-  try {
-    await _supabase.from('profiles').update({
-      total_coins_earned:   totalCoinsEarned,
-      total_shields_earned: totalShieldsEarned,
-      max_streak:           maxStreak,
-      has_diamond_armor:    hasDiamondArmor,
-      inventory_codex_sword: inventory.codex_sword || 0,
-      ...missionFlags
-    }).eq('id', currentUser.id);
-  } catch(e) { console.error('Error guardando misiones:', e); }
-}
-
-// ── Ataque con Espada del Códice ──────────────
-async function attackWithCodexSword(targetId, targetName) {
-  if (!inventory.codex_sword || inventory.codex_sword <= 0) return showToast('No tienes la Espada del Códice', 'tomato');
-  if (!confirm(`⚔️💀 ¿Usar la ESPADA DEL CÓDICE contra ${targetName}?\nSus puntos quedarán en 0. Ignora todos los escudos.\n(Solo la Armadura de Diamante puede resistirla)`)) return;
-  inventory.codex_sword--;
-  updateInventoryUI();
-  try {
-    const { data: victim, error: fetchError } = await _supabase.from('profiles').select('total_score, diamond_armor, username').eq('id', targetId).single();
-    if (fetchError || !victim) throw new Error('Rival no encontrado');
-    if (victim.diamond_armor) {
-      showToast(`🛡️💎 ¡${targetName} tiene la ARMADURA DE DIAMANTE! Tu Espada del Códice no tuvo efecto.`, 'tomato', 6000);
-      inventory.codex_sword++;
-      updateInventoryUI();
-    } else {
-      const { error: updateError } = await _supabase.from('profiles').update({ total_score: 0 }).eq('id', targetId);
-      if (updateError) throw updateError;
-      showToast(`⚔️💀 ¡DEVASTADOR! ${targetName} ha perdido TODOS sus puntos (${victim.total_score} → 0)`, 'tomato', 7000);
-      AudioEngine.playEpic();
-      updateRanking();
-    }
-    await _supabase.from('profiles').update({ inventory_codex_sword: inventory.codex_sword }).eq('id', currentUser.id);
-  } catch(e) {
-    console.error('Error en ataque Espada del Códice:', e);
-    showToast('❌ Error: ' + e.message, 'tomato');
-    inventory.codex_sword++;
-    updateInventoryUI();
-  }
-}
-
-// ── Selector de rival para Espada del Códice ──
-function prepararAtaqueCodexSword() {
-  if (!inventory.codex_sword || inventory.codex_sword <= 0) { showToast('No tienes la Espada del Códice', 'tomato'); return; }
-  if (!rankingDataCache || rankingDataCache.length === 0) { showToast('Espera a que cargue la Corte...', 'tomato'); return; }
-  const me = currentUser?.email?.split('@')[0];
-  const rivals = rankingDataCache.filter(u => u.username !== me);
-  if (rivals.length === 0) { showToast('No hay rivales disponibles', 'tomato'); return; }
-  const modal = document.createElement('div');
-  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.88);z-index:99999;display:flex;align-items:center;justify-content:center;';
-  modal.innerHTML = `
-    <div style="background:linear-gradient(180deg,#16213e,#0d1c3b);padding:24px;border-radius:14px;max-width:420px;width:92%;border:3px solid gold;box-shadow:0 0 40px rgba(201,168,76,0.5);">
-      <h3 style="color:gold;text-align:center;margin:0 0 6px 0;font-family:'Cinzel Decorative',serif;font-size:1.3rem;">⚔️ Espada del Códice</h3>
-      <p style="color:#ff4444;text-align:center;font-family:'Cinzel',serif;font-size:0.8rem;margin:0 0 16px 0;">💀 Reduce a 0 los puntos del rival (ignora escudos)</p>
-      <div style="max-height:300px;overflow-y:auto;">
-        ${rivals.map(u => {
-          const armor = u.diamond_armor ? ' <span title="Armadura de Diamante" style="color:cyan;">💎</span>' : '';
-          return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 6px;border-bottom:1px solid #2a3a5a;">
-            <span style="color:#e0e0e0;font-family:'Cinzel',serif;font-size:.85rem;">${u.username}${armor} <small style="color:#888;">— ${u.total_score} pts</small></span>
-            <button style="padding:5px 12px;border-radius:6px;border:none;background:linear-gradient(135deg,#c0392b,#7a0000);color:white;font-family:'Cinzel',serif;font-size:.8rem;cursor:pointer;"
-              onclick="attackWithCodexSword('${u.id}','${u.username}');document.body.removeChild(this.closest('[style*=position]'));">⚔️ Atacar</button>
-          </div>`;
-        }).join('')}
-      </div>
-      <button style="margin-top:14px;width:100%;padding:9px;border-radius:8px;border:1px solid #444;background:#1a2a3a;color:#aaa;font-family:'Cinzel',serif;cursor:pointer;"
-        onclick="document.body.removeChild(this.closest('[style*=position]'));">Cancelar</button>
-    </div>`;
-  document.body.appendChild(modal);
-}
 // ===============================================
 // GENERADOR DE DIVISIONES ALEATORIAS
 // ===============================================
@@ -1014,32 +865,6 @@ function updateInventoryUI() {
     shieldSpan.innerHTML = '🛡️ <small>0</small>';
   }
   bar.appendChild(shieldSpan);
-  // Espada del Códice en inventario
-const swordCount = inventory.codex_sword || 0;
-const codexSpan = document.createElement('span');
-if (swordCount > 0) {
-  codexSpan.className = 'inv-item';
-  codexSpan.title = `Espada del Códice (${swordCount}) — deja rivales en 0 pts`;
-  codexSpan.innerHTML = `⚔️💀 <small>${swordCount}</small>`;
-  codexSpan.style.cursor = 'pointer';
-  codexSpan.style.borderColor = '#ff4444';
-  codexSpan.onclick = () => prepararAtaqueCodexSword();
-} else {
-  codexSpan.className = 'inv-item empty';
-  codexSpan.title = 'Sin Espada del Códice';
-  codexSpan.innerHTML = '⚔️💀 <small>0</small>';
-}
-bar.appendChild(codexSpan);
-
-// Armadura de Diamante en inventario
-if (hasDiamondArmor) {
-  const armorSpan = document.createElement('span');
-  armorSpan.className = 'inv-item active';
-  armorSpan.title = '💎 Armadura de Diamante — protección absoluta';
-  armorSpan.innerHTML = '💎🛡️';
-  armorSpan.style.borderColor = '#00d4ff';
-  bar.appendChild(armorSpan);
-}
 }
 function incrementStreak() {
 currentStreak++; updateStreakUI();
@@ -1125,56 +950,7 @@ const gemDiv = document.createElement('div');
 gemDiv.className = 'shop-item';
 gemDiv.innerHTML = `<span class="shop-item-icon">💎</span><div class="shop-item-name">Gema del Reino</div><div class="shop-item-desc">Obtén 1 gema para abrir cofres</div><div class="shop-item-price"><i class="fas fa-coins"></i> 500</div><button class="shop-buy-btn" onclick="buyGem()">Comprar</button>`;
 container.appendChild(gemDiv);
-// — Espada del Códice —
-const codexDiv = document.createElement('div');
-const codexUnlocked = (inventory.codex_sword || 0) > 0 || missionsCompleted.length > 0;
-codexDiv.className = 'shop-item' + (codexUnlocked ? '' : ' locked-legendary');
-codexDiv.style.borderTop = '4px solid #ff4444';
-codexDiv.innerHTML = `
-  <span class="shop-item-icon">⚔️</span>
-  <div class="shop-item-name" style="color:#ff8888;">Espada del Códice</div>
-  <img src="https://mikettrt-maker.github.io/divisiones-profe/img/15.jpg"
-       style="width:60px;height:80px;border-radius:6px;margin:6px auto;display:block;
-              object-fit:cover;border:2px solid #ff4444;
-              ${codexUnlocked ? '' : 'filter:grayscale(100%);opacity:0.5;'}">
-  <div class="shop-item-desc">
-    Reduce a 0 los puntos de cualquier rival.<br>
-    Ignora todos los escudos normales.<br>
-    Solo la Armadura de Diamante la resiste.<br>
-    <b style="color:var(--cr-gold);">Se obtiene completando misiones</b>
-  </div>
-  <div style="text-align:center;font-family:'Cinzel',serif;color:var(--cr-gold);font-size:.85rem;margin:6px 0;">
-    ${codexUnlocked ? `Tienes: ${inventory.codex_sword || 0} unidades` : '🔒 Completa misiones'}
-  </div>
-  <button class="shop-buy-btn" style="background:linear-gradient(180deg,#c0392b,#7a0000);color:white;box-shadow:0 3px 0 #3a0000;"
-    ${codexUnlocked && (inventory.codex_sword||0) > 0 ? `onclick="closeShop(); prepararAtaqueCodexSword();"` : 'disabled'}>
-    ${codexUnlocked && (inventory.codex_sword||0) > 0 ? '⚔️ Usar' : '🔒 Bloqueado'}
-  </button>`;
-container.appendChild(codexDiv);
 
-// — Armadura de Diamante —
-const armorDiv = document.createElement('div');
-armorDiv.className = 'shop-item' + (hasDiamondArmor ? '' : ' locked-legendary');
-armorDiv.style.borderTop = '4px solid #00d4ff';
-armorDiv.innerHTML = `
-  <span class="shop-item-icon">🛡️</span>
-  <div class="shop-item-name" style="color:#00d4ff;">Armadura de Diamante</div>
-  <img src="https://mikettrt-maker.github.io/divisiones-profe/img/16.jpg"
-       style="width:60px;height:80px;border-radius:6px;margin:6px auto;display:block;
-              object-fit:cover;border:2px solid #00d4ff;
-              ${hasDiamondArmor ? '' : 'filter:grayscale(100%);opacity:0.5;'}">
-  <div class="shop-item-desc">
-    Protección absoluta durante toda la temporada.<br>
-    Ni la Espada del Códice puede quitarte los puntos.<br>
-    <b style="color:var(--cr-gold);">Se obtiene al completar las 5 misiones</b>
-  </div>
-  <div style="text-align:center;font-family:'Cinzel',serif;margin:6px 0;font-size:.9rem;
-              color:${hasDiamondArmor ? '#00d4ff' : '#666'};">
-    ${hasDiamondArmor ? '✅ EQUIPADA — Activa esta temporada' : '🔒 Completa las 5 misiones'}
-  </div>
-  <button class="shop-buy-btn" disabled
-    style="background:${hasDiamondArmor ? 'linear-gradient(180deg,#00d4ff,#0088aa)' : 'linear-gradient(135deg,#444,#333)'};
-           color:${hasDiamondArmor ? '
 const chestDiv = document.createElement('div');
 chestDiv.className = 'shop-item chest-item';
 chestDiv.innerHTML = `<span class="shop-item-icon">🎁</span><div class="shop-item-name">Cofre Misterioso</div><div class="shop-item-desc">Abre un cofre legendario. ¡Premios aleatorios!</div><div class="shop-item-price"><span>💎</span> 1</div><button class="shop-buy-btn chest-btn" onclick="openMysteryChest()">Abrir</button>`;
@@ -1199,9 +975,6 @@ if(!confirm(`¿Comprar Protección del Consejo (${qty} usos) por ${price} florin
 try {
 currentCoins -= price;
 shieldDurability += qty;
-totalShieldsEarned += qty;
-checkAndAwardMissions();
-renderMissionCards();  
 const { error } = await _supabase.from('profiles').update({coins: currentCoins, shield_durability: shieldDurability}).eq('id', currentUser.id);
 if (error) throw error;
 updateCoinDisplay(); updateInventoryUI(); openShop();
@@ -1271,8 +1044,6 @@ if(inventory[weaponType] <= 0) return showToast("¡No tienes esta arma!",'tomato
 if(!confirm(`¿Usar ${weapon.icon} ${weapon.name} contra ${targetName}? (-${weapon.damage} pts, -${weapon.shieldDmg} 🛡️)`)) return;
 
 inventory[weaponType]--; totalAttacks++; updateInventoryUI();
-checkAndAwardMissions();
-renderMissionCards();  
 
 try {
   const { data: victim, error: fetchError } = await _supabase
@@ -1674,24 +1445,12 @@ inventory.sword = data?.inventory_sword || 0;
 inventory.bow = data?.inventory_bow || 0;
 inventory.axe = data?.inventory_axe || 0;
 inventory.hammer = data?.inventory_hammer || 0;
-totalCoinsEarned   = data?.total_coins_earned   || 0;
-totalShieldsEarned = data?.total_shields_earned || 0;
-maxStreak          = data?.max_streak           || 0;
-hasDiamondArmor    = data?.diamond_armor        || false;
-inventory.codex_sword = data?.inventory_codex_sword || 0;
-missionsCompleted = [];
-if (data?.mission1_completed) missionsCompleted.push(0);
-if (data?.mission2_completed) missionsCompleted.push(1);
-if (data?.mission3_completed) missionsCompleted.push(2);
-if (data?.mission4_completed) missionsCompleted.push(3);
-if (data?.mission5_completed) missionsCompleted.push(4);  
 if (Array.isArray(data?.completed_levels)) {
   completedLevels = data.completed_levels;
 } else {
   completedLevels = [];
 }
 updateCoinDisplay(); updateHealthBar(); updateInventoryUI(); updateStreakUI();
-renderMissionCards();  
 if(data?.squad_id && SQUADS[data.squad_id]){
 const sq = SQUADS[data.squad_id];
 document.getElementById('squad-display').style.display = 'flex';
@@ -1967,10 +1726,6 @@ async function verificarSolucion(){
     if(!completedLevels.includes(levelKey)) {
       totalScore += POINTS;
       currentCoins += 5;
-      totalCoinsEarned += POINTS + 5;
-if (currentStreak + 1 > maxStreak) maxStreak = currentStreak + 1;
-checkAndAwardMissions();
-renderMissionCards();
       completedLevels.push(levelKey);
       
      if(currentProblemInLevel === PROBLEMS_PER_LEVEL) {
