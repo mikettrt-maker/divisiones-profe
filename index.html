@@ -744,8 +744,6 @@ let totalCoinsEarned   = 0;
 let totalShieldsEarned = 0;
 let maxStreak          = 0;
 let missionsCompleted  = [];
-let chosenReward = null;   // 'sword' o 'armor'
-let pendingChoice = false; // true cuando aún no ha elegido  
 let hasDiamondArmor    = false;
 
 // ── Definición de misiones ────────────────────
@@ -796,18 +794,18 @@ async function checkAndAwardMissions() {
       triggerEpicEffect();
     }
   }
-    const allDoneNow = missionsCompleted.length === 5;
-  if (!allDoneBefore && allDoneNow && !pendingChoice && !chosenReward) {
-    pendingChoice = true;
-    showToast('🎉 ¡Has completado las 5 misiones! Elige tu recompensa.', 'success', 8000);
+  const allDoneNow = missionsCompleted.length === 5;
+  if (!allDoneBefore && allDoneNow && !hasDiamondArmor) {
+    hasDiamondArmor = true;
+    showToast('🛡️💎 ¡ARMADURA DE DIAMANTE DESBLOQUEADA! Protección absoluta durante la temporada.', 'success', 8000);
     setTimeout(() => triggerEpicEffect(), 500);
-    setTimeout(() => showRewardChoice(), 1000);
   }
   if (newlyCompleted) {
     await saveMissionProgress();
     renderMissionCards();
     updateInventoryUI();
   }
+}
 
 // ── Guardar progreso de misiones ──────────────
 async function saveMissionProgress() {
@@ -1696,8 +1694,6 @@ totalCoinsEarned   = data?.total_coins_earned   || 0;
 totalShieldsEarned = data?.total_shields_earned || 0;
 maxStreak          = data?.max_streak           || 0;
 hasDiamondArmor    = data?.diamond_armor        || false;
-chosenReward = data?.chosen_reward || null;
-pendingChoice = data?.pending_choice || false;  
 inventory.codex_sword = data?.inventory_codex_sword || 0;
 missionsCompleted = [];
 if (data?.mission1_completed) missionsCompleted.push(0);
