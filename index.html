@@ -1215,24 +1215,35 @@ function buyWeapon(type, price) {
     .then(res => { if(res.error) { console.error("Error guardando monedas en compra", res.error); showToast("Error al guardar compra", 'tomato'); } });
   saveInventory();
 }
-async function buyShield(qty, price) {
-  if(currentCoins < price) return showToast(`❌ Necesitas ${price} florines`,'tomato');
-  if(!confirm(`¿Comprar Protección del Consejo (${qty} usos) por ${price} florines?`)) return;
-  try {
+try {
     currentCoins -= price;
     shieldDurability += qty;
-    totalShieldsEarned += qty;
+    totalShieldsEarned += qty;        // ← acumula para la misión de 50 escudos
+
+    // Actualizar la base de datos (monedas y escudos)
+    const { error } = await _supabase.from('profiles').update({
+        coins: currentCoins,
+        shield_durability: shieldDurability
+    }).eq('id', currentUser.id);
+    if (error) throw error;
+
+    // Ahora comprobamos si se completó la misión de escudos
     checkAndAwardMissions();
     renderMissionCards();
-    const { error } = await _supabase.from('profiles').update({coins: currentCoins, shield_durability: shieldDurability}).eq('id', currentUser.id);
-    if (error) throw error;
-    updateCoinDisplay(); updateInventoryUI(); openShop();
+    await saveMissionProgress();      // ← guarda inmediatamente el progreso de las misiones
+
+    updateCoinDisplay();
+    updateInventoryUI();
+    openShop();
     AudioEngine.playShop();
-    showToast(`✅ 🛡️ Protección adquirida! Tienes ${shieldDurability} usos`,'success');
-  } catch(e) {
-    currentCoins += price; shieldDurability -= qty;
-    showToast(`❌ Error: ${e.message}`,'tomato');
-  }
+    showToast(`✅ 🛡️ Protección adquirida! Tienes ${shieldDurability} usos`, 'success');
+
+} catch(e) {
+    currentCoins += price;
+    shieldDurability -= qty;
+    totalShieldsEarned -= qty;
+    showToast(`❌ Error: ${e.message}`, 'tomato');
+ }
 }
 async function buyHealingPlant() {
   const cost = 300;
@@ -2302,6 +2313,7 @@ function startStudentHeartbeat(){
       AudioEngine.playSuccess();
       checkAndAwardMissions();
       renderMissionCards();
+      await saveMissionProgress();
       setTimeout(() => { icon.classList.remove('blinking'); setTimeout(() => { icon.style.display = 'none'; badge.style.display = 'none'; }, 2500); }, 4000);
     }
   }, 4000);
