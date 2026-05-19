@@ -2305,6 +2305,8 @@ function startStudentHeartbeat(){
       await _supabase.from('profiles').update({
         pending_gift_coins: 0,
         coins: currentCoins
+        total_coins_earned: totalCoinsEarned   // ← ESTA ES LA LÍNEA NUEVA
+ 
       }).eq('id', currentUser.id);
       const icon = document.getElementById('gift-icon');
       const badge = document.getElementById('gift-badge');
