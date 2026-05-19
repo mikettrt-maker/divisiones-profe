@@ -1535,6 +1535,7 @@ const { data: s } = await _supabase.from('game_settings').select('season_number'
 const ns = (s?.season_number||0) + 1;
 try {
 await _supabase.from('game_settings').upsert({id:1, season_end_time: end.toISOString(), is_paused: false, exam_level: 0, season_number: ns});
+initSeason({ season_end_time: end.toISOString(), season_number: ns });  
 alert("¡Temporada "+ns+" iniciada!"); loadDashboardData();
 } catch(e){ alert("Error"); }
 }
