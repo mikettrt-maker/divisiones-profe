@@ -1222,6 +1222,7 @@ async function buyShield(qty, price) {
     currentCoins -= price;
     shieldDurability += qty;
     totalShieldsEarned += qty;
+    await saveScore();   // ← Guarda inmediatamente los contadores
 
     const { error } = await _supabase.from('profiles').update({
       coins: currentCoins,
@@ -2434,6 +2435,9 @@ async function saveScore(){
         gems: gems,
         player_health: playerHealth,
         is_dead: isDead,
+        total_coins_earned: totalCoinsEarned,
+        total_shields_earned: totalShieldsEarned,
+        max_streak: maxStreak,
         total_coins_earned: totalCoinsEarned,
         total_shields_earned: totalShieldsEarned,
         max_streak: maxStreak,
