@@ -2053,7 +2053,7 @@ async function verificarSolucion(){
     if (!completedLevels.includes(levelKey)) {
       totalScore += POINTS;
       currentCoins += 5;
-      totalCoinsEarned += 5;                // ✅ acumula para la misión
+      totalCoinsEarned += 5;
       completedLevels.push(levelKey);
       if (currentStreak + 1 > maxStreak) maxStreak = currentStreak + 1;
       checkAndAwardMissions();
@@ -2066,6 +2066,112 @@ async function verificarSolucion(){
         }
       }
     }
+
+    updateUI();
+    incrementStreak();
+    updateCoinDisplay();
+    updateHealthBar();
+    updateRanking();
+    document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
+
+    // ✅ Única reducción de energía
+    enemyEnergy = Math.max(0, enemyEnergy - 10);
+    updateEnergyBar();
+    if (enemyEnergy === 0) defeatEnemy();
+
+    // ─── GUARDADO INMEDIATO ───
+    if(currentUser) {
+      const saveData = {
+        total_score: totalScore,
+        current_level: unlockedLevel,
+        current_problem: currentProblemInLevel,
+        coins: currentCoins,
+        completed_levels: cleanCompletedLevels(completedLevels),
+        gems: gems,
+        player_health: playerHealth,
+        enemy_energy: enemyEnergy,
+        current_problem_key: levelKey,
+        total_attacks: totalAttacks,
+        total_coins_earned: totalCoinsEarned
+      };
+      let saved = false;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const { error } = await _supabase.from('profiles').update(saveData).eq('id', currentUser.id);
+        if (!error) { saved = true; break; }
+        await new Promise(r => setTimeout(r, 500));
+      }
+      if (!saved) {
+        document.getElementById('msg').innerHTML = '<span style="color:#ff4444;">🔴 Error al guardar. Intenta de nuevo.</span>';
+        isVerifying = false;
+        btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "⚔️ Verificar";
+        return;
+      }
+    }
+
+    isVerifying = false;
+    btn.disabled = true;
+
+    // ─── AVANCE DE PROBLEMA / NIVEL ───
+    if(currentProblemInLevel < PROBLEMS_PER_LEVEL){
+      currentProblemInLevel++;
+      setTimeout(() => loadProblem(), 1200);
+    } else {
+      if(currentMainLevel < TOTAL_LEVELS){
+        currentMainLevel++;
+        currentProblemInLevel = 1;
+        savedProblemKey = null;
+        enemyEnergy = 100;
+        if(currentUser) {
+          await _supabase.from('profiles').update({
+            current_level: unlockedLevel,
+            current_problem: 1,
+            enemy_energy: 100,
+            current_problem_key: null
+          }).eq('id', currentUser.id);
+        }
+        showVictoryScreen();
+        setTimeout(() => {
+          hideVictoryScreen();
+          loadProblem();
+        }, 3000);
+      } else {
+        hasFinishedGame = true;
+        _supabase.from('profiles').update({ completed_at: new Date().toISOString() }).eq('id', currentUser.id);
+        loadHallOfFame();
+        document.getElementById('msg').innerHTML = "<span style='color:gold;'>¡CÓDICE COMPLETADO!</span>";
+        btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "⚔️ Verificar";
+      }
+    }
+
+  } else {
+    AudioEngine.playError();
+    document.getElementById('msg').innerHTML = `<span style='color:var(--cr-red);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>🛡️ INCORRECTO — El jefe te ha atacado</span>`;
+    resetStreak();
+
+    playerHealth = Math.max(0, playerHealth - 10);
+    updateHealthBar();
+    updateRanking();
+
+    if (playerHealth === 0) {
+      isDead = true;
+      lockGrid();
+      btn.disabled = true;
+      document.getElementById('msg').innerHTML = '<span style="color:red;">💀 HAS MUERTO. Espera la próxima temporada.</span>';
+      if (currentUser) {
+        await _supabase.from('profiles').update({ player_health: 0, is_dead: true }).eq('id', currentUser.id);
+      }
+      isVerifying = false;
+      return;
+    }
+
+    if (currentUser) {
+      await _supabase.from('profiles').update({ player_health: playerHealth }).eq('id', currentUser.id);
+    }
+
+    isVerifying = false;
+    btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "⚔️ Verificar";
+  }
+}
     updateUI();
     incrementStreak();
     updateCoinDisplay();
