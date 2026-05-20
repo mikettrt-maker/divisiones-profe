@@ -1123,12 +1123,19 @@ function incrementStreak() {
   const bonus = STREAK_BONUSES[currentStreak];
   if(bonus) {
     currentCoins += bonus;
-    totalCoinsEarned += bonus;
+    totalCoinsEarned += bonus;          // ✅ suma a la misión
     updateCoinDisplay();
     showStreakBonus(currentStreak, bonus);
     AudioEngine.playStreak();
-    checkAndAwardMissions();
-    renderMissionCards();
+    // ✅ Guardar el progreso de la misión inmediatamente
+    if (currentUser && !isAdmin) {
+      _supabase.from('profiles').update({
+        coins: currentCoins,
+        total_coins_earned: totalCoinsEarned
+      }).eq('id', currentUser.id);
+      checkAndAwardMissions();
+      renderMissionCards();
+    }
   }
 }
 function resetStreak() { currentStreak = 0; updateStreakUI(); }
@@ -1704,126 +1711,30 @@ async function logout(){
   pendingChoice = false;
   showLogin(); clearInterval(rankInt);
 }
-async function loadScore(user){
+async function saveMissionProgress() {
+  if (!currentUser) return;
+  const missionFlags = {
+    mission1_completed: missionsCompleted.includes(0),
+    mission2_completed: missionsCompleted.includes(1),
+    mission3_completed: missionsCompleted.includes(2),
+    mission4_completed: missionsCompleted.includes(3),
+    mission5_completed: missionsCompleted.includes(4)
+  };
   try {
-    const { data } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
-    if(data?.is_banned){ alert("Tu cuenta está suspendida."); logout(); return; }
-    isAdmin = data?.is_admin === true || user.email.split('@')[0] === ADMIN_USER;
-    currentCoins = data?.coins || 0;
-    gems = data?.gems || 0;
-    playerHealth = data?.player_health != null ? data.player_health : 100;
-    isDead = data?.is_dead || false;
-
-    // Procesar regalos pendientes INMEDIATAMENTE
-    if (data?.pending_gift_coins > 0) {
-      const gift = data.pending_gift_coins;
-      currentCoins += gift;
-      totalCoinsEarned += gift;
-      await _supabase.from('profiles').update({
-        coins: currentCoins,
-        pending_gift_coins: 0
-      }).eq('id', user.id);
-      showToast(`🎁 ¡Recibiste ${gift} florines de ofrenda!`, 'success');
-    }
-
-    totalScore = data?.total_score || 0;
-    currentAvatarStyle = data?.avatar_style || 'avatar1';
-    unlockedLevel = data?.current_level || 1;
-    currentProblemInLevel = data?.current_problem || 1;
-    if(currentProblemInLevel > 10) currentProblemInLevel = 1;
-    hasFinishedGame = data?.completed_at || false;
-    savedProblemKey = data?.current_problem_key || null;
-    currentEnemyLevel = data?.enemy_level || unlockedLevel;
-    if (currentEnemyLevel === unlockedLevel && data?.enemy_energy != null && data.enemy_energy > 0) {
-      enemyEnergy = data.enemy_energy;
-    } else {
-      enemyEnergy = 100;
-      currentEnemyLevel = unlockedLevel;
-    }
-
-    playTimeCounter = data?.total_time_played || 0;
-    shieldDurability = data?.shield_durability || 0;
-    totalAttacks = data?.total_attacks || 0;
-    inventory.dagger = data?.inventory_dagger || 0;
-    inventory.sword = data?.inventory_sword || 0;
-    inventory.bow = data?.inventory_bow || 0;
-    inventory.axe = data?.inventory_axe || 0;
-    inventory.hammer = data?.inventory_hammer || 0;
-    totalCoinsEarned   = data?.total_coins_earned   || 0;
-    totalShieldsEarned = data?.total_shields_earned || 0;
-    maxStreak          = data?.max_streak           || 0;
-    hasDiamondArmor    = data?.diamond_armor        || false;
-    inventory.codex_sword = data?.inventory_codex_sword || 0;
-    chosenReward = data?.chosen_reward || null;
-    pendingChoice = data?.pending_choice || false;
-
-    // Limpiar completedLevels de claves futuras
-    completedLevels = cleanCompletedLevels(data?.completed_levels || []);
-
-    missionsCompleted = [];
-    if (data?.mission1_completed) missionsCompleted.push(0);
-    if (data?.mission2_completed) missionsCompleted.push(1);
-    if (data?.mission3_completed) missionsCompleted.push(2);
-    if (data?.mission4_completed) missionsCompleted.push(3);
-    if (data?.mission5_completed) missionsCompleted.push(4);
-
-    updateCoinDisplay(); updateHealthBar(); updateInventoryUI(); updateStreakUI();
-    renderMissionCards();
-
-    if(data?.squad_id && SQUADS[data.squad_id]){
-      const sq = SQUADS[data.squad_id];
-      document.getElementById('squad-display').style.display = 'flex';
-      document.getElementById('user-squad-shield').innerHTML = sq.svg;
-      document.getElementById('user-squad-name').innerText = sq.name;
-      document.getElementById('user-squad-name').style.color = sq.color;
-      userSquadId = data.squad_id;
-    } else { document.getElementById('squad-display').style.display = 'none'; userSquadId = null; }
-  } catch(e){
-    totalScore = 0; currentAvatarStyle = 'avatar1'; unlockedLevel = 1;
-    currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0;
-    currentCoins = 0; shieldDurability = 0; totalAttacks = 0;
-    inventory = { dagger:0, sword:0, bow:0, axe:0, hammer:0 };
-    completedLevels = []; savedProblemKey = null; enemyEnergy = 100; currentEnemyLevel = 1;
-    gems = 0; playerHealth = 100; isDead = false;
-    isAdmin = (user.email.split('@')[0] === ADMIN_USER);
-  }
-  document.getElementById('admin-header-btn').classList.toggle('visible', isAdmin);
-  if(hasFinishedGame) document.getElementById('msg').innerHTML = "<span style='color:var(--cr-gold);font-family:\"Cinzel\",serif;'>¡Ya completaste el Códice!</span>";
-  currentMainLevel = unlockedLevel;
-  populateLevelSelect(); updateUI(); renderMainAvatar();
+    await _supabase.from('profiles').update({
+      total_coins_earned:   totalCoinsEarned,
+      total_shields_earned: totalShieldsEarned,
+      max_streak:           maxStreak,
+      has_diamond_armor:    hasDiamondArmor,
+      inventory_codex_sword: inventory.codex_sword || 0,
+      chosen_reward: chosenReward,
+      pending_choice: pendingChoice,
+      total_attacks: totalAttacks,
+      ...missionFlags
+    }).eq('id', currentUser.id);
+  } catch(e) { console.error('Error guardando misiones:', e); }
 }
-function initGame(){ loadProblem(); populateLevelSelect(); }
-function jumpToLevel(l){
-  AudioEngine.playClick();
-  const t = parseInt(l);
-  if(t > unlockedLevel){ alert("¡Debes completar el nivel anterior!"); document.getElementById('levelSelect').value = currentMainLevel; return; }
-  if(t < unlockedLevel){ alert("¡Ya has superado este nivel! No puedes regresar."); document.getElementById('levelSelect').value = currentMainLevel; return; }
-  currentMainLevel = t; currentProblemInLevel = 1;
-  loadProblem();
-}
-function updateEnemyCard() {
-  const level = currentMainLevel;
-  const enemy = ENEMIES[level] || ENEMIES[1];
-  document.getElementById('enemy-name').innerText = enemy.name;
-  document.getElementById('enemy-img').src = enemy.jpg;
-}
-function updateEnergyBar() {
-  const fill = document.getElementById('energy-bar-fill');
-  const text = document.getElementById('energy-text');
-  fill.style.width = enemyEnergy + '%';
-  text.innerText = `Salud: ${enemyEnergy}%`;
-  if (enemyEnergy > 60) {
-    fill.style.background = 'linear-gradient(90deg, #00e676, #00c853)';
-    fill.style.boxShadow = '0 0 12px rgba(0,230,118,0.7)';
-  } else if (enemyEnergy > 30) {
-    fill.style.background = 'linear-gradient(90deg, #ffcc00, #ff9800)';
-    fill.style.boxShadow = '0 0 12px rgba(255,152,0,0.7)';
-  } else {
-    fill.style.background = 'linear-gradient(90deg, #ff1744, #d50000)';
-    fill.style.boxShadow = '0 0 12px rgba(255,23,68,0.7)';
-  }
-}
-function resetEnemy(fullReset = false) {
+  function resetEnemy(fullReset = false) {
   if (fullReset) {
     enemyEnergy = 100;
     savedProblemKey = null;
@@ -2028,12 +1939,11 @@ async function verificarSolucion(){
     AudioEngine.playSuccess();
 
     const levelKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
-    const levelCompleteKey = `L${currentMainLevel}_P${PROBLEMS_PER_LEVEL}`;
 
     if (!completedLevels.includes(levelKey)) {
       totalScore += POINTS;
       currentCoins += 5;
-      totalCoinsEarned += 5;
+      totalCoinsEarned += 5;                // ✅ acumula para la misión
       completedLevels.push(levelKey);
       if (currentStreak + 1 > maxStreak) maxStreak = currentStreak + 1;
       checkAndAwardMissions();
@@ -2044,9 +1954,115 @@ async function verificarSolucion(){
         if (currentMainLevel < TOTAL_LEVELS) {
           unlockedLevel = currentMainLevel + 1;
         }
-        setTimeout(() => showToast('💎 ¡Has ganado 1 gema por completar el nivel!', 'success', 4000), 300);
       }
     }
+
+    updateUI();
+    incrementStreak();            // <- dentro de esta función también se guardará el progreso
+    updateCoinDisplay();
+    updateHealthBar();
+    updateRanking();
+    document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
+
+    enemyEnergy = Math.max(0, enemyEnergy - 10);
+    updateEnergyBar();
+    if (enemyEnergy === 0) defeatEnemy();
+
+    // ─── GUARDADO INMEDIATO DEL NUEVO ESTADO ───
+    if(currentUser) {
+      const saveData = {
+        total_score: totalScore,
+        current_level: unlockedLevel,
+        current_problem: currentProblemInLevel,   // todavía no avanzamos problema
+        coins: currentCoins,
+        completed_levels: cleanCompletedLevels(completedLevels),
+        gems: gems,
+        player_health: playerHealth,
+        enemy_energy: enemyEnergy,
+        current_problem_key: levelKey,
+        total_attacks: totalAttacks,
+        total_coins_earned: totalCoinsEarned      // ✅ persistir monedas
+      };
+      let saved = false;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const { error } = await _supabase.from('profiles').update(saveData).eq('id', currentUser.id);
+        if (!error) { saved = true; break; }
+        await new Promise(r => setTimeout(r, 500));
+      }
+      if (!saved) {
+        document.getElementById('msg').innerHTML = '<span style="color:#ff4444;">🔴 Error al guardar. Intenta de nuevo.</span>';
+        isVerifying = false;
+        btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "⚔️ Verificar";
+        return;
+      }
+    }
+
+    isVerifying = false;
+    btn.disabled = true;
+
+    // ─── AVANCE DE PROBLEMA / NIVEL ───
+    if(currentProblemInLevel < PROBLEMS_PER_LEVEL){
+      currentProblemInLevel++;
+      setTimeout(() => loadProblem(), 1200);
+    } else {
+      // Último problema del nivel → pasar al siguiente nivel AHORA
+      if(currentMainLevel < TOTAL_LEVELS){
+        currentMainLevel++;
+        currentProblemInLevel = 1;
+        savedProblemKey = null;
+        enemyEnergy = 100;
+        // Guardar el salto de nivel inmediatamente para que al refrescar no se pierda
+        if(currentUser) {
+          await _supabase.from('profiles').update({
+            current_level: unlockedLevel,  // unlockedLevel ya se incrementó
+            current_problem: 1,
+            enemy_energy: 100,
+            current_problem_key: null
+          }).eq('id', currentUser.id);
+        }
+        showVictoryScreen();
+        setTimeout(() => {
+          hideVictoryScreen();
+          loadProblem();
+        }, 3000);
+      } else {
+        hasFinishedGame = true;
+        _supabase.from('profiles').update({ completed_at: new Date().toISOString() }).eq('id', currentUser.id);
+        loadHallOfFame();
+        document.getElementById('msg').innerHTML = "<span style='color:gold;'>¡CÓDICE COMPLETADO!</span>";
+        btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "⚔️ Verificar";
+      }
+    }
+
+  } else {
+    AudioEngine.playError();
+    document.getElementById('msg').innerHTML = `<span style='color:var(--cr-red);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>🛡️ INCORRECTO — El jefe te ha atacado</span>`;
+    resetStreak();
+
+    playerHealth = Math.max(0, playerHealth - 10);
+    updateHealthBar();
+    updateRanking();
+
+    if (playerHealth === 0) {
+      isDead = true;
+      lockGrid();
+      btn.disabled = true;
+      document.getElementById('msg').innerHTML = '<span style="color:red;">💀 HAS MUERTO. Espera la próxima temporada.</span>';
+      if (currentUser) {
+        await _supabase.from('profiles').update({ player_health: 0, is_dead: true }).eq('id', currentUser.id);
+      }
+      isVerifying = false;
+      return;
+    }
+
+    if (currentUser) {
+      await _supabase.from('profiles').update({ player_health: playerHealth }).eq('id', currentUser.id);
+    }
+
+    isVerifying = false;
+    btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "⚔️ Verificar";
+  }
+}
 
     updateUI();
     incrementStreak();
