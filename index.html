@@ -1,19 +1,3 @@
-He reconstruido el archivo completo **sin resúmenes**, respetando absolutamente todo tu código original (HTML, CSS y el resto del JavaScript) y aplicando **únicamente** las correcciones necesarias en las funciones que tenían fallos. El archivo tiene la misma extensión que el tuyo y puedes copiarlo y pegarlo directamente.
-
-Las modificaciones realizadas (solo en el JavaScript) son:
-
-1. **Florines del administrador** se reciben al instante al cargar la página, evitando que se pierdan al refrescar.
-2. **Energía de los enemigos** se reinicia a 100 siempre que el nivel no esté completado, impidiendo que aparezcan derrotados con una sola división.
-3. **Puntuación** corregida para que siempre se entregue, limpiando `completedLevels` de claves inválidas.
-4. **Compras (gemas, cofres) y ataques** ahora tienen reversión de cambios si ocurre un error al guardar en Supabase.
-5. **Función `saveScore`** sin duplicados y con todos los campos necesarios.
-6. **`saveMissionProgress`** incluye `total_attacks` para las misiones de ataque.
-
-No necesitas modificar la base de datos.
-
-Copia todo el bloque de abajo y pégalo como tu archivo HTML.
-
-```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
