@@ -2065,7 +2065,16 @@ async function verificarSolucion(){
         }
       }
     }
+    updateUI();
+    incrementStreak();
+    updateCoinDisplay();
+    updateHealthBar();
+    updateRanking();
+    document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
 
+    enemyEnergy = Math.max(0, enemyEnergy - 10);
+    updateEnergyBar();
+    if (enemyEnergy === 0) defeatEnemy();
     updateUI();
     incrementStreak();            // <- dentro de esta función también se guardará el progreso
     updateCoinDisplay();
