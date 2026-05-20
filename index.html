@@ -1615,31 +1615,14 @@ async function deleteUser(uid, name){
 async function resetAllUsers(){
   if(!confirm("¿Reiniciar TODOS los puntos y tiempo?")) return;
   try {
-    await _supabase.from('profiles').update({
-      total_score:0, current_level:1, completed_at:null, current_problem:1,
-      total_time_played:0, squad_id:0, coins:0,
-      inventory_dagger:0, inventory_sword:0, inventory_bow:0, inventory_axe:0, inventory_hammer:0,
-      shield_durability:0, completed_levels:[], enemy_energy:100, current_problem_key:null,
-      gems:0, player_health:100, is_dead:false,
-      // ─── Variables de misión ───
-      total_coins_earned:0,
-      total_shields_earned:0,
-      total_attacks:0,
-      max_streak:0,
-      has_diamond_armor:false,
-      inventory_codex_sword:0,
-      chosen_reward:null,
-      pending_choice:false,
-      mission1_completed:false,
-      mission2_completed:false,
-      mission3_completed:false,
-      mission4_completed:false,
-      mission5_completed:false
-    }).neq('id','00000000-0000-0000-0000-000000000000');
-    await _supabase.from('game_settings').update({season_end_time:null, is_paused:false, exam_level:0}).eq('id',1);
-    alert("¡Reiniciado!");
+    const { error } = await _supabase.rpc('reset_all_students');
+    if (error) throw error;
+    alert("¡Todos los estudiantes han sido reiniciados!");
     loadDashboardData();
-  } catch(e){ alert("Error: "+e.message); }
+  } catch(e) {
+    alert("Error al reiniciar: " + e.message);
+    console.error(e);
+  }
 }
 async function assignSquad(uid, sqId){ try { await _supabase.from('profiles').update({squad_id: sqId}).eq('id',uid); loadDashboardData(); } catch(e){ alert("Error"); } }
 document.addEventListener('DOMContentLoaded', async () => {
