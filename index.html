@@ -1890,8 +1890,9 @@ async function loadProblem(){
   updateEnemyCard();
 
   // REINICIO DE ENERGÍA: siempre 100 si el nivel no está completado del todo
-  const levelCompleteKey = `L${currentMainLevel}_P${PROBLEMS_PER_LEVEL}`;
-  if (!completedLevels.includes(levelCompleteKey)) {
+  // Solo reiniciar energía si el nivel actual no tiene ningún problema resuelto todavía
+  const hasStartedLevel = completedLevels.some(key => key.startsWith(`L${currentMainLevel}_`));
+  if (!hasStartedLevel) {
     enemyEnergy = 100;
     document.getElementById('enemy-card').classList.remove('defeated');
     document.getElementById('enemy-card').style.animation = 'enemyGlow 2s infinite alternate';
