@@ -2083,10 +2083,6 @@ async function verificarSolucion(){
     updateRanking();
     document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
 
-    enemyEnergy = Math.max(0, enemyEnergy - 10);
-    updateEnergyBar();
-    if (enemyEnergy === 0) defeatEnemy();
-
     // ─── GUARDADO INMEDIATO DEL NUEVO ESTADO ───
     if(currentUser) {
       const saveData = {
