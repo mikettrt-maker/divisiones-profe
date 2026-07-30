@@ -1244,12 +1244,12 @@ function openShop(){
   });
   const shieldDiv = document.createElement('div');
   shieldDiv.className = 'shop-item';
-  shieldDiv.innerHTML = `<span class="shop-item-icon">🛡️</span><div class="shop-item-name">Protección del Consejo</div><div class="shop-item-desc">Resiste 5 ataques</div><div class="shop-item-price"><i class="fas fa-coins"></i> 300</div><button class="shop-buy-btn" onclick="buyShield(5, 300)">Adquirir</button>`;
+  shieldDiv.innerHTML = `<span class="shop-item-icon"><img src="${GITHUB}/escudo.svg" style="height:2.5rem;width:auto;"></span><div class="shop-item-name">Protección del Consejo</div><div class="shop-item-desc">Resiste 5 ataques</div><div class="shop-item-price"><i class="fas fa-coins"></i> 300</div><button class="shop-buy-btn" onclick="buyShield(5, 300)">Adquirir</button>`;
   container.appendChild(shieldDiv);
 
   const plantDiv = document.createElement('div');
   plantDiv.className = 'shop-item';
-  plantDiv.innerHTML = `<span class="shop-item-icon">🌿</span><div class="shop-item-name">Planta Curativa</div><div class="shop-item-desc">Restaura toda tu salud al instante</div><div class="shop-item-price"><i class="fas fa-coins"></i> 300</div><button class="shop-buy-btn" onclick="buyHealingPlant()">Comprar</button>`;
+  plantDiv.innerHTML = `<span class="shop-item-icon"><img src="${GITHUB}/planta%20curativa.svg" style="height:2.5rem;width:auto;"></span><div class="shop-item-name">Planta Curativa</div><div class="shop-item-desc">Restaura toda tu salud al instante</div><div class="shop-item-price"><i class="fas fa-coins"></i> 300</div><button class="shop-buy-btn" onclick="buyHealingPlant()">Comprar</button>`;
   container.appendChild(plantDiv);
 
   const gemDiv = document.createElement('div');
@@ -1271,7 +1271,7 @@ function openShop(){
 
   const chestDiv = document.createElement('div');
   chestDiv.className = 'shop-item chest-item';
-  chestDiv.innerHTML = `<span class="shop-item-icon">🎁</span><div class="shop-item-name">Cofre Misterioso</div><div class="shop-item-desc">Abre un cofre legendario. ¡Premios aleatorios!</div><div class="shop-item-price"><span>💎</span> 1</div><button class="shop-buy-btn chest-btn" onclick="openMysteryChest()">Abrir</button>`;
+  chestDiv.innerHTML = `<span class="shop-item-icon"><img src="${GITHUB}/cofre.svg" style="height:2.5rem;width:auto;"></span><div class="shop-item-name">Cofre Misterioso</div><div class="shop-item-desc">Abre un cofre legendario. ¡Premios aleatorios!</div><div class="shop-item-price"><span>💎</span> 1</div><button class="shop-buy-btn chest-btn" onclick="openMysteryChest()">Abrir</button>`;
   container.appendChild(chestDiv);
 }
 function closeShop(){ document.getElementById('shop-modal').style.display='none'; }
