@@ -293,21 +293,17 @@
       margin: 15px 0; width: 100%;
     }
     .enemy-card {
-      width: 160px; height: 220px;
-      border: 4px solid var(--cr-gold-dark);
-      border-radius: 12px;
-      overflow: hidden;
-      background: linear-gradient(135deg, #1a0b2e, #0d1c3b);
-      box-shadow: 0 0 20px rgba(201,168,76,0.4), 0 8px 16px rgba(0,0,0,0.7);
+      width: auto; height: auto;
+      border: none;
+      border-radius: 0;
+      overflow: visible;
+      background: none;
+      box-shadow: none;
       position: relative;
-      transition: all 0.3s ease;
-      animation: enemyGlow 2s infinite alternate;
+      transition: none;
+      animation: none;
     }
-    @keyframes enemyGlow {
-      0%   { box-shadow: 0 0 15px #ffd700, 0 0 30px #ff8c00, 0 0 45px #ff4500; }
-      100% { box-shadow: 0 0 25px #ffec80, 0 0 50px #ffaa00, 0 0 75px #ff5500; }
-    }
-    .enemy-card img { width: 100%; height: 100%; object-fit: cover; }
+    .enemy-card img { width: 160px; height: auto; display: block; }
     .enemy-card.defeated {
       filter: grayscale(100%) brightness(0.6);
       box-shadow: 0 0 8px rgba(255,0,0,0.6);
@@ -1894,7 +1890,7 @@ function resetEnemy(fullReset = false) {
     }
   }
   document.getElementById('enemy-card').classList.remove('defeated');
-  document.getElementById('enemy-card').style.animation = 'enemyGlow 2s infinite alternate';
+  document.getElementById('enemy-card').style.animation = 'none';
   updateEnergyBar();
 }
 function defeatEnemy() {
@@ -1935,7 +1931,7 @@ async function loadProblem(){
   if (!hasStartedLevel) {
     enemyEnergy = 100;
     document.getElementById('enemy-card').classList.remove('defeated');
-    document.getElementById('enemy-card').style.animation = 'enemyGlow 2s infinite alternate';
+    document.getElementById('enemy-card').style.animation = 'none';
   }
 
   if (enemyEnergy <= 0) {
@@ -1945,7 +1941,7 @@ async function loadProblem(){
     document.getElementById('energy-text').innerText = '¡DERROTADO!';
   } else {
     document.getElementById('enemy-card').classList.remove('defeated');
-    document.getElementById('enemy-card').style.animation = 'enemyGlow 2s infinite alternate';
+    document.getElementById('enemy-card').style.animation = 'none';
     updateEnergyBar();
   }
 
