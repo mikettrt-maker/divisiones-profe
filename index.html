@@ -1122,11 +1122,11 @@ function updateInventoryUI() {
   if (shieldDurability > 0) {
     shieldSpan.className = 'inv-item active';
     shieldSpan.title = `🛡️ Protección: ${shieldDurability} usos`;
-    shieldSpan.innerHTML = `🛡️ <small>${shieldDurability}</small>`;
+    shieldSpan.innerHTML = `<img src="${GITHUB}/escudo.svg" style="height:2.2rem;width:auto;vertical-align:middle;"> <small>${shieldDurability}</small>`;
   } else {
     shieldSpan.className = 'inv-item empty';
     shieldSpan.title = 'Sin escudo';
-    shieldSpan.innerHTML = '🛡️ <small>0</small>';
+    shieldSpan.innerHTML = `<img src="${GITHUB}/escudo.svg" style="height:2.2rem;width:auto;vertical-align:middle;"> <small>0</small>`;
   }
   bar.appendChild(shieldSpan);
 
@@ -1500,7 +1500,7 @@ function renderFullRanking(data) {
         gradient = 'linear-gradient(90deg, #ffcc00, #ff9800)';
         glowColor = 'rgba(255,204,0,0.5)';
       }
-      shieldHTML = `<div class="shield-bar-container"><span class="shield-icon">🛡️</span><div class="shield-bar-bg"><div class="shield-bar-fill" style="width:${pct}%;background:${gradient};box-shadow:0 0 8px ${glowColor};"></div></div><span class="shield-text">${sh}/${maxSh}</span></div>`;
+      shieldHTML = `<div class="shield-bar-container"><span class="shield-icon"><img src="${GITHUB}/escudo.svg" style="height:1.2rem;width:auto;vertical-align:middle;"></span><div class="shield-bar-bg"><div class="shield-bar-fill" style="width:${pct}%;background:${gradient};box-shadow:0 0 8px ${glowColor};"></div></div><span class="shield-text">${sh}/${maxSh}</span></div>`;
     }
     return `<li class="${rc}" data-userid="${u.id}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${onlineDot}${dn}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span>${healthHTML}${shieldHTML}</div>${sq}</div><span class="rank-score">${s}</span></li>`;
   }).join('');
