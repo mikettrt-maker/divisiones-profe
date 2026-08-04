@@ -1001,30 +1001,37 @@ function prepararAtaqueCodexSword() {
 // GENERADOR DE DIVISIONES ALEATORIAS
 // ===============================================
 function generarDivision(nivel) {
-  let divisor, dividendo, residuoEsperado;
+  let divisor, dividendo, residuoEsperado = 0, qMin, qMax, remainderChance;
   const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
 
   if (nivel <= 2) {
     divisor = rand(2, 9);
-    dividendo = divisor * rand(10, 199);
+    qMin = 10; qMax = 199;
+    remainderChance = 0.25;
   } else if (nivel <= 5) {
     divisor = rand(10, 99);
-    dividendo = divisor * rand(5, 99);
+    qMin = 5; qMax = 99;
+    remainderChance = 0.5;
   } else if (nivel <= 7) {
     divisor = rand(100, 999);
-    dividendo = divisor * rand(2, 50);
+    qMin = 2; qMax = 50;
+    remainderChance = 0.75;
   } else if (nivel <= 8) {
     divisor = rand(10, 99);
-    residuoEsperado = rand(1, 9);
-    dividendo = divisor * rand(50, 500) + residuoEsperado;
-  } else if (nivel === 9) {
-    divisor = rand(100, 999);
-    residuoEsperado = rand(1, 9);
-    dividendo = divisor * rand(10, 50) + residuoEsperado;
+    qMin = 50; qMax = 500;
+    remainderChance = 1;
   } else {
     divisor = rand(100, 999);
-    residuoEsperado = rand(1, 9);
-    dividendo = divisor * rand(20, 100) + residuoEsperado;
+    qMin = nivel === 9 ? 10 : 20;
+    qMax = nivel === 9 ? 50 : 100;
+    remainderChance = 1;
+  }
+
+  if (Math.random() < remainderChance) {
+    residuoEsperado = rand(1, Math.min(9, divisor - 1));
+    dividendo = divisor * rand(qMin, qMax) + residuoEsperado;
+  } else {
+    dividendo = divisor * rand(qMin, qMax);
   }
 
   return { d: dividendo, div: divisor };
@@ -1918,9 +1925,25 @@ async function loadProblem(){
   document.getElementById('progressBar').style.width = ((currentMainLevel-1)/TOTAL_LEVELS)*100 + '%';
   populateLevelSelect();
 
-  const { d, div } = generarDivision(currentMainLevel);
+  const expectedPrefix = `L${currentMainLevel}_P${currentProblemInLevel}`;
+  let d = null, div = null;
+  if (savedProblemKey && savedProblemKey.startsWith(expectedPrefix + '_D')) {
+    const m = savedProblemKey.match(/^L(\d+)_P(\d+)_D(\d+)_S(\d+)$/);
+    if (m) { d = parseInt(m[3]); div = parseInt(m[4]); }
+  }
+  if (d === null || div === null || isNaN(d) || isNaN(div) || div <= 0 || d <= 0) {
+    const gen = generarDivision(currentMainLevel);
+    d = gen.d; div = gen.div;
+  }
   currentDividend = d;
   currentDivisor = div;
+
+  // Fijar el problema en la BD para que el refresco NO genere uno nuevo
+  if (currentUser) {
+    _supabase.from('profiles').update({ current_problem_key: `${expectedPrefix}_D${d}_S${div}` })
+      .eq('id', currentUser.id)
+      .then(r => { if (r.error) console.error('Error fijando problema:', r.error); });
+  }
 
   document.getElementById('difficultyLabel').innerText = getDifficultyLabel(currentMainLevel);
   updateEnemyCard();
