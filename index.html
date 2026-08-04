@@ -2409,7 +2409,8 @@ async function initSeason(settings){
     const r = await _supabase.from('game_settings').select('season_end_time,season_number').eq('id',1).single();
     data = r.data;
   }
-  document.getElementById('season-num-display').innerText = data?.season_number || 1;
+  const seasonNumEl = document.getElementById('season-num-display');
+  if(seasonNumEl) seasonNumEl.innerText = data?.season_number || 1;
   if(data?.season_end_time){
     startCountdown(new Date(data.season_end_time));
   } else {
