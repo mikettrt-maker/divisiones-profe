@@ -1820,8 +1820,12 @@ async function loadScore(user){
     if(currentProblemInLevel > 10) currentProblemInLevel = 1;
     hasFinishedGame = data?.completed_at || false;
     savedProblemKey = data?.current_problem_key || null;
+    if (savedProblemKey) {
+      const m2 = savedProblemKey.match(/^L(\d+)_P(\d+)_D(\d+)_S(\d+)$/);
+      if (m2) currentProblemInLevel = parseInt(m2[2]);
+    }
     currentEnemyLevel = data?.enemy_level || unlockedLevel;
-    if (currentEnemyLevel === unlockedLevel && data?.enemy_energy != null && data.enemy_energy > 0) {
+    if (currentEnemyLevel === unlockedLevel && data?.enemy_energy != null && data.enemy_energy >= 0) {
       enemyEnergy = data.enemy_energy;
     } else {
       enemyEnergy = 100;
@@ -1860,6 +1864,12 @@ async function loadScore(user){
         current_problem_key: null
       }).eq('id', user.id);
     }
+
+    // Corregir energía baja en cuentas afectadas por el bug de problemas repetidos
+    const doneLevel = completedLevels.filter(k => k.startsWith('L' + unlockedLevel + '_P')).length;
+    const expectedFinal = Math.max(0, 100 - doneLevel * 10);
+    if (enemyEnergy < expectedFinal) enemyEnergy = expectedFinal;
+    enemyEnergy = Math.min(100, enemyEnergy);
 
     missionsCompleted = [];
     if (data?.mission1_completed) missionsCompleted.push(0);
@@ -2165,19 +2175,12 @@ async function verificarSolucion(){
           unlockedLevel = currentMainLevel + 1;
         }
       }
+      enemyEnergy = Math.max(0, enemyEnergy - 10);
     }
-    updateUI();
-    incrementStreak();
-    updateCoinDisplay();
-    updateHealthBar();
-    updateRanking();
-    document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
-
-    enemyEnergy = Math.max(0, enemyEnergy - 10);
     updateEnergyBar();
     if (enemyEnergy === 0) defeatEnemy();
     updateUI();
-    incrementStreak();            // <- dentro de esta función también se guardará el progreso
+    incrementStreak();
     updateCoinDisplay();
     updateHealthBar();
     updateRanking();
@@ -2188,7 +2191,7 @@ async function verificarSolucion(){
       const saveData = {
         total_score: totalScore,
         current_level: unlockedLevel,
-        current_problem: currentProblemInLevel,   // todavía no avanzamos problema
+        current_problem: currentProblemInLevel === PROBLEMS_PER_LEVEL ? currentProblemInLevel : currentProblemInLevel + 1,
         coins: currentCoins,
         completed_levels: cleanCompletedLevels(completedLevels),
         gems: gems,
