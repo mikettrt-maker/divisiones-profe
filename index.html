@@ -319,7 +319,15 @@
       transition: none;
       animation: none;
     }
-    .enemy-card img { width: 260px; height: auto; display: block; }
+    .enemy-card img {
+      width: 260px; height: auto; display: block;
+      animation: enemyArcaneGlow 2.4s ease-in-out infinite;
+    }
+    .enemy-card.defeated img { animation: none; }
+    @keyframes enemyArcaneGlow {
+      0%,100% { filter: drop-shadow(0 0 8px rgba(229,57,53,0.55)) drop-shadow(0 0 20px rgba(170,20,110,0.30)); }
+      50%     { filter: drop-shadow(0 0 20px rgba(229,57,53,0.95)) drop-shadow(0 0 42px rgba(170,20,110,0.55)); }
+    }
     .enemy-card.defeated {
       filter: grayscale(100%) brightness(0.6);
       box-shadow: 0 0 8px rgba(255,0,0,0.6);
