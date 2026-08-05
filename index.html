@@ -84,7 +84,10 @@
     .tb-zone-identity{min-width:250px; padding-left:0;}
     .tb-zone-status{flex:1 1 320px; align-items:flex-start;}
     .tb-zone-status .user-stats{margin:0;}
-    .tb-resources{display:flex; align-items:center; gap:22px; flex-wrap:wrap; justify-content:center;}
+    .tb-resources{display:flex; align-items:center; gap:14px; flex-wrap:wrap; justify-content:space-evenly; width:100%;}
+    .tb-resources .coin-display-container, .tb-resources .streak-display{flex:1 1 0; min-width:140px; max-width:220px; justify-content:center;}
+    .res-numbers{display:flex; flex-direction:column; align-items:center; line-height:1.05;}
+    .res-label{font-family:'Cinzel',serif; font-size:.62rem; letter-spacing:2px; text-transform:uppercase; color:var(--cr-gold-dark); margin-top:3px; white-space:nowrap;}
     .tb-zone-identity .health-bar-container{width:100%; justify-content:center;}
     .tb-zone-identity .health-bar-bg{width:100%; max-width:280px; min-width:150px;}
     .tb-zone-actions{justify-content:center; gap:10px; flex-direction:row!important; flex-wrap:wrap; align-items:center;}
@@ -93,7 +96,7 @@
     .squad-display{display:flex; flex-direction:column; align-items:center;}
     .squad-shield{width:40px; height:45px;}
     .coin-display-container{display:flex; align-items:center; gap:6px; background:linear-gradient(135deg,rgba(180,130,0,0.25),rgba(201,168,76,0.12)); padding:15px 23px; border-radius:20px; border:2px solid var(--cr-gold-dark); cursor:default; box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.1);}
-    .coin-icon{font-size:1.2rem; color:var(--cr-gold);}
+    .coin-icon{font-size:1.6rem; color:var(--cr-gold);}
     .coin-count{font-family:'Cinzel',serif; font-size:1.6rem; font-weight:700; color:var(--cr-gold); line-height:1;}
     .inventory-quick{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
     .inv-item{display:flex; align-items:center; gap:4px; background:linear-gradient(135deg,rgba(26,58,110,0.6),rgba(13,37,69,0.9)); padding:11px 17px; border-radius:6px; border:1px solid var(--cr-blue-light); font-size:1.3rem; color:#ccc; cursor:pointer; transition:all .2s; box-shadow:0 2px 6px rgba(0,0,0,0.4);}
@@ -572,17 +575,26 @@
           <div style="font-size:.85rem;color:#aaa;font-family:'Cinzel',serif;">Prueba <span id="subLevelCount">1</span>/10</div>
         </div>
         <div class="tb-resources">
-          <div class="streak-display" id="streak-display">
+          <div class="streak-display res-pill" id="streak-display">
             <span id="streak-icon">⚡</span>
-            <div><div class="streak-count" id="streak-count">0</div><div class="streak-label" style="font-size:.7rem;color:#aaa;font-family:'Cinzel',serif;">Racha</div></div>
+            <div class="res-numbers">
+              <div class="streak-count" id="streak-count">0</div>
+              <div class="res-label">Racha</div>
+            </div>
           </div>
-          <div class="coin-display-container" title="Florines Reales">
+          <div class="coin-display-container res-pill" title="Florines Reales">
             <i class="fas fa-coins coin-icon"></i>
-            <span class="coin-count" id="coinDisplay">0</span>
+            <div class="res-numbers">
+              <span class="coin-count" id="coinDisplay">0</span>
+              <div class="res-label">Florines</div>
+            </div>
           </div>
-          <div class="coin-display-container" title="Gemas">
+          <div class="coin-display-container res-pill" title="Gemas">
             <span style="font-size:0.8rem;">💎</span>
-            <span class="coin-count" id="gemDisplay">0</span>
+            <div class="res-numbers">
+              <span class="coin-count" id="gemDisplay">0</span>
+              <div class="res-label">Gemas</div>
+            </div>
           </div>
         </div>
       </div>
