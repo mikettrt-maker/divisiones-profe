@@ -77,7 +77,20 @@
     .avatar-container{width:120px; height:120px; border-radius:50%; overflow:hidden; border:4px solid var(--cr-gold); background:linear-gradient(135deg,#0d1c3b,#1e3a5f); position:relative; box-shadow:0 0 20px rgba(201,168,76,0.5),0 4px 12px rgba(0,0,0,0.6); flex-shrink:0; cursor:pointer; transition:all .3s;}
     .avatar-container:hover{transform:scale(1.05); box-shadow:0 0 30px rgba(201,168,76,0.7),0 6px 16px rgba(0,0,0,0.7);}
     .avatar-img{width:100%; height:100%; object-fit:cover; background:black;}
-    .user-info-panel{display:flex; align-items:center; gap:20px; flex-wrap:wrap;}
+    .user-info-panel{display:flex; align-items:stretch; flex-wrap:wrap; flex:1; min-width:0; gap:0; justify-content:center;}
+    /* ── Zonas organizadas de la barra superior ── */
+    .tb-zone{display:flex; flex-direction:column; justify-content:center; align-items:center; gap:8px; padding:4px 18px; min-width:0; box-sizing:border-box;}
+    .tb-zone + .tb-zone{border-left:1px solid rgba(201,168,76,0.18); padding-left:20px;}
+    .tb-zone-identity{min-width:250px; padding-left:0;}
+    .tb-zone-status{flex:1 1 320px; align-items:flex-start;}
+    .tb-zone-status .user-stats{margin:0;}
+    .tb-resources{display:flex; align-items:center; gap:22px; flex-wrap:wrap; justify-content:center;}
+    .tb-zone-vital{flex:1.3 1 320px;}
+    .tb-zone-vital .health-bar-container{width:100%; justify-content:center;}
+    .tb-zone-vital .health-bar-bg{width:100%; max-width:460px; min-width:150px;}
+    .tb-zone-actions{justify-content:center; gap:10px; flex-direction:row!important; flex-wrap:wrap; align-items:center;}
+    .tb-zone-actions .btn-small{min-height:auto!important; padding:8px 16px;}
+    .tb-level-row{display:flex; align-items:center; gap:6px;}
     .squad-display{display:flex; flex-direction:column; align-items:center;}
     .squad-shield{width:40px; height:45px;}
     .coin-display-container{display:flex; align-items:center; gap:6px; background:linear-gradient(135deg,rgba(180,130,0,0.25),rgba(201,168,76,0.12)); padding:15px 23px; border-radius:20px; border:2px solid var(--cr-gold-dark); cursor:default; box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.1);}
@@ -100,6 +113,7 @@
     .streak-count{font-family:'Cinzel',serif; font-size:1.4rem; color:var(--cr-gold); line-height:1; font-weight:700;}
     .progress-bar-container{flex-grow:1; margin:0 20px; height:14px; background:rgba(0,0,0,0.5); border-radius:7px; overflow:hidden; min-width:100px; border:1px solid var(--cr-blue-light); box-shadow:inset 0 2px 4px rgba(0,0,0,0.5);}
     .progress-bar-fill{height:100%; background:linear-gradient(90deg,#00a878,var(--success),#00ff88); width:0%; transition:width .4s; box-shadow:0 0 12px rgba(0,230,118,0.6); border-radius:7px;}
+    .panel > .progress-bar-container{flex:0 0 220px; margin:0; min-width:120px;}
     .main-layout{display:flex; flex-direction:row; gap:20px; width:100%; align-items:flex-start; flex-wrap:wrap;}
     .game-area{flex:3; display:flex; flex-direction:column; gap:20px; min-width:300px;}
     .ranking-sidebar{flex:1; background:rgba(8,16,32,0.45); padding:0; border-radius:10px; box-shadow:0 12px 40px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.06); min-width:350px; border:2px solid var(--cr-gold-dark); overflow:hidden;}
@@ -420,7 +434,13 @@
       .main-header h1{font-size:1.4rem; letter-spacing:1px;}
       .season-badge{position:static; transform:none; margin:5px;}
       .season-banner-top{display:none;}
-      .user-info-panel{flex-wrap:wrap; justify-content:center; gap:8px;}
+      .user-info-panel{gap:10px; justify-content:center;}
+      .tb-zone{width:100%; padding:6px 0; align-items:center;}
+      .tb-zone + .tb-zone{border-left:none; border-top:1px solid rgba(201,168,76,0.18); padding-top:10px; margin-top:6px;}
+      .tb-zone-status{align-items:center;}
+      .tb-resources{justify-content:center;}
+      .tb-zone-actions{flex-direction:row; justify-content:center;}
+      .panel > .progress-bar-container{flex:1 1 100%; order:99; margin:4px 10px 0;}
       .avatar-container{width:70px; height:70px;}
     }
     .inv-item.empty { opacity: 0.4; filter: grayscale(100%); cursor: default; }
@@ -523,57 +543,67 @@
 </header>
 <div class="app-container">
   <div class="panel" id="top-bar-panel">
-    <div>
-      <label style="font-weight:700;color:var(--cr-gold-dark);font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:1px;">Nivel:</label>
-      <select id="levelSelect" class="level-select" onchange="jumpToLevel(this.value)"></select>
+    <div class="user-info-panel">
+      <div class="tb-zone tb-zone-identity">
+        <div class="avatar-squad-wrapper" onclick="toggleAvatarModal()" title="Cambiar Efigie">
+          <div class="avatar-container" id="main-avatar-box">
+            <img id="main-avatar-img" class="avatar-img" src="" alt="Efigie">
+            <div class="avatar-badge-overlay" id="squad-badge-overlay" title="Casa"></div>
+          </div>
+          <div class="avatar-rank-indicator" id="avatar-rank-badge">ESCUDERO</div>
+          <div class="squad-display" id="squad-display" style="display:none;">
+            <div class="squad-shield" id="user-squad-shield"></div>
+            <div class="squad-name-small" id="user-squad-name">Sin Casa</div>
+          </div>
+        </div>
+        <div class="rank-box" id="userRankBox">
+          <div class="rank-name" id="userRankName">...</div>
+          <div class="rank-progress"><div class="rank-progress-bar" id="userRankBar" style="width:0%"></div></div>
+          <div class="rank-score-label"><span id="scoreDisplay">0</span> pts</div>
+        </div>
+      </div>
+      <div class="tb-zone tb-zone-status">
+        <div class="user-stats">
+          <div style="font-size:.8rem;color:var(--cr-gold-dark);font-family:'Cinzel',serif;" id="difficultyLabel">...</div>
+          <div style="font-size:.85rem;color:#aaa;font-family:'Cinzel',serif;">Prueba <span id="subLevelCount">1</span>/10</div>
+        </div>
+        <div class="tb-resources">
+          <div class="streak-display" id="streak-display">
+            <span id="streak-icon">⚡</span>
+            <div><div class="streak-count" id="streak-count">0</div><div class="streak-label" style="font-size:.7rem;color:#aaa;font-family:'Cinzel',serif;">Racha</div></div>
+          </div>
+          <div class="coin-display-container" title="Florines Reales">
+            <i class="fas fa-coins coin-icon"></i>
+            <span class="coin-count" id="coinDisplay">0</span>
+          </div>
+          <div class="coin-display-container" title="Gemas">
+            <span style="font-size:1.1rem;">💎</span>
+            <span class="coin-count" id="gemDisplay">0</span>
+          </div>
+        </div>
+      </div>
+      <div class="tb-zone tb-zone-vital">
+        <div class="health-bar-container" id="player-health-bar">
+          <span style="font-size:1rem;">❤️</span>
+          <div class="health-bar-bg"><div class="health-bar-fill" id="health-fill"></div></div>
+          <span id="health-text" style="font-size:0.8rem; color:#ccc;">100/100</span>
+        </div>
+      </div>
+      <div class="tb-zone tb-zone-actions">
+        <div class="tb-level-row">
+          <label style="font-weight:700;color:var(--cr-gold-dark);font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:1px;">Nivel:</label>
+          <select id="levelSelect" class="level-select" onchange="jumpToLevel(this.value)"></select>
+        </div>
+        <div class="inventory-quick" id="inventory-bar"></div>
+        <div class="inventory-quick" id="inventory-container"></div>
+        <div style="position:relative;">
+          <i class="fas fa-gift" id="gift-icon" style="font-size:1.3rem; color:#ff4081; display:none; cursor:default;"></i>
+          <span id="gift-badge" style="position:absolute; top:-6px; right:-8px; background:linear-gradient(135deg,var(--cr-gold),var(--cr-gold-dark)); color:#0d1c3b; font-size:0.6rem; font-weight:800; padding:2px 5px; border-radius:10px; display:none; box-shadow:0 0 8px rgba(201,168,76,0.6); font-family:'Cinzel',serif;"></span>
+        </div>
+        <button onclick="logout()" class="btn-small">Abandonar</button>
+      </div>
     </div>
     <div class="progress-bar-container"><div class="progress-bar-fill" id="progressBar"></div></div>
-    <div class="user-info-panel">
-      <div class="avatar-squad-wrapper" onclick="toggleAvatarModal()" title="Cambiar Efigie">
-        <div class="avatar-container" id="main-avatar-box">
-          <img id="main-avatar-img" class="avatar-img" src="" alt="Efigie">
-          <div class="avatar-badge-overlay" id="squad-badge-overlay" title="Casa"></div>
-        </div>
-        <div class="avatar-rank-indicator" id="avatar-rank-badge">ESCUDERO</div>
-        <div class="squad-display" id="squad-display" style="display:none;">
-          <div class="squad-shield" id="user-squad-shield"></div>
-          <div class="squad-name-small" id="user-squad-name">Sin Casa</div>
-        </div>
-      </div>
-      <div class="user-stats">
-        <div style="font-size:.8rem;color:var(--cr-gold-dark);font-family:'Cinzel',serif;" id="difficultyLabel">...</div>
-        <div style="font-size:.85rem;color:#aaa;font-family:'Cinzel',serif;">Prueba <span id="subLevelCount">1</span>/10</div>
-      </div>
-      <div class="streak-display" id="streak-display">
-        <span id="streak-icon">⚡</span>
-        <div><div class="streak-count" id="streak-count">0</div><div class="streak-label" style="font-size:.7rem;color:#aaa;font-family:'Cinzel',serif;">Racha</div></div>
-      </div>
-      <div class="coin-display-container" title="Florines Reales">
-        <i class="fas fa-coins coin-icon"></i>
-        <span class="coin-count" id="coinDisplay">0</span>
-      </div>
-      <div class="coin-display-container" title="Gemas">
-        <span style="font-size:1.1rem;">💎</span>
-        <span class="coin-count" id="gemDisplay">0</span>
-      </div>
-      <div class="health-bar-container" id="player-health-bar">
-        <span style="font-size:1rem;">❤️</span>
-        <div class="health-bar-bg"><div class="health-bar-fill" id="health-fill"></div></div>
-        <span id="health-text" style="font-size:0.8rem; color:#ccc;">100/100</span>
-      </div>
-      <div class="inventory-quick" id="inventory-bar"></div>
-      <div style="position:relative; margin-left:8px;">
-        <i class="fas fa-gift" id="gift-icon" style="font-size:1.3rem; color:#ff4081; display:none; cursor:default;"></i>
-        <span id="gift-badge" style="position:absolute; top:-6px; right:-8px; background:linear-gradient(135deg,var(--cr-gold),var(--cr-gold-dark)); color:#0d1c3b; font-size:0.6rem; font-weight:800; padding:2px 5px; border-radius:10px; display:none; box-shadow:0 0 8px rgba(201,168,76,0.6); font-family:'Cinzel',serif;"></span>
-      </div>
-      <div class="inventory-quick" id="inventory-container"></div>
-      <div class="rank-box" id="userRankBox">
-        <div class="rank-name" id="userRankName">...</div>
-        <div class="rank-progress"><div class="rank-progress-bar" id="userRankBar" style="width:0%"></div></div>
-        <div class="rank-score-label"><span id="scoreDisplay">0</span> pts</div>
-      </div>
-      <button onclick="logout()" class="btn-small">Abandonar</button>
-    </div>
   </div>
   <div id="admin-dashboard">
     <div class="dash-grid">
