@@ -85,16 +85,15 @@
     .tb-zone-status{flex:1 1 320px; align-items:flex-start;}
     .tb-zone-status .user-stats{margin:0;}
     .tb-resources{display:flex; align-items:center; gap:22px; flex-wrap:wrap; justify-content:center;}
-    .tb-zone-vital{flex:1.3 1 320px;}
-    .tb-zone-vital .health-bar-container{width:100%; justify-content:center;}
-    .tb-zone-vital .health-bar-bg{width:100%; max-width:460px; min-width:150px;}
+    .tb-zone-identity .health-bar-container{width:100%; justify-content:center;}
+    .tb-zone-identity .health-bar-bg{width:100%; max-width:280px; min-width:150px;}
     .tb-zone-actions{justify-content:center; gap:10px; flex-direction:row!important; flex-wrap:wrap; align-items:center;}
     .tb-zone-actions .btn-small{min-height:auto!important; padding:8px 16px;}
     .tb-level-row{display:flex; align-items:center; gap:6px;}
     .squad-display{display:flex; flex-direction:column; align-items:center;}
     .squad-shield{width:40px; height:45px;}
     .coin-display-container{display:flex; align-items:center; gap:6px; background:linear-gradient(135deg,rgba(180,130,0,0.25),rgba(201,168,76,0.12)); padding:15px 23px; border-radius:20px; border:2px solid var(--cr-gold-dark); cursor:default; box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.1);}
-    .coin-icon{font-size:1.5rem; color:var(--cr-gold);}
+    .coin-icon{font-size:1.2rem; color:var(--cr-gold);}
     .coin-count{font-family:'Cinzel',serif; font-size:1.6rem; font-weight:700; color:var(--cr-gold); line-height:1;}
     .inventory-quick{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
     .inv-item{display:flex; align-items:center; gap:4px; background:linear-gradient(135deg,rgba(26,58,110,0.6),rgba(13,37,69,0.9)); padding:11px 17px; border-radius:6px; border:1px solid var(--cr-blue-light); font-size:1.3rem; color:#ccc; cursor:pointer; transition:all .2s; box-shadow:0 2px 6px rgba(0,0,0,0.4);}
@@ -561,6 +560,11 @@
           <div class="rank-progress"><div class="rank-progress-bar" id="userRankBar" style="width:0%"></div></div>
           <div class="rank-score-label"><span id="scoreDisplay">0</span> pts</div>
         </div>
+        <div class="health-bar-container" id="player-health-bar">
+          <span style="font-size:1rem;">❤️</span>
+          <div class="health-bar-bg"><div class="health-bar-fill" id="health-fill"></div></div>
+          <span id="health-text" style="font-size:0.8rem; color:#ccc;">100/100</span>
+        </div>
       </div>
       <div class="tb-zone tb-zone-status">
         <div class="user-stats">
@@ -577,16 +581,9 @@
             <span class="coin-count" id="coinDisplay">0</span>
           </div>
           <div class="coin-display-container" title="Gemas">
-            <span style="font-size:0.9rem;">💎</span>
+            <span style="font-size:0.8rem;">💎</span>
             <span class="coin-count" id="gemDisplay">0</span>
           </div>
-        </div>
-      </div>
-      <div class="tb-zone tb-zone-vital">
-        <div class="health-bar-container" id="player-health-bar">
-          <span style="font-size:1rem;">❤️</span>
-          <div class="health-bar-bg"><div class="health-bar-fill" id="health-fill"></div></div>
-          <span id="health-text" style="font-size:0.8rem; color:#ccc;">100/100</span>
         </div>
       </div>
       <div class="tb-zone tb-zone-actions">
