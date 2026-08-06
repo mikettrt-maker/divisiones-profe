@@ -1856,22 +1856,38 @@ async function loadScore(user){
     chosenReward = data?.chosen_reward || null;
     pendingChoice = data?.pending_choice || false;
 
-    completedLevels = cleanCompletedLevels(data?.completed_levels || []);
-
-    // ✅ Si el nivel actual ya está completamente terminado, avanzar al siguiente
-    const currentLevelComplete = `L${unlockedLevel}_P${PROBLEMS_PER_LEVEL}`;
-    if (completedLevels.includes(currentLevelComplete) && unlockedLevel < TOTAL_LEVELS) {
-      unlockedLevel++;
-      currentProblemInLevel = 1;
-      enemyEnergy = 100;
-      savedProblemKey = null;
-      await _supabase.from('profiles').update({
-        current_level: unlockedLevel,
-        current_problem: 1,
-        enemy_energy: 100,
-        current_problem_key: null
-      }).eq('id', user.id);
+    // ── Nivel real y autocura de cuentas atrasadas ──
+    // Se deriva de completed_levels CRUDO (antes de limpiar, porque cleanCompletedLevels
+    // filtra por currentMainLevel que al cargar aún es 1 y descartaría niveles futuros)
+    const rawCompleted = data?.completed_levels || [];
+    let derivedLevel = 1;
+    for (const k of rawCompleted) {
+      const mk = k.match(/^L(\d+)_P/);
+      if (mk) derivedLevel = Math.max(derivedLevel, parseInt(mk[1]));
     }
+    if ((data?.current_level || 1) > derivedLevel) derivedLevel = data.current_level;
+    const derivedComplete = `L${derivedLevel}_P${PROBLEMS_PER_LEVEL}`;
+    if (rawCompleted.includes(derivedComplete) && derivedLevel < TOTAL_LEVELS) derivedLevel++;
+    if (unlockedLevel < derivedLevel) {
+      unlockedLevel = derivedLevel;
+      enemyEnergy = 100;
+      const keyLvl = savedProblemKey && savedProblemKey.match(/^L(\d+)_P/);
+      if (!savedProblemKey || (keyLvl && parseInt(keyLvl[1]) < derivedLevel)) {
+        currentProblemInLevel = 1;
+        savedProblemKey = null;
+        await _supabase.from('profiles').update({
+          current_level: unlockedLevel,
+          current_problem: 1,
+          enemy_energy: 100,
+          current_problem_key: null
+        }).eq('id', user.id);
+      } else {
+        await _supabase.from('profiles').update({ current_level: unlockedLevel }).eq('id', user.id);
+      }
+    }
+    // currentMainLevel ya corregido para que el limpiado conserve los niveles reales
+    if (currentMainLevel < unlockedLevel) currentMainLevel = unlockedLevel;
+    completedLevels = cleanCompletedLevels(rawCompleted);
 
     // Corregir energía baja en cuentas afectadas por el bug de problemas repetidos
     const doneLevel = completedLevels.filter(k => k.startsWith('L' + unlockedLevel + '_P')).length;
