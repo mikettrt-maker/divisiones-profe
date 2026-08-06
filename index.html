@@ -1311,7 +1311,7 @@ function openShop(){
 
   const plantDiv = document.createElement('div');
   plantDiv.className = 'shop-item';
-  plantDiv.innerHTML = `<span class="shop-item-icon"><span class="weapon-icon"><img src="${GITHUB}/planta%20curativa.svg" style="width:100%;height:100%;display:block;"></span></span><div class="shop-item-name">Planta Curativa</div><div class="shop-item-desc">Restaura toda tu salud al instante</div><div class="shop-item-price"><i class="fas fa-coins"></i> 300</div><button class="shop-buy-btn" onclick="buyHealingPlant()">Comprar</button>`;
+  plantDiv.innerHTML = `<span class="shop-item-icon"><span class="weapon-icon"><img src="${GITHUB}/planta%20curativa.svg" style="width:100%;height:100%;display:block;"></span></span><div class="shop-item-name">Planta Curativa</div><div class="shop-item-desc">Restaura 30 puntos de salud</div><div class="shop-item-price"><i class="fas fa-coins"></i> 300</div><button class="shop-buy-btn" onclick="buyHealingPlant()">Comprar</button>`;
   container.appendChild(plantDiv);
 
   const gemDiv = document.createElement('div');
@@ -1386,7 +1386,7 @@ async function buyHealingPlant() {
   if (playerHealth >= 100) return showToast('Tu salud ya está al máximo', 'tomato');
   if (!confirm('¿Comprar una planta curativa por 300 monedas?')) return;
   currentCoins -= cost;
-  playerHealth = 100;
+  playerHealth = Math.min(100, playerHealth + 30);
   updateCoinDisplay();
   updateHealthBar();
   const { error } = await _supabase.from('profiles').update({
@@ -1404,7 +1404,7 @@ async function buyHealingPlant() {
     return;
   }
   updateRanking();
-  showToast('🌿 ¡Salud restaurada por completo!', 'success');
+  showToast('🌿 ¡Salud restaurada! +30', 'success');
 }
 async function buyGem() {
   const cost = 500;
