@@ -2163,9 +2163,8 @@ function enableNextAntennaInput(){
 function checkAntennaInput(inp, id){
   const val = parseInt(inp.value), exp = id * currentDivisor;
   if(val === exp){
-    AudioEngine.playSuccess(); inp.classList.add('status-ok'); inp.disabled = true; inp.classList.remove('status-wrong');
-    currentAntennaIndex++;
-    if(currentAntennaIndex < ANTENNA_SEQUENCE.length) enableNextAntennaInput(); else unlockGrid();
+    inp.classList.add('status-ok'); inp.disabled = true; inp.classList.remove('status-wrong');
+    currentAntennaIndex++;    if(currentAntennaIndex < ANTENNA_SEQUENCE.length) enableNextAntennaInput(); else unlockGrid();
   } else {
     inp.classList.add('status-wrong'); setTimeout(() => inp.classList.remove('status-wrong'), 500);
   }
@@ -2196,7 +2195,6 @@ async function verificarSolucion(){
   const rR = currentDividend % currentDivisor;
 
   if(coc === rC && res === rR){
-    AudioEngine.playSuccess();
 
     const levelKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
 
@@ -2293,7 +2291,6 @@ async function verificarSolucion(){
     }
 
   } else {
-    AudioEngine.playError();
     document.getElementById('msg').innerHTML = `<span style='color:var(--cr-red);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>🛡️ INCORRECTO — El jefe te ha atacado</span>`;
     resetStreak();
 
