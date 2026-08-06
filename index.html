@@ -2709,13 +2709,10 @@ function playMusic() {
 function toggleMusic() {
   if (!bgMusic) initMusic();
   musicEnabled = !musicEnabled;
-  var btn = document.getElementById('music-toggle-btn');
   if (musicEnabled) {
     bgMusic.play().catch(function(){});
-    btn.innerHTML = '🎵';
   } else {
     bgMusic.pause();
-    btn.innerHTML = '🔇';
   }
 }
 
