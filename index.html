@@ -847,7 +847,7 @@ const MISSIONS = [
 // ── Limpiar completedLevels para evitar claves de niveles futuros ──
 function cleanCompletedLevels(arr) {
   if (!Array.isArray(arr)) return [];
-  const maxLvl = currentMainLevel;
+  const maxLvl = Math.max(currentMainLevel, unlockedLevel);
   return arr.filter(key => {
     const match = key.match(/^L(\d+)_P/);
     return match && parseInt(match[1]) <= maxLvl;
