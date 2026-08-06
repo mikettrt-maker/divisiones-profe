@@ -1838,12 +1838,14 @@ async function loadScore(user){
       if (m2) currentProblemInLevel = parseInt(m2[2]);
     }
     currentEnemyLevel = data?.enemy_level || unlockedLevel;
-    if (currentEnemyLevel === unlockedLevel && data?.enemy_energy != null && data.enemy_energy >= 0) {
+    // Confiar SIEMPRE en la energía guardada: si el enemigo quedó vencido (0) debe seguir vencido.
+    // La columna legacy enemy_level puede traer un valor viejo y descartar la sangre por error.
+    if (data?.enemy_energy != null && data.enemy_energy >= 0) {
       enemyEnergy = data.enemy_energy;
     } else {
       enemyEnergy = 100;
-      currentEnemyLevel = unlockedLevel;
     }
+    currentEnemyLevel = unlockedLevel;
 
     playTimeCounter = data?.total_time_played || 0;
     shieldDurability = data?.shield_durability || 0;
