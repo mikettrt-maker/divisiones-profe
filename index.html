@@ -82,6 +82,8 @@
     .tb-zone{display:flex; flex-direction:column; justify-content:center; align-items:center; gap:8px; padding:4px 18px; min-width:0; box-sizing:border-box;}
     .tb-zone + .tb-zone{border-left:1px solid rgba(201,168,76,0.18); padding-left:20px;}
     .tb-zone-identity{min-width:250px; padding-left:0;}
+    .tb-left-level{display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:5px; flex-wrap:wrap;}
+    .tb-left-level .btn-small{min-height:auto!important; padding:8px 16px;}
     .tb-zone-status{flex:1 1 320px; align-items:flex-start;}
     .tb-zone-status .user-stats{margin:0;}
     .tb-resources{display:flex; align-items:center; gap:14px; flex-wrap:wrap; justify-content:space-evenly; width:100%;}
@@ -91,8 +93,6 @@
     .tb-zone-identity .health-bar-container{width:100%; justify-content:center;}
     .tb-zone-identity .health-bar-bg{width:100%; max-width:280px; min-width:150px;}
     .tb-zone-actions{justify-content:center; gap:10px; flex-direction:row!important; flex-wrap:wrap; align-items:center;}
-    .tb-zone-actions .btn-small{min-height:auto!important; padding:8px 16px;}
-    .tb-level-row{display:flex; align-items:center; gap:6px;}
     .squad-display{display:flex; flex-direction:column; align-items:center;}
     .squad-shield{width:40px; height:45px;}
     .coin-display-container{display:flex; align-items:center; gap:6px; background:linear-gradient(135deg,rgba(180,130,0,0.25),rgba(201,168,76,0.12)); padding:15px 23px; border-radius:20px; border:2px solid var(--cr-gold-dark); cursor:default; box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.1);}
@@ -555,6 +555,11 @@
   <div class="panel" id="top-bar-panel">
     <div class="user-info-panel">
       <div class="tb-zone tb-zone-identity">
+        <div class="tb-left-level">
+          <label style="font-weight:700;color:var(--cr-gold-dark);font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:1px;">Nivel:</label>
+          <select id="levelSelect" class="level-select" onchange="jumpToLevel(this.value)"></select>
+          <button onclick="logout()" class="btn-small">Abandonar</button>
+        </div>
         <div class="avatar-squad-wrapper" onclick="toggleAvatarModal()" title="Cambiar Efigie">
           <div class="avatar-container" id="main-avatar-box">
             <img id="main-avatar-img" class="avatar-img" src="" alt="Efigie">
@@ -607,17 +612,12 @@
         </div>
       </div>
       <div class="tb-zone tb-zone-actions">
-        <div class="tb-level-row">
-          <label style="font-weight:700;color:var(--cr-gold-dark);font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:1px;">Nivel:</label>
-          <select id="levelSelect" class="level-select" onchange="jumpToLevel(this.value)"></select>
-        </div>
         <div class="inventory-quick" id="inventory-bar"></div>
         <div class="inventory-quick" id="inventory-container"></div>
         <div style="position:relative;">
           <i class="fas fa-gift" id="gift-icon" style="font-size:1.3rem; color:#ff4081; display:none; cursor:default;"></i>
           <span id="gift-badge" style="position:absolute; top:-6px; right:-8px; background:linear-gradient(135deg,var(--cr-gold),var(--cr-gold-dark)); color:#0d1c3b; font-size:0.6rem; font-weight:800; padding:2px 5px; border-radius:10px; display:none; box-shadow:0 0 8px rgba(201,168,76,0.6); font-family:'Cinzel',serif;"></span>
         </div>
-        <button onclick="logout()" class="btn-small">Abandonar</button>
       </div>
     </div>
     <div class="progress-bar-container"><div class="progress-bar-fill" id="progressBar"></div></div>
