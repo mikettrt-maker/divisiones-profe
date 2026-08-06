@@ -1750,6 +1750,7 @@ function showLogin(){
 async function showApp(){
   document.getElementById('login-screen').style.display='none';
   document.querySelector('.app-container').style.display='flex';
+  playMusic();
   if(currentUser){ try{ await loadScore(currentUser); } catch(e){ console.error(e); } }
   if(isAdmin){ showAdminDashboard(); } else { initGame(); startRanking(); loadHallOfFame(); initSeason(); startStudentHeartbeat(); }
 }
