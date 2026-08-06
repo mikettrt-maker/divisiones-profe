@@ -310,6 +310,14 @@
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       margin: 15px 0; width: 100%;
     }
+    #enemy-card-section .enemy-name,
+    #enemy-card-section .enemy-card,
+    #enemy-card-section .energy-bar-container,
+    #enemy-card-section .energy-text { visibility: hidden; }
+    #enemy-card-section.loaded .enemy-name,
+    #enemy-card-section.loaded .enemy-card,
+    #enemy-card-section.loaded .energy-bar-container,
+    #enemy-card-section.loaded .energy-text { visibility: visible; }
     .enemy-card {
       width: auto; height: auto;
       border: none;
@@ -1948,6 +1956,7 @@ function updateEnemyCard() {
   const enemy = ENEMIES[level] || ENEMIES[1];
   document.getElementById('enemy-name').innerText = enemy.name;
   document.getElementById('enemy-img').src = enemy.jpg;
+  document.getElementById('enemy-card-section').classList.add('loaded');
 }
 function updateEnergyBar() {
   const fill = document.getElementById('energy-bar-fill');
