@@ -56,7 +56,7 @@
     }
     .main-header::before{content:''; position:absolute; inset:0; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='40'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='40' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"); pointer-events:none;}
     .main-header h1{margin:0; font-size:2rem; font-weight:900; text-transform:uppercase; letter-spacing:3px; font-family:'Cinzel Decorative',serif; color:transparent; background:linear-gradient(180deg,var(--cr-gold-light) 0%,var(--cr-gold) 50%,var(--cr-gold-dark) 100%); -webkit-background-clip:text; background-clip:text; text-shadow:none; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.8)); position:relative; z-index:1;}
-    .season-banner-top{position:absolute; left:20px; top:50%; transform:translateY(-50%); font-family:'Cinzel',serif; font-size:1.1rem; color:var(--cr-gold-light); letter-spacing:2px; text-transform:uppercase; z-index:10; width:300px; overflow:hidden; white-space:nowrap; text-shadow:0 0 12px rgba(201,168,76,0.5);}
+    .season-banner-top{position:absolute; left:20px; bottom:8px; top:auto; font-family:'Cinzel',serif; font-size:1.1rem; color:var(--cr-gold-light); letter-spacing:2px; text-transform:uppercase; z-index:10; width:300px; overflow:hidden; white-space:nowrap; text-shadow:0 0 12px rgba(201,168,76,0.5);}
     .marquee-text{display:inline-block; padding-left:100%; animation:marqueeScroll 10s linear infinite;}
     @keyframes marqueeScroll{0%{transform:translate(0,0)}100%{transform:translate(-100%,0)}}
     .season-badge{position:absolute; top:50%; right:20px; transform:translateY(-50%); background:linear-gradient(135deg,#0d1c3b,#1e3a5f); color:var(--cr-gold); padding:6px 18px; border-radius:6px; font-weight:800; display:flex; align-items:center; gap:10px; border:2px solid var(--cr-gold-dark); box-shadow:0 0 20px rgba(201,168,76,0.2),inset 0 1px 0 rgba(255,255,255,0.1);}
@@ -82,8 +82,9 @@
     .tb-zone{display:flex; flex-direction:column; justify-content:center; align-items:center; gap:8px; padding:4px 18px; min-width:0; box-sizing:border-box;}
     .tb-zone + .tb-zone{border-left:1px solid rgba(201,168,76,0.18); padding-left:20px;}
     .tb-zone-identity{min-width:250px; padding-left:0;}
-    .tb-left-level{display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:5px; flex-wrap:wrap;}
-    .tb-left-level .btn-small{min-height:auto!important; padding:8px 16px;}
+    .tb-left-level{position:absolute; top:50%; left:20px; transform:translateY(-50%); background:linear-gradient(135deg,#0d1c3b,#1e3a5f); color:var(--cr-gold); padding:6px 12px; border-radius:6px; display:flex; align-items:center; gap:8px; border:2px solid var(--cr-gold-dark); box-shadow:0 0 20px rgba(201,168,76,0.2),inset 0 1px 0 rgba(255,255,255,0.1); z-index:10;}
+    .tb-left-level .level-select{padding:5px 8px; font-size:.85rem;}
+    .tb-left-level .btn-small{font-size:.8rem; padding:6px 12px;}
     .tb-zone-status{flex:1 1 320px; align-items:flex-start;}
     .tb-zone-status .user-stats{margin:0;}
     .tb-resources{display:flex; align-items:center; gap:14px; flex-wrap:wrap; justify-content:space-evenly; width:100%;}
@@ -443,6 +444,7 @@
       .main-header{flex-wrap:wrap; padding:8px 0; justify-content:center;}
       .main-header h1{font-size:1.4rem; letter-spacing:1px;}
       .season-badge{position:static; transform:none; margin:5px;}
+      .tb-left-level{position:static; transform:none; margin:5px auto;}
       .season-banner-top{display:none;}
       .user-info-panel{gap:10px; justify-content:center;}
       .tb-zone{width:100%; padding:6px 0; align-items:center;}
@@ -545,6 +547,11 @@
   </div>
 </div>
 <header class="main-header">
+  <div class="tb-left-level" id="header-level-ctl">
+    <label style="font-weight:700;color:var(--cr-gold-dark);font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:1px;">Nivel:</label>
+    <select id="levelSelect" class="level-select" onchange="jumpToLevel(this.value)"></select>
+    <button onclick="logout()" class="btn-small">Abandonar</button>
+  </div>
   <div class="season-badge" id="season-badge"><i class="fas fa-hourglass"></i><span class="timer-display" id="timer-display">--:--</span></div>
   <h1>Prof. Miguel</h1>
   <div class="season-banner-top"><div class="marquee-text">⚔️💀🐉️ El Códice de los Reyes Oscuros – Temporada <span id="season-num-display">1</span> ⚜️🐉💀⚔️</div></div>
@@ -555,11 +562,6 @@
   <div class="panel" id="top-bar-panel">
     <div class="user-info-panel">
       <div class="tb-zone tb-zone-identity">
-        <div class="tb-left-level">
-          <label style="font-weight:700;color:var(--cr-gold-dark);font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:1px;">Nivel:</label>
-          <select id="levelSelect" class="level-select" onchange="jumpToLevel(this.value)"></select>
-          <button onclick="logout()" class="btn-small">Abandonar</button>
-        </div>
         <div class="avatar-squad-wrapper" onclick="toggleAvatarModal()" title="Cambiar Efigie">
           <div class="avatar-container" id="main-avatar-box">
             <img id="main-avatar-img" class="avatar-img" src="" alt="Efigie">
