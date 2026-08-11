@@ -1,0 +1,2637 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>El Códice Merovingio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      --primary-color: #c9a84c; --primary-light: #e2c275; --text-dark: #e0e0e0;
+      --bg-dark: #0d1c3b; --bg-panel: #1a1a2e; --success: #00e676; --error: #ff1744;
+      --cell-size: 32px; --rank-iron: #9e9e9e; --rank-bronze: #d97706; --rank-silver: #bdbdbd;
+      --rank-gold: #fbbf24; --rank-platinum: #06b6d4; --rank-diamond: #8b5cf6; --rank-heroic: #ef4444;
+      --bp-gold: #c9a84c; --shop-purple: #6d28d9; --shop-orange: #c2410c;
+      --neon-cyan: #00f5ff; --neon-magenta: #ff00ff; --neon-green: #39ff14; --neon-yellow: #fff01a; --neon-pink: #ff1493;
+      --cr-blue-dark: #0d1c3b; --cr-blue-mid: #152a4a; --cr-blue-light: #1e3a5f; --cr-blue-bright: #2563b8;
+      --cr-gold: #c9a84c; --cr-gold-dark: #8b6914; --cr-gold-light: #f5e6b8;
+      --cr-purple: #4a1a8a; --cr-purple-light: #7b2ff7; --cr-red: #c0392b;
+      --cr-stone: #2c2c3e; --cr-stone-light: #3d3d56;
+      --cr-border-gold: #a68a3c; --cr-border-blue: #1e5bbf; --cr-gem: #00d4ff;
+    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body {
+      margin: 0; font-family: 'Rajdhani', sans-serif;
+      background-color: #0a0a14;
+      background-image: url('https://mikettrt-maker.github.io/divisiones-profe/img/fondo.jpg');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
+      color: var(--text-dark);
+      display: flex; flex-direction: column; align-items: center; min-height: 100vh;
+      overscroll-behavior: none; touch-action: manipulation;
+      position: relative;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.35);
+      z-index: -1;
+    }
+    .cr-divider { width:100%; height:3px; background:linear-gradient(90deg,transparent,var(--cr-gold),var(--cr-gold-light),var(--cr-gold),transparent); box-shadow:0 0 8px rgba(201,168,76,0.6); position:relative; }
+    .cr-divider::before,.cr-divider::after { content:'⚜'; position:absolute; top:50%; transform:translateY(-50%); color:var(--cr-gold); font-size:1.1rem; line-height:1; }
+    .cr-divider::before{left:20px} .cr-divider::after{right:20px}
+    .main-header {
+      width:100%; background:linear-gradient(180deg,#0d1c3b 0%,#152a4a 60%,#091020 100%);
+      color:var(--cr-gold); padding:0; text-align:center;
+      box-shadow:0 6px 30px rgba(0,0,0,0.8),inset 0 -2px 0 var(--cr-gold),inset 0 1px 0 rgba(255,255,255,0.07);
+      border-bottom:3px solid var(--cr-gold-dark);
+      display:flex; justify-content:center; align-items:center; gap:20px; position:relative; min-height:80px;
+    }
+    .main-header::before{content:''; position:absolute; inset:0; background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='40'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='200' height='40' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E"); pointer-events:none;}
+    .main-header h1{margin:0; font-size:2rem; font-weight:900; text-transform:uppercase; letter-spacing:3px; font-family:'Cinzel Decorative',serif; color:transparent; background:linear-gradient(180deg,var(--cr-gold-light) 0%,var(--cr-gold) 50%,var(--cr-gold-dark) 100%); -webkit-background-clip:text; background-clip:text; text-shadow:none; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.8)); position:relative; z-index:1;}
+    .season-banner-top{position:absolute; left:20px; top:50%; transform:translateY(-50%); font-family:'Cinzel',serif; font-size:1.1rem; color:var(--cr-gold-light); letter-spacing:2px; text-transform:uppercase; z-index:10; width:300px; overflow:hidden; white-space:nowrap; text-shadow:0 0 12px rgba(201,168,76,0.5);}
+    .marquee-text{display:inline-block; padding-left:100%; animation:marqueeScroll 10s linear infinite;}
+    @keyframes marqueeScroll{0%{transform:translate(0,0)}100%{transform:translate(-100%,0)}}
+    .season-badge{position:absolute; top:50%; right:20px; transform:translateY(-50%); background:linear-gradient(135deg,#0d1c3b,#1e3a5f); color:var(--cr-gold); padding:6px 18px; border-radius:6px; font-weight:800; display:flex; align-items:center; gap:10px; border:2px solid var(--cr-gold-dark); box-shadow:0 0 20px rgba(201,168,76,0.2),inset 0 1px 0 rgba(255,255,255,0.1);}
+    .season-badge i{font-size:1.5rem}
+    .season-badge.active{background:linear-gradient(135deg,#8b6914,var(--cr-gold)); color:#0d1c3b; border-color:var(--cr-gold-light); box-shadow:0 0 30px rgba(201,168,76,0.5); animation:champGlow 2s infinite alternate;}
+    .season-badge.finished{background:linear-gradient(135deg,#7a0000,var(--cr-red)); color:white; border-color:#ff4444; animation:pulse 1s infinite;}
+    @keyframes pulse{0%{opacity:1}50%{opacity:.7}100%{opacity:1}}
+    @keyframes champGlow{from{box-shadow:0 0 15px rgba(201,168,76,0.4)} to{box-shadow:0 0 35px rgba(201,168,76,0.9),0 0 60px rgba(201,168,76,0.3)}}
+    .timer-display{font-family:'Teko'; font-size:2.8rem; line-height:1;}
+    .admin-btn{background:linear-gradient(135deg,#1a1a2e,#16213e); color:var(--cr-gold); padding:6px 16px; font-size:.9rem; border:1px solid var(--cr-gold-dark); border-radius:6px; cursor:pointer; display:none; font-family:'Cinzel',serif;}
+    .admin-btn.visible{display:block}
+    .app-container{width:100%; max-width:1500px; padding:20px; display:flex; flex-direction:column; gap:20px;}
+    .panel{background:rgba(10,18,40,0.45); padding:14px 22px; border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.08),inset 0 -1px 0 rgba(0,0,0,0.5); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; border:1px solid var(--cr-blue-light); border-top:3px solid var(--cr-gold-dark); position:relative; overflow:hidden;}
+    .panel::before{content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(201,168,76,0.4),transparent);}
+    .level-select{padding:8px 14px; border-radius:6px; border:2px solid var(--cr-gold-dark); background:linear-gradient(135deg,#0d1c3b,#1e3a5f); color:var(--cr-gold); font-family:'Cinzel',serif; font-weight:700; cursor:pointer; outline:none; text-transform:uppercase; box-shadow:0 2px 8px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.1);}
+    .level-select:focus{border-color:var(--cr-gold); box-shadow:0 0 12px rgba(201,168,76,0.4);}
+    .avatar-squad-wrapper{display:flex; flex-direction:column; align-items:center; gap:5px;}
+    .avatar-container{width:120px; height:120px; border-radius:50%; overflow:hidden; border:4px solid var(--cr-gold); background:linear-gradient(135deg,#0d1c3b,#1e3a5f); position:relative; box-shadow:0 0 20px rgba(201,168,76,0.5),0 4px 12px rgba(0,0,0,0.6); flex-shrink:0; cursor:pointer; transition:all .3s;}
+    .avatar-container:hover{transform:scale(1.05); box-shadow:0 0 30px rgba(201,168,76,0.7),0 6px 16px rgba(0,0,0,0.7);}
+    .avatar-img{width:100%; height:100%; object-fit:cover; background:black;}
+    .user-info-panel{display:flex; align-items:center; gap:20px; flex-wrap:wrap;}
+    .squad-display{display:flex; flex-direction:column; align-items:center;}
+    .squad-shield{width:40px; height:45px;}
+    .coin-display-container{display:flex; align-items:center; gap:6px; background:linear-gradient(135deg,rgba(180,130,0,0.25),rgba(201,168,76,0.12)); padding:15px 23px; border-radius:20px; border:2px solid var(--cr-gold-dark); cursor:default; box-shadow:0 2px 8px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.1);}
+    .coin-icon{font-size:2.0rem; color:var(--cr-gold);}
+    .coin-count{font-family:'Cinzel',serif; font-size:1.6rem; font-weight:700; color:var(--cr-gold); line-height:1;}
+    .inventory-quick{display:flex; gap:8px; align-items:center; flex-wrap:wrap;}
+    .inv-item{display:flex; align-items:center; gap:4px; background:linear-gradient(135deg,rgba(26,58,110,0.6),rgba(13,37,69,0.9)); padding:11px 17px; border-radius:6px; border:1px solid var(--cr-blue-light); font-size:1.3rem; color:#ccc; cursor:pointer; transition:all .2s; box-shadow:0 2px 6px rgba(0,0,0,0.4);}
+    .inv-item:hover{background:linear-gradient(135deg,rgba(37,99,184,0.5),rgba(26,58,110,0.9)); border-color:var(--cr-gold); box-shadow:0 0 10px rgba(201,168,76,0.3);}
+    .inv-item.active{border-color:var(--success); color:var(--success);}
+    .inv-item.empty { opacity: 0.4; filter: grayscale(100%); cursor: default; }
+    .rank-box{display:flex; flex-direction:column; align-items:center; background:linear-gradient(180deg,rgba(13,37,69,0.9),rgba(10,22,40,0.95)); padding:11px 23px; border-radius:8px; border:2px solid var(--cr-gold-dark); min-width:155px; box-shadow:0 4px 12px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.08);}
+    .rank-name{font-size:1rem; font-weight:800; letter-spacing:1px; text-transform:uppercase; font-family:'Cinzel',serif;}
+    .rank-progress{width:100%; height:5px; background:rgba(255,255,255,0.1); border-radius:3px; margin-top:4px; overflow:hidden;}
+    .rank-progress-bar{height:100%; transition:width .5s; background:linear-gradient(90deg,var(--cr-gold-dark),var(--cr-gold)); border-radius:3px;}
+    .rank-score-label{font-size:.75rem; color:#aaa; margin-top:3px; font-family:'Cinzel',serif;}
+    .streak-display{display:flex; align-items:center; gap:8px; background:linear-gradient(135deg,rgba(13,37,69,0.6),rgba(10,22,40,0.9)); border:1px solid rgba(255,255,255,0.1); padding:8px 18px; border-radius:20px; transition:all .3s;}
+    .streak-display.active{border-color:var(--cr-gold); background:linear-gradient(135deg,rgba(180,130,0,0.2),rgba(13,37,69,0.9)); box-shadow:0 0 15px rgba(201,168,76,0.3);}
+    .streak-display.on-fire{border-color:#ff6600; background:linear-gradient(135deg,rgba(255,100,0,0.2),rgba(13,37,69,0.9)); box-shadow:0 0 20px rgba(255,100,0,0.5); animation:firePulse 1s infinite alternate;}
+    @keyframes firePulse{from{box-shadow:0 0 10px rgba(255,100,0,.4)} to{box-shadow:0 0 28px rgba(255,100,0,.9)}}
+    .streak-count{font-family:'Cinzel',serif; font-size:1.4rem; color:var(--cr-gold); line-height:1; font-weight:700;}
+    .progress-bar-container{flex-grow:1; margin:0 20px; height:14px; background:rgba(0,0,0,0.5); border-radius:7px; overflow:hidden; min-width:100px; border:1px solid var(--cr-blue-light); box-shadow:inset 0 2px 4px rgba(0,0,0,0.5);}
+    .progress-bar-fill{height:100%; background:linear-gradient(90deg,#00a878,var(--success),#00ff88); width:0%; transition:width .4s; box-shadow:0 0 12px rgba(0,230,118,0.6); border-radius:7px;}
+    .main-layout{display:flex; flex-direction:row; gap:20px; width:100%; align-items:flex-start; flex-wrap:wrap;}
+    .game-area{flex:3; display:flex; flex-direction:column; gap:20px; min-width:300px;}
+    .ranking-sidebar{flex:1; background:rgba(8,16,32,0.45); padding:0; border-radius:10px; box-shadow:0 12px 40px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.06); min-width:350px; border:2px solid var(--cr-gold-dark); overflow:hidden;}
+    .ranking-title{font-size:1.3rem; font-weight:900; color:transparent; background:linear-gradient(180deg,var(--cr-gold-light),var(--cr-gold)); -webkit-background-clip:text; background-clip:text; text-align:center; padding:14px 20px 10px; margin:0; text-transform:uppercase; font-family:'Cinzel Decorative',serif; letter-spacing:2px; border-bottom:2px solid var(--cr-gold-dark); position:relative;}
+    .ranking-title::after{content:''; position:absolute; bottom:-1px; left:10%; right:10%; height:1px; background:linear-gradient(90deg,transparent,rgba(201,168,76,0.5),transparent);}
+    .ranking-list{list-style:none; padding:10px 12px; margin:0; max-height:400px; overflow-y:auto;}
+    .ranking-list::-webkit-scrollbar{width:4px}
+    .ranking-list::-webkit-scrollbar-track{background:rgba(255,255,255,0.05); border-radius:2px}
+    .ranking-list::-webkit-scrollbar-thumb{background:var(--cr-gold-dark); border-radius:2px}
+    .ranking-item{display:flex; justify-content:space-between; align-items:center; padding:8px 10px; margin-bottom:6px; background:rgba(255,255,255,0.03); border-left:4px solid rgba(255,255,255,0.1); transition:all .3s; position:relative; overflow:hidden; border-radius:4px;}
+    .ranking-item:hover{background:rgba(37,99,184,0.15); border-left-color:var(--cr-gold);}
+    .ranking-item.elite{background:linear-gradient(90deg,rgba(212,160,23,0.12),transparent); border-left:4px solid var(--cr-gold-dark);}
+    .ranking-item.rank-1{border:2px solid var(--cr-gold); background:linear-gradient(90deg,rgba(201,168,76,0.2),rgba(201,168,76,0.05)); box-shadow:0 0 18px rgba(201,168,76,0.3); animation:rank1Glow 2s infinite alternate;}
+    @keyframes rank1Glow{from{box-shadow:0 0 10px rgba(201,168,76,0.2)} to{box-shadow:0 0 25px rgba(201,168,76,0.5),0 0 40px rgba(201,168,76,0.2)}}
+    .rank-row{display:flex; align-items:center; gap:8px; flex-grow:1;}
+    .list-avatar{width:30px; height:30px; border-radius:50%; border:2px solid var(--cr-gold-dark); flex-shrink:0;}
+    .rank-pos{font-weight:700; color:var(--cr-gold-dark); width:22px; font-size:.95rem; font-family:'Cinzel',serif;}
+    .rank-info{flex-grow:1; display:flex; flex-direction:column;}
+    .rank-name-list{font-weight:700; font-size:.9rem; color:#e8e8e8; font-family:'Rajdhani',sans-serif;}
+    .rank-tier-list{font-size:.7rem; font-weight:700; opacity:.8;}
+    .rank-score{font-weight:700; color:var(--cr-gold); font-size:.9rem; font-family:'Cinzel',serif;}
+    .attack-btn{background:linear-gradient(135deg,rgba(192,57,43,0.2),rgba(192,57,43,0.1)); border:1px solid var(--cr-red); color:#ff6b6b; padding:2px 6px; border-radius:4px; cursor:pointer; font-size:.9rem; margin-left:3px; transition:.2s;}
+    .attack-btn:hover{background:linear-gradient(135deg,var(--cr-red),#e74c3c); color:white; box-shadow:0 0 8px rgba(192,57,43,0.5);}
+    .squad-ranking-section{padding:15px 12px 0;}
+    .squad-list{list-style:none; padding:0; margin:0;}
+    .squad-rank-item{display:flex; align-items:center; justify-content:space-between; background:rgba(0,0,0,0.3); padding:10px 12px; margin-bottom:8px; border-radius:6px; border-left:4px solid #444; border:1px solid rgba(255,255,255,0.06);}
+    .squad-rank-left{display:flex; align-items:center; gap:10px;}
+    .squad-shield-small{width:32px; height:36px;}
+    .squad-score{font-weight:700; font-size:1rem; font-family:'Cinzel',serif; color:var(--cr-gold);}
+    .hall-of-fame{margin:15px 12px; padding-top:18px; border-top:1px solid rgba(201,168,76,0.2);}
+    .hall-title{font-family:'Cinzel Decorative',serif; font-size:1.2rem; color:transparent; background:linear-gradient(135deg,#ff6b6b,var(--cr-red)); -webkit-background-clip:text; background-clip:text; text-align:center; margin-bottom:12px; filter:drop-shadow(0 0 8px rgba(255,23,68,0.4));}
+    .fame-list{list-style:none; padding:0; margin:0; max-height:150px; overflow-y:auto;}
+    .fame-item{display:flex; align-items:center; gap:10px; padding:8px 10px; border-bottom:1px solid rgba(255,255,255,0.06); font-size:1rem; border-radius:4px;}
+    .fame-item:hover{background:rgba(201,168,76,0.05);}
+    .fame-time{font-size:.72rem; color:#999; margin-left:auto;}
+    .workspace-card{background:rgba(8,16,32,0.45); padding:20px; border-radius:10px; box-shadow:0 12px 40px rgba(0,0,0,0.8),inset 0 1px 0 rgba(255,255,255,0.06),inset 0 -1px 0 rgba(0,0,0,0.5); display:flex; gap:15px; justify-content:flex-start; align-items:flex-start; overflow-x:auto; width:100%; border:2px solid var(--cr-blue-light); border-top:4px solid var(--cr-gold-dark); position:relative;}
+    .workspace-card::before{content:''; position:absolute; top:0; left:0; right:0; height:2px; background:linear-gradient(90deg,transparent,var(--cr-gold),var(--cr-gold-light),var(--cr-gold),transparent);}
+    .division-row{display:flex; flex-direction:row; align-items:flex-start; gap:0; margin-top:10px; flex-shrink:0;}
+    .col-divisor{display:flex; flex-direction:column; align-items:center; justify-content:flex-start; margin-top:38px; margin-right:3px;}
+    .input-div{width:var(--cell-size); height:var(--cell-size); border:1px solid var(--cr-blue-light); background:linear-gradient(135deg,#0d1c3b,#0a1628); font-size:1.4rem; font-weight:700; color:var(--cr-gold); text-align:center; outline:none; font-family:'Cinzel',serif;}
+    .col-grid{display:flex; flex-direction:column; position:relative; z-index:1;}
+    .grid-disabled-overlay{position:absolute; top:0; left:0; width:100%; height:100%; background:rgba(5,12,28,0.92); z-index:5; display:flex; align-items:center; justify-content:center; pointer-events:none; border-radius:4px; backdrop-filter:blur(2px);}
+    .grid-disabled-overlay.hidden{display:none;}
+    .lock-msg{background:linear-gradient(135deg,var(--cr-gold-dark),var(--cr-gold)); color:#0d1c3b; padding:10px 20px; border-radius:8px; font-size:.95rem; font-weight:900; box-shadow:0 0 30px rgba(201,168,76,0.5); pointer-events:auto; text-align:center; text-transform:uppercase; font-family:'Cinzel',serif; letter-spacing:1px; border:1px solid var(--cr-gold-light);}
+    .fila-cociente-arriba{display:flex; justify-content:flex-start; height:var(--cell-size); align-items:flex-end; padding-bottom:4px;}
+    .input-cociente-galera{width:var(--cell-size); height:var(--cell-size); border:1px solid var(--cr-blue-light); background:linear-gradient(135deg,#0d1c3b,#0a1628); font-size:1.4rem; font-weight:700; color:var(--cr-gold); text-align:center; outline:none; font-family:'Cinzel',serif; margin-right:1px; border-radius:2px; cursor:text; pointer-events:auto; transition:all .2s;}
+    .input-cociente-galera:focus{background:rgba(37,99,184,0.3); border-color:var(--cr-gold); box-shadow:0 0 8px rgba(201,168,76,0.3);}
+    .input-cociente-galera:disabled{background:#050c1c; color:#333; border-color:#1a2a3a; cursor:not-allowed; opacity:.5; pointer-events:none;}
+    .fila-horizontal-top{height:4px; background:linear-gradient(90deg,var(--cr-gold-dark),var(--cr-gold),var(--cr-gold-light),var(--cr-gold),var(--cr-gold-dark)); box-shadow:0 0 10px rgba(201,168,76,0.5); border-radius:2px; width:100%;}
+    .grid-matriz{display:grid; grid-template-columns:repeat(9,var(--cell-size)); grid-template-rows:repeat(15,var(--cell-size)); background:rgba(5,12,28,0.9); border:1px solid var(--cr-blue-light); border-radius:0 0 4px 4px; border-top:none;}
+    .cell{width:var(--cell-size); height:var(--cell-size); background:rgba(13,37,69,0.4); border:1px solid rgba(37,99,184,0.2); text-align:center; font-size:1.1rem; font-weight:600; outline:none; cursor:text; color:#c8d8f0; transition:background .15s;}
+    .cell:focus{background:rgba(37,99,184,0.3); box-shadow:inset 0 0 6px rgba(201,168,76,0.25); border-color:var(--cr-gold-dark);}
+    .cell-locked{background:rgba(5,15,35,0.8)!important; font-weight:700; color:var(--cr-gold)!important; border-color:rgba(37,99,184,0.3)!important;}
+    .fila-residuo{display:flex; justify-content:flex-end; margin-top:5px; height:var(--cell-size); align-items:center;}
+    .residuo-label{color:var(--cr-gold-dark); font-size:.9rem; margin-right:8px; text-transform:uppercase; font-family:'Cinzel',serif; letter-spacing:1px;}
+    .input-residuo{width:calc(var(--cell-size)*2); height:var(--cell-size); border:2px solid var(--cr-gold-dark); background:linear-gradient(135deg,#0d1c3b,#0a1628); font-size:1.4rem; font-weight:700; color:var(--cr-gold); text-align:center; outline:none; font-family:'Cinzel',serif; border-radius:4px;}
+    .input-residuo:focus{border-color:var(--cr-gold); box-shadow:0 0 10px rgba(201,168,76,0.4);}
+    .input-residuo:disabled{background:#050c1c; color:#333; border-color:#1a2a3a; cursor:not-allowed; opacity:.5; pointer-events:none;}
+    .antena-panel{background:linear-gradient(180deg,rgba(26,58,110,0.5) 0%,rgba(10,22,40,0.95) 100%); border:2px solid var(--cr-gold-dark); padding:16px; border-radius:10px; border-top:4px solid var(--cr-gold); width:240px; flex-shrink:0; margin-left:auto; box-shadow:0 8px 24px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.06); position:relative;}
+    .antena-panel::before{content:'💀'; position:absolute; top:-14px; left:50%; transform:translateX(-50%); font-size:1.3rem; background:linear-gradient(135deg,#0d1c3b,#1e3a5f); padding:2px 8px; border-radius:20px; border:1px solid var(--cr-gold-dark);}
+    .antena-header{text-align:center; font-weight:900; color:var(--cr-gold); margin-bottom:14px; font-size:1rem; text-transform:uppercase; font-family:'Cinzel',serif; letter-spacing:2px;}
+    .antena-row{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; opacity:1; transition:opacity .3s; font-size:.9rem; color:#c8d8f0;}
+    .antena-row.locked-row{opacity:.35;}
+    .antena-input{width:55px; height:28px; font-size:.95rem; font-weight:700; text-align:center; border:2px solid var(--cr-blue-light); border-radius:4px; background:linear-gradient(135deg,#0d1c3b,#0a1628); color:var(--cr-gold-light); -moz-appearance:textfield; font-family:'Cinzel',serif; transition:all .2s;}
+    .antena-input::-webkit-outer-spin-button,.antena-input::-webkit-inner-spin-button{-webkit-appearance:none; margin:0;}
+    .antena-input:focus{border-color:var(--cr-gold); box-shadow:0 0 8px rgba(201,168,76,0.4); outline:none;}
+    .antena-input:disabled{background:#050c1c; color:#333; border-color:#1a2a3a; cursor:not-allowed;}
+    .status-ok{background:rgba(0,168,80,0.2)!important; border-color:var(--success)!important; color:var(--success)!important;}
+    .status-wrong{background:rgba(192,57,43,0.2)!important; border-color:var(--cr-red)!important; color:#ff6b6b!important;}
+    .controls{background:rgba(10,18,40,0.45); padding:20px 24px; border-radius:10px; border:2px solid var(--cr-blue-light); border-top:4px solid var(--cr-gold-dark); display:flex; flex-direction:column; align-items:center; gap:15px; width:100%; box-shadow:0 8px 24px rgba(0,0,0,0.6);}
+    button{border:none; padding:12px 28px; font-weight:900; border-radius:8px; cursor:pointer; font-size:1.1rem; color:#0d1c3b; text-transform:uppercase; font-family:'Cinzel',serif; transition:all .2s; letter-spacing:1px;}
+    .btn-primary{background:linear-gradient(180deg,var(--cr-gold-light) 0%,var(--cr-gold) 40%,var(--cr-gold-dark) 100%); box-shadow:0 6px 0 #7a5a00,0 8px 16px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.3); border:2px solid var(--cr-gold-dark); color:#0d1c3b; position:relative; transform:translateY(0); transition:all .1s;}
+    .btn-primary:hover{background:linear-gradient(180deg,#fff5a0 0%,var(--cr-gold-light) 40%,var(--cr-gold) 100%); transform:translateY(-2px); box-shadow:0 8px 0 #7a5a00,0 12px 20px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.4);}
+    .btn-primary:active{transform:translateY(4px); box-shadow:0 2px 0 #7a5a00,0 4px 8px rgba(0,0,0,0.4);}
+    .btn-primary:disabled{background:linear-gradient(180deg,#555,#3a3a3a); box-shadow:0 4px 0 #222,0 6px 10px rgba(0,0,0,0.4); border-color:#444; cursor:not-allowed; color:#888;}
+    .btn-small{font-size:.85rem; padding:6px 14px; background:linear-gradient(135deg,rgba(26,58,110,0.6),rgba(13,37,69,0.9)); color:var(--cr-gold-light); border:1px solid var(--cr-blue-light); border-radius:6px; font-family:'Cinzel',serif; box-shadow:0 2px 6px rgba(0,0,0,0.4);}
+    .btn-small:hover{border-color:var(--cr-gold); color:var(--cr-gold);}
+    #msg{width:100%; text-align:center; font-weight:700; margin-top:5px; font-size:1.1rem; min-height:28px; font-family:'Cinzel',serif; letter-spacing:1px;}
+    .shop-btn-float{position:fixed; bottom:80px; left:20px; z-index:9001; width:64px; height:64px; border-radius:50%; background:linear-gradient(180deg,#6d28d9,var(--cr-purple)); border:3px solid var(--cr-purple-light); color:white; font-size:1.8rem; display:flex; align-items:center; justify-content:center; cursor:pointer; box-shadow:0 6px 0 #2d1060,0 8px 20px rgba(74,26,138,0.5); transition:all .1s;}
+    .shop-btn-float:hover{transform:translateY(-2px); box-shadow:0 8px 0 #2d1060,0 12px 24px rgba(74,26,138,0.6);}
+    .shop-btn-float:active{transform:translateY(4px); box-shadow:0 2px 0 #2d1060;}
+    #shop-modal{position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,12,28,0.97); z-index:99997; display:none; justify-content:center; align-items:center; backdrop-filter:blur(4px);}
+    .shop-box{background:linear-gradient(180deg,rgba(13,37,69,0.98) 0%,rgba(10,22,40,1) 100%); border:2px solid var(--cr-purple-light); border-top:6px solid var(--cr-purple-light); border-radius:12px; width:90%; max-width:720px; max-height:85vh; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,0.9),0 0 40px rgba(123,47,247,0.15);}
+    .shop-header{padding:18px 24px; background:linear-gradient(135deg,rgba(74,26,138,0.2),rgba(13,37,69,0.8)); border-bottom:2px solid var(--cr-purple-light); display:flex; justify-content:space-between; align-items:center;}
+    .shop-title{font-family:'Cinzel Decorative',serif; font-size:1.8rem; color:transparent; background:linear-gradient(135deg,var(--cr-purple-light),#c084fc); -webkit-background-clip:text; background-clip:text; filter:drop-shadow(0 0 10px rgba(123,47,247,0.4));}
+    .shop-coins-display{display:flex; align-items:center; gap:8px; background:linear-gradient(135deg,rgba(180,130,0,0.25),rgba(201,168,76,0.1)); padding:8px 16px; border-radius:30px; border:2px solid var(--cr-gold-dark); box-shadow:0 2px 8px rgba(0,0,0,0.4);}
+    .shop-coins-val{font-family:'Cinzel',serif; font-size:1.7rem; color:var(--cr-gold);}
+    .shop-body{padding:20px; overflow-y:auto; display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:14px;}
+    .shop-body::-webkit-scrollbar{width:4px}
+    .shop-body::-webkit-scrollbar-track{background:rgba(255,255,255,0.05)}
+    .shop-body::-webkit-scrollbar-thumb{background:var(--cr-purple-light); border-radius:2px}
+    .shop-item{background:linear-gradient(180deg,rgba(26,58,110,0.4) 0%,rgba(10,22,40,0.9) 100%); border:1px solid rgba(37,99,184,0.4); border-radius:10px; padding:16px; text-align:center; position:relative; box-shadow:0 4px 12px rgba(0,0,0,0.4); transition:transform .2s,box-shadow .2s;}
+    .shop-item:hover{transform:translateY(-2px); box-shadow:0 8px 20px rgba(0,0,0,0.5);}
+    .shop-item.orange{border-top:4px solid var(--shop-orange);}
+    .shop-item:not(.orange){border-top:4px solid var(--cr-purple-light);}
+    .shop-item-icon{font-size:2.5rem; margin-bottom:8px;}
+    .shop-item-name{font-family:'Cinzel',serif; font-size:1.1rem; color:white; margin-bottom:5px; font-weight:700;}
+    .shop-item-desc{font-size:.68rem; color:#aaa; margin:5px 0; min-height:30px;}
+    .shop-item-price{display:flex!important; align-items:center!important; justify-content:center!important; gap:5px!important; font-family:'Cinzel',serif!important; font-size:1.6rem!important; font-weight:900!important; color:#0d1c3b!important; background:linear-gradient(180deg,var(--cr-gold-light),var(--cr-gold),var(--cr-gold-dark))!important; padding:5px 12px!important; margin:8px 0!important; border-radius:30px!important; border:2px solid var(--cr-gold-light)!important; box-shadow:0 3px 0 #7a5a00,0 4px 8px rgba(0,0,0,0.4)!important;}
+    .shop-item-price i{color:#0d1c3b!important; font-size:1.1rem!important;}
+    .shop-buy-btn{width:100%; padding:9px; border:none; border-radius:6px; font-family:'Cinzel',serif; font-weight:700; font-size:.95rem; text-transform:uppercase; cursor:pointer; background:linear-gradient(180deg,#6d28d9,var(--cr-purple)); color:white; letter-spacing:1px; box-shadow:0 3px 0 #2d1060; transition:all .1s;}
+    .shop-buy-btn:hover{transform:translateY(-1px); box-shadow:0 4px 0 #2d1060;}
+    .shop-buy-btn:active{transform:translateY(2px); box-shadow:0 1px 0 #2d1060;}
+    .shop-buy-btn.orange-btn{background:linear-gradient(180deg,#f39c12,var(--shop-orange)); color:#0d1c3b; box-shadow:0 3px 0 #7a3500;}
+    .shop-buy-btn.orange-btn:hover{box-shadow:0 4px 0 #7a3500;}
+    .shop-buy-btn:disabled{background:linear-gradient(135deg,#444,#333); color:#666; box-shadow:none; cursor:not-allowed;}
+    .shop-qty-badge{position:absolute; top:8px; right:8px; background:linear-gradient(135deg,var(--cr-gold),var(--cr-gold-dark)); color:#0d1c3b; font-weight:900; padding:3px 8px; border-radius:15px; font-size:.75rem; font-family:'Cinzel',serif; box-shadow:0 2px 4px rgba(0,0,0,0.4);}
+    .chest-item { border-top:4px solid #ffd700!important; background:linear-gradient(180deg, #3a2e0a 0%, #1a1a2e 100%)!important; }
+    .chest-btn { background:linear-gradient(180deg, #ffd700, #b8860b)!important; color:#0d1c3b!important; box-shadow:0 3px 0 #7a5a00!important; }
+    #admin-dashboard{width:100%; display:none; flex-direction:column; gap:20px;}
+    .dash-grid{display:grid; grid-template-columns:1fr 2fr; gap:20px;}
+    .dash-card{background:linear-gradient(180deg,rgba(13,37,69,0.95) 0%,rgba(10,22,40,1) 100%); border:2px solid var(--cr-blue-light); border-top:4px solid var(--cr-gold-dark); border-radius:10px; padding:20px; box-shadow:0 8px 24px rgba(0,0,0,0.6);}
+    .dash-title{font-family:'Cinzel',serif; font-size:1.4rem; color:transparent; background:linear-gradient(135deg,var(--cr-gold-light),var(--cr-gold)); -webkit-background-clip:text; background-clip:text; border-bottom:2px solid rgba(201,168,76,0.2); padding-bottom:10px; margin-bottom:15px; display:flex; justify-content:space-between; align-items:center;}
+    .control-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+    .ctrl-btn{padding:14px; border-radius:8px; border:2px solid var(--cr-blue-light); background:linear-gradient(135deg,rgba(26,58,110,0.4),rgba(10,22,40,0.9)); color:#c8d8f0; text-align:center; cursor:pointer; transition:all .2s; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; font-family:'Cinzel',serif; font-size:.85rem;}
+    .ctrl-btn i{font-size:1.4rem; color:var(--cr-gold);}
+    .ctrl-btn:hover{border-color:var(--cr-gold); background:linear-gradient(135deg,rgba(37,99,184,0.3),rgba(13,37,69,0.9));}
+    .ctrl-btn.active{background:linear-gradient(135deg,var(--cr-gold-dark),var(--cr-gold)); color:#0d1c3b; border-color:var(--cr-gold-light);}
+    .ctrl-btn.active i{color:#0d1c3b;}
+    .ctrl-btn.danger{border-color:rgba(192,57,43,0.5); color:#ff6b6b;}
+    .ctrl-btn.danger i{color:var(--cr-red);}
+    .ctrl-btn.danger:hover{background:linear-gradient(135deg,rgba(192,57,43,0.3),rgba(10,22,40,0.9)); border-color:var(--cr-red);}
+    .squad-table-container{margin-top:20px; border-top:1px solid rgba(201,168,76,0.2); padding-top:15px;}
+    .squad-admin-table{width:100%; border-collapse:collapse; font-size:.88rem; font-family:'Cinzel',serif;}
+    .squad-admin-table th{text-align:left; color:var(--cr-gold-dark); padding:8px 4px; border-bottom:1px solid rgba(201,168,76,0.2);}
+    .squad-admin-table td{padding:8px 4px; border-bottom:1px solid rgba(37,99,184,0.1);}
+    .student-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(240px,1fr)); gap:15px; max-height:70vh; overflow-y:auto;}
+    .student-card{background:linear-gradient(135deg,rgba(13,37,69,0.8),rgba(10,22,40,0.95)); border-radius:8px; padding:15px; border:1px solid var(--cr-blue-light); border-top:3px solid var(--cr-gold-dark); transition:border-color .2s;}
+    .student-card:hover{border-color:var(--cr-gold);}
+    .sc-header{display:flex; align-items:center; gap:10px;}
+    .sc-avatar{width:40px; height:40px; border-radius:50%; border:2px solid var(--cr-gold-dark);}
+    .sc-name{font-weight:700; font-family:'Cinzel',serif; color:#e0e0e0;}
+    .sc-actions{display:flex; gap:5px; margin-top:10px;}
+    .sc-btn{background:linear-gradient(135deg,rgba(26,58,110,0.4),rgba(10,22,40,0.9)); border:1px solid var(--cr-blue-light); color:#aaa; padding:5px 10px; border-radius:6px; cursor:pointer; font-family:'Cinzel',serif; font-size:.75rem; transition:all .2s;}
+    .sc-btn.delete:hover{background:linear-gradient(135deg,rgba(192,57,43,0.4),rgba(10,22,40,0.9)); border-color:var(--cr-red); color:#ff6b6b;}
+    .sc-btn.ban.active{background:linear-gradient(135deg,var(--cr-red),#7a0000); color:white; border-color:#ff4444;}
+    #login-screen, #avatar-modal{position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,12,28,0.97); display:flex; justify-content:center; align-items:center; z-index:9999; backdrop-filter:blur(4px);}
+    .login-box{background:linear-gradient(180deg,rgba(13,37,69,0.98) 0%,rgba(10,22,40,1) 100%); padding:40px; border-radius:12px; width:360px; border:2px solid var(--cr-gold-dark); border-top:6px solid var(--cr-gold); box-shadow:0 20px 60px rgba(0,0,0,0.9),0 0 40px rgba(201,168,76,0.1);}
+    .login-box h2{color:transparent; background:linear-gradient(180deg,var(--cr-gold-light),var(--cr-gold)); -webkit-background-clip:text; background-clip:text; margin-top:0; margin-bottom:5px; font-family:'Cinzel Decorative',serif; font-size:2rem; text-transform:uppercase; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6));}
+    .login-input{width:100%; padding:12px 14px; margin:8px 0; border:2px solid var(--cr-blue-light); border-radius:6px; background:linear-gradient(135deg,#0d1c3b,#0a1628); color:#e8e8e8; font-family:'Rajdhani',sans-serif; font-size:1rem; transition:border-color .2s;}
+    .login-input:focus{border-color:var(--cr-gold); outline:none; box-shadow:0 0 10px rgba(201,168,76,0.2);}
+    .login-btn{width:100%; margin-top:10px;}
+    .login-avatar-preview{width:90px; height:90px; border-radius:50%; margin:0 auto 20px auto; border:3px solid var(--cr-gold); overflow:hidden; background:black; box-shadow:0 0 20px rgba(201,168,76,0.4);}
+    .login-error{color:#ff6b6b; font-size:.9rem; margin-top:10px; display:none; font-family:'Cinzel',serif;}
+    .modal-box{background:linear-gradient(180deg,rgba(13,37,69,0.98) 0%,rgba(10,22,40,1) 100%); padding:30px; border-radius:12px; width:460px; max-height:80vh; overflow-y:auto; text-align:center; border:2px solid var(--cr-gold-dark); border-top:6px solid var(--cr-gold); box-shadow:0 20px 60px rgba(0,0,0,0.9);}
+    .avatar-grid{display:grid; grid-template-columns:repeat(4,1fr); gap:10px;}
+    .avatar-option{cursor:pointer; padding:5px; border-radius:50%; border:2px solid transparent; transition:all .2s;}
+    .avatar-option.selected{border-color:var(--cr-gold); box-shadow:0 0 12px rgba(201,168,76,0.5);}
+    .avatar-option img{width:50px; height:50px; border-radius:50%; background:#000;}
+    .avatar-locked{filter:grayscale(100%); opacity:.4; cursor:not-allowed;}
+    .toast-container{position:fixed; bottom:90px; left:20px; z-index:99999; display:flex; flex-direction:column; gap:8px; pointer-events:none;}
+    .toast{background:linear-gradient(135deg,rgba(13,37,69,0.98),rgba(10,22,40,1)); border:1px solid var(--cr-blue-light); border-radius:8px; padding:12px 18px; font-size:.9rem; color:#e8e8e8; font-family:'Cinzel',serif; box-shadow:0 6px 20px rgba(0,0,0,0.6); animation:toastIn .3s ease,toastOut .3s ease 3.7s forwards; max-width:320px;}
+    .toast.tomato{border-color:var(--cr-red); border-left:4px solid var(--cr-red);}
+    .toast.success{border-color:var(--success); border-left:4px solid var(--success);}
+    @keyframes toastIn{from{opacity:0;transform:translateX(-30px)} to{opacity:1;transform:translateX(0)}}
+    @keyframes toastOut{from{opacity:1} to{opacity:0;transform:translateX(-30px)}}
+    #victory-screen{position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,12,28,0.97); z-index:99998; display:none; flex-direction:column; justify-content:center; align-items:center; backdrop-filter:blur(6px);}
+    .victory-title{font-size:6rem; font-weight:900; font-family:'Cinzel Decorative',serif; color:transparent; background:linear-gradient(180deg,var(--cr-gold-light) 0%,var(--cr-gold) 50%,var(--cr-gold-dark) 100%); -webkit-background-clip:text; background-clip:text; filter:drop-shadow(0 4px 8px rgba(0,0,0,0.8)); animation:scaleUp .4s cubic-bezier(.17,.89,.32,1.28); text-transform:uppercase; letter-spacing:3px;}
+    .confetti{position:absolute; width:10px; height:10px; background:#f00; animation:fall linear forwards; border-radius:2px;}
+    @keyframes scaleUp{0%{transform:scale(0) rotate(-10deg);opacity:0}100%{transform:scale(1) rotate(0deg);opacity:1}}
+    @keyframes fall{to{transform:translateY(100vh) rotate(720deg)}}
+    #epic-overlay{position:fixed; top:0; left:0; width:100%; height:100%; z-index:99990; display:none; justify-content:center; align-items:center; pointer-events:none;}
+    .epic-text{font-family:'Cinzel Decorative',serif; font-size:7rem; color:transparent; background:linear-gradient(135deg,var(--cr-gold-light),var(--cr-gold)); -webkit-background-clip:text; background-clip:text; text-transform:uppercase; font-weight:900; filter:drop-shadow(0 0 20px rgba(201,168,76,0.7)) drop-shadow(4px 4px 0 #000); opacity:0;}
+    @keyframes epicPulse{0%{transform:scale(.2) rotate(-10deg);opacity:0}50%{transform:scale(1.2) rotate(3deg);opacity:1}100%{transform:scale(1) rotate(0deg);opacity:1}}
+    .gift-icon{transition:transform 0.3s;}
+    .gift-icon.blinking{animation:giftPulse 0.5s infinite alternate; display:inline-block!important;}
+    @keyframes giftPulse{0%{transform:scale(1); opacity:0.6;}100%{transform:scale(1.35); opacity:1; filter:drop-shadow(0 0 8px gold);}}
+    .shield-bar-container{display:flex; align-items:center; gap:4px; margin-top:3px;}
+    .shield-icon{font-size:0.7rem;}
+    .shield-bar-bg{width:60px; height:5px; background:rgba(255,255,255,0.1); border-radius:3px; overflow:hidden;}
+    .shield-bar-fill{height:100%; border-radius:3px; transition:width 0.3s;}
+    .shield-text{font-size:0.65rem; color:#888; margin-left:2px; font-family:'Cinzel',serif;}
+    .mission-form{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px; background:rgba(13,37,69,0.4); padding:15px; border-radius:8px; border:1px solid var(--cr-blue-light);}
+    .mission-form select,.mission-form input{width:100%; padding:8px; background:linear-gradient(135deg,#0d1c3b,#0a1628); border:1px solid var(--cr-blue-light); color:#e0e0e0; border-radius:4px; font-family:'Rajdhani',sans-serif;}
+    .mission-list-item{display:flex; justify-content:space-between; align-items:center; background:rgba(13,37,69,0.4); padding:10px; margin-bottom:5px; border-radius:6px; border-left:4px solid var(--cr-gold-dark); font-family:'Cinzel',serif; font-size:.85rem;}
+    .mission-delete-btn{background:linear-gradient(135deg,var(--cr-red),#7a0000); color:white; border:none; padding:4px 10px; border-radius:4px; cursor:pointer; font-family:'Cinzel',serif;}
+    .squad-missions-panel{margin:10px 12px; background:linear-gradient(135deg,rgba(13,37,69,0.6),rgba(10,22,40,0.9)); border-radius:8px; padding:14px; border:2px solid var(--cr-gold-dark);}
+    .missions-title{font-family:'Cinzel',serif; font-weight:700; color:var(--cr-gold); font-size:.95rem; text-transform:uppercase; margin-bottom:10px; letter-spacing:1px;}
+    .avatar-rank-indicator{
+    position:relative; top:auto; left:auto; transform:none;
+    display:block; width:fit-content; margin:4px auto 0 auto;
+    background:linear-gradient(135deg,var(--cr-gold-dark),#b8860b);
+    color:#0d1c3b; padding:3px 12px; border-radius:12px;
+    font-size:0.65rem; font-weight:700; font-family:'Cinzel',serif;
+    border:1px solid var(--cr-gold-light);
+    box-shadow:0 2px 6px rgba(0,0,0,0.4);
+    white-space:nowrap; text-align:center; letter-spacing:0.5px;
+    }
+    .enemy-card-container {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      margin: 15px 0; width: 100%;
+    }
+    .enemy-card {
+      width: 160px; height: 220px;
+      border: 4px solid var(--cr-gold-dark);
+      border-radius: 12px;
+      overflow: hidden;
+      background: linear-gradient(135deg, #1a0b2e, #0d1c3b);
+      box-shadow: 0 0 20px rgba(201,168,76,0.4), 0 8px 16px rgba(0,0,0,0.7);
+      position: relative;
+      transition: all 0.3s ease;
+      animation: enemyGlow 2s infinite alternate;
+    }
+    @keyframes enemyGlow {
+      0%   { box-shadow: 0 0 15px #ffd700, 0 0 30px #ff8c00, 0 0 45px #ff4500; }
+      100% { box-shadow: 0 0 25px #ffec80, 0 0 50px #ffaa00, 0 0 75px #ff5500; }
+    }
+    .enemy-card img { width: 100%; height: 100%; object-fit: cover; }
+    .enemy-card.defeated {
+      filter: grayscale(100%) brightness(0.6);
+      box-shadow: 0 0 8px rgba(255,0,0,0.6);
+      animation: cardShake 0.5s ease-in-out;
+    }
+    @keyframes cardShake {
+      0% { transform: translateX(0); }
+      25% { transform: translateX(-8px); }
+      50% { transform: translateX(8px); }
+      75% { transform: translateX(-4px); }
+      100% { transform: translateX(0); }
+    }
+    .energy-bar-container {
+      width: 160px; height: 18px;
+      background: rgba(0,0,0,0.7);
+      border: 2px solid var(--cr-gold-dark);
+      border-radius: 10px;
+      margin-top: 8px;
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.6);
+    }
+    .energy-bar-fill {
+      height: 100%; width: 100%;
+      background: linear-gradient(90deg, #ff1744, #ff9800, #ffcc00, #00e676);
+      border-radius: 8px;
+      transition: width 0.4s ease;
+      box-shadow: 0 0 12px rgba(0,230,118,0.5);
+    }
+    .energy-text {
+      font-size: 0.6rem; color: var(--cr-gold-light);
+      text-align: center; margin-top: 3px;
+      font-family: 'Cinzel', serif; letter-spacing: 1px;
+    }
+    .enemy-name {
+      font-size: 0.8rem; color: var(--cr-gold);
+      text-align: center; margin-bottom: 4px;
+      font-family: 'Cinzel Decorative', serif;
+      letter-spacing: 1px; text-transform: uppercase;
+    }
+    .health-bar-container {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(0,0,0,0.4); padding: 9px 17px; border-radius: 12px;
+      border: 1px solid var(--cr-gold-dark);
+    }
+    .health-bar-bg {
+      width: 125px; height: 15px;
+      background: rgba(255,255,255,0.1); border-radius: 5px; overflow: hidden;
+    }
+    .health-bar-fill {
+      height: 100%; width: 100%;
+      background: linear-gradient(90deg, #ff1744, #e53935);
+      border-radius: 5px; transition: width 0.3s;
+    }
+    #gift-modal{display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,12,28,.97); z-index:99999; justify-content:center; align-items:center; backdrop-filter:blur(4px);}
+    .online-dot {
+      width: 8px; height: 8px; border-radius: 50%; margin-right: 6px;
+      display: inline-block; flex-shrink: 0;
+    }
+    .online-dot.green { background: #00e676; box-shadow: 0 0 6px #00e676; }
+    .online-dot.red   { background: #ff1744; opacity: 0.7; }
+    /* ── Imágenes de armas – carta épica ── */
+    .weapon-icon {
+      display: inline-block;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px gold);
+      transition: transform 0.3s, filter 0.3s;
+      width: 100px;   /* tamaño base para modales, toasts y cualquier otro lugar */
+      height: 100px;
+    }
+    /* Tienda: todavía más grande */
+    .shop-item .weapon-icon {
+      width: 150px;
+      height: 150px;
+      display: block;
+      margin: 0 auto 10px;
+      filter: drop-shadow(0 0 16px gold) drop-shadow(0 0 32px rgba(255,200,0,0.5));
+    }
+    .shop-item:hover .weapon-icon {
+      transform: scale(1.1);
+      filter: drop-shadow(0 0 24px orange) drop-shadow(0 0 48px rgba(255,140,0,0.7));
+    }
+    /* Barra de inventario: más visibles */
+    .inv-item .weapon-icon {
+      width: 60px;
+      height: 60px;
+      margin-right: 4px;
+      filter: drop-shadow(0 0 6px gold);
+    }
+    .inv-item:hover .weapon-icon {
+      transform: scale(1.15);
+    }
+    /* Ataque y toasts (ya heredan el base de 100px, solo ajustamos sombras) */
+    .toast .weapon-icon {
+      filter: drop-shadow(0 0 10px gold);
+    }
+    /* Corregir el tamaño del contenedor de icono de la tienda (para que no interfiera) */
+    .shop-item-icon {
+      font-size: inherit;
+      line-height: 1;
+    }
+    ::-webkit-scrollbar{width:5px; height:5px;}
+    ::-webkit-scrollbar-track{background:rgba(10,22,40,0.8);}
+    ::-webkit-scrollbar-thumb{background:var(--cr-gold-dark); border-radius:3px;}
+    ::-webkit-scrollbar-thumb:hover{background:var(--cr-gold);}
+    @media (max-width: 767px) {
+      .main-layout{flex-direction:column;}
+      .ranking-sidebar{width:100%; min-width:unset; max-height:50vh;}
+      .workspace-card{flex-direction:column; gap:10px;}
+      .antena-panel{width:100%; margin-left:0;}
+      :root{--cell-size:28px;}
+      .grid-matriz{grid-template-columns:repeat(9, var(--cell-size));}
+      .shop-btn-float{bottom:20px; right:20px; left:auto; width:48px; height:48px; font-size:1.4rem;}
+      .main-header{flex-wrap:wrap; padding:8px 0; justify-content:center;}
+      .main-header h1{font-size:1.4rem; letter-spacing:1px;}
+      .season-badge{position:static; transform:none; margin:5px;}
+      .season-banner-top{display:none;}
+      .user-info-panel{flex-wrap:wrap; justify-content:center; gap:8px;}
+      .avatar-container{width:70px; height:70px;}
+    }
+    .inv-item.empty { opacity: 0.4; filter: grayscale(100%); cursor: default; }
+    .mission-card {
+      transition: all 0.3s ease;
+      cursor: default;
+    }
+    .mission-card-wrap {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 4px; position: relative; cursor: pointer;
+    }
+    .mission-card-wrap img {
+      width: 100px; height: 140px; border-radius: 8px;
+      transition: filter 0.5s, opacity 0.5s, box-shadow 0.5s, transform 0.3s;
+      filter: grayscale(100%); opacity: 0.45;
+    }
+    .mission-card-wrap:hover img { transform: scale(1.08); }
+    .mission-card-wrap.completed img {
+      filter: grayscale(0%); opacity: 1;
+      box-shadow: 0 0 18px 4px gold, 0 0 36px 8px rgba(255,200,0,0.4);
+      animation: missionGlow 2s infinite alternate;
+    }
+    @keyframes missionGlow {
+      from { box-shadow: 0 0 12px 3px gold, 0 0 24px 6px rgba(255,200,0,0.3); }
+      to   { box-shadow: 0 0 22px 6px #ffe066, 0 0 44px 12px rgba(255,200,0,0.6); }
+    }
+    .mission-progress-bar-bg {
+      width: 100px; height: 6px; background: rgba(255,255,255,0.12);
+      border-radius: 3px; overflow: hidden; border: 1px solid rgba(201,168,76,0.3);
+    }
+    .mission-progress-bar-fill {
+      height: 100%; border-radius: 3px;
+      background: linear-gradient(90deg, var(--cr-gold-dark), var(--cr-gold));
+      transition: width 0.4s;
+    }
+    .mission-label {
+      font-family: 'Cinzel', serif; font-size: 0.6rem;
+      color: #aaa; text-align: center; max-width: 100px;
+    }
+    .mission-label.done { color: var(--cr-gold); font-weight: 700; }
+    .shop-item.locked-legendary { opacity: 0.55; filter: grayscale(70%); }
+    .shop-item.locked-legendary .shop-buy-btn { cursor: not-allowed; }
+  </style>
+</head>
+<body>
+<div class="toast-container" id="toast-container"></div>
+<div id="victory-screen"><div class="victory-title">¡VICTORIA!</div></div>
+<div id="epic-overlay"><div class="epic-text" id="epic-text">💀 ¡Por la Gloria Oscura!</div></div>
+<div id="shop-modal" onclick="if(event.target.id==='shop-modal')closeShop()">
+  <div class="shop-box">
+    <div class="shop-header">
+      <span class="shop-title"><i class="fas fa-coins"></i> Tesoro del Reino</span>
+      <div class="shop-coins-display">
+        <i class="fas fa-coins" style="color:var(--cr-gold)"></i>
+        <span class="shop-coins-val" id="shop-coins-val">0</span>
+      </div>
+    </div>
+    <div class="shop-body" id="shop-items"></div>
+  </div>
+</div>
+<button class="shop-btn-float" onclick="openShop()" title="Tesoro"><i class="fas fa-coins"></i></button>
+<button id="music-toggle-btn" title="Silenciar música"
+  style="position:fixed; bottom:155px; left:20px; z-index:9001;
+         width:56px; height:56px; border-radius:50%;
+         background:linear-gradient(180deg,#1e3a5f,#0d1c3b);
+         border:3px solid var(--cr-gold-dark); color:var(--cr-gold);
+         font-size:1.5rem; display:flex; align-items:center;
+         justify-content:center; cursor:pointer;
+         box-shadow:0 5px 0 #050c1c,0 7px 16px rgba(0,0,0,0.5);">
+  🎵
+</button>
+<button id="mobile-ranking-toggle" class="btn-small" style="display:none; position:fixed; bottom:20px; right:20px; z-index:9000;">⚔️ Ejércitos</button>
+
+<div id="login-screen" style="display:none;">
+  <div class="login-box">
+    <div class="login-avatar-preview"><img id="login-avatar-img" src="https://mikettrt-maker.github.io/divisiones-profe/img/1.png"></div>
+    <h2>⚜️ Códice Merovingio ⚜️</h2>
+    <p style="margin-bottom:20px;color:#888;font-family:'Cinzel',serif;font-size:.9rem;">Ingresa tu nombre, digno aspirante</p>
+    <input type="text" id="login-username" class="login-input" placeholder="Usuario">
+    <input type="password" id="login-password" class="login-input" placeholder="Contraseña">
+    <button class="login-btn btn-primary" onclick="handleLogin()">Entrar al Reino</button>
+    <button class="login-btn" onclick="handleRegister()" style="margin-top:8px;background:linear-gradient(135deg,rgba(26,58,110,0.5),rgba(10,22,40,0.9));color:var(--cr-gold-light);border:2px solid var(--cr-blue-light);border-radius:8px;font-family:'Cinzel',serif;padding:10px;width:100%;font-size:.95rem;cursor:pointer;box-shadow:0 3px 0 #050c1c;">Solicitar Audiencia</button>
+    <div id="login-error" class="login-error"></div>
+  </div>
+</div>
+<div id="avatar-modal" style="display:none;background:rgba(5,12,28,.95);" onclick="if(event.target.id==='avatar-modal')toggleAvatarModal()">
+  <div class="modal-box">
+    <h3 style="margin:0 0 12px 0;color:transparent;background:linear-gradient(135deg,var(--cr-gold-light),var(--cr-gold));-webkit-background-clip:text;background-clip:text;font-family:'Cinzel Decorative',serif;font-size:1.6rem;text-transform:uppercase;">Efigie del Guardián</h3>
+    <div class="modal-section"><h4 style="color:var(--cr-gold-dark);font-family:'Cinzel',serif;">Linaje de Hierro</h4><div class="avatar-grid" id="avatar-options-standard"></div></div>
+    <div class="modal-section" id="exclusive-section" style="display:none;"><h4 style="color:var(--cr-red);font-family:'Cinzel',serif;">Sangre de Reyes</h4><div class="avatar-grid" id="avatar-options-exclusive"></div></div>
+    <button class="btn-primary" onclick="saveAvatarChoice()" style="margin-top:15px;">Sellar la Elección</button>
+  </div>
+</div>
+<header class="main-header">
+  <div class="season-badge" id="season-badge"><i class="fas fa-hourglass"></i><span class="timer-display" id="timer-display">--:--</span></div>
+  <h1>Prof. Miguel</h1>
+  <div class="season-banner-top"><div class="marquee-text">⚔️💀🐉️ El Códice de los Reyes Oscuros – Temporada <span id="season-num-display">1</span> ⚜️🐉💀⚔️</div></div>
+  <span style="color:var(--cr-gold-dark);font-size:.9rem;font-family:'Cinzel',serif;letter-spacing:1px;">Maestre del Conocimiento</span>
+  <button id="admin-header-btn" class="admin-btn" onclick="toggleAdminDashboard()"><i class="fas fa-scroll"></i> Cámara del Maestre</button>
+</header>
+<div class="app-container">
+  <div class="panel" id="top-bar-panel">
+    <div>
+      <label style="font-weight:700;color:var(--cr-gold-dark);font-family:'Cinzel',serif;font-size:.85rem;letter-spacing:1px;">Nivel:</label>
+      <select id="levelSelect" class="level-select" onchange="jumpToLevel(this.value)"></select>
+    </div>
+    <div class="progress-bar-container"><div class="progress-bar-fill" id="progressBar"></div></div>
+    <div class="user-info-panel">
+      <div class="avatar-squad-wrapper" onclick="toggleAvatarModal()" title="Cambiar Efigie">
+        <div class="avatar-container" id="main-avatar-box">
+          <img id="main-avatar-img" class="avatar-img" src="" alt="Efigie">
+          <div class="avatar-badge-overlay" id="squad-badge-overlay" title="Casa"></div>
+        </div>
+        <div class="avatar-rank-indicator" id="avatar-rank-badge">ESCUDERO</div>
+        <div class="squad-display" id="squad-display" style="display:none;">
+          <div class="squad-shield" id="user-squad-shield"></div>
+          <div class="squad-name-small" id="user-squad-name">Sin Casa</div>
+        </div>
+      </div>
+      <div class="user-stats">
+        <div style="font-size:.8rem;color:var(--cr-gold-dark);font-family:'Cinzel',serif;" id="difficultyLabel">...</div>
+        <div style="font-size:.85rem;color:#aaa;font-family:'Cinzel',serif;">Prueba <span id="subLevelCount">1</span>/10</div>
+      </div>
+      <div class="streak-display" id="streak-display">
+        <span id="streak-icon">⚡</span>
+        <div><div class="streak-count" id="streak-count">0</div><div class="streak-label" style="font-size:.7rem;color:#aaa;font-family:'Cinzel',serif;">Racha</div></div>
+      </div>
+      <div class="coin-display-container" title="Florines Reales">
+        <i class="fas fa-coins coin-icon"></i>
+        <span class="coin-count" id="coinDisplay">0</span>
+      </div>
+      <div class="coin-display-container" title="Gemas">
+        <span style="font-size:1.1rem;">💎</span>
+        <span class="coin-count" id="gemDisplay">0</span>
+      </div>
+      <div class="health-bar-container" id="player-health-bar">
+        <span style="font-size:1rem;">❤️</span>
+        <div class="health-bar-bg"><div class="health-bar-fill" id="health-fill"></div></div>
+        <span id="health-text" style="font-size:0.8rem; color:#ccc;">100/100</span>
+      </div>
+      <div class="inventory-quick" id="inventory-bar"></div>
+      <div style="position:relative; margin-left:8px;">
+        <i class="fas fa-gift" id="gift-icon" style="font-size:1.3rem; color:#ff4081; display:none; cursor:default;"></i>
+        <span id="gift-badge" style="position:absolute; top:-6px; right:-8px; background:linear-gradient(135deg,var(--cr-gold),var(--cr-gold-dark)); color:#0d1c3b; font-size:0.6rem; font-weight:800; padding:2px 5px; border-radius:10px; display:none; box-shadow:0 0 8px rgba(201,168,76,0.6); font-family:'Cinzel',serif;"></span>
+      </div>
+      <div class="inventory-quick" id="inventory-container"></div>
+      <div class="rank-box" id="userRankBox">
+        <div class="rank-name" id="userRankName">...</div>
+        <div class="rank-progress"><div class="rank-progress-bar" id="userRankBar" style="width:0%"></div></div>
+        <div class="rank-score-label"><span id="scoreDisplay">0</span> pts</div>
+      </div>
+      <button onclick="logout()" class="btn-small">Abandonar</button>
+    </div>
+  </div>
+  <div id="admin-dashboard">
+    <div class="dash-grid">
+      <div class="dash-card">
+        <div class="dash-title">Controles del Maestre <i class="fas fa-cog" style="color:var(--cr-gold);"></i></div>
+        <div class="control-grid">
+          <div id="btn-pause" class="ctrl-btn" onclick="togglePause()"><i class="fas fa-pause"></i><span>Pausar Juego</span></div>
+          <div id="btn-exam" class="ctrl-btn" onclick="toggleExamMode()"><i class="fas fa-file-alt"></i><span>Modo Examen</span></div>
+          <div class="ctrl-btn" onclick="showSeasonModal()"><i class="fas fa-hourglass"></i><span>Temporada</span></div>
+          <div class="ctrl-btn danger" onclick="cleanInactiveUsers()"><i class="fas fa-broom"></i><span>Limpiar Cuentas</span></div>
+          <div class="ctrl-btn danger" onclick="resetAllUsers()"><i class="fas fa-redo"></i><span>Reiniciar Todo</span></div>
+          <div class="ctrl-btn" onclick="openGiftModal()" style="border-color:rgba(123,47,247,0.5); color:var(--cr-purple-light);"><i class="fas fa-gift" style="color:var(--cr-purple-light);"></i><span>Ofrenda de Florines</span></div>
+        </div>
+        <div style="margin-top:20px; border-top:1px solid rgba(201,168,76,0.2); padding-top:15px;">
+          <div class="dash-title" style="font-size:1.1rem; border:none; margin:0 0 10px 0; padding:0;">🎯 Crear Decreto (Misión)</div>
+          <div class="mission-form">
+            <input type="text" id="mission-name" placeholder="Nombre (ej: La Búsqueda del Hacha)">
+            <select id="mission-type">
+              <option value="points">Florines Acumulados</option>
+              <option value="attacks">Ataques Realizados</option>
+              <option value="level">Nivel Máximo Alcanzado</option>
+            </select>
+            <input type="number" id="mission-goal" placeholder="Meta (ej: 5000)">
+            <input type="number" id="mission-reward" placeholder="Recompensa (ej: 1000)">
+            <button class="btn-primary" onclick="addMission()" style="grid-column: span 2;">Proclamar Decreto</button>
+          </div>
+          <div id="admin-mission-list"></div>
+        </div>
+        <div class="squad-table-container">
+          <div class="dash-title" style="font-size:1.1rem;border:none;margin-bottom:8px;padding-bottom:0;">Casas Nobles</div>
+          <table class="squad-admin-table">
+            <thead><tr><th class="shield-cell"></th><th>Nombre</th><th>Miembros</th><th>Puntos</th></tr></thead>
+            <tbody id="squad-admin-tbody"><tr><td colspan="4" style="text-align:center;color:#555;">Cargando...</td></tr></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="dash-card">
+        <div class="dash-title">Aspirantes <span id="student-count" style="font-size:.9rem;color:#aaa;font-family:'Rajdhani',sans-serif;">0 activos</span></div>
+        <div class="student-grid" id="student-grid"></div>
+      </div>
+    </div>
+  </div>
+  <div class="main-layout" id="game-layout">
+    <div class="game-area">
+      <div class="workspace-card">
+        <div class="division-row">
+          <div class="col-divisor" id="divisorBox"></div>
+          <div class="col-grid" id="grid-wrapper">
+            <div class="grid-disabled-overlay" id="grid-lock-overlay"><div class="lock-msg"><i class="fas fa-lock"></i> ¡Rompe el Sello Real!</div></div>
+            <div class="fila-cociente-arriba" id="topRow"></div>
+            <div class="fila-horizontal-top" id="lineH"></div>
+            <div class="grid-matriz" id="gridContainer"></div>
+            <div class="fila-residuo"><span class="residuo-label">Residuo:</span><input type="number" id="valResiduo" class="input-residuo" placeholder="0"></div>
+          </div>
+        </div>
+        <div class="enemy-card-container" id="enemy-card-section">
+          <div class="enemy-name" id="enemy-name">El Engendro</div>
+          <div class="enemy-card" id="enemy-card">
+            <img id="enemy-img" src="https://mikettrt-maker.github.io/divisiones-profe/img/1.jpg" alt="Enemigo">
+          </div>
+          <div class="energy-bar-container">
+            <div class="energy-bar-fill" id="energy-bar-fill"></div>
+          </div>
+          <div class="energy-text" id="energy-text">Salud: 100%</div>
+        </div>
+        <div class="antena-panel">
+          <div class="antena-header">Sello Real (x <span id="antenaLabel">...</span>)</div>
+          <div id="antenaBody"></div>
+        </div>
+      </div>
+      <div class="controls">
+        <input type="hidden" id="valCociente">
+        <button id="btn-verify" class="btn-primary" onclick="verificarSolucion()">⚔️ Verificar</button>
+        <div id="msg"></div>
+        <div id="mission-cards" style="display:flex; justify-content:center; gap:18px; margin-top:14px; flex-wrap:wrap; align-items:flex-end;"></div>
+      </div>
+    </div>
+    <div class="ranking-sidebar" id="ranking-sidebar">
+      <div class="ranking-title">💀 Corte de los Reyes Oscuros 💀</div>
+      <ul class="ranking-list" id="ranking-list"></ul>
+      <div class="squad-ranking-section">
+        <div class="ranking-title" style="font-size:1rem;border-color:rgba(201,168,76,0.3);">🛡️ Casas Nobles 🛡️</div>
+        <ul class="squad-list" id="squad-list"></ul>
+        <div class="squad-missions-panel" id="squad-missions-panel" style="display:none; border-top:4px solid var(--cr-gold);">
+          <div class="missions-title"><i class="fas fa-scroll"></i> Decretos Activos</div>
+          <div id="missions-body"></div>
+        </div>
+      </div>
+      <div class="hall-of-fame">
+        <div class="hall-title"><i class="fas fa-crown"></i> Salón de los Reyes</div>
+        <ul class="fame-list" id="fame-list"></ul>
+      </div>
+    </div>
+  </div>
+</div>
+<div id="gift-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,12,28,.97); z-index:99999; justify-content:center; align-items:center; backdrop-filter:blur(4px);">
+  <div class="modal-box" style="width:400px; border-top:6px solid var(--cr-purple-light);">
+    <h3 style="margin:0 0 15px 0; color:transparent; background:linear-gradient(135deg,var(--cr-gold-light),var(--cr-gold)); -webkit-background-clip:text; background-clip:text; font-family:'Cinzel Decorative',serif; font-size:1.6rem; text-transform:uppercase;">🎁 Ofrenda de Florines</h3>
+    <select id="gift-recipient" class="login-input" style="margin-bottom:15px; font-size:.9rem;">
+      <option value="all">👥 Todos los aspirantes</option>
+    </select>
+    <div style="display:flex; gap:10px; justify-content:center; margin-bottom:15px;">
+      <button class="btn-small" onclick="selectGiftAmount(100)" style="flex:1; background:linear-gradient(135deg,rgba(180,130,0,0.2),rgba(10,22,40,0.9)); color:var(--cr-gold); border:2px solid var(--cr-gold-dark); font-family:'Cinzel',serif; padding:8px; font-size:.95rem; border-radius:6px; cursor:pointer;">100 💰</button>
+      <button class="btn-small" onclick="selectGiftAmount(500)" style="flex:1; background:linear-gradient(135deg,rgba(180,130,0,0.2),rgba(10,22,40,0.9)); color:var(--cr-gold); border:2px solid var(--cr-gold-dark); font-family:'Cinzel',serif; padding:8px; font-size:.95rem; border-radius:6px; cursor:pointer;">500 💰</button>
+      <button class="btn-small" onclick="selectGiftAmount(1000)" style="flex:1; background:linear-gradient(135deg,rgba(180,130,0,0.2),rgba(10,22,40,0.9)); color:var(--cr-gold); border:2px solid var(--cr-gold-dark); font-family:'Cinzel',serif; padding:8px; font-size:.95rem; border-radius:6px; cursor:pointer;">1000 💰</button>
+    </div>
+    <div id="gift-amount-display" style="text-align:center; font-size:.9rem; color:#aaa; margin-bottom:15px; font-family:'Cinzel',serif;">Selecciona una cantidad</div>
+    <button class="btn-primary" onclick="executeGift()" style="width:100%; background:linear-gradient(180deg,#6d28d9,var(--cr-purple));border-color:var(--cr-purple-light);color:white;box-shadow:0 4px 0 #2d1060;">🎁 Enviar Ofrenda</button>
+    <button onclick="closeGiftModal()" style="width:100%; margin-top:10px; background:linear-gradient(135deg,rgba(26,58,110,0.4),rgba(10,22,40,0.9)); color:#aaa; border:1px solid var(--cr-blue-light); border-radius:6px; font-family:'Cinzel',serif; padding:9px; cursor:pointer; font-size:.9rem;">Cancelar</button>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://uksijdbbcdttspulslzw.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVrc2lqZGJiY2R0dHNwdWxzbHp3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4MDU3NjMsImV4cCI6MjA5NDM4MTc2M30.dKcqiaSwb_40oP5NFEHjvWdMaIkBBNjtF3krDbD4K2E';
+const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { storage: window.sessionStorage, autoRefreshToken: false, persistSession: true, detectSessionInUrl: false } });
+const TOTAL_LEVELS = 10, PROBLEMS_PER_LEVEL = 10, POINTS = 100;
+const ADMIN_USER = 'profemiguel';
+const GITHUB = 'https://mikettrt-maker.github.io/divisiones-profe/img';
+let currentMainLevel = 1, currentProblemInLevel = 1, currentDivisor = 0, currentDividend = 0;
+let totalScore = 0, currentUser = null, currentAvatarStyle = 'avatar1';
+let isGridLocked = true, hasFinishedGame = false, isVerifying = false;
+let unlockedLevel = 1, isAdmin = false;
+let currentStreak = 0;
+const STREAK_BONUSES = {3:30, 5:70, 10:100, 15:200};
+let currentCoins = 0, playTimeCounter = 0;
+let completedLevels = [];
+const ANTENNA_SEQUENCE = [1,10,5,2,4,8,3,6,7,9];
+let currentAntennaIndex = 0;
+let gems = 0;
+let playerHealth = 100;
+let isDead = false;
+
+let savedProblemKey = null;
+let currentEnemyLevel = 1;
+
+const ENEMIES = {
+  1:  { name:'El Engendro',             jpg: GITHUB+'/1.jpg' },
+  2:  { name:'La Plaga de Sangre',      jpg: GITHUB+'/2.jpg' },
+  3:  { name:'El Monje Ciego',          jpg: GITHUB+'/3.jpg' },
+  4:  { name:'La Dama del Espejo',      jpg: GITHUB+'/4.jpg' },
+  5:  { name:'El Verdugo Real',         jpg: GITHUB+'/5.jpg' },
+  6:  { name:'El Sepulturero',          jpg: GITHUB+'/6.jpg' },
+  7:  { name:'La Sombra Eterna',        jpg: GITHUB+'/7.jpg' },
+  8:  { name:'El Cazador de Brujos',    jpg: GITHUB+'/8.jpg' },
+  9:  { name:'El Señor de la Penumbra', jpg: GITHUB+'/9.jpg' },
+  10: { name:'El Señor de la Penumbra', jpg: GITHUB+'/9.jpg' }
+};
+let enemyEnergy = 100;
+
+const WEAPONS = {
+    dagger: { icon:'<span class="weapon-icon"><img src="'+GITHUB+'/18.jpg" style="width:100%;height:100%;display:block;"></span>', name:'Daga de los Sicambrios', damage:100, shieldDmg:0, price:100, desc:'Rauda y silenciosa' },
+  sword: { icon:'⚔️', name:'Espada Franca', damage:300, shieldDmg:1, price:250, desc:'Equilibrio en batalla' },
+  bow: { icon:'🏹', name:'Arco de la Reina', damage:500, shieldDmg:2, price:400, desc:'Dispara desde lejos' },
+  axe: { icon:'🪓', name:'Hacha de los Brujos', damage:800, shieldDmg:3, price:600, desc:'Golpe brutal' },
+  hammer: { icon:'🔨', name:'Martillo de la Justicia', damage:1500, shieldDmg:5, price:1000, desc:'Destructor de reinos' }
+};
+let inventory = { dagger: 0, sword: 0, bow: 0, axe: 0, hammer: 0 };
+let shieldDurability = 0;
+let totalAttacks = 0;
+
+const AVATAR_STYLES_STANDARD = [
+  { id:'avatar1', name:'Caballero del Reino',    url: GITHUB+'/1.webp' },
+  { id:'avatar2', name:'Espectro de la Noche',   url: GITHUB+'/2.webp' },
+  { id:'avatar3', name:'Pergamino Antiguo',       url: GITHUB+'/3.webp' },
+  { id:'avatar4', name:'Gólem de Hierro',         url: GITHUB+'/4.webp' },
+  { id:'avatar5', name:'Sabio de la Tormenta',    url: GITHUB+'/5.webp' },
+  { id:'avatar6', name:'Boceto del Destino',      url: GITHUB+'/6.webp' },
+  { id:'avatar7', name:'Cifrado Místico',         url: GITHUB+'/7.webp' }
+];
+const AVATAR_STYLES_EXCLUSIVE = [
+  { id:'avatar8', name:'Señor de la Guerra',      url: GITHUB+'/8.webp' },
+  { id:'avatar9', name:'Maestro de las Sombras',  url: GITHUB+'/9.webp' },
+  { id:'avatar10', name:'Avatar de la Leyenda',   url: GITHUB+'/10.webp' }
+];
+
+const RANKS = [
+  {name:"Escudero",min:0,max:2999,icon:"🪨",css:"rank-iron",avatar:"avatar-iron"},
+  {name:"Caballero",min:3000,max:6999,icon:"🥉",css:"rank-bronze",avatar:"avatar-bronze"},
+  {name:"Barón",min:7000,max:12999,icon:"🥈",css:"rank-silver",avatar:"avatar-silver"},
+  {name:"Conde",min:13000,max:19999,icon:"🥇",css:"rank-gold",avatar:"avatar-gold"},
+  {name:"Duque",min:20000,max:29999,icon:"💠",css:"rank-platinum",avatar:"avatar-platinum"},
+  {name:"Príncipe",min:30000,max:49999,icon:"💎",css:"rank-diamond",avatar:"avatar-diamond"},
+  {name:"Rey Merovingio",min:50000,max:999999,icon:"👑",css:"rank-heroic",avatar:"avatar-heroic"}
+];
+function getRankInfo(score){
+  let rank = RANKS[0];
+  for(let i=0;i<RANKS.length;i++) if(score>=RANKS[i].min) rank=RANKS[i];
+  let tier="I", range=rank.max-rank.min;
+  if(score<rank.min+range/3) tier="III";
+  else if(score<rank.min+(range/3)*2) tier="II";
+  let pct = Math.min(100,((score-rank.min)/range)*100);
+  return {...rank, tier, pct};
+}
+const SQUADS = {
+  1:{name:"La Casa del Trueno",color:"#00d4ff",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#0d1c3b" stroke="#00d4ff" stroke-width="4"/><path d="M50 30L35 65L50 52L65 65L50 30Z" fill="#00d4ff" stroke="#00d4ff" stroke-width="2"/><rect x="46" y="0" width="8" height="12" fill="#ffd700"/> </svg>`},
+  2:{name:"Reyes Brujos",color:"#9b59b6",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#1a0b2e" stroke="#9b59b6" stroke-width="4"/><circle cx="50" cy="55" r="18" fill="none" stroke="#9b59b6" stroke-width="3"/><circle cx="50" cy="55" r="8" fill="#9b59b6"/><path d="M40 42L35 38M60 42L65 38" stroke="#9b59b6" stroke-width="3"/></svg>`},
+  3:{name:"Guardianes del Grial",color:"#ffd700",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#1a1a00" stroke="#ffd700" stroke-width="4"/><path d="M40 50 C40 30 60 30 60 50 L55 65 L45 65 Z" fill="#ffd700" stroke="#ffd700" stroke-width="2"/><path d="M35 55 L25 40 M65 55 L75 40" stroke="#ffd700" stroke-width="4"/> </svg>`},
+  4:{name:"Ejército de la Penumbra",color:"#c0392b",svg:`<svg viewBox="0 0 100 120" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M50 0L95 20V60C95 90 50 120 50 120C50 120 5 90 5 60V20L50 0Z" fill="#2c0404" stroke="#c0392b" stroke-width="4"/><circle cx="50" cy="55" r="18" fill="none" stroke="#c0392b" stroke-width="3"/><circle cx="40" cy="50" r="3" fill="#c0392b"/><circle cx="60" cy="50" r="3" fill="#c0392b"/><path d="M45 62 L55 62 L50 58 Z" fill="#c0392b"/><path d="M50 70 L50 57" stroke="#c0392b" stroke-width="3"/> </svg>`}
+};
+// ── Variables de misiones ─────────────────────
+let totalCoinsEarned   = 0;
+let totalShieldsEarned = 0;
+let maxStreak          = 0;
+let missionsCompleted  = [];
+let hasDiamondArmor    = false;
+let chosenReward = null;
+let pendingChoice = false;
+
+// ── Definición de misiones ────────────────────
+const MISSIONS = [
+  { id:0, img:'https://mikettrt-maker.github.io/divisiones-profe/img/14.jpg', title:'3000 Florines', desc:'Acumula 3000 florines en total', check:()=>totalCoinsEarned>=3000, progress:()=>({cur:Math.min(totalCoinsEarned,3000),max:3000}) },
+  { id:1, img:'https://mikettrt-maker.github.io/divisiones-profe/img/13.jpg', title:'50 Escudos', desc:'Obtén 50 usos de escudo en total', check:()=>totalShieldsEarned>=50, progress:()=>({cur:Math.min(totalShieldsEarned,50),max:50}) },
+  { id:2, img:'https://mikettrt-maker.github.io/divisiones-profe/img/12.jpg', title:'10 Ataques', desc:'Realiza 10 ataques contra rivales', check:()=>totalAttacks>=10, progress:()=>({cur:Math.min(totalAttacks,10),max:10}) },
+  { id:3, img:'https://mikettrt-maker.github.io/divisiones-profe/img/11.jpg', title:'Racha de 15', desc:'Alcanza una racha de 15 aciertos', check:()=>maxStreak>=15, progress:()=>({cur:Math.min(maxStreak,15),max:15}) },
+  { id:4, img:'https://mikettrt-maker.github.io/divisiones-profe/img/10.jpg', title:'2000 Puntos', desc:'Acumula 2000 puntos de rango', check:()=>totalScore>=2000, progress:()=>({cur:Math.min(totalScore,2000),max:2000}) }
+];
+
+// ── Limpiar completedLevels para evitar claves de niveles futuros ──
+function cleanCompletedLevels(arr) {
+  if (!Array.isArray(arr)) return [];
+  const maxLvl = currentMainLevel;
+  return arr.filter(key => {
+    const match = key.match(/^L(\d+)_P/);
+    return match && parseInt(match[1]) <= maxLvl;
+  });
+}
+
+// ── Render de cartas ──────────────────────────
+function renderMissionCards() {
+  const container = document.getElementById('mission-cards');
+  if (!container) return;
+  container.innerHTML = '';
+  MISSIONS.forEach(m => {
+    const done = missionsCompleted.includes(m.id);
+    const prog = m.progress();
+    const pct  = Math.min(100, Math.round((prog.cur / prog.max) * 100));
+    const wrap = document.createElement('div');
+    wrap.className = 'mission-card-wrap' + (done ? ' completed' : '');
+    wrap.title = m.desc;
+    wrap.innerHTML = `
+      <img src="${m.img}" alt="${m.title}">
+      <div class="mission-progress-bar-bg">
+        <div class="mission-progress-bar-fill" style="width:${pct}%"></div>
+      </div>
+      <div class="mission-label ${done ? 'done' : ''}">
+        ${done ? '✅ ¡Completada!' : `${prog.cur}/${prog.max}`}
+      </div>`;
+    container.appendChild(wrap);
+  });
+}
+
+// ── Verificar y otorgar misiones ──────────────
+async function checkAndAwardMissions() {
+  if (!currentUser || isAdmin) return;
+  let newlyCompleted = false;
+  const allDoneBefore = missionsCompleted.length === 5;
+  for (const m of MISSIONS) {
+    if (!missionsCompleted.includes(m.id) && m.check()) {
+      missionsCompleted.push(m.id);
+      newlyCompleted = true;
+      showToast(`🃏 ¡Misión completada! "${m.title}"`, 'success', 6000);
+      AudioEngine.playLevelUp();
+    }
+  }
+  const allDoneNow = missionsCompleted.length === 5;
+  if (!allDoneBefore && allDoneNow && !pendingChoice && !chosenReward) {
+    pendingChoice = true;
+    showToast('🎉 ¡Has completado las 5 misiones! Elige tu recompensa.', 'success', 8000);
+    setTimeout(() => triggerEpicEffect(), 500);
+    setTimeout(() => showRewardChoice(), 1000);
+  }
+  if (newlyCompleted) {
+    await saveMissionProgress();
+    renderMissionCards();
+    updateInventoryUI();
+  }
+}
+
+// ── Guardar progreso de misiones ──────────────
+async function saveMissionProgress() {
+  if (!currentUser) return;
+  const missionFlags = {
+    mission1_completed: missionsCompleted.includes(0),
+    mission2_completed: missionsCompleted.includes(1),
+    mission3_completed: missionsCompleted.includes(2),
+    mission4_completed: missionsCompleted.includes(3),
+    mission5_completed: missionsCompleted.includes(4)
+  };
+  try {
+    await _supabase.from('profiles').update({
+      total_coins_earned:   totalCoinsEarned,
+      total_shields_earned: totalShieldsEarned,
+      max_streak:           maxStreak,
+      diamond_armor:    hasDiamondArmor,
+      inventory_codex_sword: inventory.codex_sword || 0,
+      chosen_reward: chosenReward,
+      pending_choice: pendingChoice,
+      total_attacks: totalAttacks,
+      ...missionFlags
+    }).eq('id', currentUser.id);
+  } catch(e) { console.error('Error guardando misiones:', e); }
+}
+
+// ── Elección de recompensa ────────────────────
+function showRewardChoice() {
+  if (!pendingChoice || chosenReward) return;
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.9);z-index:99999;display:flex;align-items:center;justify-content:center;';
+  modal.innerHTML = `
+    <div style="background:linear-gradient(180deg,#16213e,#0d1c3b);padding:30px;border-radius:16px;max-width:500px;width:95%;border:3px solid gold;box-shadow:0 0 50px rgba(201,168,76,0.6);text-align:center;">
+      <h3 style="color:gold;font-family:'Cinzel Decorative',serif;font-size:1.6rem;margin:0 0 20px 0;">⚔️ ¡Elige tu Recompensa! 💎</h3>
+      <p style="color:#ccc;font-family:'Cinzel',serif;font-size:0.9rem;margin-bottom:20px;">Has completado las 5 misiones. Elige una de las dos recompensas legendarias. La otra quedará bloqueada.</p>
+      <div style="display:flex;justify-content:center;gap:30px;flex-wrap:wrap;">
+        <div style="background:rgba(255,68,68,0.1);border:2px solid #ff4444;border-radius:12px;padding:20px;width:180px;cursor:pointer;" onclick="chooseReward('sword', this.closest('[style*=position]'))">
+          <img src="https://mikettrt-maker.github.io/divisiones-profe/img/15.jpg" style="width:80px;height:110px;border-radius:8px;margin-bottom:10px;">
+          <div style="color:#ff8888;font-family:'Cinzel',serif;font-weight:700;margin-bottom:5px;">Espada del Códice</div>
+          <div style="color:#aaa;font-size:0.7rem;">Reduce a 0 los puntos de cualquier rival. Ignora escudos.</div>
+          <button class="btn-primary" style="margin-top:10px;width:100%;background:linear-gradient(180deg,#c0392b,#7a0000);color:white;border:none;">Elegir</button>
+        </div>
+        <div style="background:rgba(0,212,255,0.1);border:2px solid #00d4ff;border-radius:12px;padding:20px;width:180px;cursor:pointer;" onclick="chooseReward('armor', this.closest('[style*=position]'))">
+          <img src="https://mikettrt-maker.github.io/divisiones-profe/img/16.jpg" style="width:80px;height:110px;border-radius:8px;margin-bottom:10px;">
+          <div style="color:#00d4ff;font-family:'Cinzel',serif;font-weight:700;margin-bottom:5px;">Armadura de Diamante</div>
+          <div style="color:#aaa;font-size:0.7rem;">Protección absoluta. Ni la Espada del Códice puede dañarte.</div>
+          <button class="btn-primary" style="margin-top:10px;width:100%;background:linear-gradient(180deg,#00d4ff,#0088aa);color:#000;border:none;">Elegir</button>
+        </div>
+      </div>
+      <p style="color:#666;font-size:0.7rem;margin-top:20px;">Puedes cerrar esta ventana y decidir más tarde desde la Tienda.</p>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+async function chooseReward(type, modalElement) {
+  if (type === 'sword') {
+    inventory.codex_sword = (inventory.codex_sword || 0) + 1;
+    chosenReward = 'sword';
+    hasDiamondArmor = false;
+    showToast('⚔️ ¡Has elegido la Espada del Códice!', 'success', 6000);
+  } else {
+    hasDiamondArmor = true;
+    chosenReward = 'armor';
+    inventory.codex_sword = inventory.codex_sword || 0;
+    showToast('💎 ¡Has elegido la Armadura de Diamante!', 'success', 6000);
+  }
+  pendingChoice = false;
+  updateInventoryUI();
+  await saveMissionProgress();
+  if (modalElement) document.body.removeChild(modalElement);
+}
+
+// ── Ataque con Espada del Códice ──────────────
+async function attackWithCodexSword(targetId, targetName) {
+  if (!inventory.codex_sword || inventory.codex_sword <= 0) return showToast('No tienes la Espada del Códice', 'tomato');
+  if (!confirm(`⚔️💀 ¿Usar la ESPADA DEL CÓDICE contra ${targetName}?\nSus puntos quedarán en 0. Ignora todos los escudos.\n(Solo la Armadura de Diamante puede resistirla)`)) return;
+
+  const prevSwordCount = inventory.codex_sword;
+
+  inventory.codex_sword--;
+  updateInventoryUI();
+
+  try {
+    // Primero guardar el descuento del atacante
+    const { error: attError } = await _supabase.from('profiles').update({
+      inventory_codex_sword: inventory.codex_sword
+    }).eq('id', currentUser.id);
+    if (attError) throw new Error('No se pudo usar la Espada.');
+
+    // Obtener datos de la víctima
+    const { data: victim, error: fetchError } = await _supabase.from('profiles').select('total_score, diamond_armor, username').eq('id', targetId).single();
+    if (fetchError || !victim) throw new Error('Rival no encontrado');
+
+    if (victim.diamond_armor) {
+      showToast(`🛡️💎 ¡${targetName} tiene la ARMADURA DE DIAMANTE! Tu Espada del Códice no tuvo efecto.`, 'tomato', 6000);
+      // Devolver la espada
+      inventory.codex_sword++;
+      updateInventoryUI();
+      await _supabase.from('profiles').update({ inventory_codex_sword: inventory.codex_sword }).eq('id', currentUser.id);
+    } else {
+      const { error: updateError } = await _supabase.from('profiles').update({ total_score: 0 }).eq('id', targetId);
+      if (updateError) throw updateError;
+      showToast(`⚔️💀 ¡DEVASTADOR! ${targetName} ha perdido TODOS sus puntos (${victim.total_score} → 0)`, 'tomato', 7000);
+      AudioEngine.playEpic();
+      updateRanking();
+    }
+  } catch(e) {
+    console.error('Error en ataque Espada del Códice:', e);
+    // Revertir
+    inventory.codex_sword = prevSwordCount;
+    updateInventoryUI();
+    await _supabase.from('profiles').update({ inventory_codex_sword: prevSwordCount }).eq('id', currentUser.id);
+    showToast('❌ Error: ' + e.message, 'tomato');
+  }
+}
+
+// ── Selector de rival para Espada del Códice ──
+function prepararAtaqueCodexSword() {
+  if (!inventory.codex_sword || inventory.codex_sword <= 0) { showToast('No tienes la Espada del Códice', 'tomato'); return; }
+  if (!rankingDataCache || rankingDataCache.length === 0) { showToast('Espera a que cargue la Corte...', 'tomato'); return; }
+  const me = currentUser?.email?.split('@')[0];
+  const rivals = rankingDataCache.filter(u => u.username !== me);
+  if (rivals.length === 0) { showToast('No hay rivales disponibles', 'tomato'); return; }
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.88);z-index:99999;display:flex;align-items:center;justify-content:center;';
+  modal.innerHTML = `
+    <div style="background:linear-gradient(180deg,#16213e,#0d1c3b);padding:24px;border-radius:14px;max-width:420px;width:92%;border:3px solid gold;box-shadow:0 0 40px rgba(201,168,76,0.5);">
+      <h3 style="color:gold;text-align:center;margin:0 0 6px 0;font-family:'Cinzel Decorative',serif;font-size:1.3rem;">⚔️ Espada del Códice</h3>
+      <p style="color:#ff4444;text-align:center;font-family:'Cinzel',serif;font-size:0.8rem;margin:0 0 16px 0;">💀 Reduce a 0 los puntos del rival (ignora escudos)</p>
+      <div style="max-height:300px;overflow-y:auto;">
+        ${rivals.map(u => {
+          const armor = u.diamond_armor ? ' <span title="Armadura de Diamante" style="color:cyan;">💎</span>' : '';
+          return `<div style="display:flex;justify-content:space-between;align-items:center;padding:9px 6px;border-bottom:1px solid #2a3a5a;">
+            <span style="color:#e0e0e0;font-family:'Cinzel',serif;font-size:.85rem;">${u.username}${armor} <small style="color:#888;">— ${u.total_score} pts</small></span>
+            <button style="padding:5px 12px;border-radius:6px;border:none;background:linear-gradient(135deg,#c0392b,#7a0000);color:white;font-family:'Cinzel',serif;font-size:.8rem;cursor:pointer;"
+              onclick="attackWithCodexSword('${u.id}','${u.username}');document.body.removeChild(this.closest('[style*=position]'));">⚔️ Atacar</button>
+          </div>`;
+        }).join('')}
+      </div>
+      <button style="margin-top:14px;width:100%;padding:9px;border-radius:8px;border:1px solid #444;background:#1a2a3a;color:#aaa;font-family:'Cinzel',serif;cursor:pointer;"
+        onclick="document.body.removeChild(this.closest('[style*=position]'));">Cancelar</button>
+    </div>`;
+  document.body.appendChild(modal);
+}
+
+// ===============================================
+// GENERADOR DE DIVISIONES ALEATORIAS
+// ===============================================
+function generarDivision(nivel) {
+  let divisor, dividendo, residuoEsperado;
+  const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+  if (nivel <= 2) {
+    divisor = rand(2, 9);
+    dividendo = divisor * rand(10, 199);
+  } else if (nivel <= 5) {
+    divisor = rand(10, 99);
+    dividendo = divisor * rand(5, 99);
+  } else if (nivel <= 7) {
+    divisor = rand(100, 999);
+    dividendo = divisor * rand(2, 50);
+  } else if (nivel <= 8) {
+    divisor = rand(10, 99);
+    residuoEsperado = rand(1, 9);
+    dividendo = divisor * rand(50, 500) + residuoEsperado;
+  } else if (nivel === 9) {
+    divisor = rand(100, 999);
+    residuoEsperado = rand(1, 9);
+    dividendo = divisor * rand(10, 50) + residuoEsperado;
+  } else {
+    divisor = rand(100, 999);
+    residuoEsperado = rand(1, 9);
+    dividendo = divisor * rand(20, 100) + residuoEsperado;
+  }
+
+  return { d: dividendo, div: divisor };
+}
+
+let userSquadId = null;
+let squadMissionsData = [];
+const AudioEngine = {
+  ctx: null,
+  init() { if (!this.ctx) this.ctx = new (window.AudioContext || window.webkitAudioContext)(); },
+  playTone(freq, dur, type='square', vol=0.1) {
+    this.init();
+    const o = this.ctx.createOscillator(), g = this.ctx.createGain();
+    o.type = type; o.frequency.value = freq; g.gain.value = vol;
+    o.connect(g); g.connect(this.ctx.destination); o.start();
+    setTimeout(() => o.stop(), dur);
+  },
+  playClick()   { this.playTone(800,50,'square',0.05); },
+  playSuccess() { this.playTone(523,100,'square',0.08); setTimeout(()=>this.playTone(659,150,'square',0.08),100); },
+  playError()   { this.playTone(200,300,'sawtooth',0.1); },
+  playLevelUp() { [523,659,784,1047].forEach((n,i)=>setTimeout(()=>this.playTone(n,200,'square',0.1),i*150)); },
+  playEpic()    { [300,400,600,900,1200].forEach((n,i)=>setTimeout(()=>this.playTone(n,80,'sawtooth',0.3),i*40)); },
+  playStreak()  { [600,800,1000,1200].forEach((n,i)=>setTimeout(()=>this.playTone(n,100,'square',0.12),i*80)); },
+  playShop()    { this.playTone(440,80,'square',0.07); setTimeout(()=>this.playTone(550,120,'square',0.07),90); }
+};
+function showToast(msg, type='success', duration=4000) {
+  const c = document.getElementById('toast-container');
+  const t = document.createElement('div');
+  t.className = `toast ${type}`;
+  t.innerHTML = msg;
+  c.appendChild(t);
+  setTimeout(() => { if(t.parentNode) t.parentNode.removeChild(t); }, duration);
+}
+function updateCoinDisplay(){
+  document.getElementById('coinDisplay').innerText = currentCoins;
+  document.getElementById('gemDisplay').innerText = gems;
+}
+function updateHealthBar() {
+  const pct = Math.max(0, playerHealth);
+  document.getElementById('health-fill').style.width = pct + '%';
+  document.getElementById('health-text').innerText = `${playerHealth}/100`;
+  if (pct < 30) {
+    document.getElementById('health-fill').style.background = 'linear-gradient(90deg, #ff1744, #d50000)';
+  } else {
+    document.getElementById('health-fill').style.background = 'linear-gradient(90deg, #ff1744, #e53935)';
+  }
+}
+function updateInventoryUI() {
+  const oldContainer = document.getElementById('inventory-container');
+  if (oldContainer) {
+    oldContainer.innerHTML = '';
+    Object.entries(inventory).forEach(([key, count]) => {
+      if (count > 0) {
+        const weapon = WEAPONS[key];
+        const div = document.createElement('div');
+        div.className = 'inv-item';
+        div.title = `${weapon.name}: ${weapon.damage} pts (-${weapon.shieldDmg} escudo)`;
+        div.innerHTML = `<span>${weapon.icon}</span><span>${count}</span>`;
+        oldContainer.appendChild(div);
+      }
+    });
+    if (shieldDurability > 0) {
+      const shieldDiv = document.createElement('div');
+      shieldDiv.className = 'inv-item active';
+      shieldDiv.title = `🛡️ Protección del Consejo: ${shieldDurability} puntos`;
+      shieldDiv.innerHTML = `<span>🛡️</span><span>${shieldDurability}</span>`;
+      oldContainer.appendChild(shieldDiv);
+    }
+  }
+
+  const bar = document.getElementById('inventory-bar');
+  if (!bar) return;
+  bar.innerHTML = '';
+  const weaponsList = ['dagger', 'sword', 'bow', 'axe', 'hammer'];
+  weaponsList.forEach(key => {
+    const w = WEAPONS[key];
+    const count = inventory[key] || 0;
+    const span = document.createElement('span');
+    span.className = 'inv-item' + (count > 0 ? '' : ' empty');
+    span.title = `${w.name} (${count})`;
+    span.innerHTML = `${w.icon} <small>${count}</small>`;
+    if (count > 0) {
+      span.style.cursor = 'pointer';
+      span.onclick = function() {
+        prepararAtaque(key);
+      };
+    }
+    bar.appendChild(span);
+  });
+  const shieldSpan = document.createElement('span');
+  if (shieldDurability > 0) {
+    shieldSpan.className = 'inv-item active';
+    shieldSpan.title = `🛡️ Protección: ${shieldDurability} usos`;
+    shieldSpan.innerHTML = `🛡️ <small>${shieldDurability}</small>`;
+  } else {
+    shieldSpan.className = 'inv-item empty';
+    shieldSpan.title = 'Sin escudo';
+    shieldSpan.innerHTML = '🛡️ <small>0</small>';
+  }
+  bar.appendChild(shieldSpan);
+
+  const swordCount = inventory.codex_sword || 0;
+  const codexSpan = document.createElement('span');
+  if (swordCount > 0) {
+    codexSpan.className = 'inv-item';
+    codexSpan.title = `Espada del Códice (${swordCount}) — deja rivales en 0 pts`;
+    codexSpan.innerHTML = `⚔️💀 <small>${swordCount}</small>`;
+    codexSpan.style.cursor = 'pointer';
+    codexSpan.style.borderColor = '#ff4444';
+    codexSpan.onclick = () => prepararAtaqueCodexSword();
+  } else {
+    codexSpan.className = 'inv-item empty';
+    codexSpan.title = 'Sin Espada del Códice';
+    codexSpan.innerHTML = '⚔️💀 <small>0</small>';
+  }
+  bar.appendChild(codexSpan);
+
+  if (hasDiamondArmor) {
+    const armorSpan = document.createElement('span');
+    armorSpan.className = 'inv-item active';
+    armorSpan.title = '💎 Armadura de Diamante — protección absoluta';
+    armorSpan.innerHTML = '💎🛡️';
+    armorSpan.style.borderColor = '#00d4ff';
+    bar.appendChild(armorSpan);
+  }
+}
+function incrementStreak() {
+  currentStreak++;
+  if (currentStreak > maxStreak) maxStreak = currentStreak;
+  updateStreakUI();
+  const bonus = STREAK_BONUSES[currentStreak];
+  if(bonus) {
+    currentCoins += bonus;
+    totalCoinsEarned += bonus;          // ✅ suma a la misión
+    updateCoinDisplay();
+    showStreakBonus(currentStreak, bonus);
+    AudioEngine.playStreak();
+    // ✅ Guardar el progreso de la misión inmediatamente
+    if (currentUser && !isAdmin) {
+      _supabase.from('profiles').update({
+        coins: currentCoins,
+        total_coins_earned: totalCoinsEarned
+      }).eq('id', currentUser.id);
+      checkAndAwardMissions();
+      renderMissionCards();
+    }
+  }
+}
+function resetStreak() { currentStreak = 0; updateStreakUI(); }
+function updateStreakUI() {
+  const d = document.getElementById('streak-display'), c = document.getElementById('streak-count'), ic = document.getElementById('streak-icon');
+  c.innerText = currentStreak; d.classList.remove('active','on-fire');
+  if(currentStreak>=5) { d.classList.add('on-fire'); ic.innerText='🔥'; }
+  else if(currentStreak>=2) { d.classList.add('active'); ic.innerText='⚡'; }
+  else { ic.innerText='⚡'; }
+}
+function showStreakBonus(streak, bonus) {
+  const el = document.createElement('div'); el.className = 'bonus-flash';
+  el.innerText = `🔥 RACHA x${streak}! +${bonus} 💰`;
+  el.style.position = 'fixed'; el.style.top = '50%'; el.style.left = '50%';
+  el.style.transform = 'translate(-50%, -50%)'; el.style.fontSize = '2rem';
+  el.style.color = 'gold'; el.style.textShadow = '0 0 10px black';
+  el.style.zIndex = '99999';
+  document.body.appendChild(el);
+  setTimeout(() => { if(el.parentNode) el.parentNode.removeChild(el); }, 1300);
+  showToast(`🔥 ¡Racha de ${streak}! Bonus: +${bonus} monedas`,'success');
+}
+const imgCache = {};
+function getAvatarUrl(seed, styleOrObj) {
+  let url;
+  if (typeof styleOrObj === 'object' && styleOrObj.url) {
+    url = styleOrObj.url;
+  } else if (typeof styleOrObj === 'string') {
+    const allAvatars = [...AVATAR_STYLES_STANDARD, ...AVATAR_STYLES_EXCLUSIVE];
+    const found = allAvatars.find(a => a.id === styleOrObj);
+    if (found) url = found.url;
+    else url = AVATAR_STYLES_STANDARD[0].url;
+  } else {
+    url = GITHUB+'/1.png';
+  }
+  if (imgCache[url]) return imgCache[url];
+  imgCache[url] = url;
+  return url;
+}
+function renderMainAvatar() {
+  if(!currentUser) return;
+  const allAvatars = [...AVATAR_STYLES_STANDARD, ...AVATAR_STYLES_EXCLUSIVE];
+  const found = allAvatars.find(a => a.id === currentAvatarStyle);
+  const avatarUrl = found ? found.url : getAvatarUrl(currentUser.email.split('@')[0], currentAvatarStyle);
+  document.getElementById('main-avatar-img').src = avatarUrl;
+  const rankInfo = getRankInfo(totalScore);
+  document.getElementById('avatar-rank-badge').innerText = rankInfo.name.toUpperCase();
+  document.getElementById('avatar-rank-badge').style.background = rankInfo.css === 'rank-heroic'
+    ? 'linear-gradient(135deg, #ef4444, #7a0000)'
+    : 'linear-gradient(135deg, var(--cr-gold-dark), #b8860b)';
+  if(userSquadId && SQUADS[userSquadId]) {
+    document.getElementById('squad-badge-overlay').innerHTML = SQUADS[userSquadId].svg;
+    document.getElementById('squad-badge-overlay').style.display = 'flex';
+  } else {
+    document.getElementById('squad-badge-overlay').style.display = 'none';
+  }
+}
+function openShop(){
+  document.getElementById('shop-modal').style.display='flex';
+  document.getElementById('shop-coins-val').innerText = currentCoins;
+  const container = document.getElementById('shop-items');
+  container.innerHTML = '';
+  Object.entries(WEAPONS).forEach(([key, weapon]) => {
+    const div = document.createElement('div');
+    div.className = 'shop-item orange';
+    div.innerHTML = `<span class="shop-item-icon">${weapon.icon}</span><div class="shop-item-name">${weapon.name}</div><div class="shop-item-desc">${weapon.desc} (-${weapon.damage} pts, -${weapon.shieldDmg} 🛡️)</div><div class="shop-item-price"><i class="fas fa-coins"></i> ${weapon.price}</div><div class="shop-qty-badge">x${inventory[key]}</div><button class="shop-buy-btn orange-btn" onclick="buyWeapon('${key}', ${weapon.price})">Adquirir</button>`;
+    container.appendChild(div);
+  });
+  const shieldDiv = document.createElement('div');
+  shieldDiv.className = 'shop-item';
+  shieldDiv.innerHTML = `<span class="shop-item-icon">🛡️</span><div class="shop-item-name">Protección del Consejo</div><div class="shop-item-desc">Resiste 5 ataques</div><div class="shop-item-price"><i class="fas fa-coins"></i> 300</div><button class="shop-buy-btn" onclick="buyShield(5, 300)">Adquirir</button>`;
+  container.appendChild(shieldDiv);
+
+  const plantDiv = document.createElement('div');
+  plantDiv.className = 'shop-item';
+  plantDiv.innerHTML = `<span class="shop-item-icon">🌿</span><div class="shop-item-name">Planta Curativa</div><div class="shop-item-desc">Restaura toda tu salud al instante</div><div class="shop-item-price"><i class="fas fa-coins"></i> 300</div><button class="shop-buy-btn" onclick="buyHealingPlant()">Comprar</button>`;
+  container.appendChild(plantDiv);
+
+  const gemDiv = document.createElement('div');
+  gemDiv.className = 'shop-item';
+  gemDiv.innerHTML = `<span class="shop-item-icon">💎</span><div class="shop-item-name">Gema del Reino</div><div class="shop-item-desc">Obtén 1 gema para abrir cofres</div><div class="shop-item-price"><i class="fas fa-coins"></i> 500</div><button class="shop-buy-btn" onclick="buyGem()">Comprar</button>`;
+  container.appendChild(gemDiv);
+
+  // ── Elección de recompensa pendiente ──
+  if (pendingChoice && !chosenReward) {
+    const choiceDiv = document.createElement('div');
+    choiceDiv.style.cssText = 'grid-column:1/-1;text-align:center;padding:20px;background:rgba(201,168,76,0.1);border:2px dashed gold;border-radius:12px;margin-top:10px;';
+    choiceDiv.innerHTML = `
+      <h3 style="color:gold;font-family:'Cinzel Decorative',serif;">🎉 ¡Recompensa Legendaria Disponible!</h3>
+      <p style="color:#ccc;">Has completado las 5 misiones. Elige tu premio.</p>
+      <button class="btn-primary" style="margin-top:10px;background:linear-gradient(180deg,gold,#b8860b);color:#000;" onclick="closeShop();showRewardChoice();">⚔️💎 Elegir Recompensa</button>
+    `;
+    container.appendChild(choiceDiv);
+  }
+
+  const chestDiv = document.createElement('div');
+  chestDiv.className = 'shop-item chest-item';
+  chestDiv.innerHTML = `<span class="shop-item-icon">🎁</span><div class="shop-item-name">Cofre Misterioso</div><div class="shop-item-desc">Abre un cofre legendario. ¡Premios aleatorios!</div><div class="shop-item-price"><span>💎</span> 1</div><button class="shop-buy-btn chest-btn" onclick="openMysteryChest()">Abrir</button>`;
+  container.appendChild(chestDiv);
+}
+function closeShop(){ document.getElementById('shop-modal').style.display='none'; }
+function buyWeapon(type, price) {
+  if(currentCoins < price) return showToast(`❌ Necesitas ${price} florines`,'tomato');
+  if(!confirm(`¿Adquirir ${WEAPONS[type].name} por ${price} florines?`)) return;
+  currentCoins -= price; inventory[type]++;
+  updateCoinDisplay(); updateInventoryUI(); openShop();
+  AudioEngine.playShop();
+  showToast(`✅ ${WEAPONS[type].icon} ${WEAPONS[type].name} añadido a tu arsenal!`,'success');
+  _supabase.from('profiles').update({ coins: currentCoins, [`inventory_${type}`]: inventory[type] })
+    .eq('id', currentUser.id)
+    .then(res => { if(res.error) { console.error("Error guardando monedas en compra", res.error); showToast("Error al guardar compra", 'tomato'); } });
+  saveInventory();
+}
+async function buyShield(qty, price) {
+  if(currentCoins < price) return showToast(`❌ Necesitas ${price} florines`,'tomato');
+  if(!confirm(`¿Comprar Protección del Consejo (${qty} usos) por ${price} florines?`)) return;
+  try {
+    currentCoins -= price;
+    shieldDurability += qty;
+    totalShieldsEarned += qty;
+    await saveScore();   // ← Guarda inmediatamente los contadores
+
+    const { error } = await _supabase.from('profiles').update({
+      coins: currentCoins,
+      shield_durability: shieldDurability
+    }).eq('id', currentUser.id);
+    if (error) throw error;
+
+    checkAndAwardMissions();
+    renderMissionCards();
+    await saveMissionProgress();
+
+    updateCoinDisplay();
+    updateInventoryUI();
+    openShop();
+    AudioEngine.playShop();
+    showToast(`✅ 🛡️ Protección adquirida! Tienes ${shieldDurability} usos`,'success');
+  } catch(e) {
+    currentCoins += price;
+    shieldDurability -= qty;
+    totalShieldsEarned -= qty;
+    showToast(`❌ Error: ${e.message}`,'tomato');
+  }
+}
+async function buyHealingPlant() {
+  const cost = 300;
+  if (currentCoins < cost) return showToast('Necesitas 300 monedas', 'tomato');
+  if (playerHealth >= 100) return showToast('Tu salud ya está al máximo', 'tomato');
+  if (!confirm('¿Comprar una planta curativa por 300 monedas?')) return;
+  currentCoins -= cost;
+  playerHealth = 100;
+  updateCoinDisplay();
+  updateHealthBar();
+  const { error } = await _supabase.from('profiles').update({
+    coins: currentCoins,
+    player_health: playerHealth
+  }).eq('id', currentUser.id);
+  if (error) {
+    const oldHealth = playerHealth;
+    currentCoins += cost;
+    playerHealth = oldHealth;
+    updateCoinDisplay();
+    updateHealthBar();
+    showToast('❌ Error al guardar la compra', 'tomato');
+    console.error("Error en buyHealingPlant:", error);
+    return;
+  }
+  updateRanking();
+  showToast('🌿 ¡Salud restaurada por completo!', 'success');
+}
+async function buyGem() {
+  const cost = 500;
+  if (currentCoins < cost) return showToast('Necesitas 500 monedas', 'tomato');
+  if (!confirm('¿Comprar 1 gema por 500 monedas?')) return;
+  const prevCoins = currentCoins, prevGems = gems;
+  currentCoins -= cost;
+  gems += 1;
+  updateCoinDisplay();
+  const { error } = await _supabase.from('profiles').update({
+    coins: currentCoins,
+    gems: gems
+  }).eq('id', currentUser.id);
+  if (error) {
+    currentCoins = prevCoins;
+    gems = prevGems;
+    updateCoinDisplay();
+    showToast('❌ Error al comprar gema', 'tomato');
+    console.error(error);
+  } else {
+    showToast('💎 ¡Has comprado 1 gema!', 'success');
+  }
+}
+async function attackUser(targetId, targetName, weaponType) {
+  const weapon = WEAPONS[weaponType];
+  if(!weapon) return;
+  if(inventory[weaponType] <= 0) return showToast("¡No tienes esta arma!",'tomato');
+  if(!confirm(`¿Usar ${weapon.icon} ${weapon.name} contra ${targetName}? (-${weapon.damage} pts, -${weapon.shieldDmg} 🛡️)`)) return;
+
+  const prevInventory = { ...inventory };
+  const prevAttacks = totalAttacks;
+
+  inventory[weaponType]--; totalAttacks++; updateInventoryUI();
+  checkAndAwardMissions();
+  renderMissionCards();
+
+  try {
+    // 1. Guardar descuento del atacante
+    const { error: updateAttackerError } = await _supabase.from('profiles').update({
+      [`inventory_${weaponType}`]: inventory[weaponType],
+      total_attacks: totalAttacks
+    }).eq('id', currentUser.id);
+    if (updateAttackerError) throw new Error('No se pudo descontar el arma.');
+
+    // 2. Leer estado de la víctima
+    const { data: victim, error: fetchError } = await _supabase
+      .from('profiles')
+      .select('total_score, shield_durability')
+      .eq('id', targetId)
+      .single();
+    if(fetchError || !victim) throw new Error("Aspirante no encontrado");
+
+    let updates = {};
+    let msg = '';
+    let victimShield = victim.shield_durability || 0;
+    let currentVictimScore = victim.total_score || 0;
+
+    if(victimShield > 0) {
+      const newShield = Math.max(0, victimShield - weapon.shieldDmg);
+      updates.shield_durability = newShield;
+      msg = `🛡️ ¡${targetName} tenía PROTECCIÓN! Tu ${weapon.icon} le quitó ${weapon.shieldDmg} puntos de escudo.`;
+      if(newShield === 0) msg += " ¡Escudo destruido!";
+    } else {
+      const newScore = Math.max(0, currentVictimScore - weapon.damage);
+      updates.total_score = newScore;
+      msg = `${weapon.icon} ¡Atacaste a ${targetName} con ${weapon.name}! Perdió ${weapon.damage} puntos. (${currentVictimScore} → ${newScore})`;
+    }
+
+    const { error: updateError } = await _supabase
+      .from('profiles')
+      .update(updates)
+      .eq('id', targetId);
+    if(updateError) throw updateError;
+
+    showToast(msg, 'tomato', 5000);
+    updateRanking();
+  } catch(e) {
+    console.error('Error en ataque:', e);
+    // Revertir localmente
+    inventory = prevInventory;
+    totalAttacks = prevAttacks;
+    updateInventoryUI();
+    // Intentar restaurar en BD
+    await _supabase.from('profiles').update({
+      [`inventory_${weaponType}`]: prevInventory[weaponType],
+      total_attacks: prevAttacks
+    }).eq('id', currentUser.id);
+    showToast("❌ Error: " + e.message, 'tomato');
+  }
+}
+function saveInventory(){
+  if(!currentUser) return;
+  _supabase.from('profiles').update({
+    inventory_dagger: inventory.dagger, inventory_sword: inventory.sword,
+    inventory_bow: inventory.bow, inventory_axe: inventory.axe, inventory_hammer: inventory.hammer,
+    shield_durability: shieldDurability, total_attacks: totalAttacks,
+    gems: gems
+  }).eq('id', currentUser.id).then(res => { if(res.error) console.error("Error guardando inventario", res.error); });
+}
+let rankInt;
+function startRanking(){ updateRanking(); rankInt = setInterval(updateRanking, 20000); }
+let rankingDataCache = [];
+async function updateRanking(){
+  const list = document.getElementById('ranking-list');
+  try {
+    const { data, error } = await _supabase.from('profiles')
+      .select('id,username,total_score,avatar_style,completed_at,is_banned,squad_id,shield_durability,player_health,last_seen')
+      .is('completed_at', null)
+      .eq('is_banned', false)
+      .order('total_score',{ascending:false});
+    if(error) throw error;
+    if(!data||!data.length){ list.innerHTML='<li style="text-align:center;padding:10px;color:#666;">La corte está vacía.</li>'; return; }
+
+    rankingDataCache = data;
+    renderFullRanking(data);
+    updateSquadRanking(data);
+    loadActiveMissions(data);
+  } catch(err){ list.innerHTML='<li style="text-align:center;padding:10px;color:red;">Error.</li>'; }
+}
+function renderFullRanking(data) {
+  const list = document.getElementById('ranking-list');
+  const me = currentUser?.email?.split('@')[0];
+  const now = new Date();
+  list.innerHTML = data.map((u,i)=>{
+    const s = u.total_score||0, rI = getRankInfo(s);
+    const isMe = (me && u.username===me);
+    let rc = "ranking-item "+rI.css, dn = u.username||'Yo';
+    if(i===0){ rc+=" rank-1"; dn+=" 👑"; } else if(i<10) rc+=" elite";
+    if(isMe) rc+=" me";
+    const avUrl = getAvatarUrl(u.username||'guest', u.avatar_style||'adventurer');
+    const sq = u.squad_id&&SQUADS[u.squad_id] ? `<div style="width:16px;height:18px;">${SQUADS[u.squad_id].svg}</div>` : '';
+    const lastSeen = u.last_seen ? new Date(u.last_seen) : null;
+    const isOnline = lastSeen && (now - lastSeen) < 30000;
+    const onlineDot = `<span class="online-dot ${isOnline ? 'green' : 'red'}"></span>`;
+    let healthHTML = '';
+    const hp = u.player_health != null ? u.player_health : 100;
+    const hpPct = Math.max(0, hp);
+    healthHTML = `<div style="display:flex;align-items:center;gap:4px;margin-top:2px;">
+      <span style="font-size:0.6rem;">❤️</span>
+      <div style="width:40px;height:5px;background:rgba(255,255,255,0.1);border-radius:3px;overflow:hidden;">
+        <div style="width:${hpPct}%;height:100%;background:#e53935;border-radius:3px;"></div>
+      </div>
+      <span style="font-size:0.6rem;color:#ccc;">${hp}</span>
+    </div>`;
+    let shieldHTML = '';
+    const sh = u.shield_durability || 0;
+    if(sh > 0) {
+      const maxSh = 5, pct = Math.min(100, (sh / maxSh) * 100);
+      let gradient = 'linear-gradient(90deg, #00e676, #00c853)';
+      let glowColor = 'rgba(0,230,118,0.5)';
+      if(pct <= 30) {
+        gradient = 'linear-gradient(90deg, #ff1744, #d50000)';
+        glowColor = 'rgba(255,23,68,0.6)';
+      } else if(pct <= 60) {
+        gradient = 'linear-gradient(90deg, #ffcc00, #ff9800)';
+        glowColor = 'rgba(255,204,0,0.5)';
+      }
+      shieldHTML = `<div class="shield-bar-container"><span class="shield-icon">🛡️</span><div class="shield-bar-bg"><div class="shield-bar-fill" style="width:${pct}%;background:${gradient};box-shadow:0 0 8px ${glowColor};"></div></div><span class="shield-text">${sh}/${maxSh}</span></div>`;
+    }
+    return `<li class="${rc}" data-userid="${u.id}"><span class="rank-pos">${i+1}.</span><div class="rank-row"><img src="${avUrl}" class="list-avatar ${rI.avatar}"><div class="rank-info"><span class="rank-name-list">${onlineDot}${dn}</span><span class="rank-tier-list">${rI.icon} ${rI.name} ${rI.tier}</span>${healthHTML}${shieldHTML}</div>${sq}</div><span class="rank-score">${s}</span></li>`;
+  }).join('');
+}
+function updateSquadRanking(all){
+  const list = document.getElementById('squad-list'), ss = {};
+  Object.keys(SQUADS).forEach(id=>ss[id]=0);
+  all.forEach(u=>{ if(u.squad_id&&SQUADS[u.squad_id]) ss[u.squad_id] += (u.total_score||0); });
+  list.innerHTML = Object.entries(ss).sort((a,b)=>b[1]-a[1]).map(([id,sc])=>{
+    const sq = SQUADS[id];
+    return `<li class="squad-rank-item" style="border-left-color:${sq.color}"><div class="squad-rank-left"><div class="squad-shield-small">${sq.svg}</div><span style="font-weight:700;color:${sq.color};font-family:'Cinzel',serif;">${sq.name}</span></div><span class="squad-score">${sc} pts</span></li>`;
+  }).join('');
+}
+async function loadActiveMissions(allData){
+  if(!userSquadId) { document.getElementById('squad-missions-panel').style.display='none'; return; }
+  document.getElementById('squad-missions-panel').style.display = 'block';
+  const { data: missions } = await _supabase.from('squad_missions').select('*').eq('is_active', true);
+  if(!missions || missions.length === 0) { document.getElementById('missions-body').innerHTML = '<p style="text-align:center;color:#666;font-family:\'Cinzel\',serif;">No hay decretos activos.</p>'; return; }
+  const squadMembers = allData.filter(u => u.squad_id == userSquadId);
+  let squadPoints = squadMembers.reduce((sum, u) => sum + (u.total_score||0), 0);
+  let squadAttacks = squadMembers.reduce((sum, u) => sum + (u.total_attacks||0), 0);
+  let maxLevel = Math.max(...squadMembers.map(u => u.current_level||1), 0);
+  const body = document.getElementById('missions-body');
+  body.innerHTML = missions.map(m => {
+    let currentVal = 0;
+    if(m.type === 'points') currentVal = squadPoints;
+    else if(m.type === 'attacks') currentVal = squadAttacks;
+    else if(m.type === 'level') currentVal = maxLevel;
+    const pct = Math.min(100, Math.round((currentVal / m.goal) * 100));
+    const done = pct >= 100;
+    return `<div class="mission-item ${done?'mission-complete':''}"><div class="mission-header"><span class="mission-name">${m.name}</span><span class="mission-reward">+${m.reward} 💰</span></div><div class="mission-bar-wrap"><div class="mission-bar" style="width:${pct}%"></div></div><div class="mission-progress-text">${done ? '✅ ¡Completada!' : `${Math.min(currentVal, m.goal)}/${m.goal}`}</div></div>`;
+  }).join('');
+}
+async function addMission() {
+  const name = document.getElementById('mission-name').value;
+  const type = document.getElementById('mission-type').value;
+  const goal = parseInt(document.getElementById('mission-goal').value);
+  const reward = parseInt(document.getElementById('mission-reward').value);
+  if(!name || !goal || !reward) return alert("Completa todos los campos");
+  try {
+    await _supabase.from('squad_missions').insert({ name, type, goal, reward, is_active: true });
+    document.getElementById('mission-name').value = '';
+    document.getElementById('mission-goal').value = '';
+    document.getElementById('mission-reward').value = '';
+    loadAdminMissions();
+    showToast("✅ Decreto proclamado", 'success');
+  } catch(e) { alert("Error: "+e.message); }
+}
+async function deleteMission(id) {
+  if(!confirm("¿Anular este decreto?")) return;
+  await _supabase.from('squad_missions').delete().eq('id', id);
+  loadAdminMissions();
+}
+async function loadAdminMissions() {
+  const container = document.getElementById('admin-mission-list');
+  const { data: missions } = await _supabase.from('squad_missions').select('*').order('created_at', {ascending: false});
+  if(!missions || missions.length === 0) { container.innerHTML = '<p style="color:#666; font-size:.8rem;font-family:\'Cinzel\',serif;">No hay decretos creados.</p>'; return; }
+  container.innerHTML = missions.map(m => `<div class="mission-list-item"><div><strong>${m.name}</strong><br><small style="color:#aaa;">Meta: ${m.goal} ${m.type} | Recompensa: ${m.reward} 💰</small></div><button class="mission-delete-btn" onclick="deleteMission('${m.id}')"><i class="fas fa-trash"></i></button></div>`).join('');
+}
+async function loadHallOfFame(){
+  const list = document.getElementById('fame-list');
+  try {
+    const { data, error } = await _supabase.from('profiles').select('username,completed_at').not('completed_at','is',null).order('completed_at',{ascending:true}).limit(5);
+    if(error) throw error;
+    if(!data||!data.length){ list.innerHTML='<li style="text-align:center;color:#555;font-size:.8rem;padding:10px;font-family:\'Cinzel\',serif;">Nadie ha completado el Códice aún</li>'; return; }
+    list.innerHTML = data.map(u=>{ const d = new Date(u.completed_at); return `<li class="fame-item"><i class="fas fa-crown" style="color:var(--cr-gold)"></i><span style="font-family:'Cinzel',serif;">Rey ${u.username}</span><span class="fame-time">${d.toLocaleDateString()} ${d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})}</span></li>`; }).join('');
+  } catch(e) { console.error(e); }
+}
+function showAdminDashboard(){
+  document.getElementById('game-layout').style.display = 'none';
+  document.getElementById('top-bar-panel').style.display = 'none';
+  document.getElementById('admin-dashboard').style.display = 'flex';
+  loadDashboardData();
+  loadAdminMissions();
+  setInterval(loadDashboardData, 5000);
+}
+function toggleAdminDashboard(){
+  if(document.getElementById('admin-dashboard').style.display === 'flex'){ logout(); }
+  else { showAdminDashboard(); }
+}
+async function loadDashboardData(){
+  const grid = document.getElementById('student-grid');
+  try {
+    const { data: settings } = await _supabase.from('game_settings').select('*').single();
+    updateControlButtons(settings); initSeason(settings);
+    const { data: students, error } = await _supabase.from('profiles').select('*').order('total_score',{ascending:false});
+    if(error) throw error;
+    const now = new Date();
+    let ss = {}; Object.keys(SQUADS).forEach(id => ss[id] = {count:0, score:0});
+    students.forEach(u => { if(u.squad_id && ss[u.squad_id]){ ss[u.squad_id].count++; ss[u.squad_id].score += (u.total_score||0); } });
+    document.getElementById('squad-admin-tbody').innerHTML = Object.entries(ss).map(([id,st]) => {
+      const sq = SQUADS[id];
+      return `<tr><td class="shield-cell"><div>${sq.svg}</div></td><td style="color:${sq.color};">${sq.name}</td><td>${st.count}</td><td class="points-cell">${st.score}</td></tr>`;
+    }).join('');
+    grid.innerHTML = students.map(u => {
+      const isOnline = u.last_seen && (now - new Date(u.last_seen) < 30000), isBanned = u.is_banned;
+      const mins = u.total_time_played ? Math.floor(u.total_time_played/60) : 0;
+      const secs = u.total_time_played ? u.total_time_played%60 : 0;
+      let sqOpts = `<option value="0" ${u.squad_id==0?'selected':''}>Sin Casa</option>`;
+      Object.entries(SQUADS).forEach(([id,s]) => { sqOpts += `<option value="${id}" ${u.squad_id==id?'selected':''}>${s.name}</option>`; });
+      return `<div class="student-card ${isOnline&&!isBanned?'':'offline'}"><div class="sc-header"><img src="${getAvatarUrl(u.username||'guest',u.avatar_style)}" class="sc-avatar"><div class="sc-info"><div class="sc-name">${u.username}</div><div class="sc-status"><span class="status-dot ${isOnline&&!isBanned?'online':''}"></span>${isBanned?'Desterrado':(isOnline?'En la corte':'Offline')}</div></div></div><div class="sc-stats"><div>Florines<br><span class="sc-stat-val">${u.total_score||0}</span></div><div>Nivel<br><span class="sc-stat-val">${u.current_level||1}</span></div><div>Tiempo<br><span class="sc-stat-val">${mins}m ${secs}s</span></div></div><div class="sc-squad-control"><select class="squad-select-admin" onchange="assignSquad('${u.id}',this.value)">${sqOpts}</select></div><div class="sc-actions"><button class="sc-btn ban ${isBanned?'active':''}" onclick="toggleBan('${u.id}',${isBanned})">${isBanned?'Perdonar':'Desterrar'}</button><button class="sc-btn delete" onclick="deleteUser('${u.id}','${u.username}')">Borrar</button></div></div>`;
+    }).join('');
+    document.getElementById('student-count').innerText = students.filter(u => (now - new Date(u.last_seen) < 30000) && !u.is_banned).length + " en la corte";
+  } catch(e){ grid.innerHTML = "Error al cargar datos"; }
+}
+function updateControlButtons(settings){
+  const pb = document.getElementById('btn-pause'), eb = document.getElementById('btn-exam');
+  if(settings){
+    if(settings.is_paused){ pb.classList.add('active'); pb.querySelector('span').innerText = "Reanudar"; }
+    else { pb.classList.remove('active'); pb.querySelector('span').innerText = "Pausar Juego"; }
+    if(settings.exam_level > 0){ eb.classList.add('active'); eb.querySelector('span').innerText = "Fin Examen"; }
+    else { eb.classList.remove('active'); eb.querySelector('span').innerText = "Modo Examen"; }
+  }
+}
+async function togglePause(){
+  const { data: s } = await _supabase.from('game_settings').select('is_paused').single();
+  await _supabase.from('game_settings').update({is_paused: !s.is_paused}).eq('id',1);
+  loadDashboardData();
+}
+async function toggleExamMode(){
+  const { data: s } = await _supabase.from('game_settings').select('exam_level').single();
+  const nl = s.exam_level > 0 ? 0 : 1;
+  await _supabase.from('game_settings').update({exam_level: nl, is_paused: false}).eq('id',1);
+  loadDashboardData();
+}
+function showSeasonModal(){ const h = prompt("Horas:","0"), m = prompt("Minutos:","0"); if(h||m) startSeason(parseInt(h),parseInt(m)); }
+async function startSeason(h,m){
+  if(h===0 && m===0) return alert("Ingresa tiempo.");
+  const end = new Date(Date.now() + h*3600000 + m*60000);
+  const { data: s } = await _supabase.from('game_settings').select('season_number').single();
+  const ns = (s?.season_number||0) + 1;
+  const { data: existing } = await _supabase.from('game_settings').select('id').eq('id',1).maybeSingle();
+  if(existing) {
+    await _supabase.from('game_settings').update({season_end_time: end.toISOString(), is_paused: false, exam_level: 0, season_number: ns}).eq('id',1);
+  } else {
+    await _supabase.from('game_settings').insert({ id: 1, season_end_time: end.toISOString(), is_paused: false, exam_level: 0, season_number: ns });
+  }
+  initSeason({ season_end_time: end.toISOString(), season_number: ns });
+  alert("¡Temporada "+ns+" iniciada!"); loadDashboardData();
+}
+async function toggleBan(uid, cur){ try { await _supabase.from('profiles').update({is_banned: !cur}).eq('id',uid); loadDashboardData(); } catch(e){ alert("Error"); } }
+async function cleanInactiveUsers(){
+  if(!confirm("¿Borrar cuentas con 0 puntos?")) return;
+  try { await _supabase.from('profiles').delete().eq('total_score',0).neq('username',ADMIN_USER); alert("Limpieza completada."); loadDashboardData(); }
+  catch(e){ alert("Error: "+e.message); }
+}
+async function deleteUser(uid, name){
+  if(!confirm(`¿Borrar "${name}" permanentemente?`)) return;
+  try { await _supabase.from('profiles').delete().eq('id',uid); alert(`${name} eliminado.`); loadDashboardData(); }
+  catch(e){ alert("Error: "+e.message); }
+}
+async function resetAllUsers(){
+  if(!confirm("¿Reiniciar TODOS los puntos y tiempo?")) return;
+  try {
+    const { error } = await _supabase.rpc('reset_all_students');
+    if (error) throw error;
+    alert("¡Todos los estudiantes han sido reiniciados!");
+    loadDashboardData();
+  } catch(e) {
+    alert("Error al reiniciar: " + e.message);
+    console.error(e);
+  }
+}
+async function assignSquad(uid, sqId){ try { await _supabase.from('profiles').update({squad_id: sqId}).eq('id',uid); loadDashboardData(); } catch(e){ alert("Error"); } }
+document.addEventListener('DOMContentLoaded', async () => {
+  try {
+    const { data: { session } } = await _supabase.auth.getSession();
+    if (session?.user) { currentUser = session.user; showApp(); }
+    else { showLogin(); }
+  } catch(e) { showLogin(); }
+});
+let typingTimer;
+function showLogin(){
+  document.getElementById('login-screen').style.display='flex';
+  document.querySelector('.app-container').style.display='none';
+  const inp = document.getElementById('login-username'), img = document.getElementById('login-avatar-img');
+  const ni = inp.cloneNode(true); inp.parentNode.replaceChild(ni, inp);
+  document.getElementById('login-username').addEventListener('input', e => {
+    clearTimeout(typingTimer);
+    if(!e.target.value.trim()){ img.src="https://mikettrt-maker.github.io/divisiones-profe/img/1.png"; return; }
+    typingTimer = setTimeout(() => { img.src = `https://api.dicebear.com/8.x/adventurer/svg?seed=${e.target.value.trim()}`; }, 500);
+  });
+}
+async function showApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.querySelector('.app-container').style.display='flex';
+  if(currentUser){ try{ await loadScore(currentUser); } catch(e){ console.error(e); } }
+  if(isAdmin){ showAdminDashboard(); } else { initGame(); startRanking(); loadHallOfFame(); initSeason(); startStudentHeartbeat(); }
+}
+async function handleLogin(){
+  const u = document.getElementById('login-username').value.trim();
+  const p = document.getElementById('login-password').value;
+  const e = document.getElementById('login-error');
+  if(!u || p.length < 6){ e.textContent = "Datos incompletos."; e.style.display='block'; return; }
+  try {
+    const { data, error } = await _supabase.auth.signInWithPassword({ email: u+"@profemiguel.com", password: p });
+    if(error) throw error;
+    currentUser = data.user; showApp();
+  } catch(err){ e.textContent = "Error: "+err.message; e.style.display='block'; }
+}
+async function handleRegister(){
+  const u = document.getElementById('login-username').value.trim();
+  const p = document.getElementById('login-password').value;
+  const e = document.getElementById('login-error');
+  if(!u || p.length < 6){ e.textContent = "Datos incompletos."; e.style.display='block'; return; }
+  try {
+    const { data, error } = await _supabase.auth.signUp({ email: u+"@profemiguel.com", password: p });
+    if(error) throw error;
+    await _supabase.from('profiles').insert({
+      id: data.user.id,
+      username: u,
+      total_score: 0,
+      current_level: 1,
+      current_problem: 1,
+      coins: 0,
+      gems: 0,
+      player_health: 100,
+      is_dead: false,
+      enemy_energy: 100,
+      shield_durability: 0,
+      total_attacks: 0,
+      avatar_style: 'avatar1',
+      squad_id: 0,
+      is_banned: false,
+      completed_levels: [],
+      inventory_dagger: 0,
+      inventory_sword: 0,
+      inventory_bow: 0,
+      inventory_axe: 0,
+      inventory_hammer: 0
+    });
+    alert("Registrado. Entra ahora.");
+  } catch(err){ e.textContent = "Error: "+err.message; e.style.display='block'; }
+}
+async function logout(){
+  if (currentUser && !isAdmin) {
+    await saveScore();
+  }
+  await _supabase.auth.signOut();
+  currentUser = null; totalScore = 0; currentCoins = 0; enemyEnergy = 100; currentStreak = 0;
+  inventory = { dagger:0, sword:0, bow:0, axe:0, hammer:0 };
+  shieldDurability = 0; completedLevels = []; savedProblemKey = null; currentEnemyLevel = 1;
+  gems = 0; playerHealth = 100; isDead = false;
+  chosenReward = null;
+  pendingChoice = false;
+  showLogin(); clearInterval(rankInt);
+}
+// ── Carga del perfil del usuario ─────────────────
+async function loadScore(user){
+  try {
+    const { data } = await _supabase.from('profiles').select('*').eq('id', user.id).single();
+    if(data?.is_banned){ alert("Tu cuenta está suspendida."); logout(); return; }
+    isAdmin = data?.is_admin === true || user.email.split('@')[0] === ADMIN_USER;
+    currentCoins = data?.coins || 0;
+    gems = data?.gems || 0;
+    playerHealth = data?.player_health != null ? data.player_health : 100;
+    isDead = data?.is_dead || false;
+
+    // ✅ Regalos del profesor: solo al monedero, NO a totalCoinsEarned
+    if (data?.pending_gift_coins > 0) {
+      const gift = data.pending_gift_coins;
+      currentCoins += gift;
+      // totalCoinsEarned NO se modifica
+      await _supabase.from('profiles').update({
+        coins: currentCoins,
+        pending_gift_coins: 0
+      }).eq('id', user.id);
+      showToast(`🎁 ¡Recibiste ${gift} florines de ofrenda!`, 'success');
+    }
+
+    totalScore = data?.total_score || 0;
+    currentAvatarStyle = data?.avatar_style || 'avatar1';
+    unlockedLevel = data?.current_level || 1;
+    currentProblemInLevel = data?.current_problem || 1;
+    if(currentProblemInLevel > 10) currentProblemInLevel = 1;
+    hasFinishedGame = data?.completed_at || false;
+    savedProblemKey = data?.current_problem_key || null;
+    currentEnemyLevel = data?.enemy_level || unlockedLevel;
+    if (currentEnemyLevel === unlockedLevel && data?.enemy_energy != null && data.enemy_energy > 0) {
+      enemyEnergy = data.enemy_energy;
+    } else {
+      enemyEnergy = 100;
+      currentEnemyLevel = unlockedLevel;
+    }
+
+    playTimeCounter = data?.total_time_played || 0;
+    shieldDurability = data?.shield_durability || 0;
+    totalAttacks = data?.total_attacks || 0;
+    inventory.dagger = data?.inventory_dagger || 0;
+    inventory.sword = data?.inventory_sword || 0;
+    inventory.bow = data?.inventory_bow || 0;
+    inventory.axe = data?.inventory_axe || 0;
+    inventory.hammer = data?.inventory_hammer || 0;
+    totalCoinsEarned   = data?.total_coins_earned   || 0;
+    totalShieldsEarned = data?.total_shields_earned || 0;
+    maxStreak          = data?.max_streak           || 0;
+    hasDiamondArmor    = data?.diamond_armor        || false;
+    inventory.codex_sword = data?.inventory_codex_sword || 0;
+    chosenReward = data?.chosen_reward || null;
+    pendingChoice = data?.pending_choice || false;
+
+    completedLevels = cleanCompletedLevels(data?.completed_levels || []);
+
+    // ✅ Si el nivel actual ya está completamente terminado, avanzar al siguiente
+    const currentLevelComplete = `L${unlockedLevel}_P${PROBLEMS_PER_LEVEL}`;
+    if (completedLevels.includes(currentLevelComplete) && unlockedLevel < TOTAL_LEVELS) {
+      unlockedLevel++;
+      currentProblemInLevel = 1;
+      enemyEnergy = 100;
+      savedProblemKey = null;
+      await _supabase.from('profiles').update({
+        current_level: unlockedLevel,
+        current_problem: 1,
+        enemy_energy: 100,
+        current_problem_key: null
+      }).eq('id', user.id);
+    }
+
+    missionsCompleted = [];
+    if (data?.mission1_completed) missionsCompleted.push(0);
+    if (data?.mission2_completed) missionsCompleted.push(1);
+    if (data?.mission3_completed) missionsCompleted.push(2);
+    if (data?.mission4_completed) missionsCompleted.push(3);
+    if (data?.mission5_completed) missionsCompleted.push(4);
+
+    updateCoinDisplay(); updateHealthBar(); updateInventoryUI(); updateStreakUI();
+    renderMissionCards();
+
+    if(data?.squad_id && SQUADS[data.squad_id]){
+      const sq = SQUADS[data.squad_id];
+      document.getElementById('squad-display').style.display = 'flex';
+      document.getElementById('user-squad-shield').innerHTML = sq.svg;
+      document.getElementById('user-squad-name').innerText = sq.name;
+      document.getElementById('user-squad-name').style.color = sq.color;
+      userSquadId = data.squad_id;
+    } else { document.getElementById('squad-display').style.display = 'none'; userSquadId = null; }
+  } catch(e){
+    totalScore = 0; currentAvatarStyle = 'avatar1'; unlockedLevel = 1;
+    currentProblemInLevel = 1; hasFinishedGame = false; playTimeCounter = 0;
+    currentCoins = 0; shieldDurability = 0; totalAttacks = 0;
+    inventory = { dagger:0, sword:0, bow:0, axe:0, hammer:0 };
+    completedLevels = []; savedProblemKey = null; enemyEnergy = 100; currentEnemyLevel = 1;
+    gems = 0; playerHealth = 100; isDead = false;
+    isAdmin = (user.email.split('@')[0] === ADMIN_USER);
+  }
+  document.getElementById('admin-header-btn').classList.toggle('visible', isAdmin);
+  if(hasFinishedGame) document.getElementById('msg').innerHTML = "<span style='color:var(--cr-gold);font-family:\"Cinzel\",serif;'>¡Ya completaste el Códice!</span>";
+  currentMainLevel = unlockedLevel;
+  populateLevelSelect(); updateUI(); renderMainAvatar();
+}
+function initGame(){ loadProblem(); populateLevelSelect(); }
+function jumpToLevel(l){
+  AudioEngine.playClick();
+  const t = parseInt(l);
+  if(t > unlockedLevel){ alert("¡Debes completar el nivel anterior!"); document.getElementById('levelSelect').value = currentMainLevel; return; }
+  if(t < unlockedLevel){ alert("¡Ya has superado este nivel! No puedes regresar."); document.getElementById('levelSelect').value = currentMainLevel; return; }
+  currentMainLevel = t; currentProblemInLevel = 1;
+  loadProblem();
+}
+function updateEnemyCard() {
+  const level = currentMainLevel;
+  const enemy = ENEMIES[level] || ENEMIES[1];
+  document.getElementById('enemy-name').innerText = enemy.name;
+  document.getElementById('enemy-img').src = enemy.jpg;
+}
+function updateEnergyBar() {
+  const fill = document.getElementById('energy-bar-fill');
+  const text = document.getElementById('energy-text');
+  fill.style.width = enemyEnergy + '%';
+  text.innerText = `Salud: ${enemyEnergy}%`;
+  if (enemyEnergy > 60) {
+    fill.style.background = 'linear-gradient(90deg, #00e676, #00c853)';
+    fill.style.boxShadow = '0 0 12px rgba(0,230,118,0.7)';
+  } else if (enemyEnergy > 30) {
+    fill.style.background = 'linear-gradient(90deg, #ffcc00, #ff9800)';
+    fill.style.boxShadow = '0 0 12px rgba(255,152,0,0.7)';
+  } else {
+    fill.style.background = 'linear-gradient(90deg, #ff1744, #d50000)';
+    fill.style.boxShadow = '0 0 12px rgba(255,23,68,0.7)';
+  }
+}
+function resetEnemy(fullReset = false) {
+  if (fullReset) {
+    enemyEnergy = 100;
+    savedProblemKey = null;
+    if (currentUser) {
+      _supabase.from('profiles').update({
+        enemy_energy: 100,
+        current_problem_key: null
+      }).eq('id', currentUser.id);
+    }
+  }
+  document.getElementById('enemy-card').classList.remove('defeated');
+  document.getElementById('enemy-card').style.animation = 'enemyGlow 2s infinite alternate';
+  updateEnergyBar();
+}
+function defeatEnemy() {
+  document.getElementById('enemy-card').style.animation = 'none';
+  document.getElementById('enemy-card').classList.add('defeated');
+  document.getElementById('energy-bar-fill').style.background = '#333';
+  document.getElementById('energy-text').innerText = '¡DERROTADO!';
+  showToast(`💀 ¡Has derrotado a ${ENEMIES[currentMainLevel]?.name || 'el enemigo'}!`, 'success', 3000);
+}
+async function loadProblem(){
+  if(hasFinishedGame) return;
+  if (isDead) {
+    document.getElementById('msg').innerHTML = '<span style="color:red;">💀 Has caído en batalla. Espera la nueva temporada.</span>';
+    lockGrid();
+    document.getElementById('btn-verify').disabled = true;
+    return;
+  }
+  const canPlay = await checkGlobalState(); if(!canPlay) return;
+
+  isVerifying = false;
+  const btn = document.getElementById('btn-verify');
+  btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "⚔️ Verificar";
+
+  document.getElementById('subLevelCount').innerText = currentProblemInLevel;
+  document.getElementById('progressBar').style.width = ((currentMainLevel-1)/TOTAL_LEVELS)*100 + '%';
+  populateLevelSelect();
+
+  const { d, div } = generarDivision(currentMainLevel);
+  currentDividend = d;
+  currentDivisor = div;
+
+  document.getElementById('difficultyLabel').innerText = getDifficultyLabel(currentMainLevel);
+  updateEnemyCard();
+
+  // REINICIO DE ENERGÍA: siempre 100 si el nivel no está completado del todo
+  // Solo reiniciar energía si el nivel actual no tiene ningún problema resuelto todavía
+  const hasStartedLevel = completedLevels.some(key => key.startsWith(`L${currentMainLevel}_`));
+  if (!hasStartedLevel) {
+    enemyEnergy = 100;
+    document.getElementById('enemy-card').classList.remove('defeated');
+    document.getElementById('enemy-card').style.animation = 'enemyGlow 2s infinite alternate';
+  }
+
+  if (enemyEnergy <= 0) {
+    document.getElementById('enemy-card').style.animation = 'none';
+    document.getElementById('enemy-card').classList.add('defeated');
+    document.getElementById('energy-bar-fill').style.background = '#333';
+    document.getElementById('energy-text').innerText = '¡DERROTADO!';
+  } else {
+    document.getElementById('enemy-card').classList.remove('defeated');
+    document.getElementById('enemy-card').style.animation = 'enemyGlow 2s infinite alternate';
+    updateEnergyBar();
+  }
+
+  createUI(); createAntena(); resetAll(); lockGrid();
+  document.getElementById('msg').innerText = '';
+}
+function getDifficultyLabel(lvl){ if(lvl<=2) return "Divisor: 1 Cifra"; if([3,4,5,7,9].includes(lvl)) return "Divisor: 2 Cifras"; return "Divisor: 3 Cifras"; }
+function lockGrid(){
+  isGridLocked = true;
+  document.getElementById('grid-lock-overlay').classList.remove('hidden');
+  disableCocienteInputs(true);
+  document.getElementById('valResiduo').disabled = true;
+  document.querySelectorAll('.cell:not(.cell-locked)').forEach(cell => {
+    cell.disabled = true; cell.style.pointerEvents = 'none'; cell.style.opacity = '0.4';
+  });
+}
+function unlockGrid(){
+  isGridLocked = false;
+  document.getElementById('grid-lock-overlay').classList.add('hidden');
+  disableCocienteInputs(false);
+  document.getElementById('valResiduo').disabled = false;
+  document.querySelectorAll('.cell:not(.cell-locked)').forEach(cell => {
+    cell.disabled = false; cell.style.pointerEvents = 'auto'; cell.style.opacity = '1';
+  });
+  document.getElementById('msg').innerText = "¡Sello Real desbloqueado!";
+  document.getElementById('msg').style.color = "var(--success)";
+  triggerEpicEffect();
+}
+function triggerEpicEffect(){
+  AudioEngine.playEpic();
+  const ov = document.getElementById('epic-overlay'), tx = document.getElementById('epic-text');
+  const msgs = ["⚔️ ¡Por la Gloria Oscura!","💀 ¡No hay piedad!","🐉 ¡Fuego y Sangre!"];
+  tx.innerText = msgs[Math.floor(Math.random()*msgs.length)];
+  ov.style.display = 'flex'; tx.style.animation = 'none'; void tx.offsetWidth;
+  tx.style.animation = 'epicPulse .5s ease-out forwards';
+  setTimeout(() => ov.style.display = 'none', 1500);
+}
+function showVictoryScreen(){ createConfetti(); document.getElementById('victory-screen').style.display = 'flex'; AudioEngine.playLevelUp(); }
+function hideVictoryScreen(){ document.getElementById('victory-screen').style.display = 'none'; document.querySelectorAll('.confetti').forEach(c=>c.remove()); }
+function createConfetti(){
+  const sc = document.getElementById('victory-screen');
+  const colors = ['#c9a84c','#e2c275','#f5e6b8','#b08c30','#ffffff','#3498db','#6d28d9'];
+  for(let i=0;i<60;i++){
+    const c = document.createElement('div'); c.className = 'confetti';
+    c.style.left = Math.random()*100 + 'vw'; c.style.top = '-10px';
+    c.style.background = colors[Math.floor(Math.random()*colors.length)];
+    c.style.animationDuration = (Math.random()*2+2) + 's';
+    sc.appendChild(c);
+  }
+}
+function createUI(){
+  const g = document.getElementById('gridContainer'), dB = document.getElementById('divisorBox'), tR = document.getElementById('topRow');
+  g.innerHTML = ''; dB.innerHTML = ''; tR.innerHTML = '';
+  String(currentDivisor).split('').forEach(n => {
+    let i = document.createElement('input'); i.type = 'text'; i.className = 'input-div'; i.value = n; i.readOnly = true;
+    dB.appendChild(i);
+  });
+  for(let r=0; r<15; r++) for(let c=0; c<9; c++){
+    let i = document.createElement('input'); i.type = 'text'; i.className = 'cell'; i.maxLength = 1; i.id = "c-"+r+"-"+c;
+    i.addEventListener('input', e => {
+      if(!isGridLocked && e.target.value){
+        let n = (c<8) ? "c-"+r+"-"+(c+1) : (r<14) ? "c-"+(r+1)+"-0" : null;
+        if(n) document.getElementById(n).focus();
+      }
+    });
+    g.appendChild(i);
+  }
+  const sN = String(currentDividend);
+  for(let i=0; i<sN.length; i++){
+    let cell = document.getElementById("c-0-"+i);
+    cell.value = sN[i]; cell.classList.add('cell-locked'); cell.disabled = true;
+  }
+  document.getElementById('lineH').style.width = (sN.length*32) + 'px';
+  for(let i=0; i<sN.length; i++){
+    let inp = document.createElement('input'); inp.type = 'text'; inp.className = 'input-cociente-galera'; inp.maxLength = 1; inp.id = "top-"+i;
+    inp.addEventListener('input', e => {
+      syncT();
+      if(e.target.value && i<sN.length-1) document.getElementById("top-"+(i+1)).focus();
+    });
+    tR.appendChild(inp);
+  }
+}
+function disableCocienteInputs(d){ document.querySelectorAll('.input-cociente-galera').forEach(i => i.disabled = d); }
+function syncT(){ let v = ""; document.querySelectorAll('.input-cociente-galera').forEach(x => v += x.value); document.getElementById('valCociente').value = v; }
+function createAntena(){
+  const b = document.getElementById('antenaBody');
+  document.getElementById('antenaLabel').innerText = currentDivisor;
+  b.innerHTML = '';
+  for(let i=1; i<=10; i++){
+    let r = document.createElement('div'); r.className = 'antena-row locked-row'; r.id = "row-"+i;
+    r.innerHTML = "<span>"+i+" x "+currentDivisor+" =</span><input type='text' inputmode='numeric' pattern='[0-9]*' class='antena-input' id='a"+i+"' disabled>";
+    b.appendChild(r);
+  }
+  currentAntennaIndex = 0; enableNextAntennaInput();
+}
+function enableNextAntennaInput(){
+  if(currentAntennaIndex >= ANTENNA_SEQUENCE.length) return;
+  const cId = ANTENNA_SEQUENCE[currentAntennaIndex];
+  const inp = document.getElementById("a"+cId), row = document.getElementById("row-"+cId);
+  if(inp){
+    inp.disabled = false; inp.focus(); row.classList.remove('locked-row');
+    inp.oninput = e => { e.target.value = e.target.value.replace(/[^0-9]/g,''); checkAntennaInput(inp, cId); };
+  }
+}
+function checkAntennaInput(inp, id){
+  const val = parseInt(inp.value), exp = id * currentDivisor;
+  if(val === exp){
+    AudioEngine.playSuccess(); inp.classList.add('status-ok'); inp.disabled = true; inp.classList.remove('status-wrong');
+    currentAntennaIndex++;
+    if(currentAntennaIndex < ANTENNA_SEQUENCE.length) enableNextAntennaInput(); else unlockGrid();
+  } else {
+    inp.classList.add('status-wrong'); setTimeout(() => inp.classList.remove('status-wrong'), 500);
+  }
+}
+function resetAll(){
+  document.getElementById('valCociente').value = '';
+  document.getElementById('valResiduo').value = '';
+  document.querySelectorAll('.antena-input').forEach(i => { i.value = ''; i.classList.remove('status-ok','status-wrong'); });
+  document.querySelectorAll('.input-cociente-galera').forEach(i => i.value = '');
+  document.querySelectorAll('.cell:not(.cell-locked)').forEach(i => { i.value = ''; i.disabled = false; i.style.pointerEvents = 'auto'; i.style.opacity = '1'; });
+}
+// ── Verificar solución ─────────────────────────
+async function verificarSolucion(){
+  if(isVerifying) return;
+  if(isGridLocked){ alert("¡Rompe el Sello Real primero!"); return; }
+  if(isDead) {
+    document.getElementById('msg').innerHTML = '<span style="color:red;">💀 Estás muerto. Espera la nueva temporada.</span>';
+    return;
+  }
+
+  isVerifying = true;
+  const btn = document.getElementById('btn-verify');
+  btn.disabled = true; btn.style.opacity = '0.4'; btn.innerText = "Verificando...";
+
+  const coc = parseInt(document.getElementById('valCociente').value);
+  const res = parseInt(document.getElementById('valResiduo').value) || 0;
+  const rC = Math.floor(currentDividend / currentDivisor);
+  const rR = currentDividend % currentDivisor;
+
+  if(coc === rC && res === rR){
+    AudioEngine.playSuccess();
+
+    const levelKey = `L${currentMainLevel}_P${currentProblemInLevel}`;
+
+    if (!completedLevels.includes(levelKey)) {
+      totalScore += POINTS;
+      currentCoins += 5;
+      totalCoinsEarned += 5;                // ✅ acumula para la misión
+      completedLevels.push(levelKey);
+      if (currentStreak + 1 > maxStreak) maxStreak = currentStreak + 1;
+      checkAndAwardMissions();
+      renderMissionCards();
+
+      if (currentProblemInLevel === PROBLEMS_PER_LEVEL) {
+        gems += 1;
+        if (currentMainLevel < TOTAL_LEVELS) {
+          unlockedLevel = currentMainLevel + 1;
+        }
+      }
+    }
+    updateUI();
+    incrementStreak();
+    updateCoinDisplay();
+    updateHealthBar();
+    updateRanking();
+    document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
+
+    enemyEnergy = Math.max(0, enemyEnergy - 10);
+    updateEnergyBar();
+    if (enemyEnergy === 0) defeatEnemy();
+    updateUI();
+    incrementStreak();            // <- dentro de esta función también se guardará el progreso
+    updateCoinDisplay();
+    updateHealthBar();
+    updateRanking();
+    document.getElementById('msg').innerHTML = `<span style='color:var(--success);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>⚔️ ¡CORRECTO! +${POINTS} pts & +5 💰</span>`;
+
+    // ─── GUARDADO INMEDIATO DEL NUEVO ESTADO ───
+    if(currentUser) {
+      const saveData = {
+        total_score: totalScore,
+        current_level: unlockedLevel,
+        current_problem: currentProblemInLevel,   // todavía no avanzamos problema
+        coins: currentCoins,
+        completed_levels: cleanCompletedLevels(completedLevels),
+        gems: gems,
+        player_health: playerHealth,
+        enemy_energy: enemyEnergy,
+        current_problem_key: levelKey,
+        total_attacks: totalAttacks,
+        total_coins_earned: totalCoinsEarned      // ✅ persistir monedas
+      };
+      let saved = false;
+      for (let attempt = 0; attempt < 3; attempt++) {
+        const { error } = await _supabase.from('profiles').update(saveData).eq('id', currentUser.id);
+        if (!error) { saved = true; break; }
+        await new Promise(r => setTimeout(r, 500));
+      }
+      if (!saved) {
+        document.getElementById('msg').innerHTML = '<span style="color:#ff4444;">🔴 Error al guardar. Intenta de nuevo.</span>';
+        isVerifying = false;
+        btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "⚔️ Verificar";
+        return;
+      }
+    }
+
+    isVerifying = false;
+    btn.disabled = true;
+
+    // ─── AVANCE DE PROBLEMA / NIVEL ───
+    if(currentProblemInLevel < PROBLEMS_PER_LEVEL){
+      currentProblemInLevel++;
+      setTimeout(() => loadProblem(), 1200);
+    } else {
+      // Último problema del nivel → pasar al siguiente nivel AHORA
+      if(currentMainLevel < TOTAL_LEVELS){
+        currentMainLevel++;
+        currentProblemInLevel = 1;
+        savedProblemKey = null;
+        enemyEnergy = 100;
+        // Guardar el salto de nivel inmediatamente para que al refrescar no se pierda
+        if(currentUser) {
+          await _supabase.from('profiles').update({
+            current_level: unlockedLevel,  // unlockedLevel ya se incrementó
+            current_problem: 1,
+            enemy_energy: 100,
+            current_problem_key: null
+          }).eq('id', currentUser.id);
+        }
+        showVictoryScreen();
+        setTimeout(() => {
+          hideVictoryScreen();
+          loadProblem();
+        }, 3000);
+      } else {
+        hasFinishedGame = true;
+        _supabase.from('profiles').update({ completed_at: new Date().toISOString() }).eq('id', currentUser.id);
+        loadHallOfFame();
+        document.getElementById('msg').innerHTML = "<span style='color:gold;'>¡CÓDICE COMPLETADO!</span>";
+        btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "⚔️ Verificar";
+      }
+    }
+
+  } else {
+    AudioEngine.playError();
+    document.getElementById('msg').innerHTML = `<span style='color:var(--cr-red);font-weight:800;font-size:1.2rem;font-family:"Cinzel",serif;'>🛡️ INCORRECTO — El jefe te ha atacado</span>`;
+    resetStreak();
+
+    playerHealth = Math.max(0, playerHealth - 10);
+    updateHealthBar();
+    updateRanking();
+
+    if (playerHealth === 0) {
+      isDead = true;
+      lockGrid();
+      btn.disabled = true;
+      document.getElementById('msg').innerHTML = '<span style="color:red;">💀 HAS MUERTO. Espera la próxima temporada.</span>';
+      if (currentUser) {
+        await _supabase.from('profiles').update({ player_health: 0, is_dead: true }).eq('id', currentUser.id);
+      }
+      isVerifying = false;
+      return;
+    }
+
+    if (currentUser) {
+      await _supabase.from('profiles').update({ player_health: playerHealth }).eq('id', currentUser.id);
+    }
+
+    isVerifying = false;
+    btn.disabled = false; btn.style.opacity = '1'; btn.innerText = "⚔️ Verificar";
+  }
+}
+async function openMysteryChest() {
+  if (gems < 1) {
+    showToast('💎 Necesitas al menos 1 gema para abrir un cofre', 'tomato', 3000);
+    return;
+  }
+  if (!currentUser) return;
+
+  const prevGems = gems;
+  const prevCoins = currentCoins;
+  const prevInventory = { ...inventory };
+  const prevShield = shieldDurability;
+  const prevTotalShields = totalShieldsEarned;
+
+  gems -= 1;
+  updateCoinDisplay();
+
+  const rand = Math.floor(Math.random() * 100) + 1;
+  let chestName, emoji;
+  if (rand <= 30) { chestName = 'Cofre Oxidado'; emoji = '💩'; }
+  else if (rand <= 55) { chestName = 'Cofre de Hierro'; emoji = '🟤'; }
+  else if (rand <= 75) { chestName = 'Cofre de Plata'; emoji = '⚪'; }
+  else if (rand <= 90) { chestName = 'Cofre Dorado'; emoji = '🟡'; }
+  else if (rand <= 97) { chestName = 'Cofre Legendario'; emoji = '💎'; }
+  else { chestName = 'Cofre Infernal'; emoji = '🔥'; }
+
+  let rewardText = '';
+  const randomFromArray = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+  switch(chestName) {
+    case 'Cofre Oxidado':
+      if (Math.random() < 0.5) { currentCoins += 5; rewardText = '5 monedas'; }
+      else { inventory.dagger++; rewardText = '1 Daga 🗡️'; }
+      break;
+    case 'Cofre de Hierro':
+      const hierro = [
+        { text: '20 monedas', action: () => { currentCoins += 20; } },
+        { text: '1 Daga 🗡️', action: () => { inventory.dagger++; } },
+        { text: '2 usos de Escudo 🛡️', action: () => { shieldDurability += 2; totalShieldsEarned += 2; } }
+      ];
+      const c2 = randomFromArray(hierro); rewardText = c2.text; c2.action();
+      break;
+    case 'Cofre de Plata':
+      const plata = [
+        { text: '80 monedas', action: () => { currentCoins += 80; } },
+        { text: '1 Espada Franca ⚔️', action: () => { inventory.sword++; } },
+        { text: '1 Arco de la Reina 🏹', action: () => { inventory.bow++; } },
+        { text: '4 usos de Escudo 🛡️', action: () => { shieldDurability += 4; totalShieldsEarned += 4; } }
+      ];
+      const c3 = randomFromArray(plata); rewardText = c3.text; c3.action();
+      break;
+    case 'Cofre Dorado':
+      const dorado = [
+        { text: '400 monedas', action: () => { currentCoins += 400; } },
+        { text: '1 Hacha de los Brujos 🪓', action: () => { inventory.axe++; } },
+        { text: '6 usos de Escudo 🛡️', action: () => { shieldDurability += 6; totalShieldsEarned += 6; } },
+        { text: '1 Arco + 2 Escudos 🏹🛡️', action: () => { inventory.bow++; shieldDurability += 2; totalShieldsEarned += 2; } }
+      ];
+      const c4 = randomFromArray(dorado); rewardText = c4.text; c4.action();
+      break;
+    case 'Cofre Legendario':
+      const legend = [
+        { text: '1000 monedas', action: () => { currentCoins += 1000; } },
+        { text: '1 Martillo de la Justicia 🔨', action: () => { inventory.hammer++; } },
+        { text: '10 usos de Escudo 🛡️', action: () => { shieldDurability += 10; totalShieldsEarned += 10; } },
+        { text: '1 Martillo + 500 monedas 🔨💰', action: () => { inventory.hammer++; currentCoins += 500; } }
+      ];
+      const c5 = randomFromArray(legend); rewardText = c5.text; c5.action();
+      break;
+    case 'Cofre Infernal':
+      const infernal = [
+        { text: '2000 monedas', action: () => { currentCoins += 2000; } },
+        { text: '2 Martillos 🔨🔨', action: () => { inventory.hammer += 2; } },
+        { text: '20 usos de Escudo 🛡️', action: () => { shieldDurability += 20; totalShieldsEarned += 20; } },
+        { text: '1 Martillo + 1000 monedas + 5 Escudos 🔨💰🛡️', action: () => { inventory.hammer++; currentCoins += 1000; shieldDurability += 5; totalShieldsEarned += 5; } }
+      ];
+      const c6 = randomFromArray(infernal); rewardText = c6.text; c6.action();
+      break;
+  }
+
+  updateCoinDisplay();
+  updateInventoryUI();
+
+  const { error } = await _supabase.from('profiles').update({
+    gems: gems,
+    coins: currentCoins,
+    inventory_dagger: inventory.dagger,
+    inventory_sword: inventory.sword,
+    inventory_bow: inventory.bow,
+    inventory_axe: inventory.axe,
+    inventory_hammer: inventory.hammer,
+    shield_durability: shieldDurability,
+    total_shields_earned: totalShieldsEarned
+  }).eq('id', currentUser.id);
+
+  if (error) {
+    // Revertir todo
+    gems = prevGems;
+    currentCoins = prevCoins;
+    inventory = prevInventory;
+    shieldDurability = prevShield;
+    totalShieldsEarned = prevTotalShields;
+    updateCoinDisplay();
+    updateInventoryUI();
+    showToast('❌ Error al guardar el cofre, intenta de nuevo.', 'tomato');
+    console.error(error);
+  } else {
+    showToast(`${emoji} ¡${chestName}! ${rewardText}`, 'success', 5000);
+    AudioEngine.playShop();
+    updateRanking();
+  }
+}
+function prepararAtaque(weaponKey) {
+  const weapon = WEAPONS[weaponKey];
+  if (!weapon) return;
+  if (inventory[weaponKey] <= 0) {
+    showToast('No tienes ' + weapon.name, 'tomato');
+    return;
+  }
+  if (!rankingDataCache || rankingDataCache.length === 0) {
+    showToast('Espera a que cargue la Corte...', 'tomato');
+    return;
+  }
+  const me = currentUser?.email?.split('@')[0];
+  const rivals = rankingDataCache.filter(u => u.username !== me);
+  if (rivals.length === 0) {
+    showToast('No hay rivales disponibles', 'tomato');
+    return;
+  }
+  const modal = document.createElement('div');
+  modal.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.8);z-index:99999;display:flex;align-items:center;justify-content:center;';
+  modal.innerHTML = `
+    <div style="background:#16213e;padding:20px;border-radius:12px;max-width:400px;width:90%;border:2px solid gold;">
+      <h3 style="color:gold;text-align:center;margin-top:0;">${weapon.icon} Usar ${weapon.name}</h3>
+      <div style="max-height:300px;overflow-y:auto;">
+        ${rivals.map(u => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:8px;border-bottom:1px solid #333;">
+            <span style="color:#ccc;">${u.username}</span>
+            <button class="btn-small" style="padding:4px 10px;"
+              onclick="ejecutarAtaqueDesdeInventario('${u.id}','${u.username}','${weaponKey}'); document.body.removeChild(this.closest('[style*=&quot;fixed&quot;]'));">
+              ⚔️ Atacar
+            </button>
+          </div>
+        `).join('')}
+      </div>
+      <button class="btn-small" style="margin-top:10px;width:100%;" onclick="document.body.removeChild(this.closest('[style*=&quot;fixed&quot;]'));">
+        Cancelar
+      </button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+function ejecutarAtaqueDesdeInventario(targetId, targetName, weaponKey) {
+  attackUser(targetId, targetName, weaponKey);
+}
+async function checkGlobalState(){
+  if(isAdmin) return true;
+  try {
+    const { data } = await _supabase.from('game_settings').select('*').single();
+    if(data?.is_paused){ lockGrid(); document.getElementById('msg').innerHTML = "<span style='color:var(--cr-red);font-size:1.5rem;font-family:\"Cinzel\",serif;'>⏸️ JUEGO PAUSADO</span>"; return false; }
+    if(data?.exam_level > 0){
+      if(currentMainLevel !== data.exam_level){ currentMainLevel = data.exam_level; unlockedLevel = data.exam_level; loadProblem(); alert("Modo Examen: Nivel "+data.exam_level); }
+    }
+    return true;
+  } catch(e){ return true; }
+}
+let seasonInterval;
+async function initSeason(settings){
+  let data = settings;
+  if(!data){
+    const r = await _supabase.from('game_settings').select('season_end_time,season_number').eq('id',1).single();
+    data = r.data;
+  }
+  document.getElementById('season-num-display').innerText = data?.season_number || 1;
+  if(data?.season_end_time){
+    startCountdown(new Date(data.season_end_time));
+  } else {
+    document.getElementById('timer-display').innerText = isAdmin ? "SIN INICIAR" : "--:--";
+    document.getElementById('season-badge').classList.add('finished');
+  }
+}
+function startCountdown(endDate){
+  clearInterval(seasonInterval);
+  seasonInterval = setInterval(() => {
+    const diff = endDate - new Date();
+    if(diff <= 0){
+      clearInterval(seasonInterval);
+      document.getElementById('timer-display').innerText = "00:00:00";
+      document.getElementById('season-badge').classList.add('finished');
+      document.getElementById('season-badge').classList.remove('active');
+      if(isAdmin){ alert("¡Tiempo terminado!"); resetAllUsers(); }
+      return;
+    }
+    const h = Math.floor(diff/3600000), m = Math.floor((diff%3600000)/60000), s = Math.floor((diff%60000)/1000);
+    document.getElementById('timer-display').innerText = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    document.getElementById('season-badge').classList.add('active');
+    document.getElementById('season-badge').classList.remove('finished');
+  }, 1000);
+}
+let selectedGiftAmount = 0;
+function startStudentHeartbeat(){
+  setInterval(async () => { if(currentUser && !isAdmin) await _supabase.from('profiles').update({last_seen: new Date().toISOString()}).eq('id', currentUser.id); }, 15000);
+  if (currentUser && !isAdmin) {
+    _supabase.from('profiles').update({ last_seen: new Date().toISOString() }).eq('id', currentUser.id);
+  }
+  setInterval(() => { if(!isGridLocked && !hasFinishedGame){ playTimeCounter++; if(playTimeCounter%60 === 0) saveTime(); } }, 1000);
+  setInterval(async () => {
+    if(!currentUser || isAdmin) return;
+    const { data } = await _supabase.from('profiles').select('pending_gift_coins').eq('id', currentUser.id).single();
+    if(data && data.pending_gift_coins > 0) {
+      const amount = data.pending_gift_coins;
+      currentCoins += amount;
+      // ✅ totalCoinsEarned NO se incrementa con regalos
+      updateCoinDisplay();
+      await _supabase.from('profiles').update({
+        pending_gift_coins: 0,
+        coins: currentCoins
+      }).eq('id', currentUser.id);
+      const icon = document.getElementById('gift-icon');
+      const badge = document.getElementById('gift-badge');
+      icon.style.display = 'inline-block'; icon.classList.add('blinking');
+      badge.style.display = 'block'; badge.innerText = `+${amount}`;
+      showToast(`🎁 ¡El Maestre te ha ofrendado ${amount} florines!`, 'success', 5000);
+      AudioEngine.playSuccess();
+      // Las misiones no se disparan por esto
+      setTimeout(() => { icon.classList.remove('blinking'); setTimeout(() => { icon.style.display = 'none'; badge.style.display = 'none'; }, 2500); }, 4000);
+    }
+  }, 4000);
+}
+function openGiftModal() {
+  document.getElementById('gift-modal').style.display = 'flex';
+  document.getElementById('gift-amount-display').innerText = 'Selecciona una cantidad';
+  selectedGiftAmount = 0;
+  const sel = document.getElementById('gift-recipient');
+  sel.innerHTML = '<option value="all">👥 Todos los aspirantes</option>';
+  _supabase.from('profiles').select('id,username').eq('is_banned', false).is('completed_at', null).order('username').then(({data}) => {
+    if(data) data.forEach(u => { sel.innerHTML += `<option value="${u.id}">👤 ${u.username}</option>`; });
+  });
+}
+function closeGiftModal() { document.getElementById('gift-modal').style.display = 'none'; }
+function selectGiftAmount(amt) {
+  selectedGiftAmount = amt;
+  document.getElementById('gift-amount-display').innerText = `Cantidad seleccionada: ${amt} 💰`;
+}
+async function executeGift() {
+  if(selectedGiftAmount <= 0) return alert('Selecciona una cantidad primero.');
+  const recipient = document.getElementById('gift-recipient').value;
+  const targetName = recipient === 'all' ? 'todos los aspirantes' : document.getElementById('gift-recipient').selectedOptions[0].text;
+  if(!confirm(`¿Enviar ${selectedGiftAmount} florines a ${targetName}?`)) return;
+  try {
+    let query = _supabase.from('profiles');
+    if(recipient === 'all') { query = query.update({ pending_gift_coins: selectedGiftAmount }).eq('is_banned', false).neq('username', ADMIN_USER); }
+    else { query = query.update({ pending_gift_coins: selectedGiftAmount }).eq('id', recipient); }
+    const { error } = await query;
+    if(error) throw error;
+    showToast(`🎁 ¡Ofrenda de ${selectedGiftAmount} florines enviada!`, 'success');
+    closeGiftModal();
+  } catch(e) { alert('Error: ' + e.message); }
+}
+async function saveTime(){
+  if(!currentUser) return;
+  try { await _supabase.from('profiles').update({total_time_played: playTimeCounter}).eq('id', currentUser.id); } catch(e){}
+}
+function populateLevelSelect(){
+  const s = document.getElementById('levelSelect'); s.innerHTML = '';
+  for(let i=1; i<=TOTAL_LEVELS; i++){
+    let o = document.createElement('option'); o.value = i; o.innerText = "Nivel "+i;
+    if(i > unlockedLevel || i < unlockedLevel){ o.disabled = true; o.innerText += " 🔒"; }
+    s.appendChild(o);
+  }
+  s.value = currentMainLevel;
+}
+function updateUI(){
+  document.getElementById('scoreDisplay').innerText = totalScore;
+  const rI = getRankInfo(totalScore);
+  document.getElementById('userRankName').innerText = rI.icon + " " + rI.name + " " + rI.tier;
+  document.getElementById('userRankName').className = "rank-name " + rI.css;
+  document.getElementById('userRankBar').style.width = rI.pct + "%";
+  document.getElementById('main-avatar-box').className = "avatar-container " + rI.avatar;
+  renderMainAvatar();
+}
+function toggleAvatarModal(){
+  const m = document.getElementById('avatar-modal');
+  if(m.style.display === 'none'){ m.style.display = 'flex'; renderAvatarOptions(); }
+  else { m.style.display = 'none'; }
+}
+function renderAvatarOptions(){
+  const gs = document.getElementById('avatar-options-standard'), ge = document.getElementById('avatar-options-exclusive'), es = document.getElementById('exclusive-section');
+  gs.innerHTML = ''; ge.innerHTML = '';
+  const seed = currentUser.email.split('@')[0], isH = totalScore >= 50000;
+  AVATAR_STYLES_STANDARD.forEach(st => {
+    let d = document.createElement('div'); d.className = 'avatar-option' + (currentAvatarStyle===st.id?' selected':'');
+    d.onclick = () => selectAvatarStyle(st.id);
+    d.innerHTML = `<img src="${getAvatarUrl(seed, st)}"><span style="font-size:.7rem;font-weight:600;display:block;font-family:'Cinzel',serif;">${st.name}</span>`;
+    gs.appendChild(d);
+  });
+  es.style.display = 'block';
+  AVATAR_STYLES_EXCLUSIVE.forEach(st => {
+    let d = document.createElement('div');
+    if(isH){
+      d.className = 'avatar-option' + (currentAvatarStyle===st.id?' selected':'');
+      d.onclick = () => selectAvatarStyle(st.id);
+      d.innerHTML = `<img src="${getAvatarUrl(seed, st)}"><span style="font-size:.7rem;font-weight:600;display:block;font-family:'Cinzel',serif;">${st.name}</span>`;
+    } else {
+      d.className = 'avatar-option avatar-locked';
+      d.innerHTML = `<img src="${getAvatarUrl(seed, st)}"><div class="lock-icon"><i class="fas fa-lock"></i></div><span style="font-size:.7rem;font-weight:600;display:block;font-family:'Cinzel',serif;">${st.name}</span>`;
+    }
+    ge.appendChild(d);
+  });
+}
+function selectAvatarStyle(id){
+  const all = [...AVATAR_STYLES_STANDARD, ...AVATAR_STYLES_EXCLUSIVE];
+  const isEx = AVATAR_STYLES_EXCLUSIVE.some(s => s.id === id);
+  if(isEx && totalScore < 50000){ alert("¡Solo para Reyes Merovingios!"); return; }
+  currentAvatarStyle = id; renderAvatarOptions(); renderMainAvatar();
+}
+async function saveAvatarChoice(){
+  AudioEngine.playClick();
+  try {
+    const { error } = await _supabase.from('profiles').update({ avatar_style: currentAvatarStyle }).eq('id', currentUser.id);
+    if(error) throw error;
+    renderMainAvatar(); toggleAvatarModal(); updateRanking();
+    showToast('✅ ¡Efigie sellada!','success');
+  } catch(e) { console.error('Error guardando avatar:', e); showToast('❌ Error: '+e.message,'tomato'); }
+}
+async function saveScore(){
+  if(!currentUser) return false;
+  try {
+    const safeCompleted = cleanCompletedLevels(completedLevels);
+    const { error } = await _supabase
+      .from('profiles')
+      .update({
+        total_score: totalScore,
+        current_level: unlockedLevel,
+        current_problem: currentProblemInLevel,
+        coins: currentCoins,
+        inventory_dagger: inventory.dagger,
+        inventory_sword: inventory.sword,
+        inventory_bow: inventory.bow,
+        inventory_axe: inventory.axe,
+        inventory_hammer: inventory.hammer,
+        shield_durability: shieldDurability,
+        completed_levels: safeCompleted,
+        gems: gems,
+        player_health: playerHealth,
+        is_dead: isDead,
+        total_coins_earned: totalCoinsEarned,
+        total_shields_earned: totalShieldsEarned,
+        max_streak: maxStreak,
+        diamond_armor: hasDiamondArmor,
+        inventory_codex_sword: inventory.codex_sword || 0,
+        chosen_reward: chosenReward,
+        pending_choice: pendingChoice,
+        mission1_completed: missionsCompleted.includes(0),
+        mission2_completed: missionsCompleted.includes(1),
+        mission3_completed: missionsCompleted.includes(2),
+        mission4_completed: missionsCompleted.includes(3),
+        mission5_completed: missionsCompleted.includes(4),
+        enemy_energy: enemyEnergy,
+        current_problem_key: savedProblemKey,
+        total_attacks: totalAttacks
+      })
+      .eq('id', currentUser.id);
+    if(error) throw error;
+    return true;
+  } catch(e) { console.error('Error guardando score:', e); return false; }
+}
+
+// 🎵 MÚSICA
+var bgMusic = null;
+var musicEnabled = true;
+function initMusic() {
+  bgMusic = new Audio(GITHUB+'/Angevin B.mp3');
+  bgMusic.loop = true;
+  bgMusic.volume = 0.25;
+}
+function playMusic() {
+  if (!bgMusic) initMusic();
+  bgMusic.play().catch(function() {
+    document.addEventListener('click', function() {
+      if (musicEnabled && bgMusic.paused) bgMusic.play();
+    }, { once: true });
+  });
+}
+function toggleMusic() {
+  if (!bgMusic) initMusic();
+  musicEnabled = !musicEnabled;
+  var btn = document.getElementById('music-toggle-btn');
+  if (musicEnabled) {
+    bgMusic.play().catch(function(){});
+    btn.innerHTML = '🎵';
+  } else {
+    bgMusic.pause();
+    btn.innerHTML = '🔇';
+  }
+}
+
+// Móvil: toggle ranking
+(function() {
+  const toggleBtn = document.getElementById('mobile-ranking-toggle');
+  const sidebar = document.getElementById('ranking-sidebar');
+  if (window.innerWidth < 768) {
+    toggleBtn.style.display = 'block';
+    sidebar.style.display = 'none';
+  }
+  toggleBtn.addEventListener('click', () => {
+    if (sidebar.style.display === 'none') {
+      sidebar.style.display = 'block';
+      toggleBtn.innerHTML = '❌ Cerrar Corte';
+    } else {
+      sidebar.style.display = 'none';
+      toggleBtn.innerHTML = '⚔️ Ejércitos';
+    }
+  });
+})();
+</script>
+</body>
+</html>
