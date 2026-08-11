@@ -15,6 +15,22 @@ const STREAK_BONUSES = {3:30, 5:70, 10:100, 15:200};
 let currentCoins = 0, playTimeCounter = 0;
 let completedLevels = [];
 const ANTENNA_SEQUENCE = [1,10,5,2,4,8,3,6,7,9];
+const ANTENNA_WISE_PHRASES = [
+  'El Códice anota tu acierto, aprendiz.',
+  'El Sello cede un eslabón a tu saber.',
+  '¡Bien calculado! La penumbra retrocede.',
+  'Los números del Sello te reconocen.',
+  'Tu mente afila la espada del Códice.',
+  'Un acierto digno de la corte.',
+  'El fuego del pergamino arde a tu favor.',
+  'El Maestre sonríe con este cálculo.',
+  'La cadena del Sello se debilita.',
+  'Pura lógica, pura maestría.',
+  'El reino oscuro tiembla ante tu cifra.',
+  'Cada acierto graba tu nombre en el Códice.',
+  'El guardián del Sello observa impresionado.',
+  '¡Más agudo que la daga del Merovingio!'
+];
 let currentAntennaIndex = 0;
 let gems = 0;
 let playerHealth = 100;

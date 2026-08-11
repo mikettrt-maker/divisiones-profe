@@ -1364,7 +1364,14 @@ function checkAntennaInput(inp, id){
   if(val === exp){
     inp.classList.add('status-ok'); inp.disabled = true; inp.classList.remove('status-wrong');
     currentAntennaIndex++;
-    if(currentAntennaIndex < ANTENNA_SEQUENCE.length) enableNextAntennaInput(); else unlockGrid();
+    if(currentAntennaIndex < ANTENNA_SEQUENCE.length){
+      const msg = document.getElementById('msg');
+      msg.innerText = ANTENNA_WISE_PHRASES[Math.floor(Math.random()*ANTENNA_WISE_PHRASES.length)];
+      msg.style.color = 'var(--success)';
+      enableNextAntennaInput();
+    } else {
+      unlockGrid();
+    }
   } else {
     inp.classList.add('status-wrong'); setTimeout(() => inp.classList.remove('status-wrong'), 500);
   }
