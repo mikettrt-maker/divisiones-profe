@@ -398,9 +398,30 @@ function openEnemyLore(){
   document.getElementById('enemy-lore-story').innerText = enemy.story || 'Su historia se perdió en las páginas del Códice.';
   modal.style.display = 'flex';
   AudioEngine.playClick();
+  playEnemyNarration(currentEnemyLevel);
 }
 function closeEnemyLore(){
   document.getElementById('enemy-lore-modal').style.display = 'none';
+  stopEnemyNarration();
+}
+
+// ── Narraciones del Maestre (voces grabadas) ──
+// Cada enemigo tiene su audio en img/narraciones/<nivel>.mp3
+// Si el audio aún no se graba, se ignora en silencio.
+let _narrationAudio = null;
+function playEnemyNarration(level){
+  stopEnemyNarration();
+  if(!musicEnabled) return;
+  const a = new Audio(GITHUB + '/narraciones/' + (level||1) + '.mp3');
+  a.volume = 0.9;
+  a.onerror = () => { _narrationAudio = null; };
+  a.play().catch(() => { _narrationAudio = null; });
+  _narrationAudio = a;
+}
+function stopEnemyNarration(){
+  if(_narrationAudio){
+    try{ _narrationAudio.pause(); _narrationAudio = null; }catch(e){ _narrationAudio = null; }
+  }
 }
 
 function renderMainAvatar() {
@@ -1111,6 +1132,7 @@ function jumpToLevel(l){
 // ── Jefes y energías ──
 function updateEnemyCard() {
   const level = currentMainLevel;
+  currentEnemyLevel = level;
   const enemy = ENEMIES[level] || ENEMIES[1];
   document.getElementById('enemy-name').innerText = enemy.name;
   document.getElementById('enemy-img').src = enemy.jpg;
