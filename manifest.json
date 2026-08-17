@@ -1,0 +1,32 @@
+{
+  "name": "El Códice Merovingio",
+  "short_name": "Códice",
+  "description": "El Códice Merovingio - Juego del Reino",
+  "start_url": "/divisiones-profe/",
+  "scope": "/divisiones-profe/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0a12",
+  "theme_color": "#0a0a12",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "/divisiones-profe/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/divisiones-profe/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/divisiones-profe/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
