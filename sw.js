@@ -1,4 +1,4 @@
-const CACHE = 'codice-merovingio-v2';
+const CACHE = 'codice-merovingio-v3';
 const PRECACHE = ['/', '/index.html', '/styles.css', '/manifest.json'];
 
 self.addEventListener('install', (e) => {
