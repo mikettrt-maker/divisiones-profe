@@ -41,8 +41,8 @@
         setTimeout(function () { el.remove(); }, 600);
       }, Math.max(0, min - elapsed));
     }
-    if (document.readyState === 'complete') { hide(); }
-    else { window.addEventListener('load', hide); }
+    if (document.readyState === 'complete' || document.readyState === 'interactive') { hide(); }
+    else { document.addEventListener('DOMContentLoaded', hide); }
   })();
 </script>
 <div class="toast-container" id="toast-container"></div>
