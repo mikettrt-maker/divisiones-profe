@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css?v=23">
+  <link rel="stylesheet" href="styles.css?v=24">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -21,6 +21,30 @@
   </script>
 </head>
 <body>
+<div id="splash-screen">
+  <div class="splash-inner">
+    <img id="splash-logo" src="https://mikettrt-maker.github.io/divisiones-profe/icon-512.png" alt="El Códice Merovingio">
+    <div class="splash-title">El Códice Merovingio</div>
+    <div class="splash-loader"><span></span><span></span><span></span></div>
+  </div>
+</div>
+<script>
+  (function () {
+    var min = 1600;
+    var start = Date.now();
+    function hide() {
+      var el = document.getElementById('splash-screen');
+      if (!el) return;
+      var elapsed = Date.now() - start;
+      setTimeout(function () {
+        el.classList.add('splash-hide');
+        setTimeout(function () { el.remove(); }, 600);
+      }, Math.max(0, min - elapsed));
+    }
+    if (document.readyState === 'complete') { hide(); }
+    else { window.addEventListener('load', hide); }
+  })();
+</script>
 <div class="toast-container" id="toast-container"></div>
 <div id="victory-screen"><div class="victory-title">¡VICTORIA!</div></div>
 <div id="feedback-overlay"><div class="feedback-content" id="feedback-content"></div></div>
