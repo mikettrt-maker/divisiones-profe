@@ -17,7 +17,7 @@ body {
   background-color: #0a0a14;
   color: var(--text-dark);
   display: flex; flex-direction: column; align-items: center; min-height: 100vh;
-  overscroll-behavior: none; touch-action: manipulation;
+  overscroll-behavior: none; touch-action: manipulation; overflow-x: hidden;
   position: relative;
 }
 
@@ -389,7 +389,7 @@ button{border:none; padding:12px 28px; font-weight:900; border-radius:8px; curso
 .float-btn-img:hover{filter:drop-shadow(1px 0 0 #fff) drop-shadow(-1px 0 0 #fff) drop-shadow(0 1px 0 #fff) drop-shadow(0 -1px 0 #fff) drop-shadow(0 0 15px rgba(201,168,76,0.8)) drop-shadow(0 0 30px rgba(201,168,76,0.4));}
 #music-toggle-btn .float-btn-img,
 #music-toggle-btn .float-btn-img:hover{filter:none;}
-#shop-modal{position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,12,28,0.97); z-index:99997; display:none; justify-content:center; align-items:center; backdrop-filter:blur(4px);}
+#shop-modal{position:fixed; inset:0; background:rgba(5,12,28,0.97); z-index:99997; display:none; justify-content:center; align-items:center; backdrop-filter:blur(4px);}
 .shop-box{background:linear-gradient(180deg,rgba(13,37,69,0.98) 0%,rgba(10,22,40,1) 100%); border:2px solid var(--cr-purple-light); border-top:6px solid var(--cr-purple-light); border-radius:12px; width:90%; max-width:720px; max-height:85vh; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,0.9),0 0 40px rgba(123,47,247,0.15);}
 .shop-header{padding:18px 24px; background:linear-gradient(135deg,rgba(74,26,138,0.2),rgba(13,37,69,0.8)); border-bottom:2px solid var(--cr-purple-light); display:flex; justify-content:space-between; align-items:center;}
 .shop-title{font-family:'Cinzel Decorative',serif; font-size:1.8rem; color:transparent; background:linear-gradient(135deg,var(--cr-purple-light),#c084fc); -webkit-background-clip:text; background-clip:text; filter:drop-shadow(0 0 10px rgba(123,47,247,0.4));}
@@ -419,8 +419,8 @@ button{border:none; padding:12px 28px; font-weight:900; border-radius:8px; curso
 body.admin-mode .shop-btn-float,
 body.admin-mode #inventory-btn,
 body.admin-mode #music-toggle-btn{display:none !important;}
-#pvp-modal{position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,12,28,0.97); z-index:99998; display:none; justify-content:center; align-items:center; backdrop-filter:blur(4px);}
-#enemy-lore-modal{position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,12,28,0.97); z-index:99997; display:none; justify-content:center; align-items:center; backdrop-filter:blur(4px);}
+#pvp-modal{position:fixed; inset:0; background:rgba(5,12,28,0.97); z-index:99998; display:none; justify-content:center; align-items:center; backdrop-filter:blur(4px);}
+#enemy-lore-modal{position:fixed; inset:0; background:rgba(5,12,28,0.97); z-index:99997; display:none; justify-content:center; align-items:center; backdrop-filter:blur(4px);}
 .enemy-lore-box{background:linear-gradient(180deg,rgba(30,16,52,0.98) 0%,rgba(10,22,40,1) 100%); border:2px solid var(--cr-purple-light); border-top:6px solid var(--cr-gold); border-radius:12px; width:90%; max-width:520px; max-height:85vh; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,0.9),0 0 40px rgba(201,168,76,0.15);}
 .enemy-lore-header{padding:18px 24px; background:linear-gradient(135deg,rgba(74,26,138,0.2),rgba(13,37,69,0.8)); border-bottom:2px solid var(--cr-gold-dark); display:flex; justify-content:space-between; align-items:center;}
 .enemy-lore-title{font-family:'Cinzel Decorative',serif; font-size:1.4rem; color:#fff; text-shadow:0 0 10px rgba(201,168,76,0.3);}
@@ -451,7 +451,7 @@ body.admin-mode #music-toggle-btn{display:none !important;}
 .pvp-card-btn:active{transform:translateY(2px); box-shadow:0 1px 0 #7a3500;}
 .pvp-card-btn:disabled{background:linear-gradient(135deg,#444,#333); color:#666; box-shadow:none; cursor:not-allowed;}
 .pvp-empty{color:#888; font-family:'Cinzel',serif; text-align:center; padding:30px 0;}
-#inventory-modal{position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,12,28,0.97); z-index:99996; display:none; justify-content:center; align-items:center; backdrop-filter:blur(4px);}
+#inventory-modal{position:fixed; inset:0; background:rgba(5,12,28,0.97); z-index:99996; display:none; justify-content:center; align-items:center; backdrop-filter:blur(4px);}
 .inv-box{background:linear-gradient(180deg,rgba(13,28,52,0.98) 0%,rgba(8,14,28,1) 100%); border:2px solid var(--cr-gold-dark); border-top:6px solid var(--cr-gold); border-radius:12px; width:95%; max-width:900px; max-height:90vh; overflow:hidden; display:flex; flex-direction:column; box-shadow:0 20px 60px rgba(0,0,0,0.9),0 0 40px rgba(201,168,76,0.1);}
 .inv-header{padding:18px 24px; background:linear-gradient(135deg,rgba(201,168,76,0.1),rgba(13,28,52,0.9)); border-bottom:2px solid var(--cr-gold-dark); display:flex; justify-content:space-between; align-items:center;}
 .inv-title{font-family:'Cinzel Decorative',serif; font-size:1.8rem; color:var(--cr-gold); text-shadow:0 0 10px rgba(201,168,76,0.3);}
@@ -537,8 +537,8 @@ body.admin-mode #music-toggle-btn{display:none !important;}
 .sc-btn{background:linear-gradient(135deg,rgba(26,58,110,0.4),rgba(10,22,40,0.9)); border:1px solid var(--cr-blue-light); color:#aaa; padding:5px 10px; border-radius:6px; cursor:pointer; font-family:'Cinzel',serif; font-size:.75rem; transition:all .2s;}
 .sc-btn.delete:hover{background:linear-gradient(135deg,rgba(192,57,43,0.4),rgba(10,22,40,0.9)); border-color:var(--cr-red); color:#ff6b6b;}
 .sc-btn.ban.active{background:linear-gradient(135deg,var(--cr-red),#7a0000); color:white; border-color:#ff4444;}
-#avatar-modal{position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,12,28,0.97); display:flex; justify-content:center; align-items:center; z-index:9999; backdrop-filter:blur(4px);}
-#login-screen{position:fixed; top:0; left:0; width:100%; height:100%; background:#000; display:flex; justify-content:center; align-items:center; z-index:9999; backdrop-filter:blur(4px);}
+#avatar-modal{position:fixed; inset:0; background:rgba(5,12,28,0.97); display:flex; justify-content:center; align-items:center; z-index:9999; backdrop-filter:blur(4px);}
+#login-screen{position:fixed; inset:0; background:#000; display:flex; justify-content:center; align-items:center; z-index:9999; backdrop-filter:blur(4px);}
 .login-box{background:linear-gradient(180deg,rgba(38,35,33,0.98) 0%,rgba(20,18,17,1) 100%); padding:25px 30px; border-radius:12px; width:320px; border:2px solid #5c554e; border-top:6px solid #8b1e1e; box-shadow:0 20px 60px rgba(0,0,0,0.9),0 0 40px rgba(139,30,30,0.15);}
 .login-box h2{color:transparent; background:linear-gradient(180deg,var(--cr-gold-light),var(--cr-gold)); -webkit-background-clip:text; background-clip:text; margin-top:0; margin-bottom:8px; font-family:'Cinzel Decorative',serif; font-size:1.5rem; text-transform:uppercase; filter:drop-shadow(0 2px 4px rgba(0,0,0,0.6));}
 .login-input{width:100%; padding:12px 14px; margin:8px 0; border:2px solid #4a433e; border-radius:6px; background:linear-gradient(135deg,#1f1d1c,#141312); color:#e8e8e8; font-family:'Rajdhani',sans-serif; font-size:1rem; transition:border-color .2s;}
@@ -558,7 +558,7 @@ body.admin-mode #music-toggle-btn{display:none !important;}
 .toast.success{border-color:var(--success); border-left:4px solid var(--success);}
 @keyframes toastIn{from{opacity:0;transform:translateX(-30px)} to{opacity:1;transform:translateX(0)}}
 @keyframes toastOut{from{opacity:1} to{opacity:0;transform:translateX(-30px)}}
-#victory-screen{position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,12,28,0.97); z-index:99998; display:none; flex-direction:column; justify-content:center; align-items:center; backdrop-filter:blur(6px);}
+#victory-screen{position:fixed; inset:0; background:rgba(5,12,28,0.97); z-index:99998; display:none; flex-direction:column; justify-content:center; align-items:center; backdrop-filter:blur(6px);}
 #feedback-overlay{position:fixed;top:0;left:0;width:100%;height:100%;z-index:99990;display:none;justify-content:center;align-items:center;pointer-events:none;background:rgba(0,0,0,0.6);backdrop-filter:blur(4px);animation:feedbackFadeIn .3s ease-out;}
 .feedback-content{font-family:'Cinzel Decorative',serif;font-size:2.8rem;text-align:center;padding:40px 60px;border-radius:16px;border:3px solid;text-shadow:0 0 30px rgba(0,0,0,0.8);animation:feedbackPop .4s cubic-bezier(0.175,0.885,0.32,1.275);}
 .feedback-content.correct{color:#00ff88;border-color:#00ff8866;background:linear-gradient(135deg,rgba(0,255,136,0.1),rgba(0,100,50,0.2));box-shadow:0 0 60px rgba(0,255,136,0.2);}
@@ -570,7 +570,7 @@ body.admin-mode #music-toggle-btn{display:none !important;}
 .confetti{position:absolute; width:10px; height:10px; background:#f00; animation:fall linear forwards; border-radius:2px;}
 @keyframes scaleUp{0%{transform:scale(0) rotate(-10deg);opacity:0}100%{transform:scale(1) rotate(0deg);opacity:1}}
 @keyframes fall{to{transform:translateY(100vh) rotate(720deg)}}
-#epic-overlay{position:fixed; top:0; left:0; width:100%; height:100%; z-index:99990; display:none; justify-content:center; align-items:center; pointer-events:none;}
+#epic-overlay{position:fixed; inset:0; z-index:99990; display:none; justify-content:center; align-items:center; pointer-events:none;}
 .epic-text{font-family:'Cinzel Decorative',serif; font-size:7rem; color:transparent; background:linear-gradient(135deg,var(--cr-gold-light),var(--cr-gold)); -webkit-background-clip:text; background-clip:text; text-transform:uppercase; font-weight:900; filter:drop-shadow(0 0 20px rgba(201,168,76,0.7)) drop-shadow(4px 4px 0 #000); opacity:0;}
 @keyframes epicPulse{0%{transform:scale(.2) rotate(-10deg);opacity:0}50%{transform:scale(1.2) rotate(3deg);opacity:1}100%{transform:scale(1) rotate(0deg);opacity:1}}
 .gift-icon{transition:transform 0.3s;}
@@ -680,7 +680,7 @@ body.admin-mode #music-toggle-btn{display:none !important;}
 }
 .health-bar-fill::before{content:''; position:absolute; inset:0; background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,0.25) 30%,rgba(255,255,255,0.4) 50%,rgba(255,255,255,0.25) 70%,transparent 100%); animation:waterShine 1.5s ease-in-out infinite;}
 .health-bar-fill::after{content:''; position:absolute; top:-3px; left:-8%; width:116%; height:7px; background:radial-gradient(ellipse 40% 100% at 50% 0%, rgba(255,100,100,0.5) 0%, transparent 80%); border-radius:50%; animation:waterRipple 2s ease-in-out infinite;}
-#gift-modal{display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(5,12,28,.97); z-index:99999; justify-content:center; align-items:center; backdrop-filter:blur(4px);}
+#gift-modal{display:none; position:fixed; inset:0; background:rgba(5,12,28,.97); z-index:99999; justify-content:center; align-items:center; backdrop-filter:blur(4px);}
 /* ── Imágenes de armas – carta épica ── */
 .weapon-icon {
   display: inline-block;
