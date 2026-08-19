@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css?v=26">
+  <link rel="stylesheet" href="styles.css?v=27">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -30,6 +30,7 @@
 </div>
 <script>
   (function () {
+    document.documentElement.classList.add('anim-lock');
     var min = 1600;
     var start = Date.now();
     function hide() {
@@ -38,6 +39,7 @@
       var elapsed = Date.now() - start;
       setTimeout(function () {
         el.classList.add('splash-hide');
+        document.documentElement.classList.remove('anim-lock');
         setTimeout(function () { el.remove(); }, 600);
       }, Math.max(0, min - elapsed));
     }

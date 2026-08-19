@@ -1128,6 +1128,7 @@ body{
 .shop-btn-float:hover{filter:drop-shadow(0 0 14px rgba(123,47,247,0.8)) drop-shadow(0 0 28px rgba(123,47,247,0.4));}
 
 /* ── Pantalla de carga (splash con icono) ── */
+html.anim-lock, html.anim-lock body{overflow:hidden !important; height:100%;}
 #splash-screen{position:fixed; inset:0; z-index:100000; background:linear-gradient(180deg,#0b0b1a 0%,#12122a 55%,#0a0a14 100%); display:flex; align-items:center; justify-content:center; transition:opacity .5s ease;}
 #splash-screen.splash-hide{opacity:0; pointer-events:none;}
 .splash-inner{display:flex; flex-direction:column; align-items:center; gap:18px; padding:20px;}
