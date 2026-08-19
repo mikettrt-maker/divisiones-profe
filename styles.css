@@ -1139,4 +1139,4 @@ body{
 .splash-loader span:nth-child(3){animation-delay:.3s;}
 @keyframes splashPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05) rotate(0deg);}}
 @keyframes splashDot{0%,100%{opacity:.25; transform:translateY(0);}50%{opacity:1; transform:translateY(-8px);}}
-@media (pointer: coarse){ #splash-logo{width:min(150px, 40vw); height:min(150px, 40vw); border-radius:28px; border:none;} .splash-title{font-size:1.5rem; letter-spacing:2px;} .splash-loader{gap:7px; margin-top:10px;} .splash-loader span{width:9px; height:9px;} }
+@media (pointer: coarse){ #splash-logo{width:min(330px, 36vw); height:min(330px, 36vw); border-radius:60px; border:2px solid rgba(201,168,76,0.35);} .splash-title{font-size:2.2rem; letter-spacing:4px;} .splash-loader{gap:11px; margin-top:16px;} .splash-loader span{width:13px; height:13px;} }
