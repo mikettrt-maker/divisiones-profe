@@ -2,22 +2,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <script>
-    (function () {
-      var LAYOUT = 1280;
-      function fit() {
-        var w = window.innerWidth || document.documentElement.clientWidth || LAYOUT;
-        if (w <= 0) w = LAYOUT;
-        var z = w / LAYOUT;
-        if (z > 1) z = 1;
-        document.documentElement.style.zoom = z;
-      }
-      fit();
-      window.addEventListener('resize', fit);
-      window.addEventListener('orientationchange', function () { setTimeout(fit, 300); });
-    })();
-  </script>
+  <meta name="viewport" content="width=1280, maximum-scale=1.0, user-scalable=no">
   <title>El Códice Merovingio</title>
   <link rel="manifest" href="/divisiones-profe/manifest.json">
   <link rel="icon" type="image/png" sizes="192x192" href="/divisiones-profe/icon-192.png">
