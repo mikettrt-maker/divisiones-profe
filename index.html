@@ -2,7 +2,22 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=1280, maximum-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <script>
+    (function () {
+      var LAYOUT = 1280;
+      function fit() {
+        var w = window.innerWidth || document.documentElement.clientWidth || LAYOUT;
+        if (w <= 0) w = LAYOUT;
+        var z = w / LAYOUT;
+        if (z > 1) z = 1;
+        document.documentElement.style.zoom = z;
+      }
+      fit();
+      window.addEventListener('resize', fit);
+      window.addEventListener('orientationchange', function () { setTimeout(fit, 300); });
+    })();
+  </script>
   <title>El Códice Merovingio</title>
   <link rel="manifest" href="/divisiones-profe/manifest.json">
   <link rel="icon" type="image/png" sizes="192x192" href="/divisiones-profe/icon-192.png">
@@ -10,7 +25,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cinzel+Decorative:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Teko:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css?v=29">
+  <link rel="stylesheet" href="styles.css?v=30">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script>
     if ('serviceWorker' in navigator) {
@@ -532,15 +547,16 @@
     draw();
   })();
 
-  // Mobile ranking toggle
+  // Mobile ranking toggle (según ancho real del dispositivo)
   (function() {
     const toggleBtn = document.getElementById('mobile-ranking-toggle');
     const sidebar = document.getElementById('ranking-sidebar');
-    if (toggleBtn && sidebar) {
-      if (window.innerWidth < 768) {
-        toggleBtn.style.display = 'block';
-        sidebar.style.display = 'none';
-      }
+    const zoom = parseFloat(getComputedStyle(document.documentElement).zoom) || 1;
+    if (toggleBtn && sidebar && window.innerWidth < 500 && zoom < 0.5) {
+      toggleBtn.style.display = 'block';
+      sidebar.style.display = 'none';
+    }
+    if (toggleBtn) {
       toggleBtn.addEventListener('click', () => {
         if (sidebar.style.display === 'none') {
           sidebar.style.display = 'block';

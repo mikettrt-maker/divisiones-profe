@@ -13,7 +13,7 @@
 }
 * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 body {
-  margin: 0; font-family: 'Rajdhani', sans-serif;
+  margin: 0 auto; font-family: 'Rajdhani', sans-serif;
   background-color: #0a0a14;
   color: var(--text-dark);
   display: flex; flex-direction: column; align-items: center; min-height: 100vh;
@@ -48,7 +48,7 @@ body {
 .timer-display{font-family:'Teko'; font-size:2.8rem; line-height:1;}
 .admin-btn{background:linear-gradient(135deg,#1a1a2e,#16213e); color:var(--cr-gold); padding:6px 16px; font-size:.9rem; border:1px solid var(--cr-gold-dark); border-radius:6px; cursor:pointer; display:none; font-family:'Cinzel',serif;}
 .admin-btn.visible{display:block}
-.app-container{width:100%; max-width:1500px; padding:20px; display:flex; flex-direction:column; gap:20px;}
+.app-container{width:1280px; margin:0 auto; padding:20px; display:flex; flex-direction:column; gap:20px;}
 .panel{background:rgba(10,18,40,0.3); padding:6px 20px; border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.08),inset 0 -1px 0 rgba(0,0,0,0.5); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:15px; border:1px solid var(--cr-blue-light); border-top:3px solid var(--cr-gold-dark); position:relative;}
 .panel::before{content:''; position:absolute; top:0; left:0; right:0; height:1px; background:linear-gradient(90deg,transparent,rgba(201,168,76,0.4),transparent);}
 .level-select{padding:8px 14px; border-radius:6px; border:2px solid var(--cr-gold-dark); background:linear-gradient(135deg,#0d1c3b,#1e3a5f); color:var(--cr-gold); font-family:'Cinzel',serif; font-weight:700; cursor:pointer; outline:none; text-transform:uppercase; box-shadow:0 2px 8px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.1);}
@@ -723,128 +723,6 @@ textarea, select {
 ::-webkit-scrollbar-track{background:rgba(10,22,40,0.8);}
 ::-webkit-scrollbar-thumb{background:var(--cr-gold-dark); border-radius:3px;}
 ::-webkit-scrollbar-thumb:hover{background:var(--cr-gold);}
-@media (max-width: 767px) {
-  /* ── Layout general ── */
-  .main-layout{flex-direction:column;}
-  .ranking-sidebar{width:100%; min-width:unset; max-height:50vh;}
-  .workspace-card{flex-direction:column; gap:10px; padding:14px;}
-  .antena-panel{width:100%; margin-left:0;}
-  :root{--cell-size:28px;}
-  .grid-matriz{grid-template-columns:repeat(9, var(--cell-size));}
-
-  /* ── Header ── */
-  .main-header{min-height:80px; gap:8px; padding:8px 10px; flex-wrap:wrap;}
-  .main-header h1{font-size:1.2rem; letter-spacing:1px;}
-  .header-title-wrap{margin-top:15px;}
-
-  .header-title-img{width:400px; max-height:120px;}
-  .season-banner-top{display:none;} /* el marquee saturaría el header en móvil */
-  .season-badge{padding:4px 10px; gap:6px;}
-  .season-badge i{font-size:1rem;}
-  .tb-left-level{top:50%; left:10px; transform:translateY(-50%); padding:5px 8px; gap:5px;}
-  .tb-left-level .level-select{padding:4px 6px; font-size:.78rem;}
-  .timer-display{font-size:1.6rem;}
-  .admin-btn{font-size:.75rem; padding:4px 10px;}
-
-  /* ── Panel superior + avatar de 200px (demasiado grande) ── */
-  .app-container{padding:12px; gap:12px;}
-  .panel{padding:20px 12px 14px;}
-  .user-info-panel{gap:10px; justify-content:center;}
-  .tb-zone{width:100%; padding:6px 0; align-items:center;}
-  .tb-zone + .tb-zone{border-left:none; border-top:1px solid rgba(201,168,76,0.18); padding-top:10px; margin-top:6px;}
-  .tb-zone-status{align-items:center;}
-  .tb-resources{justify-content:center;}
-  .tb-zone-actions{width:100%; flex-direction:row; flex-wrap:wrap; justify-content:center;}
-  .avatar-container{width:90px; height:90px;}
-  #maestre-icon{width:126px !important; height:126px !important; margin-left:60px !important; margin-top:30px !important;}
-  .avatar-rank-group{gap:6px;}
-  .header-rank-group{margin-left:-18px;}
-  .header-rank-group::before{width:80px; height:80px;}
-  .header-rank-group::after{width:88px; height:88px;}
-  .header-rank-icon img{width:56px; height:56px;}
-
-  /* ── Monedas, gemas y racha ── */
-  .res-pill{flex:1 1 30%; min-width:0; max-width:none;}
-  .coin-display-container{padding:8px 12px;}
-  .coin-icon{font-size:1.3rem;}
-  .coin-img,.streak-img{height:1.3rem;}
-  .coin-count{font-size:1.1rem;}
-  .streak-display{padding:6px 12px;}
-  .streak-count{font-size:1.1rem;}
-  .health-bar-bg{width:90px;}
-  .tb-zone-identity .health-bar-container{width:100%; justify-content:center;}
-  .tb-zone-identity .health-bar-bg{width:150px; max-width:150px; min-width:0;}
-
-  /* ── Botones flotantes ── */
-  .shop-btn-float{bottom:20px; right:20px; left:auto; width:48px; height:48px; font-size:1.4rem;}
-  #inventory-btn{bottom:20px; left:auto; right:76px; width:48px; height:48px; font-size:1.4rem;}
-
-  /* ── Cartas de misión (140px de alto) ── */
-  .mission-card-wrap img{width:86px; height:120px;}
-  .mission-progress-bar-bg{width:86px;}
-  .mission-label{max-width:86px;}
-
-  /* ── Barra de rango ── */
-  .rank-bar{padding:30px 5px 14px;}
-  .rank-bar-marker{width:50px; top:-44px;}
-  .rank-bar-marker img{width:42px; height:42px;}
-  .rank-bar-marker-name{font-size:.45rem;}
-  .rank-table-img{max-width:100%;}
-
-  /* ── Carta de enemigo ── */
-  .enemy-card img{width:200px;}
-  .energy-bar-container{width:100%;}
-
-  /* ── Login ── */
-  .login-box{width:calc(100% - 30px); max-width:320px; padding:20px;}
-  .login-box h2{font-size:1.3rem;}
-
-  /* ── Dashboard del maestre ── */
-  .dash-grid{grid-template-columns:1fr;}
-  .control-grid{grid-template-columns:1fr 1fr;}
-
-  /* ── Tienda ── */
-  .shop-body{grid-template-columns:1fr 1fr; gap:10px;}
-  .shop-item{padding:12px;}
-  .shop-item .weapon-icon{width:90px; height:90px;}
-  .shop-title{font-size:1.3rem;}
-  .shop-coins-val{font-size:1.2rem;}
-
-  /* ── Notificaciones (toasts) ── */
-  .toast-container{left:10px; right:10px; bottom:80px;}
-  .toast{max-width:100%; font-size:.85rem;}
-
-  /* ── Modales ── */
-  .modal-box{width:calc(100% - 24px); max-width:420px; padding:20px;}
-  .avatar-grid{grid-template-columns:repeat(3,1fr);}
-  .avatar-option img{width:60px; height:60px;}
-
-  /* ── Textos épicos gigantes ── */
-  .victory-title{font-size:3.5rem; letter-spacing:2px;}
-  .epic-text{font-size:3rem;}
-}
-/* Pantallas muy estrechas (<380px) */
-@media (max-width:380px){
-  .shop-body{grid-template-columns:1fr;}
-  .main-header h1{font-size:1rem;}
-  .coin-display-container, .streak-display{padding:6px 10px;}
-}
-
-/* ── Tamaño mínimo de toque (44×44px) en móvil ──
-   Apple/Google recomiendan que todo botón tenga al menos 44px de alto.
-   Se aplica solo en móvil para no alterar el diseño de escritorio. */
-@media (max-width: 767px) {
-  button, .btn-small, .btn-primary,
-  .sc-btn, .attack-btn, .ctrl-btn, .shop-buy-btn,
-  .mission-delete-btn, .login-btn {
-    min-height: 44px;
-    min-width: 44px;
-  }
-  /* Los chips muy pequeños (atacar/borrar) reciben padding extra para el dedo */
-  .sc-btn, .attack-btn, .mission-delete-btn {
-    padding: 8px 12px;
-  }
-}
 .mission-card {
   transition: all 0.3s ease;
   cursor: default;
@@ -1140,4 +1018,4 @@ html.anim-lock, html.anim-lock body{overflow:hidden !important; height:100%;}
 .splash-loader span:nth-child(3){animation-delay:.3s;}
 @keyframes splashPulse{0%,100%{transform:scale(1);}50%{transform:scale(1.05) rotate(0deg);}}
 @keyframes splashDot{0%,100%{opacity:.25; transform:translateY(0);}50%{opacity:1; transform:translateY(-8px);}}
-@media (pointer: coarse){ #splash-logo{width:min(330px, 36vw); height:min(330px, 36vw); border-radius:60px; border:2px solid rgba(201,168,76,0.35);} .splash-title{font-size:2.2rem; letter-spacing:4px;} .splash-loader{gap:11px; margin-top:16px;} .splash-loader span{width:13px; height:13px;} }
+@media (pointer: coarse){ #splash-logo{width:min(560px, 66vw); height:min(560px, 66vw); border-radius:96px; border:2px solid rgba(201,168,76,0.35);} .splash-title{font-size:2.2rem; letter-spacing:4px;} .splash-loader{gap:11px; margin-top:16px;} .splash-loader span{width:13px; height:13px;} }
