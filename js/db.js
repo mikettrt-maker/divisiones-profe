@@ -274,9 +274,14 @@ async function handleLogin(){
 async function handleRegister(){
   const u = document.getElementById('login-username').value.trim();
   const p = document.getElementById('login-password').value;
+  const code = document.getElementById('login-access-code').value.trim();
   const e = document.getElementById('login-error');
   if(!u || p.length < 6){ e.textContent = "Datos incompletos."; e.style.display='block'; return; }
+  if(!code){ e.textContent = "Ingresa el código de clase."; e.style.display='block'; return; }
   try {
+    const { data: codeOk, error: codeErr } = await _supabase.rpc('check_access_code', { p_code: code });
+    if(codeErr) throw codeErr;
+    if(codeOk !== true){ e.textContent = "Código de clase incorrecto."; e.style.display='block'; return; }
     const { data, error } = await _supabase.auth.signUp({ email: u+"@profemiguel.com", password: p });
     if(error) throw error;
     await _supabase.from('profiles').insert({
